@@ -1,13 +1,7 @@
-import { activityStreak, useStore, withRules } from "../state.js";
+import { useStore, withRules } from "../state.js";
 import { Icon } from "./icons.jsx";
 import { makeCard } from "../engine/cards.js";
-import {
-  Badge,
-  Flame,
-  IconButton,
-  PlayingCard,
-  RatingGem,
-} from "./components.jsx";
+import { Badge, IconButton, PlayingCard, RatingGem } from "./components.jsx";
 import { parseSpot } from "../engine/trainer.js";
 import { useNav } from "../nav.js";
 
@@ -40,18 +34,6 @@ function Logo({ size: a = 40 }) {
         21
       </text>
     </svg>
-  );
-}
-function StreakBadge() {
-  let a = useStore(),
-    e = activityStreak(a.activity);
-  return (
-    <Badge
-      icon={<Flame lit={e > 0} />}
-      label={`Racha de ${e} ${e === 1 ? "día" : "días"}`}
-    >
-      {e}
-    </Badge>
   );
 }
 function RatingBadge({ showDelta: a = false }) {
@@ -170,7 +152,6 @@ export {
   MiniCards,
   RatingBadge,
   SettingsButton,
-  StreakBadge,
   TopBar,
   pct,
   spotTitle,

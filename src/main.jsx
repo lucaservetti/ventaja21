@@ -4,7 +4,7 @@ import { jsx as _jsx } from "react/jsx-runtime";
 import { getState, resetAll, setState, useStore } from "./state.js";
 import { Icon } from "./ui/icons.jsx";
 import { vibrate } from "./sound.js";
-import { cx } from "./ui/components.jsx";
+import { Toasts, cx } from "./ui/components.jsx";
 import { TrainSession } from "./screens/TrainSession.jsx";
 import { Onboarding, Placement } from "./screens/Onboarding.jsx";
 import { LearnTab } from "./screens/LearnTab.jsx";
@@ -27,6 +27,12 @@ import { ChartSheet, SettingsSheet, SystemSheet } from "./screens/sheets.jsx";
 import { NavContext } from "./nav.js";
 import { CountLevel, DrillPairs } from "./screens/countPath.jsx";
 import { ShoeChallenge } from "./screens/ShoeChallenge.jsx";
+import {
+  GoalSheet,
+  PRACTICE_SCREENS,
+  useGoalCelebration,
+  usePracticeClock,
+} from "./screens/goal.jsx";
 
 const TABS = [
   { id: "conteo", label: "Conteo", icon: "drills" },
@@ -63,6 +69,7 @@ const SHEETS = {
   settings: SettingsSheet,
   system: SystemSheet,
   chartView: ChartSheet,
+  goal: GoalSheet,
 };
 let screenSeq = 1;
 function App() {
@@ -188,6 +195,20 @@ function App() {
     }),
     [e],
   );
+  // Meta diaria: el reloj corre en pantallas de práctica y jugando en el simulador.
+  const top = l.length ? l[l.length - 1].name : null;
+  const practicing =
+    a.profile.onboarded && (top ? PRACTICE_SCREENS.has(top) : e === "jugar");
+  usePracticeClock(practicing);
+  const [goalToast, setGoalToast] = useState(null);
+  useGoalCelebration((streak) => {
+    const msg =
+      streak > 1
+        ? `¡Meta del día cumplida! Llevás ${streak} días seguidos.`
+        : "¡Meta del día cumplida! Es el primer día de tu racha.";
+    setGoalToast({ id: Date.now(), msg, kind: "good" });
+    setTimeout(() => setGoalToast(null), 3600);
+  });
   if (!a.profile.onboarded)
     return (
       <NavContext.Provider value={y}>
@@ -231,6 +252,7 @@ function App() {
         {C ? (
           <C open={true} onClose={() => y.closeSheet()} {...o.props} />
         ) : null}
+        <Toasts items={goalToast ? [goalToast] : []} />
       </div>
     </NavContext.Provider>
   );

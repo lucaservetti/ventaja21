@@ -5578,3 +5578,69 @@ i.en {
   display: block;
   font-weight: 500;
 }
+/* ---- Meta diaria ---- */
+.cal-d.part {
+  background: #5c5d33;
+}
+.goal-badge {
+  padding: 0 12px 0 5px;
+  gap: 6px;
+}
+.page-head-right .goal-badge {
+  padding: 0 12px 0 5px;
+}
+.goal-mini {
+  display: grid;
+  place-items: center;
+}
+.goal-mini .ring-in,
+.goal-card .ring-in,
+.goal-day .ring-in {
+  display: grid;
+  place-items: center;
+}
+.goal-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+}
+.goal-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 4px 0 18px;
+}
+.goal-status {
+  margin-top: 14px;
+  font-weight: 700;
+  font-size: 18px;
+}
+.goal-streak {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.goal-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-top: 16px;
+  text-align: center;
+}
+.goal-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-3);
+}
+.goal-day.today {
+  color: var(--text);
+}
+.onb-minutes .option b {
+  font-size: 19px;
+}

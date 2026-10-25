@@ -1,13 +1,22 @@
 import { useState } from "react";
 import {
-  activityStreak,
+  goalDay,
+  goalStreak,
   addDays,
   dayKey,
   levelFor,
   nextLevel,
   useStore,
 } from "../state.js";
-import { Button, Segmented, Sheet, cx } from "../ui/components.jsx";
+import {
+  Button,
+  Flame,
+  Ring,
+  Segmented,
+  Sheet,
+  cx,
+} from "../ui/components.jsx";
+import { Icon } from "../ui/icons.jsx";
 import { LESSONS } from "../lessons/content.js";
 import { UPS, skillSpots } from "../engine/trainer.js";
 import {
@@ -20,6 +29,7 @@ import {
 import { spotsAccuracy, strongSpots, weakSpots } from "../engine/skills.js";
 import { shortDate } from "./TrainTab.jsx";
 import { useNav } from "../nav.js";
+import { GoalBadge, bestGoalStreak } from "./goal.jsx";
 
 function ProgressTab() {
   let a = useStore(),
@@ -31,6 +41,7 @@ function ProgressTab() {
       <div className="page-head" style={{ alignItems: "center" }}>
         <h1 style={{ fontSize: 34 }}>Progreso</h1>
         <div className="page-head-right">
+          <GoalBadge />
           <RatingBadge showDelta={true} />
           <SettingsButton />
         </div>
@@ -139,7 +150,8 @@ function ProgressOverview({ st: a, nav: e }) {
       0,
     ),
     i = a.train.totalHands ? a.train.totalOk / a.train.totalHands : null,
-    o = activityStreak(a.activity),
+    o = goalStreak(a),
+    today = goalDay(a),
     c = [{ v: 1000 }, ...a.rating.history].slice(-40),
     r = [],
     u = dayKey();
@@ -152,7 +164,31 @@ function ProgressOverview({ st: a, nav: e }) {
     y = f.length ? f.reduce((C, k) => C + k.ok / k.n, 0) / f.length : null;
   return (
     <>
-      <div className="card">
+      <button
+        type="button"
+        className="card goal-card"
+        onClick={() => e.openSheet("goal")}
+      >
+        <Ring
+          value={today.s / today.g}
+          size={58}
+          stroke={7}
+          tone={today.s >= today.g ? "var(--good)" : "var(--accent)"}
+        >
+          <Flame size={20} lit={o > 0} />
+        </Ring>
+        <span className="li-text">
+          <span className="eyebrow">Meta de hoy</span>
+          <span className="li-title" style={{ display: "block", fontSize: 19 }}>
+            {Math.floor(today.s / 60)} de {Math.round(today.g / 60)} minutos
+          </span>
+          <span className="li-sub">
+            {o} {o === 1 ? "día seguido" : "días seguidos"} cumpliendo la meta
+          </span>
+        </span>
+        <Icon name="chev" className="li-chev" />
+      </button>
+      <div className="card" style={{ marginTop: 14 }}>
         <div className="row between">
           <div>
             <div className="eyebrow">Tu nivel</div>
@@ -189,7 +225,7 @@ function ProgressOverview({ st: a, nav: e }) {
         <div className="tile">
           <div className="tile-v num">{o}</div>
           <div className="tile-l">
-            {o === 1 ? "día seguido" : "días seguidos"}
+            {o === 1 ? "día con la meta" : "días con la meta"}
           </div>
         </div>
         <div className="tile">
@@ -215,13 +251,30 @@ function ProgressOverview({ st: a, nav: e }) {
           Últimas 5 semanas
         </div>
         <div className="cal">
-          {r.map((C) => (
-            <span
-              className={cx("cal-d", a.activity[C] && "on", C === u && "today")}
-              title={C}
-              key={C}
-            />
-          ))}
+          {r.map((C) => {
+            const g = goalDay(a, C);
+            return (
+              <span
+                className={cx(
+                  "cal-d",
+                  g.s >= g.g ? "on" : (g.s > 0 || a.activity[C]) && "part",
+                  C === u && "today",
+                )}
+                title={C}
+                key={C}
+              />
+            );
+          })}
+        </div>
+        <div className="legend" style={{ marginTop: 12 }}>
+          <span>
+            <i style={{ background: "var(--accent)" }} />
+            meta cumplida
+          </span>
+          <span>
+            <i style={{ background: "#5c5d33" }} />
+            practicaste un rato
+          </span>
         </div>
       </div>
       <div className="card" style={{ marginTop: 14 }}>
@@ -553,6 +606,10 @@ function Records({ st: a }) {
         i
           ? `${Math.round((i.ok / i.n) * 100)} % · ${shortDate(i.t)}`
           : "todavía no",
+      ],
+      [
+        "Racha de meta diaria",
+        `${goalStreak(a)} ${goalStreak(a) === 1 ? "día" : "días"} (récord ${bestGoalStreak(a)})`,
       ],
       [
         "Desafío diario",

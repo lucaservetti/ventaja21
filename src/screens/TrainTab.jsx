@@ -8,12 +8,12 @@ import {
   MiniCards,
   RatingBadge,
   SettingsButton,
-  StreakBadge,
   pct,
   useRules,
 } from "../ui/common.jsx";
 import { skillGrade, skillStats } from "../engine/skills.js";
 import { useNav } from "../nav.js";
+import { GoalBadge } from "./goal.jsx";
 
 const SKILL_SUITS = {
   stiff: ["s", "h"],
@@ -39,7 +39,7 @@ function TrainTab() {
       <div className="page-head" style={{ alignItems: "center" }}>
         <h1 style={{ fontSize: 34 }}>Entrenar</h1>
         <div className="page-head-right">
-          <StreakBadge />
+          <GoalBadge />
           <RatingBadge />
           <SettingsButton />
         </div>

@@ -11,14 +11,10 @@ import {
   cx,
 } from "../ui/components.jsx";
 import { countValue, fmtTag, systemFor } from "../engine/systems.js";
-import {
-  BrandBar,
-  InfoDot,
-  SettingsButton,
-  StreakBadge,
-} from "../ui/common.jsx";
+import { BrandBar, InfoDot, SettingsButton } from "../ui/common.jsx";
 import { HiLoValues } from "../lessons/visuals.jsx";
 import { useNav } from "../nav.js";
+import { GoalBadge } from "./goal.jsx";
 import { CountPathCard } from "./countPath.jsx";
 
 const SAMPLE_CARD = makeCard("5", "h");
@@ -46,7 +42,7 @@ function CountTab() {
       <BrandBar
         right={
           <>
-            <StreakBadge />
+            <GoalBadge />
             <SettingsButton />
           </>
         }

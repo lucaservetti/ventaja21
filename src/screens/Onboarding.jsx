@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { markActive, setState } from "../state.js";
+import { markActive, setGoalMinutes, setState, useStore } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
 import { makeCard, parseCard } from "../engine/cards.js";
 import { sfx, vibrate } from "../sound.js";
@@ -137,7 +137,14 @@ const PLACEMENT_QUESTIONS = [
     a: 0,
   },
 ];
+const MINUTE_OPTIONS = [
+  { value: 5, label: "tranqui" },
+  { value: 10, label: "lo normal" },
+  { value: 15, label: "en serio" },
+  { value: 20, label: "a fondo" },
+];
 function Onboarding() {
+  const st = useStore();
   let [a, e] = useState("welcome"),
     [t, s] = useState(0),
     [n, l] = useState(null),
@@ -179,7 +186,7 @@ function Onboarding() {
           />
           <div className="onb-progress grow">
             <span
-              style={{ width: `${((t + 1) / (ONB_SLIDES.length + 3)) * 100}%` }}
+              style={{ width: `${((t + 1) / (ONB_SLIDES.length + 4)) * 100}%` }}
             />
           </div>
         </div>
@@ -221,7 +228,7 @@ function Onboarding() {
           <div className="onb-progress grow">
             <span
               style={{
-                width: `${((ONB_SLIDES.length + (c ? 1 : 2)) / (ONB_SLIDES.length + 3)) * 100}%`,
+                width: `${((ONB_SLIDES.length + (c ? 1 : 2)) / (ONB_SLIDES.length + 4)) * 100}%`,
               }}
             />
           </div>
@@ -253,7 +260,63 @@ function Onboarding() {
           </div>
         </div>
         <div className="bottom-actions">
-          <Button disabled={!u} onClick={() => e(c ? "goal" : "quiz")}>
+          <Button disabled={!u} onClick={() => e(c ? "goal" : "minutes")}>
+            Seguir
+          </Button>
+        </div>
+      </div>
+    );
+  }
+  if (a === "minutes") {
+    const picked = st.dailyGoal.chosen ? st.dailyGoal.minutes : null;
+    return (
+      <div className="layer full onb">
+        <div className="lesson-top">
+          <IconButton
+            icon="back"
+            className="sq"
+            label="Atrás"
+            onClick={() => e("goal")}
+          />
+          <div className="onb-progress grow">
+            <span
+              style={{
+                width: `${((ONB_SLIDES.length + 3) / (ONB_SLIDES.length + 4)) * 100}%`,
+              }}
+            />
+          </div>
+        </div>
+        <div className="onb-q onb-minutes fade-up" key={a}>
+          <div className="eyebrow acc">Tu meta diaria</div>
+          <h1>¿Cuánto tiempo por día querés practicar?</h1>
+          <p className="muted" style={{ marginTop: 10 }}>
+            Un anillo se llena con lo que practicás y tu racha suma un día cada
+            vez que cumplís la meta. La cambiás cuando quieras.
+          </p>
+          <div className="options" style={{ marginTop: 22 }}>
+            {MINUTE_OPTIONS.map((opt) => (
+              <button
+                type="button"
+                className={cx("option", picked === opt.value && "picked")}
+                onClick={() => {
+                  vibrate(6);
+                  setGoalMinutes(opt.value);
+                }}
+                key={opt.value}
+              >
+                <span>
+                  <b>{opt.value} minutos</b>{" "}
+                  <span className="muted">· {opt.label}</span>
+                </span>
+                {picked === opt.value ? (
+                  <Icon name="check" size={20} stroke={3} />
+                ) : null}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="bottom-actions">
+          <Button disabled={!picked} onClick={() => e("quiz")}>
             Seguir
           </Button>
         </div>
@@ -262,7 +325,7 @@ function Onboarding() {
   }
   return (
     <div className="layer full onb">
-      <Placement embedded={true} exp={n} goal={i} onBack={() => e("goal")} />
+      <Placement embedded={true} exp={n} goal={i} onBack={() => e("minutes")} />
     </div>
   );
 }

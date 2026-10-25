@@ -94,8 +94,24 @@ function SettingsSheet({ open: a, onClose: e }) {
   return (
     <Sheet open={a} onClose={e} title="Ajustes" tall={true}>
       <h3 className="sheet-sub" style={{ marginTop: 4 }}>
-        Conteo
+        Meta diaria
       </h3>
+      <button
+        type="button"
+        className="list-item setting-link"
+        onClick={() => s.openSheet("goal")}
+      >
+        <span className="li-text">
+          <span className="li-title" style={{ fontSize: 17 }}>
+            {t.dailyGoal.minutes} minutos por día
+          </span>
+          <span className="li-sub" style={{ display: "block" }}>
+            Cambiala y mirá tu racha
+          </span>
+        </span>
+        <Icon name="chev" className="li-chev" />
+      </button>
+      <h3 className="sheet-sub">Conteo</h3>
       <button
         type="button"
         className="list-item setting-link"

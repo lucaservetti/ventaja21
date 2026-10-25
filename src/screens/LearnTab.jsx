@@ -4,6 +4,7 @@ import { Icon, SuitIcon } from "../ui/icons.jsx";
 import { Toasts, cx, useWidth } from "../ui/components.jsx";
 import { LESSONS, SECTIONS, lessonMinutes } from "../lessons/content.js";
 import { useNav } from "../nav.js";
+import { GoalBadge } from "./goal.jsx";
 
 function lessonProgress(a) {
   let e = (s) => !!(a.lessons[s] && a.lessons[s].done),
@@ -41,15 +42,18 @@ function LearnTab() {
             {" lecciones"}
           </p>
         </div>
-        <button
-          type="button"
-          className="guide-btn"
-          onClick={() => e.push("guide")}
-          aria-label="Abrir la Guía"
-        >
-          <Icon name="book" size={24} />
-          <span>Guía</span>
-        </button>
+        <div className="page-head-right">
+          <GoalBadge />
+          <button
+            type="button"
+            className="guide-btn"
+            onClick={() => e.push("guide")}
+            aria-label="Abrir la Guía"
+          >
+            <Icon name="book" size={24} />
+            <span>Guía</span>
+          </button>
+        </div>
       </div>
       <div className="learn-progress">
         {SECTIONS.map((r) => {
