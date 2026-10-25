@@ -1004,11 +1004,11 @@ function DrillDecks() {
     />
   );
 }
-function Tray({ shoe: a, cards: e, small: t, marks: s = true }) {
-  let n = t ? 90 : 220,
+function Tray({ shoe: a, cards: e, small: t, marks: s = true, height }) {
+  let n = height || (t ? 90 : 220),
     l = Math.min(1, e / (a * 52));
   return (
-    <div className={cx("tray", t && "small")} style={{ height: n + 20 }}>
+    <div className={cx("tray", t && "small")} style={{ height: n + (t ? 2 : 20) }}>
       <div className="tray-box" style={{ height: n }}>
         <div className="tray-fill" style={{ height: `${l * 100}%` }}>
           <div className="tray-lines" />

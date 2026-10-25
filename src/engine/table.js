@@ -1,23 +1,14 @@
+// Motor del simulador: un zapato, el crupier, otros jugadores (bots) y tus manos.
+// La UI lo lee con subscribe()/version y lo maneja con addChip(), deal(), act(), insure()…
 import { withRules } from "../state.js";
-import {
-  Shoe,
-  handValue,
-  isBlackjack,
-  isPair,
-  rankKey,
-  upLabel,
-} from "./cards.js";
-import {
-  allowedActions,
-  basicPlay,
-  countPlay,
-  takeInsurance,
-} from "./strategy.js";
+import { Shoe, handValue, isBlackjack, isPair, rankKey, upLabel } from "./cards.js";
+import { allowedActions, basicPlay, countPlay, takeInsurance } from "./strategy.js";
 import { explainBest, explainDeviation, explainMistake } from "./explain.js";
 import {
   betUnits,
   countValue,
   floorTC,
+  fmtSigned,
   hiloValue,
   initialCount,
   systemFor,
@@ -42,12 +33,13 @@ const CHATTER = [
   "¿Me pasás las fichas verdes?",
   "Dale, dale, que viene el As.",
 ];
+
 let handSeq = 1;
-function newHand(a, e = {}) {
+function newHand(bet, extra = {}) {
   return {
     id: handSeq++,
     cards: [],
-    bet: a,
+    bet,
     doubled: false,
     fromSplit: false,
     splitAces: false,
@@ -55,20 +47,35 @@ function newHand(a, e = {}) {
     surrendered: false,
     result: null,
     payout: 0,
-    ...e,
+    ...extra,
   };
 }
-const Table = class {
-  constructor(e = {}) {
+
+function emptyShoeStats() {
+  return { hands: 0, checks: 0, checksOk: 0, decisions: 0, decisionsOk: 0, bets: 0, betsOk: 0, net: 0 };
+}
+
+function spotLabel(spot) {
+  if (spot.kind === "pair") return `${spot.g === "T" ? "10" : spot.g},${spot.g === "T" ? "10" : spot.g}`;
+  return `${spot.kind === "soft" ? "Blando" : "Duro"} ${spot.total}`;
+}
+
+class Table {
+  constructor(options = {}) {
     this.listeners = new Set();
     this.version = 0;
     this.toasts = [];
     this.toastSeq = 1;
     this.lifetime = { hands: 0, net: 0 };
-    this.configure(e, true);
+    this.configure(options, true);
   }
-  configure(e = {}, t = false) {
-    let s = this.rules;
+
+  // Opciones: system, bots, unit, startBankroll, speed, coach (avisos de jugadas), betCoach (se evalúan
+  // las apuestas), deviations (el coach usa el Illustrious 18), countCheck (off|shoe|sometimes|often|exam),
+  // pressure, silent (sin avisos durante el juego), quietResults (sin aviso de ganaste/perdiste),
+  // lenient (acepta la jugada básica aunque el conteo pida una desviación), rules.
+  configure(options = {}, initial = false) {
+    const prevRules = this.rules;
     this.opts = {
       system: "hilo",
       bots: 0,
@@ -80,39 +87,36 @@ const Table = class {
       deviations: false,
       countCheck: "sometimes",
       pressure: false,
+      lenient: false,
       ...(this.opts || {}),
-      ...e,
+      ...options,
     };
-    this.rules = withRules(e.rules || (this.rules ? this.rules : {}));
+    this.rules = withRules(options.rules || this.rules || {});
     this.sys = systemFor(this.opts.system);
-    let n = !s || s.decks !== this.rules.decks || s.pen !== this.rules.pen;
-    if (t || ((n || e.reshuffle) && !this.running)) {
+    const shoeChanged = !prevRules || prevRules.decks !== this.rules.decks || prevRules.pen !== this.rules.pen;
+    if (initial || ((shoeChanged || options.reshuffle) && !this.running)) {
       this.newShoe();
       this.pendingShuffle = false;
     } else {
-      if (n || e.reshuffle) {
-        this.pendingShuffle = true;
-        this.recount();
-      } else {
-        this.recount();
-      }
+      if (shoeChanged || options.reshuffle) this.pendingShuffle = true;
+      this.recount();
     }
-    if (t) {
-      this.bankroll = e.bankroll ?? this.opts.startBankroll;
+    if (initial) {
+      this.bankroll = options.bankroll ?? this.opts.startBankroll;
       this.phase = "bet";
       this.dealer = { cards: [], hidden: true };
       this.hands = [];
       this.botSeats = [];
       this.bet = 0;
+      this.chipStack = [];
       this.lastBet = this.opts.unit;
       this.active = 0;
       this.session = this.emptySession();
     }
-    if (!this.running) {
-      this.setupBots();
-    }
+    if (!this.running) this.setupBots();
     this.emit();
   }
+
   emptySession() {
     return {
       hands: 0,
@@ -133,17 +137,18 @@ const Table = class {
       biggestWin: 0,
       slow: 0,
       mistakes: [],
+      betMistakes: [],
+      checkLog: [],
     };
   }
+
   setupBots() {
-    let e = Math.max(0, Math.min(4, this.opts.bots | 0));
-    if (!this.botSeats || this.botSeats.length !== e) {
-      this.botSeats = Array.from({ length: e }, (t, s) => ({
-        name: BOT_NAMES[s],
-        hands: [],
-      }));
+    const n = Math.max(0, Math.min(4, this.opts.bots | 0));
+    if (!this.botSeats || this.botSeats.length !== n) {
+      this.botSeats = Array.from({ length: n }, (_, i) => ({ name: BOT_NAMES[i], hands: [] }));
     }
   }
+
   newShoe() {
     this.shoe = new Shoe({ decks: this.rules.decks, pen: this.rules.pen });
     this.seen = [];
@@ -151,50 +156,48 @@ const Table = class {
     this.rcSys = initialCount(this.sys, this.rules.decks);
     this.rcHilo = 0;
     this.roundsThisShoe = 0;
-    this.shoeStats = {
-      hands: 0,
-      checks: 0,
-      checksOk: 0,
-      decisions: 0,
-      decisionsOk: 0,
-      net: 0,
-    };
+    this.roundsSinceCheck = 0;
+    this.shoeStats = emptyShoeStats();
     this.needsBurn = this.rules.pen > 0;
   }
+
   recount() {
     this.rcSys = initialCount(this.sys, this.rules.decks);
     this.rcHilo = 0;
-    for (let e of this.seen || []) {
-      this.rcSys += countValue(e, this.sys);
-      this.rcHilo += hiloValue(e);
+    for (const card of this.seen || []) {
+      this.rcSys += countValue(card, this.sys);
+      this.rcHilo += hiloValue(card);
     }
   }
-  subscribe(e) {
-    this.listeners.add(e);
-    return () => this.listeners.delete(e);
+
+  subscribe(fn) {
+    this.listeners.add(fn);
+    return () => this.listeners.delete(fn);
   }
+
   emit() {
     this.version++;
-    for (let e of this.listeners) {
-      e();
-    }
+    for (const fn of this.listeners) fn();
   }
-  sleep(e = 1) {
+
+  sleep(beats = 1) {
     if (this.opts.instant) return Promise.resolve();
-    let t = (TABLE_SPEEDS[this.opts.speed] || TABLE_SPEEDS.normal).ms * e;
-    return new Promise((s) => setTimeout(s, t));
+    const ms = (TABLE_SPEEDS[this.opts.speed] || TABLE_SPEEDS.normal).ms * beats;
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
-  toast(e, t = "info", s = 2600) {
-    let n = { id: this.toastSeq++, msg: e, kind: t };
-    this.toasts = [...this.toasts, n].slice(-3);
+
+  toast(msg, kind = "info", ms = 2600) {
+    const item = { id: this.toastSeq++, msg, kind };
+    this.toasts = [...this.toasts, item].slice(-3);
     this.emit();
     if (!this.opts.instant) {
       setTimeout(() => {
-        this.toasts = this.toasts.filter((l) => l.id !== n.id);
+        this.toasts = this.toasts.filter((t) => t.id !== item.id);
         this.emit();
-      }, s);
+      }, ms);
     }
   }
+
   get decksRemaining() {
     return this.shoe.remaining / 52;
   }
@@ -202,160 +205,162 @@ const Table = class {
     return trueCount(this.rcHilo, this.decksRemaining);
   }
   get tcSys() {
-    return this.sys.balanced
-      ? trueCount(this.rcSys, this.decksRemaining)
-      : null;
+    return this.sys.balanced ? trueCount(this.rcSys, this.decksRemaining) : null;
   }
+  // El coach de apuestas, las desviaciones y el seguro se calculan con Hi-Lo.
   get useCountCoach() {
     return this.opts.system === "hilo";
-  }
-  get minBet() {
-    return 1;
   }
   get maxBet() {
     return this.opts.unit * 100;
   }
+  // Apuesta que corresponde al conteo real de ahora (1 unidad si se mezcla antes de la mano).
+  get suggestedBet() {
+    const units = this.shoe.needsShuffle || this.pendingShuffle ? 1 : betUnits(this.tc);
+    return Math.min(units * this.opts.unit, this.maxBet);
+  }
+
+  // Qué queda en el zapato (para los rayos X). La carta tapada del crupier cuenta como "quedan".
   composition() {
-    let e = 0,
-      t = 0,
-      s = 0;
-    for (let n = this.shoe.pos; n < this.shoe.cards.length; n++) {
-      let l = hiloValue(this.shoe.cards[n]);
-      if (l > 0) {
-        e++;
-      } else {
-        if (l < 0) {
-          s++;
-        } else {
-          t++;
-        }
-      }
-    }
-    if (this.dealer.hidden && this.dealer.cards[1]) {
-      let n = hiloValue(this.dealer.cards[1]);
-      if (n > 0) {
-        e++;
-      } else {
-        if (n < 0) {
-          s++;
-        } else {
-          t++;
-        }
-      }
-    }
-    return { low: e, mid: t, high: s, total: e + t + s };
+    let low = 0,
+      mid = 0,
+      high = 0;
+    const tally = (card) => {
+      const v = hiloValue(card);
+      if (v > 0) low++;
+      else if (v < 0) high++;
+      else mid++;
+    };
+    for (let i = this.shoe.pos; i < this.shoe.cards.length; i++) tally(this.shoe.cards[i]);
+    if (this.dealer.hidden && this.dealer.cards[1]) tally(this.dealer.cards[1]);
+    return { low, mid, high, total: low + mid + high };
   }
-  see(e) {
-    this.seen.push(e);
-    this.rcSys += countValue(e, this.sys);
-    this.rcHilo += hiloValue(e);
+
+  see(card) {
+    this.seen.push(card);
+    this.rcSys += countValue(card, this.sys);
+    this.rcHilo += hiloValue(card);
   }
-  addChip(e) {
+
+  addChip(value) {
     if (this.phase !== "bet" && this.phase !== "settle") return;
-    if (this.phase === "settle") {
-      this.clearTable();
-    }
-    let t = Math.min(this.bet + e, this.maxBet, this.bankroll);
-    if (t === this.bet) {
-      if (this.bet + e > this.bankroll) {
-        this.toast("No te alcanzan las fichas.", "warn");
-      }
+    if (this.phase === "settle") this.newBet();
+    const next = Math.min(this.bet + value, this.maxBet, this.bankroll);
+    if (next === this.bet) {
+      if (this.bet + value > this.bankroll) this.toast("No te alcanzan las fichas.", "warn");
       return;
     }
-    this.chipStack = [...(this.chipStack || []), t - this.bet];
-    this.bet = t;
+    this.chipStack = [...this.chipStack, next - this.bet];
+    this.bet = next;
     this.emit();
   }
+
   undoChip() {
-    if (this.phase !== "bet" || !this.chipStack || !this.chipStack.length)
-      return;
-    let e = this.chipStack[this.chipStack.length - 1];
+    if (this.phase !== "bet" || !this.chipStack.length) return;
+    const last = this.chipStack[this.chipStack.length - 1];
     this.chipStack = this.chipStack.slice(0, -1);
-    this.bet = Math.max(0, this.bet - e);
+    this.bet = Math.max(0, this.bet - last);
     this.emit();
   }
+
   clearBet() {
-    if (this.phase === "bet") {
-      this.bet = 0;
-      this.chipStack = [];
-      this.emit();
-    }
+    if (this.phase !== "bet") return;
+    this.bet = 0;
+    this.chipStack = [];
+    this.emit();
   }
-  rebet(e = 1) {
-    if ((this.phase === "settle" && this.clearTable(), this.phase !== "bet"))
+
+  // "Nueva apuesta": limpia la mesa y deja la apuesta en cero.
+  newBet() {
+    if (this.running) return;
+    this.clearTable();
+    this.bet = 0;
+    this.chipStack = [];
+    this.emit();
+  }
+
+  // Pone la apuesta anterior (o el doble) y deja todo listo para repartir.
+  rebet(mult = 1) {
+    if (this.phase === "settle") this.clearTable();
+    if (this.phase !== "bet") return false;
+    const amount = Math.min(this.lastBet * mult, this.maxBet);
+    if (amount > this.bankroll) {
+      this.toast("No te alcanzan las fichas para esa apuesta.", "warn");
       return false;
-    let t = Math.min(this.lastBet * e, this.maxBet);
-    return t > this.bankroll
-      ? (this.toast("No te alcanzan las fichas para esa apuesta.", "warn"),
-        false)
-      : ((this.bet = t), (this.chipStack = [t]), this.emit(), true);
+    }
+    this.bet = amount;
+    this.chipStack = [amount];
+    this.emit();
+    return true;
   }
+
+  setBet(amount) {
+    if (this.phase === "settle") this.clearTable();
+    if (this.phase !== "bet") return false;
+    const bet = Math.min(amount, this.maxBet, this.bankroll);
+    this.bet = bet;
+    this.chipStack = bet ? [bet] : [];
+    this.emit();
+    return bet > 0;
+  }
+
   refill() {
     this.bankroll = this.opts.startBankroll;
-    this.toast(
-      `Fichas recargadas a $${this.bankroll.toLocaleString("es-UY")}.`,
-      "info",
-    );
+    this.toast(`Fichas recargadas a $${this.bankroll.toLocaleString("es-UY")}.`, "info");
     this.emit();
   }
+
   clearTable() {
     this.dealer = { cards: [], hidden: true };
     this.hands = [];
-    for (let e of this.botSeats) {
-      e.hands = [];
-    }
+    for (const seat of this.botSeats) seat.hands = [];
     this.phase = "bet";
     this.result = null;
     this.feedback = null;
+    this.betFeedback = null;
   }
+
   async deal() {
-    if (
-      !this.running &&
-      (this.phase === "settle" && this.clearTable(), this.phase === "bet")
-    ) {
-      if (this.bet <= 0) {
-        this.toast("Poné una apuesta para repartir.", "warn");
-        return;
+    if (this.running) return;
+    if (this.phase === "settle") this.clearTable();
+    if (this.phase !== "bet") return;
+    if (this.bet <= 0) {
+      this.toast("Poné una apuesta para repartir.", "warn");
+      return;
+    }
+    if (this.bet > this.bankroll) {
+      this.toast("No te alcanzan las fichas.", "warn");
+      return;
+    }
+    this.running = true;
+    this.countCheckDue = false;
+    this.shoeEnded = false;
+    try {
+      if (this.pendingShuffle) {
+        this.newShoe();
+        this.pendingShuffle = false;
       }
-      if (this.bet > this.bankroll) {
-        this.toast("No te alcanzan las fichas.", "warn");
-        return;
-      }
-      this.running = true;
-      this.countCheckDue = false;
-      this.shoeEnded = false;
-      try {
-        if (this.pendingShuffle) {
-          this.newShoe();
-          this.pendingShuffle = false;
-        }
-        this.setupBots();
-        await this.playRound();
-      } finally {
-        this.running = false;
-        this.emit();
-      }
+      this.setupBots();
+      await this.playRound();
+    } finally {
+      this.running = false;
+      this.emit();
     }
   }
+
   async playRound() {
-    let e = this.rules;
+    const rules = this.rules;
     if (this.shoe.needsShuffle) {
       this.phase = "shuffle";
       this.emit();
-      let r = e.pen <= 0;
+      const rng = rules.pen <= 0;
       this.shoe.shuffleNow();
       this.seen = [];
       this.recount();
       this.roundsThisShoe = 0;
-      this.shoeStats = {
-        hands: 0,
-        checks: 0,
-        checksOk: 0,
-        decisions: 0,
-        decisionsOk: 0,
-        net: 0,
-      };
-      if (!r) {
+      this.roundsSinceCheck = 0;
+      this.shoeStats = emptyShoeStats();
+      if (!rng) {
         this.session.shoes++;
         await this.sleep(2.2);
         this.needsBurn = true;
@@ -365,26 +370,25 @@ const Table = class {
       this.burned = this.shoe.draw();
       this.needsBurn = false;
     }
-    let t = this.tc;
-    if (
-      ((this.betFeedback = null),
-      this.opts.betCoach && this.useCountCoach && e.pen > 0)
-    ) {
-      let r = betUnits(t),
-        u = r * this.opts.unit,
-        d = this.bet === u;
+
+    // ¿La apuesta va con el conteo? Se evalúa antes de repartir, con el conteo real redondeado hacia abajo.
+    const tcBefore = this.tc;
+    this.betFeedback = null;
+    if (this.opts.betCoach && this.useCountCoach && rules.pen > 0) {
+      const units = betUnits(tcBefore);
+      const ideal = Math.min(units * this.opts.unit, this.maxBet, this.bankroll);
+      const ok = this.bet === ideal;
       this.session.bets++;
-      if (d) {
+      this.shoeStats.bets++;
+      if (ok) {
         this.session.betsOk++;
+        this.shoeStats.betsOk++;
+      } else {
+        this.session.betMistakes = [...this.session.betMistakes, { tc: floorTC(tcBefore), bet: this.bet, ideal, units }].slice(-30);
       }
-      this.betFeedback = {
-        ok: d,
-        ideal: u,
-        units: r,
-        tc: floorTC(t),
-        bet: this.bet,
-      };
+      this.betFeedback = { ok, ideal, units, tc: floorTC(tcBefore), bet: this.bet };
     }
+
     this.lastBet = this.bet;
     this.bankroll -= this.bet;
     this.phase = "deal";
@@ -394,559 +398,448 @@ const Table = class {
     this.dealer = { cards: [], hidden: true };
     this.hands = [newHand(this.bet)];
     this.active = 0;
-    for (let r of this.botSeats) {
-      r.hands = [newHand(this.opts.unit)];
-    }
-    if (
-      ((this.chipStack = []),
-      this.emit(),
-      this.betFeedback && !this.betFeedback.ok)
-    ) {
-      let r = this.betFeedback;
+    for (const seat of this.botSeats) seat.hands = [newHand(this.opts.unit)];
+    this.chipStack = [];
+    this.emit();
+    if (this.betFeedback && !this.betFeedback.ok && !this.opts.silent) {
+      const f = this.betFeedback;
       this.toast(
-        `Con conteo real ${r.tc >= 0 ? "+" : ""}${r.tc} la apuesta ideal era ${r.units} ${r.units === 1 ? "unidad" : "unidades"} ($${r.ideal}).`,
+        `Con conteo real ${fmtSigned(f.tc)} la apuesta ideal era ${f.units} ${f.units === 1 ? "unidad" : "unidades"} ($${f.ideal}).`,
         "warn",
-        3200,
+        3400,
       );
     }
-    let s = [...this.botSeats.map((r) => r.hands[0]), this.hands[0]];
-    for (let r of s) {
-      await this.dealTo(r);
-    }
+
+    // Dos cartas para cada uno; la segunda del crupier, tapada.
+    const firstHands = [...this.botSeats.map((s) => s.hands[0]), this.hands[0]];
+    for (const hand of firstHands) await this.dealTo(hand);
     await this.dealDealer(true);
-    for (let r of s) {
-      await this.dealTo(r);
-    }
+    for (const hand of firstHands) await this.dealTo(hand);
     await this.dealDealer(false);
-    let n = this.dealer.cards[0],
-      l = rankKey(n.r),
-      i = isBlackjack(this.hands[0].cards);
-    if (l === "A") {
+
+    const up = this.dealer.cards[0];
+    const upKey = rankKey(up.r);
+    const playerBJ = isBlackjack(this.hands[0].cards);
+
+    if (upKey === "A") {
       this.phase = "insurance";
       this.emit();
-      let r = await new Promise((d) => (this.insuranceResolver = d));
+      const took = await new Promise((resolve) => (this.insuranceResolver = resolve));
       this.insuranceResolver = null;
-      let u =
-        this.useCountCoach && this.opts.deviations
-          ? takeInsurance(this.tc, e)
-          : false;
-      if (
-        (this.opts.coach &&
-          (this.session.insurance++,
-          r === u && this.session.insuranceOk++,
-          r !== u &&
-            (this.feedback = {
-              ok: false,
-              id: Date.now(),
-              best: u ? "I" : "N",
-              chosen: r ? "I" : "N",
-              title: u ? "Acá convenía el seguro" : "El seguro no conviene",
-              note: u
-                ? `Con conteo real ${this.fmtTC()} (+3 o más) el seguro gana plata.`
-                : this.opts.deviations && this.useCountCoach
-                  ? `Con conteo real ${this.fmtTC()} el seguro pierde. Se toma recién con +3 o más.`
-                  : "El seguro es una apuesta aparte que pierde alrededor de 7 % a la larga. Sin contar, nunca lo tomes.",
-            })),
-        r)
-      ) {
-        let d = this.hands[0].bet / 2;
-        if (d > this.bankroll) {
-          this.toast("No te alcanzan las fichas para el seguro.", "warn");
-        } else {
-          this.insuranceBet = d;
-          this.bankroll -= d;
+      const shouldTake = this.useCountCoach && this.opts.deviations ? takeInsurance(this.tc, rules) : false;
+      const ok = took === shouldTake || (this.opts.lenient && !took);
+      this.session.insurance++;
+      if (ok) this.session.insuranceOk++;
+      if (!ok && this.opts.coach && !this.opts.silent) {
+        this.feedback = {
+          ok: false,
+          id: Date.now(),
+          best: shouldTake ? "I" : "N",
+          chosen: took ? "I" : "N",
+          title: shouldTake ? "Acá convenía el seguro" : "El seguro no conviene",
+          note: shouldTake
+            ? `Con conteo real ${this.fmtTC()} (+3 o más) el seguro gana plata.`
+            : this.opts.deviations && this.useCountCoach
+              ? `Con conteo real ${this.fmtTC()} el seguro pierde. Se toma recién con +3 o más.`
+              : "El seguro es una apuesta aparte que pierde alrededor de 7 % a la larga. Sin contar, nunca lo tomes.",
+        };
+      }
+      if (took) {
+        const cost = this.hands[0].bet / 2;
+        if (cost > this.bankroll) this.toast("No te alcanzan las fichas para el seguro.", "warn");
+        else {
+          this.insuranceBet = cost;
+          this.bankroll -= cost;
         }
       }
       this.phase = "deal";
       this.emit();
       await this.sleep(0.6);
     }
-    let o = false;
-    if (
-      ((l === "A" || l === "T") &&
-        ((o = isBlackjack(this.dealer.cards)),
-        o
-          ? (await this.revealHole(),
-            this.toast("El crupier tiene blackjack.", "bad"))
-          : (l === "A" || l === "T") &&
-            this.insuranceBet &&
-            this.toast(
-              "El crupier no tiene blackjack: perdés el seguro.",
-              "info",
-            )),
-      o)
-    ) {
-      for (let r of this.botSeats)
-        for (let u of r.hands) {
-          u.done = true;
-        }
-      for (let r of this.hands) {
-        r.done = true;
-      }
+
+    // El crupier revisa si tiene blackjack cuando muestra As o 10.
+    let dealerBJ = false;
+    if (upKey === "A" || upKey === "T") {
+      dealerBJ = isBlackjack(this.dealer.cards);
+      if (dealerBJ) await this.revealHole();
+      else if (this.insuranceBet) this.toast("El crupier no tiene blackjack: perdés el seguro.", "info");
+    }
+    if (dealerBJ) {
+      for (const seat of this.botSeats) for (const hand of seat.hands) hand.done = true;
+      for (const hand of this.hands) hand.done = true;
       await this.settle(true);
       return;
     }
-    if (i) {
-      this.hands[0].done = true;
-      this.toast("¡Blackjack!", "good");
-    }
-    for (let r of this.botSeats) {
+    if (playerBJ) this.hands[0].done = true;
+
+    for (const seat of this.botSeats) {
       this.phase = "bots";
       this.emit();
-      await this.playBot(r);
+      await this.playBot(seat);
     }
-    if (
-      (i ||
-        ((this.phase = "player"),
-        (this.active = 0),
-        this.emit(),
-        await this.playerTurn()),
-      (this.phase = "dealer"),
-      this.emit(),
-      await this.revealHole(),
-      [...this.hands, ...this.botSeats.flatMap((r) => r.hands)].some(
-        (r) =>
-          !r.surrendered &&
-          !handValue(r.cards).bust &&
-          !(isBlackjack(r.cards, r.fromSplit) && r.cards.length === 2),
-      ))
-    )
-      for (; this.dealerShouldHit();) {
-        await this.dealDealer(true);
-      }
+    if (!playerBJ) {
+      this.phase = "player";
+      this.active = 0;
+      this.emit();
+      await this.playerTurn();
+    }
+    this.phase = "dealer";
+    this.emit();
+    await this.revealHole();
+    const someoneAlive = [...this.hands, ...this.botSeats.flatMap((s) => s.hands)].some(
+      (h) => !h.surrendered && !handValue(h.cards).bust && !(isBlackjack(h.cards, h.fromSplit) && h.cards.length === 2),
+    );
+    if (someoneAlive) while (this.dealerShouldHit()) await this.dealDealer(true);
     await this.settle(false);
   }
+
   dealerShouldHit() {
-    let e = handValue(this.dealer.cards);
-    return e.bust
-      ? false
-      : !!(e.total < 17 || (e.total === 17 && e.soft && this.rules.h17));
+    const v = handValue(this.dealer.cards);
+    if (v.bust) return false;
+    return v.total < 17 || (v.total === 17 && v.soft && this.rules.h17);
   }
-  async dealTo(e, { face: t = true } = {}) {
-    let s = this.shoe.draw();
-    e.cards = [...e.cards, { ...s, faceUp: t }];
-    if (t) {
-      this.see(s);
-    }
+
+  async dealTo(hand, { face = true } = {}) {
+    const card = this.shoe.draw();
+    hand.cards = [...hand.cards, { ...card, faceUp: face }];
+    if (face) this.see(card);
     this.emit();
     await this.sleep();
-    return s;
+    return card;
   }
-  async dealDealer(e) {
-    let t = this.shoe.draw();
-    this.dealer.cards = [...this.dealer.cards, { ...t, faceUp: e }];
-    if (e) {
-      this.see(t);
-    } else {
-      this.dealer.hidden = true;
-    }
+
+  async dealDealer(faceUp) {
+    const card = this.shoe.draw();
+    this.dealer.cards = [...this.dealer.cards, { ...card, faceUp }];
+    if (faceUp) this.see(card);
+    else this.dealer.hidden = true;
     this.emit();
     await this.sleep();
-    return t;
+    return card;
   }
+
   async revealHole() {
     if (!this.dealer.hidden) return;
     this.dealer.hidden = false;
-    let e = this.dealer.cards[1];
-    if (e) {
-      this.dealer.cards = this.dealer.cards.map((t, s) =>
-        s === 1 ? { ...t, faceUp: true } : t,
-      );
-      this.see(e);
+    const hole = this.dealer.cards[1];
+    if (hole) {
+      this.dealer.cards = this.dealer.cards.map((c, i) => (i === 1 ? { ...c, faceUp: true } : c));
+      this.see(hole);
     }
     this.emit();
     await this.sleep(1.1);
   }
-  async playBot(e) {
-    let t = this.dealer.cards[0];
-    for (let s = 0; s < e.hands.length; s++) {
-      let n = e.hands[s];
-      if (
-        (n.cards.length === 1 && (await this.dealTo(n)),
-        isBlackjack(n.cards, n.fromSplit))
-      ) {
-        n.done = true;
+
+  // Los otros jugadores juegan estrategia básica perfecta.
+  async playBot(seat) {
+    const up = this.dealer.cards[0];
+    for (let i = 0; i < seat.hands.length; i++) {
+      let hand = seat.hands[i];
+      if (hand.cards.length === 1) await this.dealTo(hand);
+      if (isBlackjack(hand.cards, hand.fromSplit)) {
+        hand.done = true;
         continue;
       }
-      let l = 0;
-      for (; !n.done && l++ < 15;) {
-        let i = handValue(n.cards);
-        if (i.bust || i.total >= 21) {
-          n.done = true;
+      let guard = 0;
+      while (!hand.done && guard++ < 15) {
+        const v = handValue(hand.cards);
+        if (v.bust || v.total >= 21) {
+          hand.done = true;
           break;
         }
-        let o = allowedActions(n, this.rules, {
-          maxHandsReached: e.hands.length >= this.rules.maxHands,
-        });
-        if (n.splitAces && !this.rules.hitSplitAces && !o.P) {
-          n.done = true;
+        const allowed = allowedActions(hand, this.rules, { maxHandsReached: seat.hands.length >= this.rules.maxHands });
+        if (hand.splitAces && !this.rules.hitSplitAces && !allowed.P) {
+          hand.done = true;
           break;
         }
-        let c = basicPlay(n, t.r, this.rules, o).action;
-        if (c === "P") {
-          await this.splitHand(e.hands, s);
-          n = e.hands[s];
+        const action = basicPlay(hand, up.r, this.rules, allowed).action;
+        if (action === "P") {
+          await this.splitHand(seat.hands, i);
+          hand = seat.hands[i];
           continue;
         }
-        if (c === "R") {
-          n.surrendered = true;
-          n.done = true;
+        if (action === "R") {
+          hand.surrendered = true;
+          hand.done = true;
           break;
         }
-        if (c === "D") {
-          n.bet *= 2;
-          n.doubled = true;
-          await this.dealTo(n);
-          n.done = true;
+        if (action === "D") {
+          hand.bet *= 2;
+          hand.doubled = true;
+          await this.dealTo(hand);
+          hand.done = true;
           break;
         }
-        if (c === "S") {
-          n.done = true;
+        if (action === "S") {
+          hand.done = true;
           break;
         }
-        await this.dealTo(n);
+        await this.dealTo(hand);
       }
       this.emit();
       await this.sleep(0.35);
     }
   }
-  async splitHand(e, t) {
-    let s = e[t],
-      [n, l] = s.cards,
-      i = rankKey(n.r) === "A",
-      o = newHand(s.bet, { fromSplit: true, splitAces: i || s.splitAces }),
-      c = newHand(s.bet, { fromSplit: true, splitAces: i || s.splitAces });
-    o.cards = [n];
-    c.cards = [l];
-    e.splice(t, 1, o, c);
+
+  async splitHand(hands, index) {
+    const hand = hands[index];
+    const [first, second] = hand.cards;
+    const aces = rankKey(first.r) === "A";
+    const a = newHand(hand.bet, { fromSplit: true, splitAces: aces || hand.splitAces });
+    const b = newHand(hand.bet, { fromSplit: true, splitAces: aces || hand.splitAces });
+    a.cards = [first];
+    b.cards = [second];
+    hands.splice(index, 1, a, b);
     this.emit();
     await this.sleep(0.7);
-    await this.dealTo(o);
-    if (i && !this.rules.hitSplitAces) {
-      await this.dealTo(c);
-    }
-    return [o, c];
+    await this.dealTo(a);
+    // Con ases separados se reparte una carta a cada mano de una vez (no se puede pedir).
+    if (aces && !this.rules.hitSplitAces) await this.dealTo(b);
+    return [a, b];
   }
+
   activeHand() {
     return this.hands[this.active];
   }
+
   allowed() {
-    let e = this.activeHand();
-    if (!e || this.phase !== "player")
-      return { H: false, S: false, D: false, P: false, R: false };
-    let t = allowedActions(e, this.rules, {
-      maxHandsReached: this.hands.length >= this.rules.maxHands,
-    });
-    if (e.cards.length === 2 && t.D && e.bet > this.bankroll) {
-      t.D = false;
-    }
-    if (t.P && e.bet > this.bankroll) {
-      t.P = false;
-    }
-    return t;
+    const hand = this.activeHand();
+    if (!hand || this.phase !== "player") return { H: false, S: false, D: false, P: false, R: false };
+    const allowed = allowedActions(hand, this.rules, { maxHandsReached: this.hands.length >= this.rules.maxHands });
+    if (hand.cards.length === 2 && allowed.D && hand.bet > this.bankroll) allowed.D = false;
+    if (allowed.P && hand.bet > this.bankroll) allowed.P = false;
+    return allowed;
   }
+
   async playerTurn() {
-    let e = this.dealer.cards[0];
+    const up = this.dealer.cards[0];
     for (this.active = 0; this.active < this.hands.length; this.active++) {
-      let t = this.hands[this.active];
-      for (t.cards.length === 1 && (await this.dealTo(t)); !t.done;) {
-        let s = handValue(t.cards);
-        if (s.bust) {
-          t.done = true;
-          this.toast(
-            this.hands.length > 1
-              ? `Mano ${this.active + 1}: te pasaste.`
-              : "Te pasaste.",
-            "bad",
-            1800,
-          );
+      const hand = this.hands[this.active];
+      if (hand.cards.length === 1) await this.dealTo(hand);
+      while (!hand.done) {
+        const v = handValue(hand.cards);
+        if (v.bust) {
+          hand.done = true;
           break;
         }
-        if (s.total === 21) {
-          t.done = true;
+        if (v.total === 21) {
+          hand.done = true;
           break;
         }
-        let n = this.allowed();
-        if (t.splitAces && !this.rules.hitSplitAces && !n.P) {
-          t.done = true;
+        const allowed = this.allowed();
+        if (hand.splitAces && !this.rules.hitSplitAces && !allowed.P) {
+          hand.done = true;
           break;
         }
         this.emit();
         this.decisionStart = Date.now();
-        let l = await new Promise((i) => (this.actionResolver = i));
-        if (
-          ((this.actionResolver = null),
-          this.evaluateDecision(t, e, n, l),
-          l === "S")
-        ) {
-          t.done = true;
-        } else if (l === "H") {
-          await this.dealTo(t);
-        } else if (l === "D") {
-          this.bankroll -= t.bet;
-          t.bet *= 2;
-          t.doubled = true;
-          await this.dealTo(t);
-          t.done = true;
-          if (handValue(t.cards).bust) {
-            this.toast("Te pasaste.", "bad", 1800);
-          }
-        } else if (l === "P") {
-          this.bankroll -= t.bet;
+        const action = await new Promise((resolve) => (this.actionResolver = resolve));
+        this.actionResolver = null;
+        this.evaluateDecision(hand, up, allowed, action);
+        if (action === "S") hand.done = true;
+        else if (action === "H") await this.dealTo(hand);
+        else if (action === "D") {
+          this.bankroll -= hand.bet;
+          hand.bet *= 2;
+          hand.doubled = true;
+          await this.dealTo(hand);
+          hand.done = true;
+        } else if (action === "P") {
+          this.bankroll -= hand.bet;
           await this.splitHand(this.hands, this.active);
-          let i = this.hands[this.active];
+          const firstOfSplit = this.hands[this.active];
           this.emit();
-          if (i.splitAces && !this.rules.hitSplitAces) {
-            if (!this.allowed().P) {
-              i.done = true;
-            }
-          }
-          this.active--;
+          if (firstOfSplit.splitAces && !this.rules.hitSplitAces && !this.allowed().P) firstOfSplit.done = true;
+          this.active--; // vuelve a jugar la primera mano del par separado
           break;
-        } else {
-          if (l === "R") {
-            t.surrendered = true;
-            t.done = true;
-          }
+        } else if (action === "R") {
+          hand.surrendered = true;
+          hand.done = true;
         }
       }
       this.emit();
     }
     this.active = -1;
   }
-  act(e) {
-    if (this.phase !== "player" || !this.actionResolver || !this.allowed()[e])
-      return false;
-    let s = this.actionResolver;
+
+  act(action) {
+    if (this.phase !== "player" || !this.actionResolver || !this.allowed()[action]) return false;
+    const resolve = this.actionResolver;
     this.actionResolver = null;
-    s(e);
+    resolve(action);
     return true;
   }
-  insure(e) {
+
+  insure(take) {
     if (this.phase !== "insurance" || !this.insuranceResolver) return;
-    let t = this.insuranceResolver;
+    const resolve = this.insuranceResolver;
     this.insuranceResolver = null;
-    t(!!e);
+    resolve(!!take);
   }
-  evaluateDecision(e, t, s, n) {
-    if (!this.opts.coach) return;
-    let l =
-        this.useCountCoach && this.opts.deviations
-          ? countPlay(e, t.r, this.rules, this.tc, s)
-          : null,
-      i = basicPlay(e, t.r, this.rules, s),
-      o = l ? l.action : i.action,
-      c = o === n;
+
+  // Compara tu jugada con la correcta. Las estadísticas se llevan siempre; el aviso solo si el coach está prendido.
+  evaluateDecision(hand, up, allowed, chosen) {
+    const devPlay = this.useCountCoach && this.opts.deviations ? countPlay(hand, up.r, this.rules, this.tc, allowed) : null;
+    const basic = basicPlay(hand, up.r, this.rules, allowed);
+    const best = devPlay ? devPlay.action : basic.action;
+    const ok = chosen === best || (this.opts.lenient && chosen === basic.action);
     this.session.decisions++;
     this.shoeStats.decisions++;
-    if (c) {
+    if (ok) {
       this.session.decisionsOk++;
       this.shoeStats.decisionsOk++;
     }
-    if (
-      this.opts.pressure &&
-      this.decisionStart &&
-      Date.now() - this.decisionStart > 5000
-    ) {
-      this.session.slow++;
-    }
-    let r = handValue(e.cards),
-      u = {
-        kind: isPair(e.cards) && s.P ? "pair" : r.soft ? "soft" : "hard",
-        total: r.total,
-        g: isPair(e.cards) ? rankKey(e.cards[0].r) : null,
-        upRank: t.r,
-        nCards: e.cards.length,
-      },
-      d = "";
-    if (c) {
-      if (l && l.source === "dev" && l.dev) {
-        d = explainDeviation(l.dev, o, this.rules, this.tc);
-      }
+    if (this.opts.pressure && this.decisionStart && Date.now() - this.decisionStart > 5000) this.session.slow++;
+
+    const v = handValue(hand.cards);
+    const spot = {
+      kind: isPair(hand.cards) && allowed.P ? "pair" : v.soft ? "soft" : "hard",
+      total: v.total,
+      g: isPair(hand.cards) ? rankKey(hand.cards[0].r) : null,
+      upRank: up.r,
+      nCards: hand.cards.length,
+    };
+    let note = "";
+    if (ok) {
+      if (devPlay && devPlay.source === "dev" && devPlay.dev && chosen === best) note = explainDeviation(devPlay.dev, best, this.rules, this.tc);
     } else {
-      let p = explainMistake(u, n, o, this.rules),
-        f =
-          l && l.dev
-            ? explainDeviation(l.dev, o, this.rules, this.tc)
-            : explainBest(u, o, i.code, this.rules);
-      d = [p, f].filter(Boolean).join(" ");
+      const why = devPlay && devPlay.dev ? explainDeviation(devPlay.dev, best, this.rules, this.tc) : explainBest(spot, best, basic.code, this.rules);
+      note = [explainMistake(spot, chosen, best, this.rules), why].filter(Boolean).join(" ");
       this.session.mistakes = [
         ...this.session.mistakes,
-        {
-          spot: `${u.kind === "pair" ? u.g + "," + u.g : (u.kind === "soft" ? "Blando " : "Duro ") + u.total} vs ${upLabel(t.r)}`,
-          chosen: n,
-          best: o,
-        },
+        { spot: `${spotLabel(spot)} vs ${upLabel(up.r)}`, chosen, best, tc: devPlay ? floorTC(this.tc) : null, note },
       ].slice(-30);
     }
-    this.feedback = {
-      ok: c,
-      chosen: n,
-      best: o,
-      note: d,
-      dev: !!(l && l.source === "dev"),
-      id: Date.now(),
-    };
+    if (this.opts.coach && !this.opts.silent) this.feedback = { ok, chosen, best, note, dev: !!(devPlay && devPlay.source === "dev"), id: Date.now() };
     this.emit();
   }
-  async settle(e) {
-    let t = this.rules,
-      s = handValue(this.dealer.cards),
-      n = s.total,
-      l = s.bust,
-      i = -this.insuranceBet,
-      o = 0;
-    if (this.insuranceBet && e) {
-      o += this.insuranceBet * 3;
-      i += this.insuranceBet * 3;
+
+  async settle(dealerBJ) {
+    const rules = this.rules;
+    const dealer = handValue(this.dealer.cards);
+    const dealerTotal = dealer.total;
+    const dealerBust = dealer.bust;
+    let net = -this.insuranceBet;
+    let paid = 0;
+    if (this.insuranceBet && dealerBJ) {
+      paid += this.insuranceBet * 3;
+      net += this.insuranceBet * 3;
     }
-    let c = (u, d) => {
-      let p = handValue(u.cards),
-        f = isBlackjack(u.cards, u.fromSplit),
-        y = 0,
-        C;
-      if (u.surrendered) {
-        y = u.bet / 2;
-        C = "surrender";
+    const settleHand = (hand, mine) => {
+      const v = handValue(hand.cards);
+      const bj = isBlackjack(hand.cards, hand.fromSplit);
+      let payout = 0;
+      let result;
+      if (hand.surrendered) {
+        payout = hand.bet / 2;
+        result = "surrender";
+      } else if (dealerBJ) {
+        payout = bj ? hand.bet : 0;
+        result = bj ? "push" : "lose";
+      } else if (bj) {
+        payout = hand.bet + hand.bet * rules.bjPays;
+        result = "bj";
+      } else if (v.bust) {
+        result = "bust";
+      } else if (dealerBust || v.total > dealerTotal) {
+        payout = hand.bet * 2;
+        result = "win";
+      } else if (v.total === dealerTotal) {
+        payout = hand.bet;
+        result = "push";
       } else {
-        if (e) {
-          if (f) {
-            y = u.bet;
-            C = "push";
-          } else {
-            y = 0;
-            C = "lose";
-          }
-        } else {
-          if (f) {
-            y = u.bet + u.bet * t.bjPays;
-            C = "bj";
-          } else {
-            if (p.bust) {
-              y = 0;
-              C = "bust";
-            } else {
-              if (l || p.total > n) {
-                y = u.bet * 2;
-                C = "win";
-              } else {
-                if (p.total === n) {
-                  y = u.bet;
-                  C = "push";
-                } else {
-                  y = 0;
-                  C = "lose";
-                }
-              }
-            }
-          }
-        }
+        result = "lose";
       }
-      u.result = C;
-      u.payout = y;
-      if (d) {
-        o += y;
-        i += y - u.bet;
+      hand.result = result;
+      hand.payout = payout;
+      if (mine) {
+        paid += payout;
+        net += payout - hand.bet;
       }
     };
-    for (let u of this.botSeats)
-      for (let d of u.hands) {
-        c(d, false);
-      }
-    for (let u of this.hands) {
-      c(u, true);
-    }
-    this.bankroll += o;
-    let r = this.session;
-    r.hands++;
+    for (const seat of this.botSeats) for (const hand of seat.hands) settleHand(hand, false);
+    for (const hand of this.hands) settleHand(hand, true);
+    this.bankroll += paid;
+
+    const s = this.session;
+    s.hands++;
     this.shoeStats.hands++;
     this.roundsThisShoe++;
-    r.net += i;
-    this.shoeStats.net += i;
-    if (i > 0) {
-      r.won++;
-    } else {
-      if (i < 0) {
-        r.lost++;
-      } else {
-        r.push++;
-      }
-    }
-    if (this.hands.some((u) => u.result === "bj")) {
-      r.bj++;
-    }
-    r.biggestWin = Math.max(r.biggestWin, i);
+    this.roundsSinceCheck++;
+    s.net += net;
+    this.shoeStats.net += net;
+    if (net > 0) s.won++;
+    else if (net < 0) s.lost++;
+    else s.push++;
+    if (this.hands.some((h) => h.result === "bj")) s.bj++;
+    s.biggestWin = Math.max(s.biggestWin, net);
     this.lifetime.hands++;
-    this.lifetime.net += i;
-    this.result = { net: i, dealerTotal: n, dealerBust: l, dealerBJ: e };
+    this.lifetime.net += net;
+    this.result = { net, dealerTotal, dealerBust, dealerBJ };
     this.phase = "settle";
     this.emit();
-    if (i > 0) {
-      this.toast(`Ganaste $${money(i)}`, "good", 2000);
-    } else {
-      if (i < 0) {
-        this.toast(`Perdiste $${money(-i)}`, "bad", 2000);
-      } else {
-        this.toast("Empate", "info", 1600);
-      }
+    if (!this.opts.quietResults) {
+      if (net > 0) this.toast(`Ganaste $${money(net)}`, "good", 2000);
+      else if (net < 0) this.toast(`Perdiste $${money(-net)}`, "bad", 2000);
+      else this.toast("Empate", "info", 1600);
     }
     this.countCheckDue = this.shouldCheck();
-    this.shoeEnded = this.shoe.needsShuffle && t.pen > 0;
-    if (this.shoeEnded) {
-      this.countCheckDue = this.opts.countCheck !== "off" ? "final" : false;
-    }
-    if (this.onRoundEnd) {
-      this.onRoundEnd(this.result, this);
-    }
+    this.shoeEnded = this.shoe.needsShuffle && rules.pen > 0;
+    if (this.shoeEnded) this.countCheckDue = this.opts.countCheck !== "off" ? "final" : false;
+    if (this.countCheckDue) this.roundsSinceCheck = 0;
+    if (this.onRoundEnd) this.onRoundEnd(this.result, this);
     this.emit();
   }
+
   shouldCheck() {
-    let e = this.opts.countCheck;
-    if (e === "off" || e === "shoe" || this.rules.pen <= 0) return false;
-    let t = e === "often" ? 2 : 4;
-    return this.opts.pressure
-      ? Math.random() < 0.3
-      : this.roundsThisShoe > 0 &&
-          this.roundsThisShoe % t === 0 &&
-          Math.random() < 0.85;
+    const mode = this.opts.countCheck;
+    if (mode === "off" || mode === "shoe" || this.rules.pen <= 0) return false;
+    if (mode === "exam") {
+      // Al azar, pero nunca dos seguidos ni más de 6 manos sin chequeo.
+      if (this.roundsSinceCheck < 2) return false;
+      return this.roundsSinceCheck >= 6 || Math.random() < 0.3;
+    }
+    if (this.opts.pressure) return Math.random() < 0.3;
+    const every = mode === "often" ? 2 : 4;
+    return this.roundsThisShoe > 0 && this.roundsThisShoe % every === 0 && Math.random() < 0.85;
   }
-  submitCountCheck(e) {
-    let t = this.rcSys,
-      s = Math.abs(e - t) < 0.01;
+
+  submitCountCheck(value) {
+    const correct = this.rcSys;
+    const ok = Math.abs(value - correct) < 0.01;
     this.session.checks++;
     this.shoeStats.checks++;
-    if (s) {
+    if (ok) {
       this.session.checksOk++;
       this.shoeStats.checksOk++;
     }
-    let n = this.countCheckDue === "final";
+    const final = this.countCheckDue === "final";
+    this.session.checkLog = [...this.session.checkLog, { value, correct, ok, final }].slice(-40);
     this.countCheckDue = false;
-    this.lastCheck = { ok: s, value: e, correct: t, final: n };
+    this.lastCheck = { ok, value, correct, final };
     this.emit();
-    return { ok: s, correct: t, final: n };
+    return { ok, correct, final };
   }
+
   skipCountCheck() {
     this.countCheckDue = false;
     this.emit();
   }
+
   fmtTC() {
-    let e = this.tc,
-      t = Math.round(e * 10) / 10;
-    return (
-      (t > 0 ? "+" : t < 0 ? "−" : "") +
-      Math.abs(t).toFixed(1).replace(".", ",")
-    );
+    const t = Math.round(this.tc * 10) / 10;
+    return (t > 0 ? "+" : t < 0 ? "−" : "") + Math.abs(t).toFixed(1).replace(".", ",");
   }
+
   randomChatter() {
     return CHATTER[Math.floor(Math.random() * CHATTER.length)];
   }
-};
-function money(a) {
-  let e = Math.round(a * 100) / 100,
-    t = Math.abs(e - Math.round(e)) < 1e-9;
-  return Math.abs(e).toLocaleString("es-UY", {
-    minimumFractionDigits: t ? 0 : 2,
-    maximumFractionDigits: 2,
-  });
 }
+
+function money(amount) {
+  const rounded = Math.round(amount * 100) / 100;
+  const whole = Math.abs(rounded - Math.round(rounded)) < 1e-9;
+  return Math.abs(rounded).toLocaleString("es-UY", { minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: 2 });
+}
+
 export { TABLE_SPEEDS, Table, money };

@@ -154,22 +154,16 @@ function TrainTab() {
                   <span className="li-sub" style={{ display: "block" }}>
                     {u.sub}
                   </span>
-                  <ProgressBar
-                    value={d.acc === null ? 0 : d.coverage * 0.4 + d.acc * 0.6}
-                    tone={p.tone}
-                    className="skill-bar"
-                  />
-                </span>
-                <span className={cx("li-side", p.tone && `t-${p.tone}`)}>
-                  {d.acc === null ? (
-                    p.label
-                  ) : (
-                    <>
-                      <span className="num">{pct(d.acc)}</span>
-                      <br />
-                      <span className="tiny">{p.label}</span>
-                    </>
-                  )}
+                  <span className="skill-meter">
+                    <ProgressBar
+                      value={d.acc === null ? 0 : d.coverage * 0.4 + d.acc * 0.6}
+                      tone={p.tone}
+                      className="skill-bar"
+                    />
+                    <span className={cx("skill-grade", p.tone && `t-${p.tone}`)}>
+                      {d.acc === null ? p.label : `${pct(d.acc)} · ${p.label}`}
+                    </span>
+                  </span>
                 </span>
                 <Icon name="chev" className="li-chev" />
               </button>

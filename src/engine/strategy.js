@@ -185,17 +185,28 @@ const ACTION_NAMES = {
   I: "Tomar seguro",
   N: "Sin seguro",
 };
+// Las letras de la tabla son las que se usan en todo el mundo (en inglés): H hit, S stand, D double, P split.
+const ACTION_EN = {
+  H: "hit",
+  S: "stand",
+  D: "double",
+  P: "split",
+  R: "surrender",
+  I: "insurance",
+  N: "no insurance",
+};
 const CHART_LETTERS = {
-  H: "P",
-  S: "Q",
+  H: "H",
+  S: "S",
   D: "D",
   Ds: "D",
-  P: "S",
+  P: "P",
   Rh: "R",
   Rs: "R",
   Rp: "R",
 };
-const CHART_SUBS = { Ds: "q", Rh: "p", Rs: "q", Rp: "s" };
+// Letra chica: qué hacer si la jugada no se permite (s = plantarse, h = pedir, p = separar).
+const CHART_SUBS = { Ds: "s", Rh: "h", Rs: "s", Rp: "p" };
 const CHART_CLASS = {
   H: "hit",
   S: "stand",
@@ -548,6 +559,7 @@ function takeInsurance(a, e) {
   return a >= t;
 }
 export {
+  ACTION_EN,
   ACTION_NAMES,
   CHART_CLASS,
   CHART_LETTERS,

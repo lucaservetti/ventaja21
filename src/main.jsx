@@ -29,7 +29,7 @@ import { NavContext } from "./nav.js";
 const TABS = [
   { id: "conteo", label: "Conteo", icon: "drills" },
   { id: "entrenar", label: "Entrenar", icon: "train" },
-  { id: "jugar", label: "Jugar", icon: "play" },
+  { id: "jugar", label: "Jugar", icon: "play", layerClass: "layer-sim" },
   { id: "aprender", label: "Aprender", icon: "learn" },
   { id: "progreso", label: "Progreso", icon: "stats" },
 ];
@@ -200,7 +200,7 @@ function App() {
           let v = TAB_SCREENS[k.id];
           return (
             <section
-              className="layer with-tabbar"
+              className={cx("layer with-tabbar", k.layerClass)}
               hidden={k.id !== e || l.length > 0}
               aria-label={k.label}
               key={k.id}

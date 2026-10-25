@@ -67,7 +67,7 @@ function RatingBadge({ showDelta: a = false }) {
     }
   }
   return (
-    <Badge icon={<RatingGem />} label={`Puntaje ${t}`}>
+    <Badge icon={<RatingGem />} label={`Puntaje ${t}`} tone="rating">
       <span className="num">{t}</span>
       {a && l ? (
         <small className={l < 0 ? "neg" : ""}>

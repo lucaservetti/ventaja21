@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { withRules } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
 import { handValue, isBlackjack, parseCard } from "../engine/cards.js";
@@ -481,6 +481,11 @@ const PLAY_NAMES = {
 };
 const PLAY_ICONS = { H: "hand", S: "stand", P: "split", R: "surrender" };
 function Scene({ step: a, picked: e, onPick: t }) {
+  // En pantallas bajas, que el texto del coach siempre quede a la vista.
+  const sayRef = useRef(null);
+  useEffect(() => {
+    if (sayRef.current && sayRef.current.scrollIntoView) sayRef.current.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [a.sceneId, a.beat, e]);
   let s = a.chart
       ? typeof a.chart == "string"
         ? { tab: a.chart }
@@ -533,7 +538,7 @@ function Scene({ step: a, picked: e, onPick: t }) {
   return (
     <div className="scene">
       <div className="scene-stage">{n}</div>
-      <div className="scene-say" key={"say" + a.beat}>
+      <div className="scene-say" key={"say" + a.beat} ref={sayRef}>
         <div className="coach-tag">
           <Logo size={18} />
           {" Coach"}

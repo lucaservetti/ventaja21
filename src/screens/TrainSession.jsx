@@ -280,7 +280,7 @@ function TrainSession({ mode: a = "mixed", focus: e = null }) {
             <span className={cx("res-icon", d.correct ? "ok" : "bad")}>
               <Icon name={d.correct ? "check" : "x"} size={22} stroke={3} />
             </span>
-            <h2 className="grow" style={{ fontSize: 30 }}>
+            <h2 className="grow res-title">
               {d.correct ? praise(r) : "No era esa"}
             </h2>
             <span

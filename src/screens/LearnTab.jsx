@@ -129,19 +129,16 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
           <SectionIcon icon={a.icon} on={r || c === o.length} />
         </span>
         <div className="grow">
-          <div className={cx("eyebrow", r && "acc")}>
-            {"Sección "}
-            {a.id}
+          <div className="sec-top">
+            <div className={cx("eyebrow", r && "acc")}>Sección {a.id}</div>
+            <div className="sec-count num">
+              <b>{c}</b> de {o.length}
+            </div>
           </div>
-          <h2 style={{ fontSize: 24, marginTop: 4 }}>{a.title}</h2>
+          <h2 className="sec-title">{a.title}</h2>
           <p className="muted" style={{ marginTop: 6 }}>
             {a.desc}
           </p>
-        </div>
-        <div className="sec-count num">
-          <b>{c}</b>
-          {" de "}
-          {o.length}
         </div>
       </div>
       <div className="path" ref={l} style={{ height: y.H }}>
