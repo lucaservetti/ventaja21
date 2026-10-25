@@ -5644,3 +5644,150 @@ i.en {
 .onb-minutes .option b {
   font-size: 19px;
 }
+/* Mesa narrada: valores Hi-Lo sobre las cartas, conteo corrido y otros jugadores. */
+.scn-tagged {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.scn-tag {
+  position: absolute;
+  left: 3px;
+  bottom: -11px;
+  z-index: 2;
+  min-width: 26px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  background: #0b0b0d;
+  border: 1px solid #34343c;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  animation: pop 0.25s ease both;
+}
+.scn-tag.pos {
+  color: var(--good);
+  border-color: #1f5a3d;
+}
+.scn-tag.neg {
+  color: #ff7b72;
+  border-color: #5a2420;
+}
+.card-row.overlap > .scn-tagged + .scn-tagged,
+.card-row.overlap > .pc + .scn-tagged,
+.card-row.overlap > .scn-tagged + .pc {
+  margin-left: -34px;
+}
+.cr-sm.overlap > .scn-tagged + .scn-tagged,
+.cr-sm.overlap > .pc + .scn-tagged {
+  margin-left: -20px;
+}
+.scn-others {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.scn-other {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.scn-other .scn-stack {
+  min-height: 62px;
+}
+.scn-other .scn-stack.empty {
+  display: none;
+}
+.scn-tray-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.scn-left {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-2);
+}
+.scn-counts {
+  display: inline-flex;
+  gap: 6px;
+}
+.scn-rc {
+  background: var(--surface-2);
+  border-color: var(--line);
+}
+@media (max-width: 370px) {
+  .scn-tc {
+    padding: 3px 8px;
+    gap: 5px;
+  }
+  .scn-tc b {
+    font-size: 17px;
+  }
+}
+.review-tag {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+/* Aprender: repaso y lo que sigue después de las lecciones. */
+.review-card {
+  width: 100%;
+  margin-bottom: 16px;
+}
+.next-steps {
+  margin-bottom: 18px;
+  border: 1.5px solid var(--accent-line);
+}
+.next-steps-title {
+  font-size: 24px;
+  margin: 4px 0 8px;
+}
+.next-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+.next-step .li-sub {
+  display: block;
+}
+.next-step:disabled {
+  opacity: 0.7;
+}
+.scn-sign {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 340px;
+  padding: 18px 18px 8px;
+  border-radius: 20px;
+  background: radial-gradient(120% 120% at 50% 0%, #1f2a22, #121815);
+  border: 1px solid #2c3a30;
+  animation: fadeUp 0.25s ease both;
+}
+.scn-sign .eyebrow {
+  margin-bottom: 8px;
+  color: #a8b9ac;
+}
+.scn-sign-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid #2c3a30;
+  font-size: 16px;
+}
+.scn-sign-row span {
+  color: #c9d3cb;
+}
+.scn-sign-row b {
+  text-align: right;
+}

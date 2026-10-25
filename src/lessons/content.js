@@ -32,6 +32,10 @@ const SCENE_KEYS = [
   "tc",
   "bustMini",
   "rules",
+  // Para las lecciones de conteo: conteo corrido, mazos que quedan y otros jugadores en la mesa.
+  "rc",
+  "left",
+  "others",
 ];
 const lenOf = (a) => (Array.isArray(a) ? a.length : 0);
 function scene(a) {
@@ -75,6 +79,7 @@ function scene(a) {
       chart: s.chart || null,
       outcomes: s.outcomes || null,
       chips: s.chips || null,
+      sign: s.sign || null,
       play: s.play || null,
       bustcards: !!s.bustcards,
     };
@@ -2045,6 +2050,387 @@ const SECTIONS = [
       },
     ],
   },
+  {
+    id: 6,
+    title: "Práctica de casino",
+    desc: "Todo junto: elegir la mesa, contar, apostar y saber cuándo irte",
+    icon: "target",
+    lessons: [
+      {
+        id: "l28",
+        title: "Elegir la mesa",
+        sum: [
+          "Buscá blackjack 3:2, el corte bien atrás y, si se puede, que el crupier se plante con 17 blando.",
+          "Evitá las mesas 6:5 y las máquinas de mezcla continua: ahí contar no sirve.",
+          "Tu unidad es el mínimo de la mesa, y tu banca tiene que aguantar 100 apuestas máximas.",
+        ],
+        steps: [
+          ...scene([
+            {
+              bank: 1000,
+              sign: [
+                { k: "Apuesta mínima", v: "$10" },
+                { k: "El blackjack paga", v: "3 a 2", tone: "good" },
+                { k: "El crupier", v: "se planta con 17 blando" },
+                { k: "Mazos", v: "6" },
+              ],
+              say: "Llegás al casino con **1.000** para jugar. Antes de sentarte, leé el cartel de la mesa: ahí están las reglas que importan.",
+            },
+            {
+              sign: [
+                { k: "Apuesta mínima", v: "$10" },
+                { k: "El blackjack paga", v: "3 a 2", tone: "good" },
+                { k: "El crupier", v: "se planta con 17 blando" },
+                { k: "Mazos", v: "6" },
+              ],
+              say: "Esta mesa paga el blackjack **3 a 2**, el crupier **se planta con 17 blando** (S17) y usa 6 mazos. Hasta acá, todo bien.",
+            },
+            {
+              sign: [
+                { k: "Carta de corte", v: "al 75 % del zapato", tone: "good" },
+                { k: "Mezcla", v: "a mano" },
+              ],
+              say: "Ahora mirá dónde ponen la **carta de corte** (*cut card*): si la ponen a tres cuartos del zapato, se reparte el **75 %** antes de mezclar. Cuanto más atrás, más seguido llegan los conteos altos.",
+            },
+            {
+              sign: [
+                { k: "El blackjack paga", v: "6 a 5", tone: "bad" },
+                { k: "El crupier", v: "pide con 17 blando" },
+                { k: "Mezcla", v: "máquina continua", tone: "bad" },
+              ],
+              ask: {
+                q: "La mesa de al lado paga 6:5 y usa una máquina de mezcla continua. ¿Te sirve para contar?",
+                o: ["Sí, si cuento rápido", "No"],
+                a: 1,
+                x: "Con mezcla continua las cartas vuelven al mazo enseguida: no hay nada que contar. Y el 6:5 solo ya le suma a la casa alrededor de 1,4 %.",
+              },
+            },
+          ]),
+          info(
+            "Tu unidad y tu banca",
+            [
+              "Tu **unidad** es la apuesta mínima de la mesa. Con la escala de 1 a 8 unidades, tu apuesta máxima es de **8 unidades**.",
+              "Una referencia prudente: que tu banca alcance para **100 apuestas máximas**. Con unidad de 10, la máxima es 80 y la banca, 8.000.",
+            ],
+            {
+              v: "tiles",
+              items: [
+                { v: "10", l: "unidad" },
+                { v: "80", l: "apuesta máxima" },
+                { v: "8.000", l: "banca" },
+              ],
+            },
+          ),
+          quiz(
+            "Tenés 4.000 para jugar. ¿Qué unidad te conviene?",
+            ["5", "10", "25"],
+            0,
+            "Con unidad de 5, la apuesta máxima es 40, y 100 veces 40 son 4.000. Con unidad de 10 necesitarías 8.000.",
+          ),
+          quiz(
+            "¿Qué mesa elegís para contar?",
+            [
+              "3:2, 6 mazos, corte al 75 %",
+              "3:2, 8 mazos, corte a la mitad",
+              "6:5, un solo mazo",
+            ],
+            0,
+            "3:2 y corte bien atrás. Con el corte a la mitad los conteos altos casi no llegan, y el 6:5 cuesta más de lo que te da contar.",
+          ),
+          quiz(
+            "¿En qué momento te conviene sentarte?",
+            [
+              "Cuando están mezclando",
+              "En cualquier momento, da igual",
+              "Con el zapato por la mitad",
+            ],
+            0,
+            "Si te sentás después de la mezcla, contás desde la primera carta. A mitad de zapato no sabés qué salió antes.",
+          ),
+        ],
+      },
+      {
+        id: "l29",
+        title: "Contar una mesa llena",
+        sum: [
+          "Contá todas las cartas que ves: las del crupier, las tuyas y las de los demás jugadores.",
+          "Cancelá de a pares mientras caen: al final de la ronda solo cuenta lo que sobró.",
+          "Si alguien se pasa, el crupier levanta sus cartas enseguida: contalas apenas salen.",
+        ],
+        steps: [
+          info("Todas las cartas cuentan", [
+            "En la mesa no estás solo. **Todas las cartas que se ven** cambian lo que queda en el zapato: las del crupier, las tuyas y las de los otros jugadores.",
+            "Con más jugadores salen más cartas por ronda: cancelá de a pares para no atrasarte.",
+          ]),
+          ...scene([
+            {
+              bank: 1000,
+              rc: 0,
+              left: 6,
+              others: [
+                { name: "Ana", cards: [] },
+                { name: "Bruno", cards: [] },
+              ],
+              say: "Zapato recién mezclado: el conteo corrido (*running count*) arranca en **0**. En la mesa están Ana y Bruno.",
+            },
+            {
+              bet: 10,
+              bank: 990,
+              others: [
+                { name: "Ana", cards: ["Kd", "5c"] },
+                { name: "Bruno", cards: ["9h", "9s"] },
+              ],
+              d: ["4s", "Qh?"],
+              p: ["Jc", "2d"],
+              say: "Primera ronda. Ana tiene K y 5, Bruno 9 y 9, vos J y 2, y el crupier muestra un 4. Contá todo lo que se ve.",
+            },
+            {
+              tags: true,
+              ask: {
+                q: "¿Cuánto vale el conteo corrido ahora?",
+                o: ["0", "+1", "+3"],
+                a: 1,
+                x: "La K de Ana se cancela con su 5, tu J con tu 2, los 9 de Bruno son neutros y el 4 del crupier suma: +1.",
+              },
+            },
+            {
+              rc: 1,
+              tags: true,
+              others: [
+                { name: "Ana", cards: ["Kd", "5c", "7h"] },
+                { name: "Bruno", cards: ["9h", "9s"] },
+              ],
+              say: "Ana pide y saca un 7: **22**, se pasó. El crupier levanta sus cartas enseguida, así que contá el 7 apenas cae. Es neutro: seguís en **+1**.",
+            },
+            {
+              others: [
+                { name: "Ana", cards: [] },
+                { name: "Bruno", cards: ["9h", "9s"] },
+              ],
+              play: {
+                a: "S",
+                x: "12 contra un 4: plantate y dejá que pida el crupier. Contar no te cambia esta jugada.",
+              },
+              say: "Te toca a vos: **12** contra un 4. ¿Pedís o te plantás?",
+            },
+            {
+              d: ["4s", "Qh", "9c"],
+              stamp: { d: "bust", p: "win" },
+              bank: 1010,
+              say: "El crupier da vuelta una Q: 14, y pide. Un 9: **23**, se pasó. Ganás 10, y Bruno también.",
+            },
+            {
+              tags: true,
+              ask: {
+                q: "Terminó la ronda. ¿Cuánto es el conteo corrido?",
+                o: ["−1", "0", "+1"],
+                a: 1,
+                x: "Venías en +1. La Q del crupier resta 1 y el 9 es neutro: 0.",
+              },
+            },
+            {
+              rc: 0,
+              say: "Conteo corrido **0**. En una ronda viste 11 cartas y el número casi no se movió: eso pasa seguido, por eso conviene cancelar de a pares en vez de sumar carta por carta.",
+            },
+          ]),
+          quiz(
+            "Un jugador se pasa y el crupier se lleva sus cartas antes de que termine la ronda. ¿Las contás?",
+            ["No, ya no están", "Sí, apenas salen"],
+            1,
+            "Esas cartas ya salieron del zapato: cambian lo que queda igual que las demás.",
+          ),
+          quiz(
+            "En una ronda salen: 2, 5, K, 8, A, 3 y 6. ¿Cuánto cambió el conteo?",
+            ["+1", "+2", "+3"],
+            1,
+            "2 (+1), 5 (+1), K (−1), 8 (0), A (−1), 3 (+1), 6 (+1): +2.",
+          ),
+          {
+            t: "count",
+            title: "Una ronda entera",
+            intro:
+              "Tres jugadores y el crupier: mirá las cartas de la ronda y después decí el conteo.",
+            cards: ["Qs", "4h", "7d", "2c", "Ks", "5d", "9c", "3h", "Ad"],
+            ms: 1100,
+            options: ["−1", "0", "+1", "+2"],
+            answer: 2,
+            explain:
+              "Q (−1), 4 (+1), 7 (0), 2 (+1), K (−1), 5 (+1), 9 (0), 3 (+1), A (−1): +1.",
+          },
+        ],
+      },
+      {
+        id: "l30",
+        title: "El conteo manda la apuesta",
+        sum: [
+          "Antes de cada mano: conteo corrido ÷ mazos que quedan = conteo real. Con eso elegís la apuesta.",
+          "Hasta +1, 1 unidad; +2, 2; +3, 4; +4, 6; +5 o más, 8.",
+          "Subí y bajá de a poco: un salto de 1 a 8 unidades llama la atención.",
+        ],
+        steps: [
+          ...scene([
+            {
+              bank: 1000,
+              rc: 2,
+              left: 5,
+              say: "Vas por el primer mazo del zapato. Conteo corrido **+2** y quedan unos **5 mazos**.",
+            },
+            {
+              ask: {
+                q: "¿Cuál es el conteo real (true count)?",
+                o: ["0", "+1", "+2"],
+                a: 0,
+                x: "+2 ÷ 5 = 0,4. Redondeado hacia abajo: 0. Apostás el mínimo.",
+              },
+            },
+            {
+              tc: 0,
+              bet: 10,
+              bank: 990,
+              say: "Conteo real **0**: apostás **1 unidad**, 10.",
+            },
+            {
+              reset: true,
+              bank: 1000,
+              rc: 9,
+              left: 3,
+              say: "Un rato después salieron muchas cartas chicas. Conteo corrido **+9** y quedan **3 mazos**.",
+            },
+            {
+              ask: {
+                q: "¿Cuántas unidades apostás?",
+                o: ["1", "2", "4", "8"],
+                a: 2,
+                x: "+9 ÷ 3 = +3. Con conteo real +3, la escala dice 4 unidades: 40.",
+              },
+            },
+            {
+              tc: 3,
+              bet: 40,
+              bank: 960,
+              say: "Conteo real **+3**: **4 unidades**, 40. Ahora la ventaja es tuya.",
+            },
+            {
+              d: ["6c", "Kd?"],
+              p: ["Ah", "Ks"],
+              stamp: { p: "bj" },
+              bank: 1060,
+              say: "¡Blackjack! Con 40 en juego cobrás 60. Por eso se apuesta más con el conteo alto: quedan más dieces y ases, y salen más blackjacks.",
+            },
+            {
+              reset: true,
+              bank: 1050,
+              rc: -5,
+              left: 2,
+              tc: -2,
+              bet: 10,
+              say: "Más adelante el zapato se dio vuelta: corrido **−5** con **2 mazos** por delante, conteo real **−2**. Volvés a la apuesta mínima.",
+            },
+          ]),
+          info(
+            "De a poco",
+            [
+              "En un casino, saltar de 10 a 80 de una mano a la otra es justo la señal que buscan.",
+              "Los contadores suben **de a un escalón** por mano y bajan cuando el conteo baja o después de perder una mano, como haría cualquier jugador.",
+            ],
+            { v: "ramp" },
+          ),
+          quiz(
+            "Conteo corrido +12 y quedan 4 mazos. Tu unidad es 25. ¿Cuánto apostás?",
+            ["25", "50", "100", "150"],
+            2,
+            "+12 ÷ 4 = +3 → 4 unidades → 100.",
+          ),
+          quiz(
+            "Conteo corrido +7 y quedan 2 mazos. ¿Cuántas unidades?",
+            ["2", "4", "6"],
+            1,
+            "+7 ÷ 2 = 3,5. Redondeado hacia abajo, +3 → 4 unidades.",
+          ),
+          quiz(
+            "Venías apostando 1 unidad y el conteo real salta a +5. ¿Qué hacés en una mesa de casino?",
+            [
+              "Salto directo a 8 unidades",
+              "Subo a 2 o 4 y sigo subiendo si el conteo se mantiene",
+            ],
+            1,
+            "La escala dice 8, pero un salto así llama mucho la atención. Subir de a poco cuesta un poco de ventaja y te deja seguir jugando.",
+          ),
+        ],
+      },
+      {
+        id: "l31",
+        title: "Cuándo levantarte",
+        sum: [
+          "Con el conteo real en −2 o menos, una buena opción es levantarte hasta la próxima mezcla.",
+          "Antes de sentarte, decidí cuánto podés perder y cuánto tiempo vas a jugar, y respetalo.",
+          "Si te piden que dejes de jugar al blackjack, agradecé y andate: no discutas.",
+        ],
+        steps: [
+          ...scene([
+            {
+              bank: 800,
+              rc: -8,
+              left: 4,
+              tc: -2,
+              bet: 10,
+              say: "Llevás un rato perdiendo y el zapato viene mal: corrido **−8** con **4 mazos**, conteo real **−2**.",
+            },
+            {
+              ask: {
+                q: "¿Qué conviene?",
+                o: [
+                  "Subir la apuesta para recuperar",
+                  "Apostar el mínimo o levantarme hasta la mezcla",
+                ],
+                a: 1,
+                x: "Con el conteo negativo la ventaja es de la casa. Lo mejor es apostar el mínimo o directamente no jugar hasta que mezclen.",
+              },
+            },
+            {
+              bet: null,
+              say: "Te levantás y mirás la mesa desde la barra. Seguís contando: cuando mezclen, volvés con el conteo en 0.",
+            },
+          ]),
+          info("Antes de sentarte, decidí", [
+            "**Cuánto podés perder hoy.** Si llegás a ese número, terminó la noche: la ventaja se ve en miles de manos, no en una.",
+            "**Cuánto tiempo vas a jugar.** Contar cansa, y cansado te equivocás: esos errores cuestan más de lo que te da contar.",
+          ]),
+          info("Si te piden que te vayas", [
+            "Contar con la cabeza es legal, pero el casino puede pedirte que no juegues al blackjack.",
+            "Si pasa, agradecé y andate tranquilo. No discutas ni des explicaciones.",
+          ]),
+          quiz(
+            "Perdiste tu límite de la noche, pero el conteo real está en +4. ¿Qué hacés?",
+            ["Sigo: con +4 tengo ventaja", "Me voy: el límite es el límite"],
+            1,
+            "Una mano con ventaja cambia muy poco a la larga, y romper tus propias reglas cambia mucho. Mañana hay otro zapato.",
+          ),
+          quiz(
+            "¿Qué jugador tiene más chances de que lo descubran?",
+            [
+              "El que sube la apuesta de a poco y charla con la mesa",
+              "El que salta de 10 a 80 cuando el conteo sube",
+            ],
+            1,
+            "Los saltos grandes justo cuando sube el conteo son la señal más clara. Subir de a poco disimula.",
+          ),
+        ],
+      },
+      {
+        id: "exam",
+        title: "Examen final",
+        exam: true,
+        minutes: 15,
+        sum: [
+          "Jugaste un zapato completo con la estrategia básica.",
+          "Llevaste el conteo y apostaste según el conteo real.",
+          "Sabés contar cartas.",
+        ],
+        steps: [],
+      },
+    ],
+  },
 ];
 const EXTRA_LESSONS = {
   use: {
@@ -2090,7 +2476,16 @@ function lessonIndex(a) {
   return LESSONS.findIndex((e) => e.id === a);
 }
 function lessonMinutes(a) {
+  if (a.minutes) return a.minutes;
   return Math.max(2, Math.min(5, Math.round(a.steps.length / 4)));
+}
+// Abre una lección (el examen final no es una lección: abre el simulador en modo examen).
+function openLesson(nav, lesson, replace = false) {
+  const [name, params] = lesson.exam
+    ? ["shoeChallenge", { mode: "exam", confirmExit: true, flex: true }]
+    : ["lesson", { id: lesson.id, confirmExit: true }];
+  if (replace) nav.replace(name, params);
+  else nav.push(name, params);
 }
 export {
   LESSONS,
@@ -2099,4 +2494,5 @@ export {
   lessonIndex,
   lessonMinutes,
   nextLessonId,
+  openLesson,
 };

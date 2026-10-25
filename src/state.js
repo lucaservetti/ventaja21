@@ -516,6 +516,41 @@ function setGoalMinutes(minutes) {
     };
   });
 }
+// Repaso: una pregunta fallada entra a la lista; sale cuando la acertás dos veces en el repaso.
+const DAY_MS = 86400000;
+function recordReviewAnswer(lessonId, step, ok, sig, fromReview = false) {
+  setState((st) => {
+    const key = `${lessonId}:${step}`;
+    const prev = st.review.items[key];
+    const items = { ...st.review.items };
+    if (ok) {
+      if (!prev) return st;
+      if (!fromReview) return st; // acertarla dentro de la lección no la saca del repaso
+      const streak = (prev.streak || 0) + 1;
+      if (streak >= 2) delete items[key];
+      else items[key] = { ...prev, streak, due: Date.now() + 2 * DAY_MS };
+    } else {
+      items[key] = {
+        lesson: lessonId,
+        step,
+        sig,
+        misses: (prev ? prev.misses : 0) + 1,
+        streak: 0,
+        due: Date.now() + (fromReview ? 0 : 3600000),
+        at: Date.now(),
+      };
+    }
+    return { ...st, review: { ...st.review, items } };
+  });
+}
+function dropReviewItem(key) {
+  setState((st) => {
+    if (!st.review.items[key]) return st;
+    const items = { ...st.review.items };
+    delete items[key];
+    return { ...st, review: { ...st.review, items } };
+  });
+}
 function resetAll() {
   currentState = clone(DEFAULT_STATE);
   saveNow();
@@ -543,6 +578,8 @@ function importBackup(a) {
 }
 export {
   TABLE_PRESETS,
+  dropReviewItem,
+  recordReviewAnswer,
   addPracticeTime,
   goalDay,
   goalMet,

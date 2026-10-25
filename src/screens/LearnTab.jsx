@@ -2,9 +2,130 @@ import { useMemo, useState } from "react";
 import { useStore } from "../state.js";
 import { Icon, SuitIcon } from "../ui/icons.jsx";
 import { Toasts, cx, useWidth } from "../ui/components.jsx";
-import { LESSONS, SECTIONS, lessonMinutes } from "../lessons/content.js";
+import {
+  LESSONS,
+  SECTIONS,
+  lessonMinutes,
+  openLesson,
+} from "../lessons/content.js";
 import { useNav } from "../nav.js";
 import { GoalBadge } from "./goal.jsx";
+import { reviewCount } from "../lessons/Review.jsx";
+
+// Después de las lecciones (o cuando hay preguntas falladas): repaso, práctica de casino y examen final.
+function NextStepsCard({ st, done }) {
+  const nav = useNav();
+  const pending = reviewCount(st);
+  const core = SECTIONS.filter((sec) => sec.id <= 5).flatMap(
+    (sec) => sec.lessons,
+  );
+  const coreDone = core.every((l) => done(l.id));
+  const casino = SECTIONS.find((sec) => sec.id === 6);
+  const casinoLessons = casino ? casino.lessons.filter((l) => !l.exam) : [];
+  const casinoDone = casinoLessons.filter((l) => done(l.id)).length;
+  const exam = casino ? casino.lessons.find((l) => l.exam) : null;
+  const examPassed = !!st.finalExam.passed;
+  if (!coreDone) {
+    if (!pending) return null;
+    return (
+      <button
+        type="button"
+        className="card list-item review-card"
+        onClick={() => nav.push("review", { confirmExit: true })}
+      >
+        <span className="li-icon">
+          <Icon name="refresh" />
+        </span>
+        <span className="li-text">
+          <span className="li-title" style={{ fontSize: 17 }}>
+            Repaso
+          </span>
+          <span className="li-sub" style={{ display: "block" }}>
+            {pending === 1
+              ? "1 pregunta que fallaste"
+              : `${pending} preguntas que fallaste`}
+          </span>
+        </span>
+        <span className="pstep-go">Repasar</span>
+      </button>
+    );
+  }
+  const nextCasino = casinoLessons.find((l) => !done(l.id));
+  return (
+    <div className="card next-steps">
+      <div className="eyebrow acc">Terminaste las lecciones</div>
+      <h2 className="next-steps-title">¿Y ahora?</h2>
+      <button
+        type="button"
+        className="next-step"
+        onClick={() => nav.push("review", { confirmExit: true })}
+        disabled={!pending}
+      >
+        <span className="li-icon">
+          <Icon name="refresh" />
+        </span>
+        <span className="li-text">
+          <span className="li-title">Repaso de lo que fallaste</span>
+          <span className="li-sub">
+            {pending
+              ? pending === 1
+                ? "1 pregunta pendiente"
+                : `${pending} preguntas pendientes`
+              : "Nada pendiente: vas al día"}
+          </span>
+        </span>
+        {pending ? (
+          <Icon name="chev" className="li-chev" />
+        ) : (
+          <Icon name="check" className="good" />
+        )}
+      </button>
+      {casino ? (
+        <button
+          type="button"
+          className="next-step"
+          onClick={() => openLesson(nav, nextCasino || casinoLessons[0])}
+        >
+          <span className="li-icon">
+            <Icon name="target" />
+          </span>
+          <span className="li-text">
+            <span className="li-title">Sección 6: práctica de casino</span>
+            <span className="li-sub">
+              {casinoDone} de {casinoLessons.length} lecciones · elegir mesa,
+              contar una mesa llena, apostar
+            </span>
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+      ) : null}
+      {exam ? (
+        <button
+          type="button"
+          className="next-step"
+          onClick={() => openLesson(nav, exam)}
+        >
+          <span className="li-icon">
+            <Icon name="trophy" />
+          </span>
+          <span className="li-text">
+            <span className="li-title">Examen final</span>
+            <span className="li-sub">
+              {examPassed
+                ? "Aprobado. Podés rendirlo otra vez cuando quieras."
+                : "Un zapato entero jugando bien, contando y apostando según el conteo"}
+            </span>
+          </span>
+          {examPassed ? (
+            <Icon name="check" className="good" />
+          ) : (
+            <Icon name="chev" className="li-chev" />
+          )}
+        </button>
+      ) : null}
+    </div>
+  );
+}
 
 function lessonProgress(a) {
   let e = (s) => !!(a.lessons[s] && a.lessons[s].done),
@@ -28,7 +149,7 @@ function LearnTab() {
         setTimeout(() => o(null), 2200);
         return;
       }
-      e.push("lesson", { id: r.id, confirmExit: true });
+      openLesson(e, r);
     };
   return (
     <div className="fade-up learn">
@@ -55,6 +176,7 @@ function LearnTab() {
           </button>
         </div>
       </div>
+      <NextStepsCard st={a} done={t} />
       <div className="learn-progress">
         {SECTIONS.map((r) => {
           let u = r.lessons.filter((d) => t(d.id)).length;
@@ -85,8 +207,8 @@ function LearnTab() {
   );
 }
 function SectionIcon({ icon: a, on: e }) {
-  return a === "crown" ? (
-    <Icon name="crown" size={28} className={e ? "acc" : "dim"} />
+  return a.length > 1 ? (
+    <Icon name={a} size={28} className={e ? "acc" : "dim"} />
   ) : (
     <SuitIcon s={a} size={30} className={e ? "acc" : "dim"} />
   );
@@ -187,6 +309,8 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
                     <Icon name="play" size={34} stroke={2.4} />
                   ) : b ? (
                     <Icon name="check" size={32} stroke={3} />
+                  ) : k.exam ? (
+                    <Icon name="trophy" size={30} />
                   ) : (
                     <span className="node-num num">{D + 1}</span>
                   )}

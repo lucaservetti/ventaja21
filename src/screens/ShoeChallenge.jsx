@@ -1,12 +1,12 @@
 // Un zapato completo en el simulador, con el conteo oculto y chequeos de conteo.
 // mode "level": nivel 10 de la ruta de conteo (se aprueba con 4 de cada 5 chequeos bien).
 // mode "exam": examen final (jugar bien, contar y apostar según el conteo).
-import { useEffect, useState } from "react";
 import {
+  completeLesson,
   getState,
+  markActive,
   recordLevel,
   setState,
-  markActive,
   withRules,
 } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
@@ -97,6 +97,8 @@ function ShoeChallenge({ mode = "level", level: levelN = 10 }) {
           },
         }),
       );
+      if (g.passed)
+        completeLesson("exam", Math.min(g.decisions, g.bets, g.checks));
       setResult({ s, ...g });
     } else {
       const r = ratio(s.checksOk, s.checks);

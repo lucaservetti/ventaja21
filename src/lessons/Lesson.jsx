@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { completeLesson, markPathDone, useStore, withRules } from "../state.js";
+import {
+  completeLesson,
+  markPathDone,
+  recordReviewAnswer,
+  useStore,
+  withRules,
+} from "../state.js";
 import { Icon } from "../ui/icons.jsx";
 import { handLabel, handValue, parseCard } from "../engine/cards.js";
 import {
@@ -20,6 +26,7 @@ import {
 import {
   LESSONS,
   getLesson,
+  openLesson,
   lessonIndex,
   lessonMinutes,
   nextLessonId,
@@ -38,6 +45,23 @@ import { Scene, SceneActions } from "./scene.jsx";
 import { useNav } from "../nav.js";
 
 const GRADED_STEPS = new Set(["quiz", "decide", "tags", "count"]);
+// Huella de un paso, para saber si una pregunta guardada en el repaso sigue siendo la misma.
+function stepSig(step) {
+  const text =
+    step.q ||
+    (step.ask && step.ask.q) ||
+    step.say ||
+    (step.player ? step.player.join(",") + "|" + step.dealer : "");
+  return `${step.t}|${text}`.slice(0, 90);
+}
+// Pasos que entran al repaso si los fallás: preguntas, "¿qué hacés?" y las preguntas de la mesa narrada.
+function reviewable(step) {
+  return (
+    step.t === "quiz" ||
+    step.t === "decide" ||
+    (step.t === "scene" && !!(step.ask || step.play))
+  );
+}
 function Lesson({ id: a, then: e }) {
   let t = useNav(),
     s = getLesson(a),
@@ -123,6 +147,7 @@ function Lesson({ id: a, then: e }) {
       }
       vibrate(P ? 10 : 30);
       S(l, P ? 1 : 0, 1, X);
+      if (!ta) recordReviewAnswer(s.id, l, P, stepSig(v));
     },
     Ma = (X) => {
       let P = v.play.a,
@@ -134,6 +159,7 @@ function Lesson({ id: a, then: e }) {
       }
       vibrate(w ? 10 : 30);
       S(l, w ? 1 : 0, 1, X);
+      if (!ta) recordReviewAnswer(s.id, l, w, stepSig(v));
     },
     ca = () => {
       sfx.card();
@@ -183,7 +209,11 @@ function Lesson({ id: a, then: e }) {
               step={v}
               report={D}
               saved={o[l]}
-              onPicked={(X, P) => S(l, P ? 1 : 0, 1, X)}
+              onPicked={(X, P) => {
+                S(l, P ? 1 : 0, 1, X);
+                if (!o[l] && reviewable(v))
+                  recordReviewAnswer(s.id, l, P, stepSig(v));
+              }}
               setReady={_}
             />
           </div>
@@ -958,7 +988,7 @@ function LessonResult({ lesson: a, score: e, then: t }) {
           <button
             type="button"
             className="card lr-next"
-            onClick={() => s.replace("lesson", { id: o.id, confirmExit: true })}
+            onClick={() => openLesson(s, o, true)}
           >
             <span className="lr-next-n num">{l + 2}</span>
             <span className="li-text">
@@ -978,8 +1008,8 @@ function LessonResult({ lesson: a, score: e, then: t }) {
           </button>
         ) : a.section > 0 ? (
           <p className="muted center" style={{ marginTop: 16 }}>
-            Terminaste todas las lecciones. Seguí con la Guía, el simulador y el
-            examen de nivel.
+            Terminaste todas las lecciones. Seguí con el repaso, la ruta de
+            conteo y el simulador.
           </p>
         ) : null}
       </div>
@@ -992,10 +1022,7 @@ function LessonResult({ lesson: a, score: e, then: t }) {
             {t.label}
           </Button>
         ) : o ? (
-          <Button
-            kind="white"
-            onClick={() => s.replace("lesson", { id: o.id, confirmExit: true })}
-          >
+          <Button kind="white" onClick={() => openLesson(s, o, true)}>
             Empezar la próxima lección
           </Button>
         ) : null}
@@ -1006,4 +1033,4 @@ function LessonResult({ lesson: a, score: e, then: t }) {
     </div>
   );
 }
-export { Lesson };
+export { DecideStep, Lesson, QuizStep, reviewable, stepSig };

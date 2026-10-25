@@ -22,6 +22,7 @@ import { PlayTab } from "./screens/PlayTab.jsx";
 import { ProgressTab } from "./screens/ProgressTab.jsx";
 import { TrainSummary } from "./screens/TrainSummary.jsx";
 import { Lesson } from "./lessons/Lesson.jsx";
+import { Review } from "./lessons/Review.jsx";
 import { Guide, GuideChapter } from "./screens/Guide.jsx";
 import { ChartSheet, SettingsSheet, SystemSheet } from "./screens/sheets.jsx";
 import { NavContext } from "./nav.js";
@@ -62,6 +63,7 @@ const SCREENS = {
   guideChapter: GuideChapter,
   placement: Placement,
   countLevel: CountLevel,
+  review: Review,
   drillPairs: DrillPairs,
   shoeChallenge: ShoeChallenge,
 };

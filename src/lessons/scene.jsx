@@ -46,22 +46,37 @@ function SceneCards({
   newLast: s,
   hlUp: n,
   size: l = "lg",
+  tags = false,
 }) {
   return a.length ? (
     <div className="scn-stack">
       <div className={cx("card-row overlap scn-row", `cr-${l}`)}>
-        {a.map((i, o) => (
-          <PlayingCard
-            card={i.card}
-            size={l}
-            deal={true}
-            down={i.hidden}
-            className={cx(
-              (s && o === a.length - 1) || (n && o === 0) ? "pc-hl" : null,
-            )}
-            key={i.key}
-          />
-        ))}
+        {a.map((i, o) =>
+          tags && !i.hidden ? (
+            <span className="scn-tagged" key={i.key}>
+              <PlayingCard
+                card={i.card}
+                size={l}
+                deal={true}
+                className={cx(
+                  (s && o === a.length - 1) || (n && o === 0) ? "pc-hl" : null,
+                )}
+              />
+              <HiloTag card={i.card} />
+            </span>
+          ) : (
+            <PlayingCard
+              card={i.card}
+              size={l}
+              deal={true}
+              down={i.hidden}
+              className={cx(
+                (s && o === a.length - 1) || (n && o === 0) ? "pc-hl" : null,
+              )}
+              key={i.key}
+            />
+          ),
+        )}
       </div>
       <Stamp kind={t} who={e} />
     </div>
@@ -69,6 +84,34 @@ function SceneCards({
     <div className="scn-stack empty" aria-hidden="true">
       <span className={cx("slot-ghost", `sg-${l}`)} />
       <span className={cx("slot-ghost", `sg-${l}`)} />
+    </div>
+  );
+}
+function HiloTag({ card }) {
+  const v = hiloValue(card);
+  return (
+    <span className={cx("scn-tag num", v > 0 ? "pos" : v < 0 ? "neg" : "")}>
+      {fmtTag(v)}
+    </span>
+  );
+}
+// Otros jugadores sentados a la mesa (para contar todas las cartas, no solo las tuyas).
+function SceneOthers({ others, tags }) {
+  return (
+    <div className="scn-others">
+      {others.map((o, k) => {
+        const list = sceneCards(o.cards, "o" + k);
+        const v = handValue(visibleCards(list));
+        return (
+          <div className="scn-other" key={k}>
+            <SceneCards list={list} owner={"o" + k} size="sm" tags={tags} />
+            <span className="tiny muted">
+              {o.name}
+              {list.length ? ` · ${v.bust ? "se pasó" : v.total}` : ""}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -378,30 +421,59 @@ function SceneTable({ step: a }) {
   return (
     <div className="scn-table">
       <div className="scn-deco" aria-hidden="true">
-        <span className="scn-tray" />
-        {a.tc !== undefined && a.tc !== null ? (
-          <span className="scn-tc">
-            <span className="eyebrow">Conteo real</span>
-            <b className={cx("num", a.tc > 0 ? "good" : a.tc < 0 ? "bad" : "")}>
-              {fmtSigned(a.tc)}
-            </b>
-          </span>
-        ) : (
-          <span />
-        )}
+        <span className="scn-tray-wrap">
+          <span className="scn-tray" />
+          {a.left !== undefined && a.left !== null ? (
+            <span className="scn-left num">quedan {a.left}</span>
+          ) : null}
+        </span>
+        <span className="scn-counts">
+          {a.rc !== undefined && a.rc !== null ? (
+            <span className="scn-tc scn-rc">
+              <span className="eyebrow">Corrido</span>
+              <b
+                className={cx("num", a.rc > 0 ? "good" : a.rc < 0 ? "bad" : "")}
+              >
+                {fmtSigned(a.rc)}
+              </b>
+            </span>
+          ) : null}
+          {a.tc !== undefined && a.tc !== null ? (
+            <span className="scn-tc">
+              <span className="eyebrow">
+                {a.rc !== undefined && a.rc !== null ? "Real" : "Conteo real"}
+              </span>
+              <b
+                className={cx("num", a.tc > 0 ? "good" : a.tc < 0 ? "bad" : "")}
+              >
+                {fmtSigned(a.tc)}
+              </b>
+            </span>
+          ) : null}
+        </span>
         <span className="scn-shoe">
           <Icon name="shoe" size={26} />
         </span>
       </div>
       <div className="scn-seat">
         <span className="eyebrow">Crupier</span>
-        <SceneCards list={e} owner="d" stamp={i.d} newLast={a.newD} hlUp={o} />
+        <SceneCards
+          list={e}
+          owner="d"
+          stamp={i.d}
+          newLast={a.newD}
+          hlUp={o}
+          tags={a.tags}
+        />
         {o ? (
           <span className="eyebrow scn-hl-lbl">La carta visible</span>
         ) : null}
         {a.meter && t.length ? <DealerMeter cards={t} /> : null}
         {a.bustMini && r ? <BustMini upRank={r} /> : null}
       </div>
+      {a.others && a.others.length ? (
+        <SceneOthers others={a.others} tags={a.tags} />
+      ) : null}
       {a.outcomes && r && l.length ? (
         <Outcomes
           playerCards={l}
@@ -433,7 +505,13 @@ function SceneTable({ step: a }) {
           </div>
         ) : (
           <>
-            <SceneCards list={n} owner="p" stamp={i.p} newLast={a.newP} />
+            <SceneCards
+              list={n}
+              owner="p"
+              stamp={i.p}
+              newLast={a.newP}
+              tags={a.tags}
+            />
             <SceneTotal cards={l} hl={c} />
             {c ? (
               <span className="eyebrow acc scn-hl-lbl">Tu total</span>
@@ -442,6 +520,27 @@ function SceneTable({ step: a }) {
         )}
       </div>
       {a.dots ? <Dots100 n={a.dots.n} label={a.dots.label} /> : null}
+    </div>
+  );
+}
+// El cartel de la mesa, con las reglas que importan.
+function SceneSign({ items }) {
+  return (
+    <div className="scn-sign" key={items.map((i) => i.v).join()}>
+      <div className="eyebrow center">Cartel de la mesa</div>
+      {items.map((i) => (
+        <div className="scn-sign-row" key={i.k}>
+          <span>{i.k}</span>
+          <b
+            className={cx(
+              i.tone === "good" && "good",
+              i.tone === "bad" && "bad",
+            )}
+          >
+            {i.v}
+          </b>
+        </div>
+      ))}
     </div>
   );
 }
@@ -511,6 +610,8 @@ function Scene({ step: a, picked: e, onPick: t }) {
       </div>
     ) : a.row ? (
       <SceneRow codes={a.row} tags={a.tags} />
+    ) : a.sign ? (
+      <SceneSign items={a.sign} />
     ) : a.chips ? (
       <ChipsRow items={a.chips} />
     ) : (
