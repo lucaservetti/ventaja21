@@ -418,6 +418,19 @@ function SceneTable({ step: a }) {
     o = a.hl === "up" || a.hl === "both",
     c = a.hl === "total" || a.hl === "both",
     r = e.length ? e[0].card.r : null;
+  // Sin cartas en la mesa pero con conteo: un tablero grande con el corrido, los mazos y el real.
+  const hasCount =
+    (a.rc !== undefined && a.rc !== null) ||
+    (a.left !== undefined && a.left !== null);
+  if (
+    hasCount &&
+    !e.length &&
+    !n.length &&
+    !s &&
+    !(a.others && a.others.some((o) => o.cards.length))
+  ) {
+    return <SceneBoard step={a} />;
+  }
   return (
     <div className="scn-table">
       <div className="scn-deco" aria-hidden="true">
@@ -541,6 +554,45 @@ function SceneSign({ items }) {
           </b>
         </div>
       ))}
+    </div>
+  );
+}
+function SceneBoard({ step: a }) {
+  const tile = (label, value, tone, key) => (
+    <div className={cx("scn-board-tile", tone)} key={key}>
+      <span className="eyebrow">{label}</span>
+      <b className="num">{value}</b>
+    </div>
+  );
+  return (
+    <div className="scn-board">
+      {a.rc !== undefined && a.rc !== null
+        ? tile(
+            "Conteo corrido",
+            fmtSigned(a.rc),
+            a.rc > 0 ? "good" : a.rc < 0 ? "bad" : "",
+            "rc" + a.rc,
+          )
+        : null}
+      {a.left !== undefined && a.left !== null
+        ? tile(
+            "Mazos que quedan",
+            String(a.left).replace(".", ","),
+            "",
+            "l" + a.left,
+          )
+        : null}
+      {a.tc !== undefined && a.tc !== null
+        ? tile("Conteo real", fmtSigned(a.tc), "acc", "tc" + a.tc)
+        : a.rc !== undefined && a.rc !== null && a.left
+          ? tile("Conteo real", "?", "muted", "tcq")
+          : null}
+      {a.bet ? (
+        <div className="scn-board-bet">
+          <span className="eyebrow">Tu apuesta</span>
+          <BetChip v={a.bet} />
+        </div>
+      ) : null}
     </div>
   );
 }

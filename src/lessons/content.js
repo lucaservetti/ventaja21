@@ -1432,16 +1432,60 @@ const SECTIONS = [
         title: "Los valores de las cartas",
         sum: [
           "Hi-Lo: del 2 al 6 valen +1; 7, 8 y 9 valen 0; dieces, figuras y ases valen −1.",
-          "Sumá el valor de cada carta que ves: ese total es el conteo corrido.",
+          "Sumá el valor de cada carta que ves: ese total es el conteo corrido (running count).",
           "Un mazo completo suma 0.",
         ],
         steps: [
+          ...scene([
+            {
+              bank: 100,
+              rc: 0,
+              left: 6,
+              say: "Volvés a la mesa, ahora para contar. El sistema **Hi-Lo** le da a cada carta un valor: **+1, 0 o −1**. Mirá qué pasa cuando salen cartas.",
+            },
+            {
+              bet: 10,
+              bank: 90,
+              d: ["5d", "Kc?"],
+              p: ["3h", "6s"],
+              tags: true,
+              say: "Te tocan un 3 y un 6, y el crupier muestra un 5. Las tres son **bajas (del 2 al 6)**: cada una vale **+1**.",
+            },
+            {
+              rc: 3,
+              tags: true,
+              say: "Salieron tres cartas bajas: en el zapato quedan más altas que antes, y eso te conviene. El **conteo corrido** (*running count*) sube a **+3**.",
+            },
+            {
+              p: ["3h", "6s", "8c"],
+              tags: true,
+              say: "Pedís y sale un 8. **El 7, el 8 y el 9 valen 0**: no cambian nada. Seguís en **+3**.",
+            },
+            {
+              d: ["5d", "Kc"],
+              tags: true,
+              ask: {
+                q: "El crupier da vuelta una K. ¿Cuánto vale?",
+                o: ["+1", "0", "−1"],
+                a: 2,
+                x: "Las altas (10, J, Q, K y As) valen −1: quedan menos cartas altas en el zapato.",
+              },
+            },
+            {
+              rc: 2,
+              d: ["5d", "Kc", "9h"],
+              stamp: { d: "bust", p: "win" },
+              bank: 110,
+              tags: true,
+              say: "La K resta 1: **+2**. El crupier pide y saca un 9, neutro: tiene **24**, se pasó. Terminás la ronda con conteo **+2**.",
+            },
+          ]),
           info(
             "Los valores",
             [
               "Cuando sale una carta baja, quedan más altas: es bueno para vos, **sumá 1**.",
               "Cuando sale una alta, **restá 1**. Las del medio no cambian nada.",
-              "Sumá a medida que ves cada carta. Ese total es tu **conteo corrido**.",
+              "Sumá a medida que ves cada carta. Ese total es tu **conteo corrido** (*running count*).",
             ],
             { v: "values" },
           ),
@@ -1485,23 +1529,75 @@ const SECTIONS = [
           "Cancelá de a pares: una alta y una baja juntas suman 0.",
         ],
         steps: [
-          info("Un número que se mueve", [
-            "El conteo corrido arranca en **0** cuando mezclan.",
-            "Sumás el valor de **cada carta que ves**: las tuyas, las de los otros jugadores y las del crupier. No vuelve a 0 hasta la próxima mezcla.",
-          ]),
-          info(
-            "El truco de las parejas",
-            [
-              "No sumes carta por carta: buscá **parejas que se cancelan**. Una alta y una baja juntas suman 0.",
-              "Solo las que sobran mueven tu conteo.",
-            ],
+          ...scene([
             {
-              v: "cards",
-              cards: ["Kh", "4c", "9d", "10s", "2h", "6c"],
-              caption:
-                "K con 4 y 10 con 2 se cancelan, el 9 es neutro: sobra el 6. Total +1",
+              bank: 100,
+              rc: 0,
+              left: 6,
+              others: [{ name: "Ana", cards: [] }],
+              say: "El conteo corrido arranca en **0** cuando mezclan y sigue mano tras mano hasta la próxima mezcla. Contás **todas** las cartas que ves, también las de los demás.",
             },
-          ),
+            {
+              bet: 10,
+              bank: 90,
+              others: [{ name: "Ana", cards: ["Kh", "4c"] }],
+              d: ["5h", "10c?"],
+              p: ["9s", "Qd"],
+              tags: true,
+              say: "Primera ronda: Ana tiene K y 4, vos 9 y Q, y el crupier muestra un 5.",
+            },
+            {
+              tags: true,
+              ask: {
+                q: "¿Cuánto da el conteo hasta acá?",
+                o: ["−1", "0", "+1"],
+                a: 1,
+                x: "La K se cancela con el 4, tu Q con el 5 del crupier y el 9 es neutro: 0.",
+              },
+            },
+            {
+              tags: true,
+              say: "Ese es el truco: **cancelar de a pares**. Una alta y una baja juntas suman 0, así que no sumás carta por carta: solo mueven el conteo las que sobran.",
+            },
+            {
+              d: ["5h", "10c"],
+              rc: -1,
+              tags: true,
+              say: "Ana y vos se plantan. El crupier da vuelta un 10: **−1**.",
+            },
+            {
+              d: ["5h", "10c", "7s"],
+              stamp: { d: "bust", p: "win" },
+              bank: 110,
+              tags: true,
+              say: "Pide y saca un 7: **22**, se pasó. El 7 es neutro: el conteo queda en **−1**, y así sigue en la próxima mano.",
+            },
+            {
+              reset: true,
+              bank: 100,
+              bet: 10,
+              rc: -1,
+              left: 6,
+              others: [{ name: "Ana", cards: ["8d", "8h"] }],
+              d: ["2c", "9h?"],
+              p: ["Ad", "3s"],
+              tags: true,
+              say: "Mano nueva, pero el conteo **no vuelve a 0**: arrancás en −1. Ana tiene dos 8, el crupier muestra un 2 y vos, As y 3.",
+            },
+            {
+              tags: true,
+              ask: {
+                q: "¿Cuánto es el conteo corrido ahora?",
+                o: ["−1", "0", "+1"],
+                a: 1,
+                x: "Venías en −1. Los 8 son neutros, el 2 y el 3 suman 2 y el As resta 1: −1 + 2 − 1 = 0.",
+              },
+            },
+            {
+              rc: 0,
+              say: "Conteo **0**. Así se lleva durante todo el zapato: cada carta que ves lo mueve, hasta que mezclan.",
+            },
+          ]),
           {
             t: "deal",
             title: "Contá conmigo",
@@ -1550,25 +1646,55 @@ const SECTIONS = [
           "En esta app se redondea hacia abajo: +2,7 cuenta como +2.",
         ],
         steps: [
-          info(
-            "El mismo conteo no vale lo mismo",
-            [
-              "Un **+6 con un mazo por repartir** es muchísimo: hay 6 cartas altas de más en solo 52 cartas.",
-              "Un **+6 con 6 mazos por repartir** casi no se nota.",
-            ],
+          ...scene([
             {
-              v: "tiles",
-              items: [
-                { v: "+6", l: "con 1 mazo: +6 por mazo", tone: "good" },
-                { v: "+1", l: "con 6 mazos: +1 por mazo", tone: "mid" },
-              ],
+              rc: 6,
+              left: 5,
+              say: "Vas jugando y el conteo corrido es **+6**. ¿Es mucho? Depende de cuántas cartas quedan por repartir.",
             },
-          ),
-          info(
-            "La cuenta",
-            ["**Conteo real = conteo corrido ÷ mazos que quedan.**"],
-            { v: "tc", rc: 6, decks: 3 },
-          ),
+            {
+              left: 1,
+              say: "Si quedara **un solo mazo**, +6 serían seis cartas altas de más en apenas 52 cartas: muchísimo.",
+            },
+            {
+              left: 6,
+              say: "Con **6 mazos** por repartir, esas seis altas de más se reparten entre 312 cartas: casi no se notan.",
+            },
+            {
+              left: 3,
+              say: "Para comparar se usa el **conteo real** (*true count*): el conteo corrido dividido por los **mazos que quedan**.",
+            },
+            {
+              ask: {
+                q: "Corrido +6 y quedan 3 mazos. ¿Cuál es el conteo real?",
+                o: ["+2", "+3", "+6"],
+                a: 0,
+                x: "+6 ÷ 3 = +2.",
+              },
+            },
+            {
+              tc: 2,
+              say: "Conteo real **+2**. Es el número que mirás para apostar y para las jugadas que cambian con el conteo.",
+            },
+            {
+              rc: 9,
+              left: 4,
+              tc: null,
+              say: "Más tarde: corrido **+9** y quedan **4 mazos**.",
+            },
+            {
+              ask: {
+                q: "¿Cuál es el conteo real?",
+                o: ["+2", "+3", "+9"],
+                a: 0,
+                x: "9 ÷ 4 = 2,25. En esta app se redondea hacia abajo: +2.",
+              },
+            },
+            {
+              tc: 2,
+              say: "**+2**: siempre redondeás hacia abajo, que es lo más prudente para apostar.",
+            },
+          ]),
           info(
             "La bandeja de descarte",
             [
@@ -1616,11 +1742,57 @@ const SECTIONS = [
           "Subí y bajá la apuesta de a poco para no llamar la atención.",
         ],
         steps: [
+          ...scene([
+            {
+              rc: 0,
+              left: 6,
+              tc: 0,
+              bet: 10,
+              say: "Tu **unidad** es tu apuesta base: acá, 10. Con el conteo real en 0, apostás **1 unidad**.",
+            },
+            {
+              say: "Cada punto de conteo real mueve la ventaja alrededor de **0,5 %** a tu favor. La casa arranca con cerca de 0,5 %: recién con **+1 o +2** la ventaja pasa a ser tuya.",
+            },
+            {
+              rc: 8,
+              left: 4,
+              tc: 2,
+              bet: 20,
+              say: "Salieron muchas cartas chicas: corrido **+8** con **4 mazos**, conteo real **+2**. La escala dice **2 unidades**: 20.",
+            },
+            {
+              rc: 12,
+              left: 3,
+              tc: null,
+              bet: null,
+              ask: {
+                q: "Corrido +12 y quedan 3 mazos. ¿Cuánto apostás?",
+                o: ["20", "40", "60", "80"],
+                a: 2,
+                x: "+12 ÷ 3 = +4 → 6 unidades → 60.",
+              },
+            },
+            {
+              tc: 4,
+              bet: 60,
+              d: ["7c", "Kd?"],
+              p: ["Ah", "Js"],
+              stamp: { p: "bj" },
+              say: "Conteo real **+4**: apostás **6 unidades**, 60. Te sale blackjack y cobrás 90: con el conteo alto salen más blackjacks, y vos tenés más plata en la mesa.",
+            },
+            {
+              reset: true,
+              rc: -4,
+              left: 2,
+              tc: -2,
+              bet: 10,
+              say: "Cuando el conteo baja, volvés a **1 unidad**. Corrido −4 con 2 mazos: conteo real −2, apuesta mínima.",
+            },
+          ]),
           info(
-            "Cada punto vale",
+            "Cuánto vale cada punto",
             [
-              "Cada punto de conteo real mueve la ventaja alrededor de **0,5 %** a tu favor.",
-              "Como la casa arranca con cerca de 0,5 % de ventaja, recién con conteo real **+1 o +2** la ventaja empieza a ser tuya.",
+              "Ventaja aproximada según el conteo real, con 6 mazos y buenas reglas.",
             ],
             { v: "edge" },
           ),
@@ -1719,8 +1891,51 @@ const SECTIONS = [
           "Una referencia común: una banca de al menos 100 apuestas máximas.",
         ],
         steps: [
-          info("La ventaja es chica", [
-            "Contando bien tenés alrededor de **1 % de ventaja**. Es real, pero chica: la suerte de una noche pesa mucho más.",
+          ...scene([
+            {
+              bank: 920,
+              rc: 10,
+              left: 2,
+              tc: 5,
+              bet: 80,
+              d: ["10c", "Ad?"],
+              p: ["10h", "Qs"],
+              say: "Conteo real **+5**: apostás lo máximo, 8 unidades. Te toca **20** contra un 10. Mejor, imposible.",
+            },
+            {
+              d: ["10c", "Ad"],
+              stamp: { d: "bj", p: "lose" },
+              bank: 920,
+              say: "El crupier revisa su carta tapada: un As. **Blackjack**. Perdés 80 en la mejor situación de la noche.",
+            },
+            {
+              reset: true,
+              bank: 860,
+              rc: 9,
+              left: 2,
+              tc: 4,
+              bet: 60,
+              d: ["10d", "Ks?"],
+              p: ["10s", "6h"],
+              play: {
+                a: "S",
+                x: "16 contra 10 con conteo real 0 o más: plantate. Es la desviación más famosa del Illustrious 18.",
+              },
+              say: "Siguiente mano, conteo real **+4**: 6 unidades. Te toca 16 contra un 10. ¿Pedís o te plantás?",
+            },
+            {
+              d: ["10d", "Ks"],
+              stamp: { p: "lose" },
+              say: "El crupier tenía 20. Jugaste perfecto y perdiste **140 en dos manos**. No es mala suerte rara: pasa todo el tiempo.",
+            },
+            {
+              dots: {
+                n: 47,
+                label:
+                  "noches de 100 manos que terminan abajo, con 1 % de ventaja",
+              },
+              say: "Contando bien tenés alrededor de **1 % de ventaja**. Es real, pero chica: después de 100 manos, vas abajo casi la mitad de las veces.",
+            },
           ]),
           info(
             "Lo que dicen los números",

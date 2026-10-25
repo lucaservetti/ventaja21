@@ -5791,3 +5791,50 @@ i.en {
 .scn-sign-row b {
   text-align: right;
 }
+.scn-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 10px;
+  align-items: stretch;
+}
+.scn-board-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 8px;
+  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  text-align: center;
+  animation: pop 0.3s ease both;
+}
+.scn-board-tile b {
+  font-size: 38px;
+  line-height: 1;
+}
+.scn-board-tile.good b {
+  color: var(--good);
+}
+.scn-board-tile.bad b {
+  color: #ff7b72;
+}
+.scn-board-tile.acc {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+}
+.scn-board-tile.acc b {
+  color: var(--accent);
+}
+.scn-board-tile.muted b {
+  color: var(--text-3);
+}
+.scn-board-bet {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 4px;
+}
