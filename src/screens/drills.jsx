@@ -45,9 +45,10 @@ import {
 } from "../engine/systems.js";
 import { TopBar } from "../ui/common.jsx";
 import { useNav } from "../nav.js";
-import { recordLevel } from "../state.js";
+import { recordLevel, recordLevelPractice } from "../state.js";
 import { levelByN } from "../engine/countPath.js";
-import { LevelActions, LevelOutcome } from "./countPath.jsx";
+import { CardTag, LevelActions, LevelOutcome } from "./countPath.jsx";
+import { BetRamp } from "../lessons/visuals.jsx";
 
 const DRILL_SPEEDS = [
   { id: "relaxed", label: "Relajado", ms: 1500 },
@@ -85,7 +86,14 @@ function ExitDrillModal({
     </Modal>
   );
 }
-function DrillValues({ count: a = 12, pathStep: e = null, level: lv = null }) {
+// En la práctica con ayuda, cada botón dice qué cartas van en él (Hi-Lo).
+const HILO_GROUPS = { 1: "2 a 6", 0: "7, 8 y 9", "-1": "10 a As" };
+function DrillValues({
+  count: a = 12,
+  pathStep: e = null,
+  level: lv = null,
+  practice = false,
+}) {
   const level = lv ? levelByN(lv) : null;
   if (level) a = level.count;
   let t = useNav(),
@@ -176,8 +184,9 @@ function DrillValues({ count: a = 12, pathStep: e = null, level: lv = null }) {
       if (ta / l.length >= 0.8) {
         markPathDone("values");
       }
-      const passed = level ? ta >= level.pass : null;
-      if (level) recordLevel(level.id, passed, ta / l.length);
+      const passed = level && !practice ? ta >= level.pass : null;
+      if (level && practice) recordLevelPractice(level.id);
+      else if (level) recordLevel(level.id, passed, ta / l.length);
       b({ ok: ta, n: l.length, missed: Ba, bestRun: Z, passed });
     };
   if (m) {
@@ -208,6 +217,7 @@ function DrillValues({ count: a = 12, pathStep: e = null, level: lv = null }) {
         onBack={() => t.pop()}
         level={level}
         passed={m.passed}
+        practice={practice}
       />
     );
   }
@@ -219,7 +229,7 @@ function DrillValues({ count: a = 12, pathStep: e = null, level: lv = null }) {
     <div className="drill">
       <TopBar
         onClose={() => (i > 0 ? v(true) : t.pop())}
-        title="Valores de las cartas"
+        title={practice ? "Práctica: valores" : "Valores de las cartas"}
         sub={
           <span>
             {i + 1}
@@ -263,7 +273,13 @@ function DrillValues({ count: a = 12, pathStep: e = null, level: lv = null }) {
             : `${R.r === "A" ? "El As" : "El " + R.r} vale ${fmtTag(u.val)}`
           : "\xA0"}
       </p>
-      <div className={cx("tag-btns", D.length > 3 && "many")}>
+      <div
+        className={cx(
+          "tag-btns",
+          D.length > 3 && "many",
+          practice && n.id === "hilo" && "with-groups",
+        )}
+      >
         {D.map((B) => (
           <button
             type="button"
@@ -276,6 +292,9 @@ function DrillValues({ count: a = 12, pathStep: e = null, level: lv = null }) {
             key={B}
           >
             {fmtTag(B)}
+            {practice && n.id === "hilo" ? (
+              <span className="tag-group">{HILO_GROUPS[B]}</span>
+            ) : null}
           </button>
         ))}
       </div>
@@ -301,6 +320,7 @@ function DrillResult({
   ringValue: u,
   level = null,
   passed = null,
+  practice = false,
 }) {
   let d = t ? e / t : 0;
   return (
@@ -359,12 +379,14 @@ function DrillResult({
         </div>
       ) : null}
       {r}
-      {level ? <LevelOutcome level={level} passed={passed} /> : null}
+      {level ? (
+        <LevelOutcome level={level} passed={passed} practice={practice} />
+      ) : null}
       <p className="center muted" style={{ margin: "18px 0" }}>
         {l}
       </p>
       {level ? (
-        <LevelActions level={level} passed={passed} />
+        <LevelActions level={level} passed={passed} practice={practice} />
       ) : (
         <div className="btns">
           <Button onClick={o}>Otra vez</Button>
@@ -390,7 +412,20 @@ const DISTRACT_LINES = [
   "¿Sos de acá?",
   "Dale, dale, que viene el As.",
 ];
-function DrillRunning({ daily = false, n, speed, mode, level: levelN = null }) {
+const SLOWER = {
+  pro: "fast",
+  fast: "normal",
+  normal: "relaxed",
+  relaxed: "relaxed",
+};
+function DrillRunning({
+  daily = false,
+  n,
+  speed,
+  mode,
+  level: levelN = null,
+  practice = false,
+}) {
   const nav = useNav();
   const st = useStore();
   const level = levelN ? levelByN(levelN) : null;
@@ -399,7 +434,8 @@ function DrillRunning({ daily = false, n, speed, mode, level: levelN = null }) {
     level
       ? {
           n: level.cards,
-          speed: level.speed,
+          // Practicando, un paso más lento que el nivel (lo podés cambiar).
+          speed: practice ? SLOWER[level.speed] : level.speed,
           mode: level.mode || "single",
           distract: !!level.distract,
         }
@@ -416,6 +452,7 @@ function DrillRunning({ daily = false, n, speed, mode, level: levelN = null }) {
   const [value, setValue] = useState("");
   const [result, setResult] = useState(null);
   const [exitOpen, setExitOpen] = useState(false);
+  const [showCount, setShowCount] = useState(true);
   const startedAt = useRef(0);
   const answeredAt = useRef(0);
   useBackGuard(setExitOpen);
@@ -528,7 +565,8 @@ function DrillRunning({ daily = false, n, speed, mode, level: levelN = null }) {
       },
     );
     markPathDone("running");
-    if (level) recordLevel(level.id, ok, ok ? 1 : 0);
+    if (level && practice) recordLevelPractice(level.id);
+    else if (level) recordLevel(level.id, ok, ok ? 1 : 0);
     if (daily) {
       setState((s) => {
         const d = s.daily;
@@ -555,7 +593,9 @@ function DrillRunning({ daily = false, n, speed, mode, level: levelN = null }) {
   };
 
   const title = level
-    ? `Nivel ${level.n}: ${level.title}`
+    ? practice
+      ? `Práctica: ${level.title}`
+      : `Nivel ${level.n}: ${level.title}`
     : daily
       ? `Desafío diario #${dailyNumber}`
       : "Conteo corrido";
@@ -611,7 +651,12 @@ function DrillRunning({ daily = false, n, speed, mode, level: levelN = null }) {
                 ? `20 cartas a ritmo normal, iguales para todos hoy. Tu primer intento cuenta para el desafío${st.daily.streak ? ` (vas ${st.daily.streak} ${st.daily.streak === 1 ? "día" : "días"} seguidos)` : ""}.`
                 : `Vas a ver las cartas de a ${cfg.mode === "pairs" ? "dos" : "una"}. Al final escribís el conteo corrido (running count) en ${sys.short || sys.name}. Arrancás en 0.`}
           </p>
-          {level ? (
+          {level && practice ? (
+            <p className="small" style={{ marginTop: 10, fontWeight: 700 }}>
+              Práctica con ayuda: cada carta muestra su valor y ves el conteo
+              mientras caen. No cuenta como intento.
+            </p>
+          ) : level ? (
             <p className="small" style={{ marginTop: 10, fontWeight: 700 }}>
               Para aprobar: {level.goal}
             </p>
@@ -629,6 +674,27 @@ function DrillRunning({ daily = false, n, speed, mode, level: levelN = null }) {
             </p>
           ) : null}
         </div>
+        {level && practice ? (
+          <div className="card" style={{ marginTop: 14 }}>
+            <div className="eyebrow">Velocidad de la práctica</div>
+            <Pills
+              className="left"
+              options={DRILL_SPEEDS.slice(0, 3).map((s) => ({
+                value: s.id,
+                label: s.label,
+              }))}
+              value={cfg.speed}
+              onChange={(v) => setCfg({ ...cfg, speed: v })}
+            />
+            <p className="muted small" style={{ marginTop: 10 }}>
+              El nivel se rinde a ritmo{" "}
+              {(
+                DRILL_SPEEDS.find((s) => s.id === level.speed) || {}
+              ).label.toLowerCase()}
+              .
+            </p>
+          </div>
+        ) : null}
         {daily || level ? null : (
           <div className="card" style={{ marginTop: 14 }}>
             <div className="eyebrow">Velocidad</div>
@@ -726,15 +792,39 @@ function DrillRunning({ daily = false, n, speed, mode, level: levelN = null }) {
             }
           >
             {shown.map((c) => (
-              <PlayingCard
-                card={c}
-                size={shown.length === 2 ? "lg" : "xl"}
-                deal={true}
-                key={c.id}
-              />
+              <span className="tagged-card" key={c.id}>
+                <PlayingCard
+                  card={c}
+                  size={shown.length === 2 ? "lg" : "xl"}
+                  deal={true}
+                />
+                {practice ? <CardTag card={c} /> : null}
+              </span>
             ))}
           </div>
         </div>
+        {practice ? (
+          <button
+            type="button"
+            className={cx("live-count", !showCount && "hidden")}
+            onClick={() => setShowCount(!showCount)}
+            aria-label={showCount ? "Ocultar el conteo" : "Mostrar el conteo"}
+          >
+            <span className="eyebrow">Conteo</span>
+            <b className="num">
+              {showCount
+                ? fmtSigned(
+                    cards
+                      .slice(0, seen)
+                      .reduce((sum, c) => sum + countValue(c, sys), 0),
+                  )
+                : "?"}
+            </b>
+            <span className="tiny muted">
+              {showCount ? "tocá para ocultarlo" : "tocá para verlo"}
+            </span>
+          </button>
+        ) : null}
         {exitModal}
       </div>
     );
@@ -811,7 +901,9 @@ function DrillRunning({ daily = false, n, speed, mode, level: levelN = null }) {
           {tip}
         </p>
       </div>
-      {level ? <LevelOutcome level={level} passed={result.ok} /> : null}
+      {level ? (
+        <LevelOutcome level={level} passed={result.ok} practice={practice} />
+      ) : null}
       <div className="card seq-review">
         <h3>Repaso de la secuencia</h3>
         <div className="seq-head">
@@ -840,7 +932,7 @@ function DrillRunning({ daily = false, n, speed, mode, level: levelN = null }) {
       </div>
       <div className="bottom-actions">
         {level ? (
-          <LevelActions level={level} passed={result.ok} />
+          <LevelActions level={level} passed={result.ok} practice={practice} />
         ) : (
           <div className="btns">
             <Button onClick={deal}>Otra vez</Button>
@@ -899,13 +991,14 @@ function QuizDrill({
   onAgain: l,
   resultMessage: i,
   level = null,
+  practice = false,
 }) {
   let o = useNav(),
     [c, r] = useState(false);
   useBackGuard(r);
   let u = useRef(false);
   const okCount = t.marks.filter(Boolean).length;
-  const passed = level && t.done ? okCount >= level.pass : null;
+  const passed = level && t.done && !practice ? okCount >= level.pass : null;
   useEffect(() => {
     if (t.done && !u.current) {
       u.current = true;
@@ -915,7 +1008,8 @@ function QuizDrill({
         ok: okCount,
         level: level ? level.id : undefined,
       });
-      if (level)
+      if (level && practice) recordLevelPractice(level.id);
+      else if (level)
         recordLevel(level.id, okCount >= level.pass, okCount / t.qs.length);
     }
   }, [t.done]);
@@ -935,6 +1029,7 @@ function QuizDrill({
         onBack={() => o.pop()}
         level={level}
         passed={passed}
+        practice={practice}
       />
     );
   }
@@ -1028,7 +1123,25 @@ const halfText = (a) => {
 function optionSet(a, e) {
   return [...new Set([a, ...e])].slice(0, 4).sort((n, l) => n - l);
 }
-function DrillTrue({ level: levelN = null }) {
+// Pista de la práctica: la división hecha, para que solo tengas que redondear.
+function TrueHint({ q }) {
+  const [open, setOpen] = useState(false);
+  const exact = q.rc / q.decksLeft;
+  return open ? (
+    <p className="center hint-line fade-up">
+      {fmtSigned(q.rc)} ÷ {halfText(q.decksLeft).replace("½", ",5")} ={" "}
+      <b>{Number.isInteger(exact) ? fmtSigned(exact) : fmtSigned(exact, 1)}</b>
+      {Number.isInteger(exact) ? "" : ". Ahora redondeá hacia abajo."}
+    </p>
+  ) : (
+    <div className="center">
+      <button type="button" className="hint-btn" onClick={() => setOpen(true)}>
+        <Icon name="eye" size={16} /> Ver una pista
+      </button>
+    </div>
+  );
+}
+function DrillTrue({ level: levelN = null, practice = false }) {
   const level = levelN ? levelByN(levelN) : null;
   let a = useNav(),
     t = useQuiz(() => {
@@ -1062,10 +1175,17 @@ function DrillTrue({ level: levelN = null }) {
     }, 10);
   return (
     <QuizDrill
-      title={level ? `Nivel ${level.n}: Conteo real` : "Conteo real"}
+      title={
+        level
+          ? practice
+            ? "Práctica: conteo real"
+            : `Nivel ${level.n}: Conteo real`
+          : "Conteo real"
+      }
       kind="true"
       d={t}
       level={level}
+      practice={practice}
       onAgain={() => a.replace("drillTrue")}
       resultMessage={(s) =>
         s === 1
@@ -1089,6 +1209,7 @@ function DrillTrue({ level: levelN = null }) {
               </span>
             </div>
           </div>
+          {practice && t.picked === null ? <TrueHint q={s} /> : null}
         </>
       )}
       explain={(s) => {
@@ -1182,7 +1303,7 @@ function Tray({ shoe: a, cards: e, small: t, marks: s = true, height }) {
     </div>
   );
 }
-function DrillBet({ level: levelN = null }) {
+function DrillBet({ level: levelN = null, practice = false }) {
   const level = levelN ? levelByN(levelN) : null;
   let a = useNav(),
     t = useStore().table.unit || 10,
@@ -1202,11 +1323,16 @@ function DrillBet({ level: levelN = null }) {
   return (
     <QuizDrill
       title={
-        level ? `Nivel ${level.n}: Cuánto apostar` : "Apuesta según el conteo"
+        level
+          ? practice
+            ? "Práctica: cuánto apostar"
+            : `Nivel ${level.n}: Cuánto apostar`
+          : "Apuesta según el conteo"
       }
       kind="bet"
       d={n}
       level={level}
+      practice={practice}
       onAgain={() => a.replace("drillBet")}
       resultMessage={(l) =>
         l === 1
@@ -1223,6 +1349,7 @@ function DrillBet({ level: levelN = null }) {
             </div>
             <div className="muted small">Tu unidad: ${t}</div>
           </div>
+          {practice ? <BetRamp /> : null}
         </>
       )}
       explain={(l) =>

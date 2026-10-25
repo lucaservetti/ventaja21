@@ -202,7 +202,7 @@ const DEFAULT_STATE = {
   },
   path: { done: {} },
   // Ruta de conteo de 10 niveles: niveles superados (con su mejor puntaje) e intentos.
-  countPath: { passed: {}, tries: {} },
+  countPath: { passed: {}, tries: {}, practiced: {} },
   // Meta diaria: minutos por día y segundos practicados cada día ({ s, g }: segundos y meta de ese día).
   dailyGoal: { minutes: 10, chosen: false, days: {}, celebrated: null },
   // Repaso: preguntas de lecciones que fallaste ({ [lessonId:step]: { misses, ok, due, at } }).
@@ -465,6 +465,20 @@ function recordLevel(id, ok, score) {
     });
   });
 }
+// Práctica con ayuda de un nivel de la ruta de conteo (no cuenta como intento).
+function recordLevelPractice(id) {
+  setState((st) => {
+    const cp = st.countPath;
+    const practiced = cp.practiced || {};
+    return markActive({
+      ...st,
+      countPath: {
+        ...cp,
+        practiced: { ...practiced, [id]: (practiced[id] || 0) + 1 },
+      },
+    });
+  });
+}
 // Meta diaria
 function goalSeconds(st) {
   return st.dailyGoal.minutes * 60;
@@ -586,6 +600,7 @@ export {
   goalSeconds,
   goalStreak,
   recordLevel,
+  recordLevelPractice,
   setGoalMinutes,
   activityStreak,
   addDays,

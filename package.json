@@ -6,13 +6,16 @@
   "type": "module",
   "scripts": {
     "build": "node build.mjs",
-    "test": "node tests/simulador.mjs && node tests/estrategia.mjs"
+    "test": "eslint && node tests/simulador.mjs && node tests/estrategia.mjs",
+    "lint": "eslint"
   },
   "dependencies": {
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "esbuild": "0.28.2"
+    "esbuild": "0.28.2",
+    "eslint": "9.39.1",
+    "globals": "16.5.0"
   }
 }
