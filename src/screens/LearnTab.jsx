@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { useStore } from "../state.js";
 import { Icon, SuitIcon } from "../ui/icons.jsx";
-import { Toasts, cx, useWidth } from "../ui/components.jsx";
+import { IconButton, Toasts, cx, useWidth } from "../ui/components.jsx";
+import { PageHeader } from "../ui/common.jsx";
 import {
   LESSONS,
   SECTIONS,
@@ -153,29 +154,25 @@ function LearnTab() {
     };
   return (
     <div className="fade-up learn">
-      <div className="page-head" style={{ alignItems: "flex-start" }}>
-        <div className="page-head-text">
-          <h1>Aprender</h1>
-          <p className="page-sub num">
-            {l}
-            {" de "}
-            {n}
-            {" lecciones"}
-          </p>
-        </div>
-        <div className="page-head-right">
-          <GoalBadge />
-          <button
-            type="button"
-            className="guide-btn"
-            onClick={() => e.push("guide")}
-            aria-label="Abrir la Guía"
-          >
-            <Icon name="book" size={24} />
-            <span>Guía</span>
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Aprender"
+        sub={`${l} de ${n} lecciones`}
+        actions={
+          <>
+            <IconButton
+              icon="grid"
+              label="Tu tabla de estrategia"
+              onClick={() => e.push("myChart")}
+            />
+            <IconButton
+              icon="book"
+              label="Abrir la Guía"
+              onClick={() => e.push("guide")}
+            />
+            <GoalBadge />
+          </>
+        }
+      />
       <NextStepsCard st={a} done={t} />
       <div className="learn-progress">
         {SECTIONS.map((r) => {
@@ -221,6 +218,8 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
     u = e.settings.unlockAll,
     d = (k) => LESSONS.findIndex((v) => v.id === k),
     p = s ? d(s) : LESSONS.length,
+    nav = useNav(),
+    locked = !u && a.id > 1 && d(o[0].id) > p,
     f = 84,
     y = useMemo(() => {
       let k = Math.max(300, i || 340),
@@ -265,6 +264,18 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
           <p className="muted" style={{ marginTop: 6 }}>
             {a.desc}
           </p>
+          {locked ? (
+            <button
+              type="button"
+              className="jump-btn"
+              onClick={() =>
+                nav.push("jumpTest", { section: a.id, confirmExit: true })
+              }
+            >
+              <Icon name="bolt" size={16} />
+              Saltar hasta acá
+            </button>
+          ) : null}
         </div>
       </div>
       <div className="path" ref={l} style={{ height: y.H }}>
@@ -333,13 +344,14 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
         })}
         <div className="path-end" style={{ top: y.endY }}>
           <span className={cx("end-slot", c === o.length && "full")}>
-            {c === o.length ? <Icon name="trophy" size={30} /> : null}
+            <Icon name="trophy" size={28} />
           </span>
-          <span className="muted num">
-            {c}
-            {" de "}
-            {o.length}
-            {" lecciones"}
+          <span
+            className={cx("num end-label", c === o.length ? "acc" : "muted")}
+          >
+            {c === o.length
+              ? `Sección ${a.id} completa`
+              : `${c} de ${o.length} lecciones`}
           </span>
         </div>
       </div>

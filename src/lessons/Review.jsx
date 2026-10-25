@@ -136,7 +136,6 @@ function Review() {
   const { lesson, step } = queue[i];
   const saved = answers[i];
   const isScene = step.t === "scene";
-  const needsPlay = isScene && step.play && !saved;
   const next = () => {
     if (i + 1 < queue.length) setI(i + 1);
     else {
@@ -163,53 +162,18 @@ function Review() {
           <Icon name="close" size={22} />
         </button>
       </div>
-      <div className="eyebrow lesson-name">De la lección: {lesson.title}</div>
+      <div className="eyebrow lesson-name">{lesson.title}</div>
       <div className={cx("lesson-body", isScene && "is-scene")} key={i}>
-        {step.t === "quiz" ? (
-          <QuizStep
-            step={step}
-            saved={saved}
-            onPicked={(pick, ok) => answer(ok, pick)}
-          />
-        ) : step.t === "decide" ? (
-          <DecideStep
-            step={step}
-            saved={saved}
-            onPicked={(pick, ok) => answer(ok, pick)}
-          />
-        ) : (
-          <Scene
-            step={step}
-            picked={saved ? saved.pick : null}
-            onPick={(pick) => {
-              const ok = pick === step.ask.a;
-              if (ok) sfx.good();
-              else sfx.bad();
-              vibrate(ok ? 10 : 30);
-              answer(ok, pick);
-            }}
-          />
-        )}
+        <QuestionBody step={step} saved={saved} onAnswer={answer} />
       </div>
       <div className="bottom-actions">
-        {needsPlay ? (
-          <SceneActions
-            act={null}
-            opts={step.play.opts || ["H", "S"]}
-            surrender={!!(step.rules && step.rules.surrender)}
-            onAct={(act) => {
-              const ok = act === step.play.a;
-              if (ok) sfx.good();
-              else sfx.bad();
-              vibrate(ok ? 10 : 30);
-              answer(ok, act);
-            }}
-          />
-        ) : (
-          <Button kind="white" onClick={next} disabled={!saved}>
-            {i + 1 < queue.length ? "Siguiente" : "Terminar"}
-          </Button>
-        )}
+        <QuestionFooter
+          step={step}
+          saved={saved}
+          onAnswer={answer}
+          onNext={next}
+          nextLabel={i + 1 < queue.length ? "Siguiente" : "Terminar"}
+        />
       </div>
       <Modal open={exitOpen} onClose={() => setExitOpen(false)}>
         <h2 style={{ fontSize: 24 }}>¿Salir del repaso?</h2>
@@ -229,4 +193,59 @@ function Review() {
   );
 }
 
-export { Review, reviewCount };
+// Una pregunta de lección suelta (repaso y examen para saltar): el cuerpo y los botones de abajo.
+function QuestionBody({ step, saved, onAnswer }) {
+  if (step.t === "quiz")
+    return (
+      <QuizStep
+        step={step}
+        saved={saved}
+        onPicked={(pick, ok) => onAnswer(ok, pick)}
+      />
+    );
+  if (step.t === "decide")
+    return (
+      <DecideStep
+        step={step}
+        saved={saved}
+        onPicked={(pick, ok) => onAnswer(ok, pick)}
+      />
+    );
+  return (
+    <Scene
+      step={step}
+      picked={saved ? saved.pick : null}
+      onPick={(pick) => {
+        const ok = pick === step.ask.a;
+        if (ok) sfx.good();
+        else sfx.bad();
+        vibrate(ok ? 10 : 30);
+        onAnswer(ok, pick);
+      }}
+    />
+  );
+}
+function QuestionFooter({ step, saved, onAnswer, onNext, nextLabel }) {
+  if (step.t === "scene" && step.play && !saved)
+    return (
+      <SceneActions
+        act={null}
+        opts={step.play.opts || ["H", "S"]}
+        surrender={!!(step.rules && step.rules.surrender)}
+        onAct={(act) => {
+          const ok = act === step.play.a;
+          if (ok) sfx.good();
+          else sfx.bad();
+          vibrate(ok ? 10 : 30);
+          onAnswer(ok, act);
+        }}
+      />
+    );
+  return (
+    <Button kind="white" onClick={onNext} disabled={!saved}>
+      {nextLabel}
+    </Button>
+  );
+}
+
+export { QuestionBody, QuestionFooter, Review, reviewCount };

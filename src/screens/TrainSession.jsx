@@ -4,6 +4,7 @@ import {
   eloDelta,
   getState,
   recordDrill,
+  recordHandResult,
   recordSpot,
   recordTrainSession,
   setState,
@@ -30,11 +31,14 @@ import {
   deviationSpot,
   gradeSpot,
   makeSpot,
+  mistakeQueue,
   spotDifficulty,
+  spotFromHand,
 } from "../engine/trainer.js";
 import { fmtSigned } from "../engine/systems.js";
 import { TopBar, spotTitle, useRules } from "../ui/common.jsx";
 import { useNav } from "../nav.js";
+import { ChartRowHint } from "../lessons/visuals.jsx";
 
 const SESSION_TITLES = {
   level: "Encontrá tu nivel",
@@ -43,6 +47,9 @@ const SESSION_TITLES = {
   spot: "Práctica puntual",
   count: "Con conteo",
   exam: "Examen de nivel",
+  mistakes: "Tus errores",
+  foryou: "Tanda para vos",
+  replay: "Repaso de una tanda",
 };
 const SKILL_TITLES = {
   stiff: "Duras 12–16",
@@ -51,7 +58,7 @@ const SKILL_TITLES = {
   doubles: "Dobles",
   surrender: "Rendición",
 };
-function TrainSession({ mode: a = "mixed", focus: e = null }) {
+function TrainSession({ mode: a = "mixed", focus: e = null, hands = null }) {
   let t = useNav(),
     s = useStore(),
     n = useRules(),
@@ -64,17 +71,40 @@ function TrainSession({ mode: a = "mixed", focus: e = null }) {
     ),
     i = a === "exam" ? 25 : 10,
     o = a === "exam",
-    [c] = useState(() =>
-      a === "count"
-        ? Array.from({ length: i }, () => deviationSpot(l))
-        : buildSession({
-            mode: o ? "mixed" : a,
-            focus: e,
-            rules: l,
-            stats: getState().train.cells,
-            size: i,
-          }).map((J) => ({ spot: makeSpot(J, { nCards: cardsForSpot(J) }) })),
-    ),
+    [c] = useState(() => {
+      if (a === "count")
+        return Array.from({ length: i }, () => deviationSpot(l));
+      const st = getState();
+      // Tus errores: las manos exactas que fallaste. Tanda para vos: algunos errores y el resto
+      // apuntado a tus puntos débiles.
+      const replays =
+        a === "replay" && hands
+          ? hands.map((m) => ({
+              spot: spotFromHand(m.key, m.cards, m.up),
+              replay: true,
+            }))
+          : a === "mistakes" || a === "foryou"
+            ? mistakeQueue(st.train.mistakes, a === "mistakes" ? i : 3).map(
+                (m) => ({
+                  spot: spotFromHand(m.key, m.cards, m.up),
+                  replay: true,
+                }),
+              )
+            : [];
+      const rest = buildSession({
+        mode:
+          o || a === "foryou" || a === "mistakes" || a === "replay"
+            ? "mixed"
+            : a,
+        focus: e,
+        rules: l,
+        stats: st.train.cells,
+        size: Math.max(0, i - replays.length),
+      }).map((J) => ({ spot: makeSpot(J, { nCards: cardsForSpot(J) }) }));
+      return (a === "mistakes" || a === "replay") && replays.length
+        ? replays
+        : [...replays, ...rest];
+    }),
     [r, u] = useState(0),
     [d, p] = useState(null),
     [f, y] = useState([]),
@@ -107,12 +137,20 @@ function TrainSession({ mode: a = "mixed", focus: e = null }) {
         ye = a === "count" ? 1250 : spotDifficulty(B.key, l),
         Ja = getState().rating.value,
         Ga = o ? 0 : eloDelta(Ja, ye, J.correct);
-      if (o) {
-        recordSpot(ba, J.correct);
-      } else {
-        recordSpot(ba, J.correct);
-        setState((Ht) => applyRating(Ht, Ga));
-      }
+      recordSpot(ba, J.correct);
+      if (!o) setState((Ht) => applyRating(Ht, Ga));
+      if (a !== "count")
+        recordHandResult(
+          {
+            key: B.key,
+            cards: B.cards.map((Ht) => Ht.r),
+            up: B.upRank,
+            chosen: w,
+            best: J.best,
+            src: "train",
+          },
+          J.correct,
+        );
       let Zt = J.correct ? C + 1 : 0;
       k(Zt);
       m((Ht) => Math.max(Ht, Zt));
@@ -162,6 +200,16 @@ function TrainSession({ mode: a = "mixed", focus: e = null }) {
           ms: Date.now() - R.current,
           bestStreak: Math.max(v, C),
           misses: w.filter((Ga) => !Ga.correct).map((Ga) => Ga.key),
+          // Las manos falladas completas, para el historial.
+          missHands: w
+            .filter((Ga) => !Ga.correct && !Ga.dev)
+            .map((Ga) => ({
+              key: Ga.key,
+              cards: Ga.cards,
+              up: Ga.up,
+              chosen: Ga.chosen,
+              best: Ga.best,
+            })),
         };
       recordTrainSession(Ja);
       if (a === "count") {
@@ -308,17 +356,10 @@ function TrainSession({ mode: a = "mixed", focus: e = null }) {
             {d.costText && s.settings.showCost ? (
               <p className="res-cost">{d.costText}</p>
             ) : null}
-            {a !== "count" ? (
-              <button
-                type="button"
-                className="link small"
-                onClick={() => S(true)}
-                style={{ marginTop: 6 }}
-              >
-                Ver en la tabla →
-              </button>
-            ) : null}
           </div>
+          {a !== "count" ? (
+            <ChartRowHint cards={B.cards} up={B.upRank} rules={l} />
+          ) : null}
           <Button kind="white" onClick={() => X(false)} className="next-btn">
             {r + 1 >= c.length ? "Ver resultado" : "Siguiente mano"}
           </Button>

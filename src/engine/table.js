@@ -817,6 +817,7 @@ class Table {
       note = [explainMistake(spot, chosen, best, this.rules), why]
         .filter(Boolean)
         .join(" ");
+      this.session.mistakeSeq = (this.session.mistakeSeq || 0) + 1;
       this.session.mistakes = [
         ...this.session.mistakes,
         {
@@ -825,6 +826,18 @@ class Table {
           best,
           tc: devPlay ? floorTC(this.tc) : null,
           note,
+          seq: this.session.mistakeSeq,
+          // La mano exacta, para repetirla en Entrenar (solo errores de estrategia básica).
+          hand:
+            devPlay && devPlay.dev
+              ? null
+              : {
+                  key: `${spot.kind === "pair" ? "P" + spot.g : (spot.kind === "soft" ? "S" : "H") + Math.min(spot.total, 21)}|${rankKey(up.r)}`,
+                  cards: hand.cards.map((c) => c.r),
+                  up: up.r,
+                  chosen,
+                  best,
+                },
         },
       ].slice(-30);
     }

@@ -1,7 +1,12 @@
 // Ruta de conteo: la tarjeta de la pestaña Conteo, la pantalla de cada nivel
 // y el ejercicio nuevo de cancelar de a pares (nivel 2).
 import { useMemo, useRef, useState } from "react";
-import { recordDrill, recordLevel, useStore } from "../state.js";
+import {
+  recordDrill,
+  recordLevel,
+  recordLevelPractice,
+  useStore,
+} from "../state.js";
 import { Icon } from "../ui/icons.jsx";
 import { RANKS, SUITS, makeCard, randInt, shuffle } from "../engine/cards.js";
 import { sfx, vibrate } from "../sound.js";
@@ -18,6 +23,7 @@ import {
   currentLevel,
   levelByN,
   levelPassed,
+  levelPracticed,
   levelUnlocked,
   passedCount,
 } from "../engine/countPath.js";
@@ -83,6 +89,22 @@ function CountPathCard() {
               <span className="li-sub">{cur.goal}</span>
             </span>
           </button>
+          {done === 0 && !(st.lessons.l17 && st.lessons.l17.done) ? (
+            <button
+              type="button"
+              className="cpath-first"
+              onClick={() =>
+                nav.push("lesson", { id: "l17", confirmExit: true })
+              }
+            >
+              <Icon name="book" size={18} />
+              <span>
+                <b>¿Primera vez contando?</b> Mirá antes la lección de 3 minutos
+                sobre los valores de las cartas.
+              </span>
+              <Icon name="chev" size={16} />
+            </button>
+          ) : null}
           <Button onClick={() => tap(cur)} iconRight="arrow">
             {tries
               ? `Reintentar el nivel ${cur.n}`
@@ -163,13 +185,17 @@ function CountLevel({ level: n }) {
   const level = levelByN(n) || COUNT_LEVELS[0];
   const passed = st.countPath.passed[level.id];
   const tries = st.countPath.tries[level.id] || 0;
-  const start = () =>
+  const practiced = levelPracticed(st, level);
+  const start = (practice) =>
     nav.replace(level.screen, {
       level: level.n,
+      practice: practice || undefined,
       confirmExit: true,
       flex: level.screen === "shoeChallenge",
       mode: level.screen === "shoeChallenge" ? "level" : undefined,
     });
+  // La primera vez conviene practicar con ayuda; después, rendir.
+  const practiceFirst = !passed && !practiced;
   return (
     <div className="drill fade-up level-intro">
       <TopBar
@@ -208,6 +234,28 @@ function CountLevel({ level: n }) {
           </p>
         ) : null}
       </div>
+      {level.tips ? (
+        <div className="card level-tips">
+          <div className="eyebrow acc">Cómo hacerlo</div>
+          <ul>
+            {level.tips.map((t) => (
+              <li key={t}>
+                <Icon name="sparkle" size={16} />
+                <span>{rich(t)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="level-help">
+            <Icon name="eye" size={16} />
+            <span>
+              <b>Practicar con ayuda:</b> {level.help} No cuenta como intento.
+              {practiced
+                ? ` Ya practicaste ${practiced} ${practiced === 1 ? "vez" : "veces"}.`
+                : ""}
+            </span>
+          </p>
+        </div>
+      ) : null}
       {level.lesson ? (
         <button
           type="button"
@@ -231,17 +279,55 @@ function CountLevel({ level: n }) {
         </button>
       ) : null}
       <div className="bottom-actions">
-        <Button onClick={start}>
-          {passed || tries ? "Empezar otra vez" : "Empezar"}
-        </Button>
+        {practiceFirst ? (
+          <div className="btns">
+            <Button onClick={() => start(true)}>Practicar con ayuda</Button>
+            <Button kind="outline" onClick={() => start(false)}>
+              Rendir el nivel directo
+            </Button>
+          </div>
+        ) : (
+          <div className="btns">
+            <Button onClick={() => start(false)}>
+              {passed
+                ? "Rendir otra vez"
+                : tries
+                  ? "Reintentar el nivel"
+                  : "Rendir el nivel"}
+            </Button>
+            <Button kind="outline" onClick={() => start(true)}>
+              Practicar con ayuda
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
 // Bloque de resultado de un nivel, para poner dentro del resumen de cada ejercicio.
-function LevelOutcome({ level, passed, detail }) {
+function LevelOutcome({ level, passed, detail, practice = false }) {
   const next = levelByN(level.n + 1);
+  if (practice)
+    return (
+      <div className="card level-outcome practice">
+        <div className="row" style={{ gap: 12 }}>
+          <span className="res-icon">
+            <Icon name="eye" size={22} />
+          </span>
+          <div className="grow">
+            <div className="eyebrow">
+              Práctica · Nivel {level.n} de {COUNT_LEVELS.length}
+            </div>
+            <b className="level-outcome-title">Práctica terminada</b>
+          </div>
+        </div>
+        <p className="muted small" style={{ marginTop: 8 }}>
+          {detail ||
+            "No cuenta como intento. Cuando te sientas listo, rendí el nivel sin ayuda."}
+        </p>
+      </div>
+    );
   return (
     <div className={cx("card level-outcome", passed ? "ok" : "bad")}>
       <div className="row" style={{ gap: 12 }}>
@@ -272,9 +358,28 @@ function LevelOutcome({ level, passed, detail }) {
     </div>
   );
 }
-function LevelActions({ level, passed }) {
+function LevelActions({ level, passed, practice = false }) {
   const nav = useNav();
   const next = levelByN(level.n + 1);
+  const go = (p) =>
+    nav.replace(level.screen, {
+      level: level.n,
+      practice: p || undefined,
+      confirmExit: true,
+      flex: level.screen === "shoeChallenge",
+      mode: level.screen === "shoeChallenge" ? "level" : undefined,
+    });
+  if (practice)
+    return (
+      <div className="btns">
+        <Button onClick={() => go(false)} iconRight="arrow">
+          Rendir el nivel {level.n}
+        </Button>
+        <Button kind="outline" onClick={() => go(true)}>
+          Practicar otra vez
+        </Button>
+      </div>
+    );
   return (
     <div className="btns">
       {passed && next ? (
@@ -344,7 +449,17 @@ function pairExplain([a, b]) {
   return `${sum > 0 ? "Dos bajas" : "Dos altas"}: ${fmtTag(sum)}.`;
 }
 
-function DrillPairs({ level: levelN }) {
+// Valor Hi-Lo debajo de una carta (práctica con ayuda).
+function CardTag({ card }) {
+  const v = hiloValue(card);
+  return (
+    <span className={cx("card-tag num", v > 0 ? "pos" : v < 0 ? "neg" : "")}>
+      {fmtTag(v)}
+    </span>
+  );
+}
+
+function DrillPairs({ level: levelN, practice = false }) {
   const nav = useNav();
   const level = levelN ? levelByN(levelN) : null;
   const count = level ? level.count : 10;
@@ -383,8 +498,9 @@ function DrillPairs({ level: levelN }) {
       ok,
       ms: Date.now() - started.current,
     });
-    const passed = level ? ok >= level.pass : null;
-    if (level) recordLevel(level.id, passed, ok / pairs.length);
+    const passed = level && !practice ? ok >= level.pass : null;
+    if (level && practice) recordLevelPractice(level.id);
+    else if (level) recordLevel(level.id, passed, ok / pairs.length);
     setDone({ ok, passed, missed: pairs.filter((_, k) => !all[k]) });
   };
 
@@ -405,7 +521,13 @@ function DrillPairs({ level: levelN }) {
           </div>
           <p className="muted">pares bien</p>
         </div>
-        {level ? <LevelOutcome level={level} passed={done.passed} /> : null}
+        {level ? (
+          <LevelOutcome
+            level={level}
+            passed={done.passed}
+            practice={practice}
+          />
+        ) : null}
         {done.missed.length ? (
           <div className="card" style={{ marginTop: 14 }}>
             <div className="eyebrow" style={{ marginBottom: 10 }}>
@@ -426,7 +548,11 @@ function DrillPairs({ level: levelN }) {
             : "La clave: una alta y una baja juntas no mueven el conteo. Solo cuentan las que sobran."}
         </p>
         {level ? (
-          <LevelActions level={level} passed={done.passed} />
+          <LevelActions
+            level={level}
+            passed={done.passed}
+            practice={practice}
+          />
         ) : (
           <div className="btns">
             <Button onClick={() => nav.replace("drillPairs", {})}>
@@ -448,7 +574,7 @@ function DrillPairs({ level: levelN }) {
     <div className="drill">
       <TopBar
         onClose={() => nav.pop()}
-        title="Cancelar de a pares"
+        title={practice ? "Práctica: de a pares" : "Cancelar de a pares"}
         sub={`${i + 1} / ${pairs.length}`}
       />
       <Segments total={pairs.length} states={states} className="drill-segs" />
@@ -457,18 +583,19 @@ function DrillPairs({ level: levelN }) {
         Hi-Lo: bajas +1, 7 a 9 valen 0, altas −1
       </p>
       <div className="pair-stage" key={i}>
-        <PlayingCard
-          card={pair[0]}
-          size="lg"
-          deal={true}
-          glow={picked !== null ? (picked === answer ? "good" : "bad") : null}
-        />
-        <PlayingCard
-          card={pair[1]}
-          size="lg"
-          deal={true}
-          glow={picked !== null ? (picked === answer ? "good" : "bad") : null}
-        />
+        {pair.map((c) => (
+          <span className="tagged-card" key={c.id}>
+            <PlayingCard
+              card={c}
+              size="lg"
+              deal={true}
+              glow={
+                picked !== null ? (picked === answer ? "good" : "bad") : null
+              }
+            />
+            {practice ? <CardTag card={c} /> : null}
+          </span>
+        ))}
       </div>
       <p
         className={cx(
@@ -503,6 +630,7 @@ function DrillPairs({ level: levelN }) {
 }
 
 export {
+  CardTag,
   CountLevel,
   CountPathCard,
   DrillPairs,

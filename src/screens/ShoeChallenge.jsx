@@ -1,11 +1,13 @@
 // Un zapato completo en el simulador, con el conteo oculto y chequeos de conteo.
 // mode "level": nivel 10 de la ruta de conteo (se aprueba con 4 de cada 5 chequeos bien).
 // mode "exam": examen final (jugar bien, contar y apostar según el conteo).
+import { useEffect, useState } from "react";
 import {
   completeLesson,
   getState,
   markActive,
   recordLevel,
+  recordLevelPractice,
   setState,
   withRules,
 } from "../state.js";
@@ -43,7 +45,11 @@ function gradeExam(s) {
   };
 }
 
-function ShoeChallenge({ mode = "level", level: levelN = 10 }) {
+function ShoeChallenge({
+  mode = "level",
+  level: levelN = 10,
+  practice = false,
+}) {
   const nav = useNav();
   const exam = mode === "exam";
   const level = exam ? null : levelByN(levelN);
@@ -75,6 +81,8 @@ function ShoeChallenge({ mode = "level", level: levelN = 10 }) {
   });
   const [result, setResult] = useState(null);
   const [exitOpen, setExitOpen] = useState(false);
+  // Practicando el nivel 10, el conteo se ve (y se puede ocultar para probarte).
+  const [showCount, setShowCount] = useState(practice);
   useEffect(() => {
     const onBack = () => setExitOpen(true);
     window.addEventListener("v21-back", onBack);
@@ -102,14 +110,22 @@ function ShoeChallenge({ mode = "level", level: levelN = 10 }) {
       setResult({ s, ...g });
     } else {
       const r = ratio(s.checksOk, s.checks);
-      const passed = s.checks > 0 && r >= level.passRatio;
-      recordLevel(level.id, passed, r);
+      const passed = practice ? null : s.checks > 0 && r >= level.passRatio;
+      if (practice) recordLevelPractice(level.id);
+      else recordLevel(level.id, passed, r);
       setResult({ s, passed, checks: r });
     }
   };
 
   if (result)
-    return <ChallengeResult result={result} exam={exam} level={level} />;
+    return (
+      <ChallengeResult
+        result={result}
+        exam={exam}
+        level={level}
+        practice={practice}
+      />
+    );
 
   const top = (t) => (
     <div className="sim-top challenge-top">
@@ -121,7 +137,13 @@ function ShoeChallenge({ mode = "level", level: levelN = 10 }) {
         onClick={() => setExitOpen(true)}
       />
       <div className="grow challenge-title">
-        <b>{exam ? "Examen final" : `Nivel ${level.n}: ${level.title}`}</b>
+        <b>
+          {exam
+            ? "Examen final"
+            : practice
+              ? `Práctica: ${level.title}`
+              : `Nivel ${level.n}: ${level.title}`}
+        </b>
         <span className="challenge-progress">
           <i
             style={{
@@ -141,7 +163,8 @@ function ShoeChallenge({ mode = "level", level: levelN = 10 }) {
       <TableView
         table={table}
         top={top}
-        showCount={false}
+        showCount={practice ? showCount : false}
+        onToggleCount={practice ? () => setShowCount(!showCount) : undefined}
         countLabel="Contá vos"
         betHint={false}
         unitBets={true}
@@ -167,7 +190,7 @@ function ShoeChallenge({ mode = "level", level: levelN = 10 }) {
   );
 }
 
-function ChallengeResult({ result, exam, level }) {
+function ChallengeResult({ result, exam, level, practice = false }) {
   const nav = useNav();
   const s = result.s;
   const rows = exam
@@ -229,9 +252,11 @@ function ChallengeResult({ result, exam, level }) {
             ? passed
               ? "¡Aprobaste el examen final!"
               : "Todavía no aprobaste"
-            : passed
-              ? "¡Contaste un zapato entero!"
-              : "Todavía no"}
+            : practice
+              ? "Práctica terminada"
+              : passed
+                ? "¡Contaste un zapato entero!"
+                : "Todavía no"}
         </h1>
         <p className="muted" style={{ marginTop: 6 }}>
           {s.hands} manos · resultado {s.net >= 0 ? "+" : "−"}$
@@ -259,7 +284,9 @@ function ChallengeResult({ result, exam, level }) {
           </div>
         ))}
       </div>
-      {level ? <LevelOutcome level={level} passed={passed} /> : null}
+      {level ? (
+        <LevelOutcome level={level} passed={passed} practice={practice} />
+      ) : null}
       {s.checkLog.some((c) => !c.ok) ? (
         <div className="card" style={{ marginTop: 14 }}>
           <div className="eyebrow" style={{ marginBottom: 8 }}>
@@ -327,7 +354,7 @@ function ChallengeResult({ result, exam, level }) {
             : "Cuando un chequeo falla, el error suele venir de una mano con muchas cartas. Contá cada carta apenas cae."}
       </p>
       {level ? (
-        <LevelActions level={level} passed={passed} />
+        <LevelActions level={level} passed={passed} practice={practice} />
       ) : (
         <div className="btns">
           <Button

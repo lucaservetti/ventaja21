@@ -154,6 +154,29 @@ function makeSpot(a, { nCards: e = 2, rnd: t, tc: s = null } = {}) {
     tc: s,
   };
 }
+// Una mano guardada (tus errores), con las mismas cartas que te tocaron.
+function spotFromHand(key, ranks, up) {
+  const p = parseSpot(key);
+  const cards = ranks.map((r) => makeCard(r, randomSuit()));
+  return {
+    key,
+    kind: p.kind,
+    total: handValue(cards).total,
+    g: p.kind === "pair" ? p.g : null,
+    up: p.up,
+    upRank: up,
+    dealer: makeCard(up, randomSuit()),
+    cards,
+    nCards: cards.length,
+    tc: null,
+  };
+}
+// Los errores que conviene repetir primero: los que más fallaste y los más viejos.
+function mistakeQueue(mistakes, n) {
+  return [...(mistakes || [])]
+    .sort((a, b) => b.misses - a.misses || a.t - b.t)
+    .slice(0, n);
+}
 function spotHand(a) {
   return { cards: a.cards, fromSplit: false, splitAces: false };
 }
@@ -476,7 +499,9 @@ export {
   deviationSpot,
   gradeSpot,
   makeSpot,
+  mistakeQueue,
   parseSpot,
   skillSpots,
   spotDifficulty,
+  spotFromHand,
 };

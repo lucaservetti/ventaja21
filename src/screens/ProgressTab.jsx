@@ -21,7 +21,7 @@ import { LESSONS } from "../lessons/content.js";
 import { UPS, skillSpots } from "../engine/trainer.js";
 import {
   InfoDot,
-  RatingBadge,
+  PageHeader,
   SettingsButton,
   spotTitle,
   useRules,
@@ -30,6 +30,7 @@ import { spotsAccuracy, strongSpots, weakSpots } from "../engine/skills.js";
 import { shortDate } from "./TrainTab.jsx";
 import { useNav } from "../nav.js";
 import { GoalBadge, bestGoalStreak } from "./goal.jsx";
+import { NextSteps, ProfileCard } from "./profile.jsx";
 
 function ProgressTab() {
   let a = useStore(),
@@ -38,14 +39,16 @@ function ProgressTab() {
     [n, l] = useState(null);
   return (
     <div className="fade-up">
-      <div className="page-head" style={{ alignItems: "center" }}>
-        <h1 style={{ fontSize: 34 }}>Progreso</h1>
-        <div className="page-head-right">
-          <GoalBadge />
-          <RatingBadge showDelta={true} />
-          <SettingsButton />
-        </div>
-      </div>
+      <PageHeader
+        title="Progreso"
+        sub="Cómo venís y qué te conviene practicar"
+        actions={
+          <>
+            <GoalBadge />
+            <SettingsButton />
+          </>
+        }
+      />
       <Segmented
         options={[
           { value: "overview", label: "Resumen" },
@@ -164,9 +167,11 @@ function ProgressOverview({ st: a, nav: e }) {
     y = f.length ? f.reduce((C, k) => C + k.ok / k.n, 0) / f.length : null;
   return (
     <>
+      <NextSteps st={a} />
       <button
         type="button"
         className="card goal-card"
+        style={{ marginTop: 14 }}
         onClick={() => e.openSheet("goal")}
       >
         <Ring
@@ -188,24 +193,50 @@ function ProgressOverview({ st: a, nav: e }) {
         </span>
         <Icon name="chev" className="li-chev" />
       </button>
-      <div className="card" style={{ marginTop: 14 }}>
-        <div className="row between">
-          <div>
-            <div className="eyebrow">Tu nivel</div>
-            <div style={{ fontSize: 28, fontWeight: 700 }}>{t.name}</div>
+      {a.train.sessions.length ? (
+        <div className="card" style={{ marginTop: 14 }}>
+          <div className="row between">
+            <div>
+              <div className="eyebrow">Tu nivel</div>
+              <div style={{ fontSize: 28, fontWeight: 700 }}>{t.name}</div>
+            </div>
+            <div className="mid-num" style={{ fontSize: 44 }}>
+              {a.rating.value}
+            </div>
           </div>
-          <div className="mid-num" style={{ fontSize: 44 }}>
-            {a.rating.value}
-          </div>
+          <Sparkline points={c} />
+          <p className="muted small" style={{ marginTop: 6 }}>
+            {s
+              ? `Te faltan ${s.min - a.rating.value} puntos para ${s.name}.`
+              : "Llegaste al nivel más alto."}
+            {" Tu puntaje sube cuando acertás manos en Entrenar."}
+          </p>
         </div>
-        <Sparkline points={c} />
-        <p className="muted small" style={{ marginTop: 6 }}>
-          {s
-            ? `Te faltan ${s.min - a.rating.value} puntos para ${s.name}.`
-            : "Llegaste al nivel más alto."}
-          {" Tu puntaje sube cuando acertás manos en Entrenar."}
-        </p>
-      </div>
+      ) : (
+        <button
+          type="button"
+          className="card list-item level-unknown"
+          style={{ marginTop: 14 }}
+          onClick={() =>
+            e.push("trainSession", { mode: "level", confirmExit: true })
+          }
+        >
+          <span className="li-text">
+            <span className="eyebrow">Tu nivel</span>
+            <span
+              className="li-title"
+              style={{ display: "block", fontSize: 22 }}
+            >
+              Todavía sin medir
+            </span>
+            <span className="li-sub" style={{ display: "block" }}>
+              Hacé tu primera tanda de 10 manos en Entrenar y vas a ver tu nivel
+              y cómo crece.
+            </span>
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+      )}
       <div className="tiles" style={{ marginTop: 14 }}>
         <div className="tile">
           <div className="tile-v num">{a.train.totalHands}</div>
@@ -277,28 +308,8 @@ function ProgressOverview({ st: a, nav: e }) {
           </span>
         </div>
       </div>
-      <div className="card" style={{ marginTop: 14 }}>
-        <div className="eyebrow" style={{ marginBottom: 6 }}>
-          Conteo
-        </div>
-        <div className="kv">
-          <span className="kv-k">Valores de las cartas</span>
-          <span className="kv-v num">
-            {y === null ? "—" : `${Math.round(y * 100)} %`}
-          </span>
-        </div>
-        <div className="kv">
-          <span className="kv-k">Conteos corridos exactos</span>
-          <span className="kv-v num">
-            {p === null ? "—" : `${Math.round(p * 100)} %`}
-          </span>
-        </div>
-        <div className="kv">
-          <span className="kv-k">Chequeos en la mesa</span>
-          <span className="kv-v num">
-            {a.play.checks ? `${a.play.checksOk}/${a.play.checks}` : "—"}
-          </span>
-        </div>
+      <div style={{ marginTop: 14 }}>
+        <ProfileCard st={a} />
       </div>
       {a.train.totalHands === 0 ? (
         <Button onClick={() => e.setTab("entrenar")} style={{ marginTop: 16 }}>

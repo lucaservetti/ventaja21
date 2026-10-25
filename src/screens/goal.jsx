@@ -16,6 +16,7 @@ import { Icon } from "../ui/icons.jsx";
 import { sfx } from "../sound.js";
 import { Flame, Pills, Ring, Sheet, cx } from "../ui/components.jsx";
 import { useNav } from "../nav.js";
+import { NextSteps } from "./profile.jsx";
 
 const GOAL_OPTIONS = [5, 10, 15, 20];
 const WEEKDAYS = ["D", "L", "M", "M", "J", "V", "S"];
@@ -34,6 +35,7 @@ const PRACTICE_SCREENS = new Set([
   "shoeChallenge",
   "placement",
   "review",
+  "jumpTest",
 ]);
 const TICK = 5; // segundos
 const IDLE_LIMIT = 90000; // sin tocar la pantalla por más de 90 s, el tiempo deja de contar
@@ -166,6 +168,13 @@ function GoalSheet({ open, onClose }) {
               : `Te ${left === 1 ? "falta 1 minuto" : `faltan ${left} minutos`}.`}
         </p>
       </div>
+      <NextSteps
+        st={st}
+        limit={3}
+        title="Para hoy"
+        onGo={onClose}
+        className="flat goal-plan"
+      />
       <div className="goal-streak card flat">
         <Flame size={30} lit={streak > 0} />
         <div className="grow">

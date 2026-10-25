@@ -177,6 +177,33 @@ function TrainSummary({ summary: a, results: e, mode: t, focus: s }) {
               </div>
             ))}
           </div>
+          {C.some((S) => !S.dev) ? (
+            <div className="summary-replay">
+              <p className="muted small">
+                Estas manos quedaron en <b>Tus errores</b>, en Entrenar. Salen
+                de ahí cuando las acertás dos veces.
+              </p>
+              <Button
+                kind="secondary"
+                small={true}
+                onClick={() =>
+                  n.replace("trainSession", {
+                    mode: "replay",
+                    hands: C.filter((S) => !S.dev).map((S) => ({
+                      key: S.key,
+                      cards: S.cards,
+                      up: S.up,
+                      chosen: S.chosen,
+                      best: S.best,
+                    })),
+                    confirmExit: true,
+                  })
+                }
+              >
+                Repetir estas manos ahora
+              </Button>
+            </div>
+          ) : null}
         </>
       ) : null}
       <div className="btns" style={{ marginTop: 22 }}>

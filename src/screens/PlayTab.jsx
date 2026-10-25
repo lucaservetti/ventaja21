@@ -5,6 +5,7 @@ import {
   describeRules,
   getState,
   markActive,
+  recordHandResult,
   setRules,
   setSettings,
   setState,
@@ -104,6 +105,12 @@ function PlayTab({ active }) {
           },
         }),
       );
+      // Las jugadas que fallaste en la mesa pasan a tus errores de Entrenar.
+      const seenSeq =
+        (lastSession.current && lastSession.current.mistakeSeq) || 0;
+      for (const m of s.mistakes)
+        if (m.seq > seenSeq && m.hand)
+          recordHandResult({ ...m.hand, src: "mesa" }, false);
       lastSession.current = { ...s };
       if (result.net > 0) sfx.win();
     };

@@ -11,7 +11,7 @@ import {
   cx,
 } from "../ui/components.jsx";
 import { countValue, fmtTag, systemFor } from "../engine/systems.js";
-import { BrandBar, InfoDot, SettingsButton } from "../ui/common.jsx";
+import { InfoDot, PageHeader, SettingsButton } from "../ui/common.jsx";
 import { HiLoValues } from "../lessons/visuals.jsx";
 import { useNav } from "../nav.js";
 import { GoalBadge } from "./goal.jsx";
@@ -39,41 +39,34 @@ function CountTab() {
   const bestRun = st.drills.running.bestPerfect;
   return (
     <div className="fade-up">
-      <BrandBar
-        right={
+      <PageHeader
+        title="Conteo"
+        sub="La habilidad que da vuelta el juego"
+        actions={
           <>
+            <IconButton
+              icon="help"
+              label="Cómo se cuenta"
+              onClick={() => setHelpOpen(true)}
+            />
             <GoalBadge />
             <SettingsButton />
           </>
         }
       />
-      <div className="page-head">
-        <div className="page-head-text">
-          <h1>Conteo</h1>
-          <p className="page-sub">La habilidad que da vuelta el juego</p>
-        </div>
-        <div className="page-head-right">
-          <button
-            type="button"
-            className="sys-pill"
-            onClick={() => nav.openSheet("system")}
-          >
-            {sys.short || sys.name} <Icon name="chev" size={14} />
-          </button>
-          <IconButton
-            icon="help"
-            label="Cómo funciona el conteo"
-            onClick={() => setHelpOpen(true)}
-            className="acc-icon"
-          />
-        </div>
-      </div>
 
       <CountPathCard />
 
       <div className="section-title">
         <h2>Práctica libre</h2>
-        <span className="side">En {sys.short || sys.name}</span>
+        <button
+          type="button"
+          className="sys-pill"
+          onClick={() => nav.openSheet("system")}
+          aria-label={`Sistema de conteo: ${sys.name}. Cambiar`}
+        >
+          {sys.short || sys.name} <Icon name="chev" size={14} />
+        </button>
       </div>
       <div className="card drill-hero">
         <Segmented
