@@ -12,7 +12,7 @@ import {
 } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
 import { handLabel } from "../engine/cards.js";
-import { ACTION_NAMES, allowedActions } from "../engine/strategy.js";
+import { ACTION_EN, ACTION_NAMES, allowedActions } from "../engine/strategy.js";
 import { sfx, vibrate } from "../sound.js";
 import {
   Button,
@@ -38,8 +38,8 @@ import { useNav } from "../nav.js";
 
 const SESSION_TITLES = {
   level: "Encontrá tu nivel",
-  mixed: "Sesión de coach",
-  skill: "Sesión de coach",
+  mixed: "Tanda mezclada",
+  skill: "Tanda por habilidad",
   spot: "Práctica puntual",
   count: "Con conteo",
   exam: "Examen de nivel",
@@ -396,7 +396,11 @@ function ActionButton({
         <Icon name={ACTION_ICONS[a]} size={n ? 24 : 30} />
       )}
       <span className="act-label">{ACTION_NAMES[a].toUpperCase()}</span>
-      {!o && i && !n ? <span className="act-note">{i}</span> : null}
+      {!o && i && !n ? (
+        <span className="act-note">{i}</span>
+      ) : (
+        <span className="act-en">{ACTION_EN[a]}</span>
+      )}
     </button>
   );
 }

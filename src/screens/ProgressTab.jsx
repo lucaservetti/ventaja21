@@ -56,7 +56,7 @@ function ProgressTab() {
       <Sheet
         open={n === "leaks"}
         onClose={() => l(null)}
-        title="Tus mayores fugas"
+        title="Dónde más fallás"
       >
         <p className="muted">
           Son las situaciones donde más fallaste en tus últimos intentos (por
@@ -280,7 +280,7 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
     <>
       <div className="card">
         <div className="eyebrow row" style={{ gap: 6 }}>
-          {"Tus mayores fugas "}
+          {"Dónde más fallás "}
           <InfoDot onClick={() => t("leaks")} />
         </div>
         {l.length ? (

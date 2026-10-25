@@ -1,6 +1,12 @@
 // La mesa del simulador. La usan la pestaña Jugar y los desafíos de zapato completo
 // (nivel 10 de la ruta de conteo y examen final).
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { Icon } from "../ui/icons.jsx";
 import { handTotalText, handValue, isBlackjack } from "../engine/cards.js";
 import { ACTION_NAMES, ACTION_EN } from "../engine/strategy.js";
@@ -49,7 +55,10 @@ function useTable(table) {
 }
 
 function decksText(decks) {
-  return (Math.round(decks * 2) / 2).toFixed(1).replace(".0", "").replace(".", ",");
+  return (Math.round(decks * 2) / 2)
+    .toFixed(1)
+    .replace(".0", "")
+    .replace(".", ",");
 }
 
 function TableView({
@@ -75,7 +84,10 @@ function TableView({
   const cardCount =
     table.dealer.cards.length +
     table.hands.reduce((n, h) => n + h.cards.length, 0) +
-    table.botSeats.reduce((n, s) => n + s.hands.reduce((m, h) => m + h.cards.length, 0), 0);
+    table.botSeats.reduce(
+      (n, s) => n + s.hands.reduce((m, h) => m + h.cards.length, 0),
+      0,
+    );
   const prevCards = useRef(0);
   useEffect(() => {
     if (cardCount > prevCards.current && active) sfx.card();
@@ -88,10 +100,23 @@ function TableView({
   // Chequeo de conteo (después de algunas manos y al final del zapato).
   useEffect(() => {
     if (table.phase === "settle" && table.countCheckDue && !check) {
-      const timer = setTimeout(() => setCheck({ value: "", result: null, final: table.countCheckDue === "final" }), 700);
+      const timer = setTimeout(
+        () =>
+          setCheck({
+            value: "",
+            result: null,
+            final: table.countCheckDue === "final",
+          }),
+        700,
+      );
       return () => clearTimeout(timer);
     }
-    if (table.phase === "settle" && table.shoeEnded && !table.countCheckDue && !check) {
+    if (
+      table.phase === "settle" &&
+      table.shoeEnded &&
+      !table.countCheckDue &&
+      !check
+    ) {
       table.shoeEnded = false;
       if (onShoeEnd) onShoeEnd({ ...table.shoeStats });
     }
@@ -138,7 +163,8 @@ function TableView({
   };
 
   const allowed = table.allowed();
-  const reshuffling = (table.shoe.needsShuffle || table.pendingShuffle) && rules.pen > 0;
+  const reshuffling =
+    (table.shoe.needsShuffle || table.pendingShuffle) && rules.pen > 0;
   const suggested = betHint ? table.suggestedBet : null;
   const tcNow = floorTC(table.tc);
   const dealerBadge = table.dealer.cards.length
@@ -158,7 +184,11 @@ function TableView({
   let message = null;
   if (fb) {
     message = (
-      <button type="button" className={cx("sim-msg coach-line", fb.ok ? "ok" : "bad")} onClick={() => fb.note && setWhyOpen(true)}>
+      <button
+        type="button"
+        className={cx("sim-msg coach-line", fb.ok ? "ok" : "bad")}
+        onClick={() => fb.note && setWhyOpen(true)}
+      >
         <span className="fb-icon">
           <Icon name={fb.ok ? "check" : "x"} size={14} stroke={3} />
         </span>
@@ -166,15 +196,24 @@ function TableView({
           <b>
             {fb.ok
               ? `Bien: ${ACTION_NAMES[fb.best].toLowerCase()}`
-              : fb.title || `Lo correcto era ${ACTION_NAMES[fb.best].toLowerCase()}`}
+              : fb.title ||
+                `Lo correcto era ${ACTION_NAMES[fb.best].toLowerCase()}`}
           </b>
-          {fb.note ? <span className="msg-more">{fb.ok ? "por qué" : "ver por qué"}</span> : null}
+          {fb.note ? (
+            <span className="msg-more">
+              {fb.ok ? "por qué" : "ver por qué"}
+            </span>
+          ) : null}
         </span>
       </button>
     );
   } else if (toast) {
     message = (
-      <div className={cx("sim-msg", `msg-${toast.kind}`)} key={toast.id} role="status">
+      <div
+        className={cx("sim-msg", `msg-${toast.kind}`)}
+        key={toast.id}
+        role="status"
+      >
         <span className="msg-text">{toast.msg}</span>
       </div>
     );
@@ -191,8 +230,15 @@ function TableView({
       {top}
       <div className="sim-hud">
         <div className="hud-side">
-          <Tray shoe={rules.decks} cards={table.shoe.dealt} small={true} height={30} />
-          <span className="tiny muted num">≈ {decksText(table.decksRemaining)} mazos</span>
+          <Tray
+            shoe={rules.decks}
+            cards={table.shoe.dealt}
+            small={true}
+            height={30}
+          />
+          <span className="tiny muted num">
+            ≈ {decksText(table.decksRemaining)} mazos
+          </span>
         </div>
         <div className="hud-center">
           {rules.pen <= 0 ? (
@@ -209,18 +255,25 @@ function TableView({
                 <>
                   <span className="num">CC {fmtSigned(table.rcSys)}</span>
                   {sys.balanced ? (
-                    <span className="num"> · CR {table.tcSys === null ? "—" : fmtSigned(table.tcSys, 1)}</span>
+                    <span className="num">
+                      {" "}
+                      · CR{" "}
+                      {table.tcSys === null ? "—" : fmtSigned(table.tcSys, 1)}
+                    </span>
                   ) : null}
                 </>
               ) : (
                 <>
-                  <Icon name="eyeoff" size={16} /> {countLabel || "Conteo oculto"}
+                  <Icon name="eyeoff" size={16} />{" "}
+                  {countLabel || "Conteo oculto"}
                 </>
               )}
             </button>
           )}
           {comp ? <XRay comp={comp} /> : null}
-          {sys.id !== "hilo" && showCount ? <span className="tiny muted">{sys.short || sys.name}</span> : null}
+          {sys.id !== "hilo" && showCount ? (
+            <span className="tiny muted">{sys.short || sys.name}</span>
+          ) : null}
         </div>
         <div className="hud-side right">
           <span className="shoe-ic">
@@ -230,16 +283,35 @@ function TableView({
         </div>
       </div>
 
-      <div className={cx("felt", table.phase === "shuffle" && "shuffling", table.botSeats.length > 0 && "has-bots")}>
+      <div
+        className={cx(
+          "felt",
+          table.phase === "shuffle" && "shuffling",
+          table.botSeats.length > 0 && "has-bots",
+        )}
+      >
         <div className="seat dealer-seat">
           <span className="eyebrow">Crupier</span>
           <div className="card-row overlap cr-md">
             {table.dealer.cards.map((card) => (
-              <PlayingCard card={card} size="md" deal={true} down={!card.faceUp} key={card.id} />
+              <PlayingCard
+                card={card}
+                size="md"
+                deal={true}
+                down={!card.faceUp}
+                key={card.id}
+              />
             ))}
           </div>
           {dealerBadge !== null ? (
-            <span className={cx("total-badge num", table.result && table.result.dealerBust && "bad")}>{dealerBadge}</span>
+            <span
+              className={cx(
+                "total-badge num",
+                table.result && table.result.dealerBust && "bad",
+              )}
+            >
+              {dealerBadge}
+            </span>
           ) : (
             <span className="total-badge ghost">·</span>
           )}
@@ -250,14 +322,27 @@ function TableView({
               <div className="bot" key={seat.name}>
                 <div className="bot-hands">
                   {seat.hands.map((hand) => (
-                    <div className={cx("bot-hand", hand.result && `r-${hand.result}`)} key={hand.id}>
+                    <div
+                      className={cx(
+                        "bot-hand",
+                        hand.result && `r-${hand.result}`,
+                      )}
+                      key={hand.id}
+                    >
                       <div className="card-row overlap cr-sm">
                         {hand.cards.map((card) => (
-                          <PlayingCard card={card} size="xs" deal={true} key={card.id} />
+                          <PlayingCard
+                            card={card}
+                            size="xs"
+                            deal={true}
+                            key={card.id}
+                          />
                         ))}
                       </div>
                       {hand.cards.length ? (
-                        <span className="tiny num bot-total">{hand.surrendered ? "R" : handTotalText(hand.cards)}</span>
+                        <span className="tiny num bot-total">
+                          {hand.surrendered ? "R" : handTotalText(hand.cards)}
+                        </span>
                       ) : null}
                     </div>
                   ))}
@@ -282,18 +367,42 @@ function TableView({
                       ? "Blackjack"
                       : handTotalText(hand.cards);
               return (
-                <div className={cx("p-hand", isActive && "active", hand.result && `r-${hand.result}`)} key={hand.id}>
-                  <div className={cx("card-row overlap", table.hands.length > 1 ? "cr-sm" : "cr-md")}>
+                <div
+                  className={cx(
+                    "p-hand",
+                    isActive && "active",
+                    hand.result && `r-${hand.result}`,
+                  )}
+                  key={hand.id}
+                >
+                  <div
+                    className={cx(
+                      "card-row overlap",
+                      table.hands.length > 1 ? "cr-sm" : "cr-md",
+                    )}
+                  >
                     {hand.cards.map((card) => (
-                      <PlayingCard card={card} size={table.hands.length > 2 ? "sm" : "md"} deal={true} key={card.id} />
+                      <PlayingCard
+                        card={card}
+                        size={table.hands.length > 2 ? "sm" : "md"}
+                        deal={true}
+                        key={card.id}
+                      />
                     ))}
                   </div>
                   <div className="p-meta">
                     <span
                       className={cx(
                         "total-badge num",
-                        hand.result && ["win", "bj"].includes(hand.result) && "good",
-                        ((hand.result && ["lose", "bust", "surrender"].includes(hand.result)) || (!hand.result && v.bust)) && "bad",
+                        hand.result &&
+                          ["win", "bj"].includes(hand.result) &&
+                          "good",
+                        ((hand.result &&
+                          ["lose", "bust", "surrender"].includes(
+                            hand.result,
+                          )) ||
+                          (!hand.result && v.bust)) &&
+                          "bad",
                       )}
                     >
                       {label}
@@ -308,12 +417,22 @@ function TableView({
             })
           ) : (
             <div className="bet-spot">
-              {table.bet ? <ChipStack amount={table.bet} size={42} /> : <span className="bet-ring">APOSTÁ</span>}
-              {table.bet ? <b className="num bet-amt">${money(table.bet)}</b> : null}
+              {table.bet ? (
+                <ChipStack amount={table.bet} size={42} />
+              ) : (
+                <span className="bet-ring">APOSTÁ</span>
+              )}
+              {table.bet ? (
+                <b className="num bet-amt">${money(table.bet)}</b>
+              ) : null}
             </div>
           )}
         </div>
-        {table.insuranceBet ? <div className="ins-chip tiny">Seguro ${money(table.insuranceBet)}</div> : null}
+        {table.insuranceBet ? (
+          <div className="ins-chip tiny">
+            Seguro ${money(table.insuranceBet)}
+          </div>
+        ) : null}
       </div>
 
       <div className="sim-msgs" aria-live="polite">
@@ -327,11 +446,13 @@ function TableView({
               {suggested ? (
                 reshuffling ? (
                   <>
-                    Se mezcla antes de esta mano: apuesta sugerida <b>${suggested}</b> (1 u.)
+                    Se mezcla antes de esta mano: apuesta sugerida{" "}
+                    <b>${suggested}</b> (1 u.)
                   </>
                 ) : (
                   <>
-                    Con conteo real {fmtSigned(tcNow)}: apuesta sugerida <b>${suggested}</b> ({suggested / table.opts.unit} u.)
+                    Con conteo real {fmtSigned(tcNow)}: apuesta sugerida{" "}
+                    <b>${suggested}</b> ({suggested / table.opts.unit} u.)
                   </>
                 )
               ) : reshuffling ? (
@@ -342,18 +463,38 @@ function TableView({
             </div>
             <div className="chip-rack">
               {CHIP_VALUES.map((value) => (
-                <Chip value={value} size={52} onClick={(v) => table.addChip(v)} disabled={value > table.bankroll - table.bet} key={value} />
+                <Chip
+                  value={value}
+                  size={52}
+                  onClick={(v) => table.addChip(v)}
+                  disabled={value > table.bankroll - table.bet}
+                  key={value}
+                />
               ))}
             </div>
             <div className="bet-row">
-              <Button kind="secondary" small={true} onClick={() => table.undoChip()} disabled={!table.bet}>
+              <Button
+                kind="secondary"
+                small={true}
+                onClick={() => table.undoChip()}
+                disabled={!table.bet}
+              >
                 Deshacer
               </Button>
-              <Button kind="secondary" small={true} onClick={() => table.clearBet()} disabled={!table.bet}>
+              <Button
+                kind="secondary"
+                small={true}
+                onClick={() => table.clearBet()}
+                disabled={!table.bet}
+              >
                 Borrar
               </Button>
               {table.bankroll < 1 ? (
-                <Button small={true} onClick={() => table.refill()} className="grow">
+                <Button
+                  small={true}
+                  onClick={() => table.refill()}
+                  className="grow"
+                >
                   Recargar fichas
                 </Button>
               ) : (
@@ -373,13 +514,26 @@ function TableView({
           </>
         ) : table.phase === "settle" ? (
           <div className="settle-row">
-            <Button kind="secondary" small={true} onClick={() => table.newBet()}>
+            <Button
+              kind="secondary"
+              small={true}
+              onClick={() => table.newBet()}
+            >
               Nueva apuesta
             </Button>
-            <Button small={true} onClick={() => table.rebet(1) && table.deal()} disabled={table.lastBet > table.bankroll}>
+            <Button
+              small={true}
+              onClick={() => table.rebet(1) && table.deal()}
+              disabled={table.lastBet > table.bankroll}
+            >
               Repetir ${money(table.lastBet)}
             </Button>
-            <Button kind="secondary" small={true} onClick={() => table.rebet(2) && table.deal()} disabled={table.lastBet * 2 > table.bankroll}>
+            <Button
+              kind="secondary"
+              small={true}
+              onClick={() => table.rebet(2) && table.deal()}
+              disabled={table.lastBet * 2 > table.bankroll}
+            >
               ×2
             </Button>
           </div>
@@ -389,27 +543,47 @@ function TableView({
             <SimAction action="D" allowed={allowed} table={table} />
             <SimAction action="H" allowed={allowed} table={table} />
             <SimAction action="S" allowed={allowed} table={table} />
-            {rules.surrender ? <SimAction action="R" allowed={allowed} table={table} /> : null}
+            {rules.surrender ? (
+              <SimAction action="R" allowed={allowed} table={table} />
+            ) : null}
           </div>
         ) : table.phase === "insurance" ? (
           <div className="ins-panel fade-up">
-            <b>{isBlackjack(table.hands[0].cards) ? "¿Pago parejo? (even money)" : "¿Seguro? (insurance)"}</b>
+            <b>
+              {isBlackjack(table.hands[0].cards)
+                ? "¿Pago parejo? (even money)"
+                : "¿Seguro? (insurance)"}
+            </b>
             <p className="muted small">
               {isBlackjack(table.hands[0].cards)
                 ? "Tenés blackjack y el crupier muestra As. Pago parejo: cobrás 1 a 1 ya, tenga o no blackjack."
                 : `El crupier muestra As. El seguro cuesta $${money(table.hands[0].bet / 2)} y paga 2 a 1 si tiene blackjack.`}
             </p>
             <div className="ins-btns">
-              <Button kind="secondary" small={true} className="grow" onClick={() => table.insure(true)} disabled={table.hands[0].bet / 2 > table.bankroll}>
-                {isBlackjack(table.hands[0].cards) ? "Sí, cobrar" : "Sí, seguro"}
+              <Button
+                kind="secondary"
+                small={true}
+                className="grow"
+                onClick={() => table.insure(true)}
+                disabled={table.hands[0].bet / 2 > table.bankroll}
+              >
+                {isBlackjack(table.hands[0].cards)
+                  ? "Sí, cobrar"
+                  : "Sí, seguro"}
               </Button>
-              <Button small={true} className="grow" onClick={() => table.insure(false)}>
+              <Button
+                small={true}
+                className="grow"
+                onClick={() => table.insure(false)}
+              >
                 No, gracias
               </Button>
             </div>
           </div>
         ) : (
-          <div className="phase-msg muted">{PHASE_LABELS[table.phase] || ""}</div>
+          <div className="phase-msg muted">
+            {PHASE_LABELS[table.phase] || ""}
+          </div>
         )}
       </div>
 
@@ -417,23 +591,36 @@ function TableView({
         {check ? (
           check.result ? (
             <div className="center">
-              <span className={cx("res-icon big", check.result.ok ? "ok" : "bad")}>
-                <Icon name={check.result.ok ? "check" : "x"} size={34} stroke={3} />
+              <span
+                className={cx("res-icon big", check.result.ok ? "ok" : "bad")}
+              >
+                <Icon
+                  name={check.result.ok ? "check" : "x"}
+                  size={34}
+                  stroke={3}
+                />
               </span>
-              <h2 style={{ fontSize: 28, marginTop: 12 }}>{check.result.ok ? "¡Exacto!" : "No era ese"}</h2>
+              <h2 style={{ fontSize: 28, marginTop: 12 }}>
+                {check.result.ok ? "¡Exacto!" : "No era ese"}
+              </h2>
               <p className="muted" style={{ marginTop: 8 }}>
-                El conteo corrido es <b className="acc num">{fmtSigned(check.result.correct)}</b>
+                El conteo corrido es{" "}
+                <b className="acc num">{fmtSigned(check.result.correct)}</b>
                 {check.result.ok ? null : (
                   <>
                     {" "}
-                    y pusiste <b className="bad num">{fmtSigned(parseKeypad(check.value))}</b>
+                    y pusiste{" "}
+                    <b className="bad num">
+                      {fmtSigned(parseKeypad(check.value))}
+                    </b>
                   </>
                 )}
                 .
               </p>
               {sys.balanced && rules.pen > 0 ? (
                 <p className="muted small" style={{ marginTop: 6 }}>
-                  Quedan ≈ {decksText(table.decksRemaining)} mazos: conteo real {fmtSigned(table.tcSys, 1)}.
+                  Quedan ≈ {decksText(table.decksRemaining)} mazos: conteo real{" "}
+                  {fmtSigned(table.tcSys, 1)}.
                 </p>
               ) : null}
               <Button onClick={closeCheck} style={{ marginTop: 18 }}>
@@ -442,13 +629,17 @@ function TableView({
             </div>
           ) : (
             <div>
-              <div className="eyebrow acc center">{check.final ? "Fin del zapato" : "Chequeo de conteo"}</div>
+              <div className="eyebrow acc center">
+                {check.final ? "Fin del zapato" : "Chequeo de conteo"}
+              </div>
               <h2 className="center" style={{ fontSize: 24, marginTop: 6 }}>
                 ¿Cuál es el conteo corrido?
               </h2>
               <p className="center muted small" style={{ marginTop: 4 }}>
                 {sys.name}
-                {sys.balanced ? " · running count" : ` · arrancó en ${fmtSigned(sys.irc(rules.decks))}`}
+                {sys.balanced
+                  ? " · running count"
+                  : ` · arrancó en ${fmtSigned(sys.irc(rules.decks))}`}
               </p>
               <div className="keypad-display">{formatKeypad(check.value)}</div>
               <Keypad
@@ -474,13 +665,19 @@ function TableView({
         ) : null}
       </Modal>
 
-      <Sheet open={whyOpen && !!fb} onClose={() => setWhyOpen(false)} title="Por qué">
+      <Sheet
+        open={whyOpen && !!fb}
+        onClose={() => setWhyOpen(false)}
+        title="Por qué"
+      >
         {fb ? (
           <>
             <div className="res-moves" style={{ marginTop: 0 }}>
               <div>
                 <div className="eyebrow">Tu jugada</div>
-                <div className={cx("res-move", fb.ok ? "good" : "bad")}>{ACTION_NAMES[fb.chosen]}</div>
+                <div className={cx("res-move", fb.ok ? "good" : "bad")}>
+                  {ACTION_NAMES[fb.chosen]}
+                </div>
               </div>
               <div>
                 <div className="eyebrow">La correcta</div>
@@ -506,7 +703,11 @@ function SimAction({ action, allowed, table }) {
         table.act(action);
       }}
     >
-      {action === "D" ? <span className="act-2x">2X</span> : <Icon name={ACTION_ICONS[action]} size={22} />}
+      {action === "D" ? (
+        <span className="act-2x">2X</span>
+      ) : (
+        <Icon name={ACTION_ICONS[action]} size={22} />
+      )}
       <span className="act-label">{ACTION_NAMES[action].toUpperCase()}</span>
       <span className="act-en">{ACTION_EN[action]}</span>
     </button>
@@ -519,13 +720,29 @@ function XRay({ comp }) {
   return (
     <div className="xray" title="Cartas que quedan en el zapato">
       <div className="xray-bar">
-        <span className="xr-lo" style={{ width: `${(comp.low / total) * 100}%` }} />
-        <span className="xr-mid" style={{ width: `${(comp.mid / total) * 100}%` }} />
-        <span className="xr-hi" style={{ width: `${(comp.high / total) * 100}%` }} />
+        <span
+          className="xr-lo"
+          style={{ width: `${(comp.low / total) * 100}%` }}
+        />
+        <span
+          className="xr-mid"
+          style={{ width: `${(comp.mid / total) * 100}%` }}
+        />
+        <span
+          className="xr-hi"
+          style={{ width: `${(comp.high / total) * 100}%` }}
+        />
       </div>
       <div className="xray-lbl tiny">
         <span className="bad">BAJAS</span>
-        <span className="muted">RAYOS X {extra > 0 ? `· +${extra} altas` : extra < 0 ? `· ${-extra} bajas de más` : ""}</span>
+        <span className="muted">
+          RAYOS X{" "}
+          {extra > 0
+            ? `· +${extra} altas`
+            : extra < 0
+              ? `· ${-extra} bajas de más`
+              : ""}
+        </span>
         <span className="good">ALTAS</span>
       </div>
     </div>

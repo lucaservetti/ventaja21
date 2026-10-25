@@ -6,6 +6,7 @@ import { PlayingCard, cx } from "../ui/components.jsx";
 import { dealerDist, evFor, rankNum } from "../engine/ev.js";
 import { fmtSigned, fmtTag, hiloValue } from "../engine/systems.js";
 import { Logo } from "../ui/common.jsx";
+import { ACTION_EN } from "../engine/strategy.js";
 import { BustCards, MiniChart, rich } from "./visuals.jsx";
 
 const sceneCardCache = new Map();
@@ -484,7 +485,8 @@ function Scene({ step: a, picked: e, onPick: t }) {
   // En pantallas bajas, que el texto del coach siempre quede a la vista.
   const sayRef = useRef(null);
   useEffect(() => {
-    if (sayRef.current && sayRef.current.scrollIntoView) sayRef.current.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (sayRef.current && sayRef.current.scrollIntoView)
+      sayRef.current.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }, [a.sceneId, a.beat, e]);
   let s = a.chart
       ? typeof a.chart == "string"
@@ -597,6 +599,7 @@ function SceneActions({ act: a, opts: e, onAct: t, surrender: s }) {
             <Icon name={PLAY_ICONS[i]} size={22} />
           )}
           <span>{PLAY_NAMES[i]}</span>
+          <span className="act-en">{ACTION_EN[i]}</span>
         </button>
       ))}
     </div>

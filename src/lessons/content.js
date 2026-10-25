@@ -113,7 +113,7 @@ const SECTIONS = [
             },
             {
               act: "S",
-              say: "19 es una muy buena mano. Tocá **Plantarse** para quedarte con ella.",
+              say: "19 es una muy buena mano. Tocá **Plantarse** (en inglés, *stand*) para quedarte con ella.",
             },
             {
               d: ["10c", "8d"],
@@ -150,7 +150,7 @@ const SECTIONS = [
             },
             {
               act: "H",
-              say: "Contra un 10, con 15 conviene pedir (lo vas a ver en la sección 2). Tocá **Pedir**.",
+              say: "Contra un 10, con 15 conviene pedir otra carta (lo vas a ver en la sección 2). Tocá **Pedir** (en inglés, *hit*).",
             },
             {
               p: ["9d", "6c", "8s"],
@@ -360,16 +360,16 @@ const SECTIONS = [
         id: "l4",
         title: "Manos blandas",
         sum: [
-          "Una mano es blanda cuando tiene un As que vale 11, como A,6.",
+          "Una mano es blanda (soft) cuando tiene un As que vale 11, como A,6.",
           "Desde una blanda no te pasás con una carta: si te pasarías, el As vale 1.",
-          "Cuando el As tiene que valer 1, la mano pasa a ser dura.",
+          "Cuando el As tiene que valer 1, la mano pasa a ser dura (hard).",
         ],
         steps: [
           info(
             "Duras y blandas",
             [
-              "Una mano es **blanda** si tiene un As que vale 11.",
-              "Es **dura** si no tiene As, o si el As tiene que valer 1 para no pasarte.",
+              "Una mano es **blanda** (en inglés, *soft*) si tiene un As que vale 11.",
+              "Es **dura** (*hard*) si no tiene As, o si el As tiene que valer 1 para no pasarte.",
             ],
             {
               v: "hands2",
@@ -485,7 +485,7 @@ const SECTIONS = [
             },
           ),
           info("Lo que vos tenés y el crupier no", [
-            "Para compensar, tenés opciones que el crupier no tiene: plantarte cuando quieras, **doblar**, **separar** y cobrar el blackjack 3 a 2.",
+            "Para compensar, tenés opciones que el crupier no tiene: plantarte cuando quieras, **doblar** (*double*), **separar** (*split*) y cobrar el blackjack 3 a 2.",
           ]),
           info(
             "La estrategia básica",
@@ -769,7 +769,7 @@ const SECTIONS = [
             {
               play: {
                 a: "S",
-                x: "Esperás. El 2 no es tan débil como un 4, 5 o 6, pero con 13 o más igual te plantás. Solo el 12 pide contra 2 o 3.",
+                x: "Te plantás. El 2 no es tan débil como un 4, 5 o 6, pero con 13 o más igual te plantás. Solo el 12 pide contra 2 o 3.",
               },
               say: "13 contra un 2. Cuidado con esta.",
             },
@@ -908,7 +908,7 @@ const SECTIONS = [
             "7",
             ["Ad", "7s"],
             "S",
-            "Plantate: tu 18 le gana al 17 probable del crupier.",
+            "Plantate: tu 18 le gana al 17 que el crupier suele armar.",
           ),
           decide("A", ["Ac", "7h"], "H", "Pedí: contra As, 18 blando pierde."),
           decide(
@@ -933,7 +933,7 @@ const SECTIONS = [
         ],
         steps: [
           info("Doblar", [
-            "Doblar es **duplicar tu apuesta** a cambio de recibir **una sola carta más**.",
+            "Doblar (en inglés, *double* o *double down*) es **duplicar tu apuesta** a cambio de recibir **una sola carta más**.",
             "Se hace con tus dos primeras cartas, cuando sos favorito en la mano.",
           ]),
           ...scene([
@@ -1026,7 +1026,7 @@ const SECTIONS = [
           info(
             "Separar",
             [
-              "Con dos cartas iguales podés **separarlas**: ponés otra apuesta igual a la primera y cada carta arranca una mano nueva.",
+              "Con dos cartas iguales podés **separarlas** (en inglés, *split*): ponés otra apuesta igual a la primera y cada carta arranca una mano nueva.",
             ],
             { v: "cards", cards: ["8h", "8c"], caption: "Un par de 8" },
           ),
@@ -1239,7 +1239,7 @@ const SECTIONS = [
           info(
             "Qué es",
             [
-              "Cuando el crupier muestra un As, te ofrece un **seguro**: apostás la mitad de tu apuesta a que tiene blackjack.",
+              "Cuando el crupier muestra un As, te ofrece un **seguro** (*insurance*): apostás la mitad de tu apuesta a que tiene blackjack.",
               "Si lo tiene, el seguro paga **2 a 1**.",
             ],
             {
@@ -1861,7 +1861,7 @@ const SECTIONS = [
         ],
         steps: [
           info("Rendirse", [
-            "La **rendición tardía** te deja abandonar tu mano después de que el crupier revisó que no tiene blackjack. Perdés la mitad de la apuesta.",
+            "La **rendición tardía** (*late surrender*) te deja abandonar tu mano después de que el crupier revisó que no tiene blackjack. Perdés la mitad de la apuesta.",
             "Solo se puede con tus dos primeras cartas.",
           ]),
           ...scene([

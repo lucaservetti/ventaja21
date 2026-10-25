@@ -15,7 +15,16 @@ import {
 import { Icon } from "../ui/icons.jsx";
 import { ACTION_NAMES } from "../engine/strategy.js";
 import { sfx } from "../sound.js";
-import { Button, IconButton, Modal, Pills, Sheet, StrategyChart, Toggle, cx } from "../ui/components.jsx";
+import {
+  Button,
+  IconButton,
+  Modal,
+  Pills,
+  Sheet,
+  StrategyChart,
+  Toggle,
+  cx,
+} from "../ui/components.jsx";
 import { evFor } from "../engine/ev.js";
 import { systemFor } from "../engine/systems.js";
 import { TABLE_SPEEDS, Table, money } from "../engine/table.js";
@@ -42,7 +51,10 @@ function tableOptions(st) {
 function getTable() {
   if (!tableInstance) {
     const st = getState();
-    tableInstance = new Table({ ...tableOptions(st), bankroll: st.table.bankroll });
+    tableInstance = new Table({
+      ...tableOptions(st),
+      bankroll: st.table.bankroll,
+    });
   }
   return tableInstance;
 }
@@ -59,7 +71,8 @@ function PlayTab({ active }) {
   // Las opciones de "Mesa" y de Ajustes viven en el estado guardado; acá se pasan a la mesa.
   useEffect(() => {
     const opts = tableOptions(st);
-    const rulesChanged = JSON.stringify(withRules(table.rules)) !== JSON.stringify(opts.rules);
+    const rulesChanged =
+      JSON.stringify(withRules(table.rules)) !== JSON.stringify(opts.rules);
     table.configure({ ...opts, reshuffle: rulesChanged && !table.running });
   }, [optionsKey]);
 
@@ -67,7 +80,14 @@ function PlayTab({ active }) {
   useEffect(() => {
     table.onRoundEnd = (result, t) => {
       const s = t.session;
-      const prev = lastSession.current || { hands: 0, net: 0, decisions: 0, decisionsOk: 0, bets: 0, betsOk: 0 };
+      const prev = lastSession.current || {
+        hands: 0,
+        net: 0,
+        decisions: 0,
+        decisionsOk: 0,
+        bets: 0,
+        betsOk: 0,
+      };
       setState((state) =>
         markActive({
           ...state,
@@ -77,7 +97,8 @@ function PlayTab({ active }) {
             hands: state.play.hands + (s.hands - prev.hands),
             net: state.play.net + (s.net - prev.net),
             decisions: state.play.decisions + (s.decisions - prev.decisions),
-            decisionsOk: state.play.decisionsOk + (s.decisionsOk - prev.decisionsOk),
+            decisionsOk:
+              state.play.decisionsOk + (s.decisionsOk - prev.decisionsOk),
             bets: state.play.bets + (s.bets - prev.bets),
             betsOk: state.play.betsOk + (s.betsOk - prev.betsOk),
           },
@@ -91,7 +112,11 @@ function PlayTab({ active }) {
   const onCheck = (result) =>
     setState((state) => ({
       ...state,
-      play: { ...state.play, checks: state.play.checks + 1, checksOk: state.play.checksOk + (result.ok ? 1 : 0) },
+      play: {
+        ...state.play,
+        checks: state.play.checks + 1,
+        checksOk: state.play.checksOk + (result.ok ? 1 : 0),
+      },
     }));
 
   const net = table.session.net;
@@ -115,9 +140,26 @@ function PlayTab({ active }) {
         </b>
       </div>
       <span className="grow" />
-      <IconButton icon="grid" label="Tabla de estrategia" onClick={() => setSheet("chart")} className="sq small-ib" size={20} />
-      <IconButton icon="stats" label="Estadísticas de la sesión" onClick={() => setSheet("stats")} className="sq small-ib" size={20} />
-      <button type="button" className="table-btn" onClick={() => setSheet("table")} aria-label="Mesa y ayudas">
+      <IconButton
+        icon="grid"
+        label="Tabla de estrategia"
+        onClick={() => setSheet("chart")}
+        className="sq small-ib"
+        size={20}
+      />
+      <IconButton
+        icon="stats"
+        label="Estadísticas de la sesión"
+        onClick={() => setSheet("stats")}
+        className="sq small-ib"
+        size={20}
+      />
+      <button
+        type="button"
+        className="table-btn"
+        onClick={() => setSheet("table")}
+        aria-label="Mesa y ayudas"
+      >
         <Icon name="gear" size={18} />
         <span className="table-btn-text">Mesa</span>
       </button>
@@ -139,7 +181,12 @@ function PlayTab({ active }) {
         onShoeEnd={(stats) => setShoeSummary(stats)}
       />
       <ShoeSummary stats={shoeSummary} onClose={() => setShoeSummary(null)} />
-      <Sheet open={sheet === "chart"} onClose={() => setSheet(null)} title="Estrategia básica" tall={true}>
+      <Sheet
+        open={sheet === "chart"}
+        onClose={() => setSheet(null)}
+        title="Estrategia básica"
+        tall={true}
+      >
         <StrategyChart rules={rules} />
         <div className="tags" style={{ marginTop: 14 }}>
           {describeRules(rules).map((r) => (
@@ -149,10 +196,19 @@ function PlayTab({ active }) {
           ))}
         </div>
       </Sheet>
-      <Sheet open={sheet === "stats"} onClose={() => setSheet(null)} title="Esta sesión" tall={true}>
+      <Sheet
+        open={sheet === "stats"}
+        onClose={() => setSheet(null)}
+        title="Esta sesión"
+        tall={true}
+      >
         <SessionStats table={table} st={st} />
       </Sheet>
-      <TableSheet open={sheet === "table"} onClose={() => setSheet(null)} table={table} />
+      <TableSheet
+        open={sheet === "table"}
+        onClose={() => setSheet(null)}
+        table={table}
+      />
     </>
   );
 }
@@ -172,22 +228,35 @@ function ShoeSummary({ stats, onClose }) {
               <div className="tile-l">manos</div>
             </div>
             <div className="tile">
-              <div className={cx("tile-v num", stats.net > 0 ? "good" : stats.net < 0 ? "bad" : "")}>
+              <div
+                className={cx(
+                  "tile-v num",
+                  stats.net > 0 ? "good" : stats.net < 0 ? "bad" : "",
+                )}
+              >
                 {stats.net >= 0 ? "+" : "−"}${money(Math.abs(stats.net))}
               </div>
               <div className="tile-l">resultado</div>
             </div>
             <div className="tile">
-              <div className="tile-v num">{stats.decisions ? Math.round((stats.decisionsOk / stats.decisions) * 100) + "%" : "—"}</div>
+              <div className="tile-v num">
+                {stats.decisions
+                  ? Math.round((stats.decisionsOk / stats.decisions) * 100) +
+                    "%"
+                  : "—"}
+              </div>
               <div className="tile-l">jugadas correctas</div>
             </div>
             <div className="tile">
-              <div className="tile-v num">{stats.checks ? `${stats.checksOk}/${stats.checks}` : "—"}</div>
+              <div className="tile-v num">
+                {stats.checks ? `${stats.checksOk}/${stats.checks}` : "—"}
+              </div>
               <div className="tile-l">chequeos de conteo</div>
             </div>
           </div>
           <p className="muted small center" style={{ marginTop: 12 }}>
-            El resultado de un zapato es casi pura suerte. Lo que importa es jugar bien y apostar según el conteo.
+            El resultado de un zapato es casi pura suerte. Lo que importa es
+            jugar bien y apostar según el conteo.
           </p>
           <Button onClick={onClose} style={{ marginTop: 16 }}>
             Mezclar y seguir
@@ -209,7 +278,12 @@ function SessionStats({ table, st }) {
           <div className="tile-l">manos</div>
         </div>
         <div className="tile">
-          <div className={cx("tile-v num", s.net > 0 ? "good" : s.net < 0 ? "bad" : "")}>
+          <div
+            className={cx(
+              "tile-v num",
+              s.net > 0 ? "good" : s.net < 0 ? "bad" : "",
+            )}
+          >
             {s.net >= 0 ? "+" : "−"}
             {money(Math.abs(s.net))}
           </div>
@@ -242,11 +316,15 @@ function SessionStats({ table, st }) {
         </div>
         <div className="kv">
           <span className="kv-k">Chequeos de conteo</span>
-          <span className="kv-v num">{s.checks ? `${s.checksOk}/${s.checks}` : "—"}</span>
+          <span className="kv-v num">
+            {s.checks ? `${s.checksOk}/${s.checks}` : "—"}
+          </span>
         </div>
         <div className="kv">
           <span className="kv-k">Seguro bien decidido</span>
-          <span className="kv-v num">{s.insurance ? `${s.insuranceOk}/${s.insurance}` : "—"}</span>
+          <span className="kv-v num">
+            {s.insurance ? `${s.insuranceOk}/${s.insurance}` : "—"}
+          </span>
         </div>
         <div className="kv">
           <span className="kv-k">Zapatos terminados</span>
@@ -273,7 +351,8 @@ function SessionStats({ table, st }) {
                       {m.spot}
                     </span>
                     <span className="li-sub" style={{ display: "block" }}>
-                      Jugaste <b className="bad">{ACTION_NAMES[m.chosen]}</b> · era <b className="acc">{ACTION_NAMES[m.best]}</b>
+                      Jugaste <b className="bad">{ACTION_NAMES[m.chosen]}</b> ·
+                      era <b className="acc">{ACTION_NAMES[m.best]}</b>
                     </span>
                   </span>
                 </div>
@@ -295,7 +374,9 @@ function SessionStats({ table, st }) {
         </div>
         <div className="kv">
           <span className="kv-k">Jugadas correctas</span>
-          <span className="kv-v num">{pctOf(st.play.decisionsOk, st.play.decisions)}</span>
+          <span className="kv-v num">
+            {pctOf(st.play.decisionsOk, st.play.decisions)}
+          </span>
         </div>
       </div>
     </div>
@@ -310,8 +391,17 @@ function TableSheet({ open, onClose, table }) {
     const ev = -evFor(rules).gameEV();
     const deckAdj = { 4: -9e-4, 6: -5e-4, 8: -3e-4 }[rules.decks] || 0;
     return ev + deckAdj;
-  }, [rules.h17, rules.das, rules.surrender, rules.bjPays, rules.decks, rules.doubleOn]);
-  const preset = TABLE_PRESETS.find((p) => Object.entries(p.rules).every(([k, v]) => rules[k] === v));
+  }, [
+    rules.h17,
+    rules.das,
+    rules.surrender,
+    rules.bjPays,
+    rules.decks,
+    rules.doubleOn,
+  ]);
+  const preset = TABLE_PRESETS.find((p) =>
+    Object.entries(p.rules).every(([k, v]) => rules[k] === v),
+  );
   return (
     <Sheet open={open} onClose={onClose} title="Mesa" tall={true}>
       <div className="eyebrow">Tipo de mesa</div>
@@ -332,13 +422,18 @@ function TableSheet({ open, onClose, table }) {
         ))}
       </div>
       <div className="note-box" style={{ marginTop: 12 }}>
-        Ventaja de la casa con estrategia básica: <b>≈ {(houseEdge * 100).toFixed(1).replace(".", ",")} %</b>
+        Ventaja de la casa con estrategia básica:{" "}
+        <b>≈ {(houseEdge * 100).toFixed(1).replace(".", ",")} %</b>
         {rules.bjPays < 1.5 ? " (el 6:5 solo ya suma 1,4 %)" : ""}
       </div>
       <h3 className="sheet-sub">Reglas</h3>
       <div className="field">
         <span>Mazos</span>
-        <Pills options={[4, 6, 8].map((n) => ({ value: n, label: String(n) }))} value={rules.decks} onChange={(n) => setRules({ decks: n })} />
+        <Pills
+          options={[4, 6, 8].map((n) => ({ value: n, label: String(n) }))}
+          value={rules.decks}
+          onChange={(n) => setRules({ decks: n })}
+        />
       </div>
       <div className="field">
         <span>Corte del zapato</span>
@@ -365,32 +460,71 @@ function TableSheet({ open, onClose, table }) {
           onChange={(bjPays) => setRules({ bjPays })}
         />
       </div>
-      <Toggle id="r-h17" label="El crupier pide con 17 blando (H17)" checked={rules.h17} onChange={(h17) => setRules({ h17 })} />
-      <Toggle id="r-das" label="Doblar después de separar" checked={rules.das} onChange={(das) => setRules({ das })} />
-      <Toggle id="r-ls" label="Rendición tardía (surrender)" checked={rules.surrender} onChange={(surrender) => setRules({ surrender })} />
-      <Toggle id="r-rsa" label="Volver a separar ases" checked={rules.rsa} onChange={(rsa) => setRules({ rsa })} />
-      <p className="muted tiny">Cambiar las reglas o los mazos mezcla el zapato de nuevo.</p>
+      <Toggle
+        id="r-h17"
+        label="El crupier pide con 17 blando (H17)"
+        checked={rules.h17}
+        onChange={(h17) => setRules({ h17 })}
+      />
+      <Toggle
+        id="r-das"
+        label="Doblar después de separar"
+        checked={rules.das}
+        onChange={(das) => setRules({ das })}
+      />
+      <Toggle
+        id="r-ls"
+        label="Rendición tardía (surrender)"
+        checked={rules.surrender}
+        onChange={(surrender) => setRules({ surrender })}
+      />
+      <Toggle
+        id="r-rsa"
+        label="Volver a separar ases"
+        checked={rules.rsa}
+        onChange={(rsa) => setRules({ rsa })}
+      />
+      <p className="muted tiny">
+        Cambiar las reglas o los mazos mezcla el zapato de nuevo.
+      </p>
       <h3 className="sheet-sub">Juego</h3>
       <div className="field">
         <span>Otros jugadores</span>
-        <Pills options={[0, 1, 2, 3, 4].map((n) => ({ value: n, label: String(n) }))} value={t.bots} onChange={(bots) => setTable({ bots })} />
+        <Pills
+          options={[0, 1, 2, 3, 4].map((n) => ({ value: n, label: String(n) }))}
+          value={t.bots}
+          onChange={(bots) => setTable({ bots })}
+        />
       </div>
       <div className="field">
         <span>Velocidad</span>
         <Pills
-          options={Object.entries(TABLE_SPEEDS).map(([value, s]) => ({ value, label: s.label }))}
+          options={Object.entries(TABLE_SPEEDS).map(([value, s]) => ({
+            value,
+            label: s.label,
+          }))}
           value={t.speed}
           onChange={(speed) => setTable({ speed })}
         />
       </div>
       <div className="field">
         <span>Unidad de apuesta</span>
-        <Pills options={[5, 10, 25, 50, 100].map((n) => ({ value: n, label: `$${n}` }))} value={t.unit} onChange={(unit) => setTable({ unit })} />
+        <Pills
+          options={[5, 10, 25, 50, 100].map((n) => ({
+            value: n,
+            label: `$${n}`,
+          }))}
+          value={t.unit}
+          onChange={(unit) => setTable({ unit })}
+        />
       </div>
       <div className="field">
         <span>Fichas al recargar</span>
         <Pills
-          options={[500, 1000, 5000, 10000].map((n) => ({ value: n, label: `$${n.toLocaleString("es-UY")}` }))}
+          options={[500, 1000, 5000, 10000].map((n) => ({
+            value: n,
+            label: `$${n.toLocaleString("es-UY")}`,
+          }))}
           value={t.startBankroll}
           onChange={(startBankroll) => setTable({ startBankroll })}
         />
@@ -408,7 +542,12 @@ function TableSheet({ open, onClose, table }) {
           onChange={(countCheck) => setTable({ countCheck })}
         />
       </div>
-      <Toggle id="t-sound" label="Sonido" checked={st.settings.sound} onChange={(sound) => setSettings({ sound })} />
+      <Toggle
+        id="t-sound"
+        label="Sonido"
+        checked={st.settings.sound}
+        onChange={(sound) => setSettings({ sound })}
+      />
       <h3 className="sheet-sub">Ayudas</h3>
       <Toggle
         id="t-coach"
@@ -431,14 +570,28 @@ function TableSheet({ open, onClose, table }) {
         checked={t.betCoach}
         onChange={(betCoach) => setTable({ betCoach })}
       />
-      <Toggle id="t-count" label="Mostrar el conteo" sub="Apagalo para practicar de verdad" checked={t.showCount} onChange={(showCount) => setTable({ showCount })} />
-      <Toggle id="t-xray" label="Rayos X del zapato" sub="Muestra qué cartas quedan (altas y bajas)" checked={t.xray} onChange={(xray) => setTable({ xray })} />
+      <Toggle
+        id="t-count"
+        label="Mostrar el conteo"
+        sub="Apagalo para practicar de verdad"
+        checked={t.showCount}
+        onChange={(showCount) => setTable({ showCount })}
+      />
+      <Toggle
+        id="t-xray"
+        label="Rayos X del zapato"
+        sub="Muestra qué cartas quedan (altas y bajas)"
+        checked={t.xray}
+        onChange={(xray) => setTable({ xray })}
+      />
       <Toggle
         id="t-press"
         label="Modo presión de casino"
         sub="Más velocidad, charla de mesa y chequeos sorpresa"
         checked={t.pressure}
-        onChange={(pressure) => setTable({ pressure, speed: pressure ? "fast" : t.speed })}
+        onChange={(pressure) =>
+          setTable({ pressure, speed: pressure ? "fast" : t.speed })
+        }
       />
       <div className="btns" style={{ marginTop: 20 }}>
         <Button

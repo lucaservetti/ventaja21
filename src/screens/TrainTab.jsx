@@ -119,7 +119,7 @@ function TrainTab() {
             <li>
               <span className="how-n">3</span>
               <span>
-                <b>Recibí tus próximas diez</b>
+                <b>Recibí las próximas diez manos</b>
                 <span className="muted">
                   La siguiente tanda insiste en las manos que fallaste, así
                   practicás donde importa.
@@ -156,11 +156,15 @@ function TrainTab() {
                   </span>
                   <span className="skill-meter">
                     <ProgressBar
-                      value={d.acc === null ? 0 : d.coverage * 0.4 + d.acc * 0.6}
+                      value={
+                        d.acc === null ? 0 : d.coverage * 0.4 + d.acc * 0.6
+                      }
                       tone={p.tone}
                       className="skill-bar"
                     />
-                    <span className={cx("skill-grade", p.tone && `t-${p.tone}`)}>
+                    <span
+                      className={cx("skill-grade", p.tone && `t-${p.tone}`)}
+                    >
                       {d.acc === null ? p.label : `${pct(d.acc)} · ${p.label}`}
                     </span>
                   </span>

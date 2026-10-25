@@ -9,7 +9,7 @@ import {
   indexFor,
   strategyFor,
 } from "../engine/strategy.js";
-import { PlayingCard, cx } from "../ui/components.jsx";
+import { ChartLegend, PlayingCard, chartCode, cx } from "../ui/components.jsx";
 import { bustChances } from "../engine/ev.js";
 import { BET_RAMP } from "../engine/systems.js";
 import { useRules } from "../ui/common.jsx";
@@ -17,15 +17,17 @@ import { useRules } from "../ui/common.jsx";
 function rich(a) {
   return typeof a != "string"
     ? a
-    : a
-        .split(/(\*\*[^*]+\*\*)/g)
-        .map((t, s) =>
-          t.startsWith("**") && t.endsWith("**") ? (
-            <b key={s}>{t.slice(2, -2)}</b>
-          ) : (
-            t
-          ),
-        );
+    : a.split(/(\*\*[^*]+\*\*|\*[^*\s][^*]*\*)/g).map((t, s) =>
+        t.startsWith("**") && t.endsWith("**") ? (
+          <b key={s}>{t.slice(2, -2)}</b>
+        ) : t.length > 2 && t.startsWith("*") && t.endsWith("*") ? (
+          <i className="en" key={s}>
+            {t.slice(1, -1)}
+          </i>
+        ) : (
+          t
+        ),
+      );
 }
 function useCards(a) {
   return useMemo(
@@ -289,25 +291,21 @@ function MiniChart({
           ? [20, 19, 18, 17, 16, 15, 14, 13]
           : ["A", "T", "9", "8", "7", "6", "5", "4", "3", "2"]),
     u = (f, y) =>
-      a === "pairs"
-        ? o.pairs[f][y]
-        : a === "soft"
-          ? o.soft[f][y]
-          : f <= 8
-            ? "H"
-            : o.hard[f][y],
+      chartCode(
+        a === "pairs"
+          ? o.pairs[f][y]
+          : a === "soft"
+            ? o.soft[f][y]
+            : f <= 8
+              ? "H"
+              : o.hard[f][y],
+        i,
+      ),
     d = new Set();
   for (let f of r)
     for (let y = 0; y < 10; y++) {
       d.add(CHART_CLASS[u(f, y)]);
     }
-  let p = [
-    ["hit", "P", "pedir"],
-    ["stand", "Q", "plantarse"],
-    ["dbl", "D", "doblar"],
-    ["split", "S", "separar"],
-    ["surr", "R", "rendirse"],
-  ];
   return (
     <div className={cx("vis mini-chart", t && "has-hl")}>
       <div className="chart-row chart-headrow">
@@ -336,15 +334,18 @@ function MiniChart({
           })}
         </div>
       ))}
-      <div className="chart-legend" style={{ marginTop: 10 }}>
-        {p
-          .filter(([f]) => d.has(f))
-          .map(([f, y, C]) => (
-            <span key={f}>
-              <i className={`cell c-${f}`}>{y}</i> {C}
-            </span>
-          ))}
-      </div>
+      <ChartLegend
+        show={[
+          ["H", "hit"],
+          ["S", "stand"],
+          ["D", "dbl"],
+          ["P", "split"],
+          ["R", "surr"],
+        ]
+          .filter(([, cls]) => d.has(cls))
+          .map(([l]) => l)}
+        style={{ marginTop: 10 }}
+      />
       {n ? (
         <p className="chart-cap">
           {i.h17

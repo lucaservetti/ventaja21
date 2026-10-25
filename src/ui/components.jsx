@@ -505,13 +505,16 @@ function StrategyChart({
   let l = strategyFor(a),
     i = s === "hard" ? HARD_ROWS : s === "soft" ? SOFT_ROWS : PAIR_ROWS,
     o = (c, r) =>
-      s === "pairs"
-        ? l.pairs[c][r]
-        : s === "soft"
-          ? l.soft[c][r]
-          : c <= 8
-            ? "H"
-            : l.hard[c][r];
+      chartCode(
+        s === "pairs"
+          ? l.pairs[c][r]
+          : s === "soft"
+            ? l.soft[c][r]
+            : c <= 8
+              ? "H"
+              : l.hard[c][r],
+        a,
+      );
   return (
     <div className="chart">
       <Segmented
@@ -523,6 +526,10 @@ function StrategyChart({
         value={s}
         onChange={n}
       />
+      <p className="chart-cap-top">
+        {CHART_TAB_NOTES[s]} Buscá tu mano en las filas y la carta del crupier
+        en las columnas.
+      </p>
       <div
         className="chart-grid"
         role="table"
@@ -566,42 +573,57 @@ function StrategyChart({
           </div>
         ))}
       </div>
-      <div className="chart-legend">
-        <span>
-          <i className="cell c-hit">P</i>
-          {" pedir"}
-        </span>
-        <span>
-          <i className="cell c-stand">Q</i>
-          {" plantarse"}
-        </span>
-        <span>
-          <i className="cell c-dbl">D</i>
-          {" doblar"}
-        </span>
-        <span>
-          <i className="cell c-split">S</i>
-          {" separar"}
-        </span>
-        {a.surrender || a.h17 ? (
-          <span>
-            <i className="cell c-surr">R</i>
-            {" rendirse"}
-          </span>
-        ) : null}
-      </div>
+      <ChartLegend
+        show={a.surrender ? ["H", "S", "D", "P", "R"] : ["H", "S", "D", "P"]}
+      />
       <p className="chart-note">
-        {"Letra chica: qué hacer si no se permite. "}
-        <b>D</b>
-        {" sin letra = si no podés doblar, pedí. "}
+        Letra chica: qué hacer si esa jugada no se permite. <b>D</b> sola: si no
+        podés doblar, pedí.{" "}
         <b>
-          D<sub>q</sub>
+          D<sub>s</sub>
         </b>
-        {" = si no podés doblar, plantate."}
-        {a.surrender || a.h17
-          ? " R con p, q o s = si no hay rendición: pedir, plantarse o separar."
-          : ""}
+        : si no podés doblar, plantate.
+        {a.surrender ? (
+          <>
+            {" "}
+            <b>R</b> con h, s o p: si no te podés rendir, pedí (h), plantate (s)
+            o separá (p).
+          </>
+        ) : null}
       </p>
+    </div>
+  );
+}
+// Sin rendición en la mesa, las casillas de "rendirse" muestran directamente la jugada de reemplazo.
+function chartCode(code, rules) {
+  if (rules && !rules.surrender && code[0] === "R")
+    return { Rh: "H", Rs: "S", Rp: "P" }[code] || code;
+  return code;
+}
+// Las letras de la tabla son las internacionales (en inglés); la leyenda las explica en español.
+const CHART_KEY = [
+  ["H", "hit", "Pedir", "hit"],
+  ["S", "stand", "Plantarse", "stand"],
+  ["D", "dbl", "Doblar", "double"],
+  ["P", "split", "Separar", "split"],
+  ["R", "surr", "Rendirse", "surrender"],
+];
+const CHART_TAB_NOTES = {
+  hard: "Manos duras (hard): sin As, o con el As valiendo 1.",
+  soft: "Manos blandas (soft): con un As que vale 11.",
+  pairs: "Pares (pairs): tus dos primeras cartas son iguales.",
+};
+function ChartLegend({ show = ["H", "S", "D", "P", "R"], style }) {
+  return (
+    <div className="chart-legend" style={style}>
+      {CHART_KEY.filter(([letter]) => show.includes(letter)).map(
+        ([letter, cls, es, en]) => (
+          <span key={letter}>
+            <i className={`cell c-${cls}`}>{letter}</i> {es}{" "}
+            <span className="legend-en">· {en}</span>
+          </span>
+        ),
+      )}
     </div>
   );
 }
@@ -700,6 +722,7 @@ export {
   Badge,
   Button,
   CHIP_VALUES,
+  ChartLegend,
   Chip,
   ChipStack,
   Flame,
@@ -717,6 +740,7 @@ export {
   StrategyChart,
   Toasts,
   Toggle,
+  chartCode,
   chartHighlight,
   cx,
   formatKeypad,

@@ -1,8 +1,20 @@
 // Motor del simulador: un zapato, el crupier, otros jugadores (bots) y tus manos.
 // La UI lo lee con subscribe()/version y lo maneja con addChip(), deal(), act(), insure()…
 import { withRules } from "../state.js";
-import { Shoe, handValue, isBlackjack, isPair, rankKey, upLabel } from "./cards.js";
-import { allowedActions, basicPlay, countPlay, takeInsurance } from "./strategy.js";
+import {
+  Shoe,
+  handValue,
+  isBlackjack,
+  isPair,
+  rankKey,
+  upLabel,
+} from "./cards.js";
+import {
+  allowedActions,
+  basicPlay,
+  countPlay,
+  takeInsurance,
+} from "./strategy.js";
 import { explainBest, explainDeviation, explainMistake } from "./explain.js";
 import {
   betUnits,
@@ -52,11 +64,21 @@ function newHand(bet, extra = {}) {
 }
 
 function emptyShoeStats() {
-  return { hands: 0, checks: 0, checksOk: 0, decisions: 0, decisionsOk: 0, bets: 0, betsOk: 0, net: 0 };
+  return {
+    hands: 0,
+    checks: 0,
+    checksOk: 0,
+    decisions: 0,
+    decisionsOk: 0,
+    bets: 0,
+    betsOk: 0,
+    net: 0,
+  };
 }
 
 function spotLabel(spot) {
-  if (spot.kind === "pair") return `${spot.g === "T" ? "10" : spot.g},${spot.g === "T" ? "10" : spot.g}`;
+  if (spot.kind === "pair")
+    return `${spot.g === "T" ? "10" : spot.g},${spot.g === "T" ? "10" : spot.g}`;
   return `${spot.kind === "soft" ? "Blando" : "Duro"} ${spot.total}`;
 }
 
@@ -93,7 +115,10 @@ class Table {
     };
     this.rules = withRules(options.rules || this.rules || {});
     this.sys = systemFor(this.opts.system);
-    const shoeChanged = !prevRules || prevRules.decks !== this.rules.decks || prevRules.pen !== this.rules.pen;
+    const shoeChanged =
+      !prevRules ||
+      prevRules.decks !== this.rules.decks ||
+      prevRules.pen !== this.rules.pen;
     if (initial || ((shoeChanged || options.reshuffle) && !this.running)) {
       this.newShoe();
       this.pendingShuffle = false;
@@ -145,7 +170,10 @@ class Table {
   setupBots() {
     const n = Math.max(0, Math.min(4, this.opts.bots | 0));
     if (!this.botSeats || this.botSeats.length !== n) {
-      this.botSeats = Array.from({ length: n }, (_, i) => ({ name: BOT_NAMES[i], hands: [] }));
+      this.botSeats = Array.from({ length: n }, (_, i) => ({
+        name: BOT_NAMES[i],
+        hands: [],
+      }));
     }
   }
 
@@ -182,7 +210,8 @@ class Table {
 
   sleep(beats = 1) {
     if (this.opts.instant) return Promise.resolve();
-    const ms = (TABLE_SPEEDS[this.opts.speed] || TABLE_SPEEDS.normal).ms * beats;
+    const ms =
+      (TABLE_SPEEDS[this.opts.speed] || TABLE_SPEEDS.normal).ms * beats;
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
@@ -205,7 +234,9 @@ class Table {
     return trueCount(this.rcHilo, this.decksRemaining);
   }
   get tcSys() {
-    return this.sys.balanced ? trueCount(this.rcSys, this.decksRemaining) : null;
+    return this.sys.balanced
+      ? trueCount(this.rcSys, this.decksRemaining)
+      : null;
   }
   // El coach de apuestas, las desviaciones y el seguro se calculan con Hi-Lo.
   get useCountCoach() {
@@ -216,7 +247,8 @@ class Table {
   }
   // Apuesta que corresponde al conteo real de ahora (1 unidad si se mezcla antes de la mano).
   get suggestedBet() {
-    const units = this.shoe.needsShuffle || this.pendingShuffle ? 1 : betUnits(this.tc);
+    const units =
+      this.shoe.needsShuffle || this.pendingShuffle ? 1 : betUnits(this.tc);
     return Math.min(units * this.opts.unit, this.maxBet);
   }
 
@@ -231,7 +263,8 @@ class Table {
       else if (v < 0) high++;
       else mid++;
     };
-    for (let i = this.shoe.pos; i < this.shoe.cards.length; i++) tally(this.shoe.cards[i]);
+    for (let i = this.shoe.pos; i < this.shoe.cards.length; i++)
+      tally(this.shoe.cards[i]);
     if (this.dealer.hidden && this.dealer.cards[1]) tally(this.dealer.cards[1]);
     return { low, mid, high, total: low + mid + high };
   }
@@ -247,7 +280,8 @@ class Table {
     if (this.phase === "settle") this.newBet();
     const next = Math.min(this.bet + value, this.maxBet, this.bankroll);
     if (next === this.bet) {
-      if (this.bet + value > this.bankroll) this.toast("No te alcanzan las fichas.", "warn");
+      if (this.bet + value > this.bankroll)
+        this.toast("No te alcanzan las fichas.", "warn");
       return;
     }
     this.chipStack = [...this.chipStack, next - this.bet];
@@ -306,7 +340,10 @@ class Table {
 
   refill() {
     this.bankroll = this.opts.startBankroll;
-    this.toast(`Fichas recargadas a $${this.bankroll.toLocaleString("es-UY")}.`, "info");
+    this.toast(
+      `Fichas recargadas a $${this.bankroll.toLocaleString("es-UY")}.`,
+      "info",
+    );
     this.emit();
   }
 
@@ -376,7 +413,11 @@ class Table {
     this.betFeedback = null;
     if (this.opts.betCoach && this.useCountCoach && rules.pen > 0) {
       const units = betUnits(tcBefore);
-      const ideal = Math.min(units * this.opts.unit, this.maxBet, this.bankroll);
+      const ideal = Math.min(
+        units * this.opts.unit,
+        this.maxBet,
+        this.bankroll,
+      );
       const ok = this.bet === ideal;
       this.session.bets++;
       this.shoeStats.bets++;
@@ -384,9 +425,18 @@ class Table {
         this.session.betsOk++;
         this.shoeStats.betsOk++;
       } else {
-        this.session.betMistakes = [...this.session.betMistakes, { tc: floorTC(tcBefore), bet: this.bet, ideal, units }].slice(-30);
+        this.session.betMistakes = [
+          ...this.session.betMistakes,
+          { tc: floorTC(tcBefore), bet: this.bet, ideal, units },
+        ].slice(-30);
       }
-      this.betFeedback = { ok, ideal, units, tc: floorTC(tcBefore), bet: this.bet };
+      this.betFeedback = {
+        ok,
+        ideal,
+        units,
+        tc: floorTC(tcBefore),
+        bet: this.bet,
+      };
     }
 
     this.lastBet = this.bet;
@@ -424,9 +474,14 @@ class Table {
     if (upKey === "A") {
       this.phase = "insurance";
       this.emit();
-      const took = await new Promise((resolve) => (this.insuranceResolver = resolve));
+      const took = await new Promise(
+        (resolve) => (this.insuranceResolver = resolve),
+      );
       this.insuranceResolver = null;
-      const shouldTake = this.useCountCoach && this.opts.deviations ? takeInsurance(this.tc, rules) : false;
+      const shouldTake =
+        this.useCountCoach && this.opts.deviations
+          ? takeInsurance(this.tc, rules)
+          : false;
       const ok = took === shouldTake || (this.opts.lenient && !took);
       this.session.insurance++;
       if (ok) this.session.insuranceOk++;
@@ -436,7 +491,9 @@ class Table {
           id: Date.now(),
           best: shouldTake ? "I" : "N",
           chosen: took ? "I" : "N",
-          title: shouldTake ? "Acá convenía el seguro" : "El seguro no conviene",
+          title: shouldTake
+            ? "Acá convenía el seguro"
+            : "El seguro no conviene",
           note: shouldTake
             ? `Con conteo real ${this.fmtTC()} (+3 o más) el seguro gana plata.`
             : this.opts.deviations && this.useCountCoach
@@ -446,7 +503,8 @@ class Table {
       }
       if (took) {
         const cost = this.hands[0].bet / 2;
-        if (cost > this.bankroll) this.toast("No te alcanzan las fichas para el seguro.", "warn");
+        if (cost > this.bankroll)
+          this.toast("No te alcanzan las fichas para el seguro.", "warn");
         else {
           this.insuranceBet = cost;
           this.bankroll -= cost;
@@ -462,10 +520,12 @@ class Table {
     if (upKey === "A" || upKey === "T") {
       dealerBJ = isBlackjack(this.dealer.cards);
       if (dealerBJ) await this.revealHole();
-      else if (this.insuranceBet) this.toast("El crupier no tiene blackjack: perdés el seguro.", "info");
+      else if (this.insuranceBet)
+        this.toast("El crupier no tiene blackjack: perdés el seguro.", "info");
     }
     if (dealerBJ) {
-      for (const seat of this.botSeats) for (const hand of seat.hands) hand.done = true;
+      for (const seat of this.botSeats)
+        for (const hand of seat.hands) hand.done = true;
       for (const hand of this.hands) hand.done = true;
       await this.settle(true);
       return;
@@ -486,10 +546,17 @@ class Table {
     this.phase = "dealer";
     this.emit();
     await this.revealHole();
-    const someoneAlive = [...this.hands, ...this.botSeats.flatMap((s) => s.hands)].some(
-      (h) => !h.surrendered && !handValue(h.cards).bust && !(isBlackjack(h.cards, h.fromSplit) && h.cards.length === 2),
+    const someoneAlive = [
+      ...this.hands,
+      ...this.botSeats.flatMap((s) => s.hands),
+    ].some(
+      (h) =>
+        !h.surrendered &&
+        !handValue(h.cards).bust &&
+        !(isBlackjack(h.cards, h.fromSplit) && h.cards.length === 2),
     );
-    if (someoneAlive) while (this.dealerShouldHit()) await this.dealDealer(true);
+    if (someoneAlive)
+      while (this.dealerShouldHit()) await this.dealDealer(true);
     await this.settle(false);
   }
 
@@ -523,7 +590,9 @@ class Table {
     this.dealer.hidden = false;
     const hole = this.dealer.cards[1];
     if (hole) {
-      this.dealer.cards = this.dealer.cards.map((c, i) => (i === 1 ? { ...c, faceUp: true } : c));
+      this.dealer.cards = this.dealer.cards.map((c, i) =>
+        i === 1 ? { ...c, faceUp: true } : c,
+      );
       this.see(hole);
     }
     this.emit();
@@ -547,7 +616,9 @@ class Table {
           hand.done = true;
           break;
         }
-        const allowed = allowedActions(hand, this.rules, { maxHandsReached: seat.hands.length >= this.rules.maxHands });
+        const allowed = allowedActions(hand, this.rules, {
+          maxHandsReached: seat.hands.length >= this.rules.maxHands,
+        });
         if (hand.splitAces && !this.rules.hitSplitAces && !allowed.P) {
           hand.done = true;
           break;
@@ -585,8 +656,14 @@ class Table {
     const hand = hands[index];
     const [first, second] = hand.cards;
     const aces = rankKey(first.r) === "A";
-    const a = newHand(hand.bet, { fromSplit: true, splitAces: aces || hand.splitAces });
-    const b = newHand(hand.bet, { fromSplit: true, splitAces: aces || hand.splitAces });
+    const a = newHand(hand.bet, {
+      fromSplit: true,
+      splitAces: aces || hand.splitAces,
+    });
+    const b = newHand(hand.bet, {
+      fromSplit: true,
+      splitAces: aces || hand.splitAces,
+    });
     a.cards = [first];
     b.cards = [second];
     hands.splice(index, 1, a, b);
@@ -604,9 +681,13 @@ class Table {
 
   allowed() {
     const hand = this.activeHand();
-    if (!hand || this.phase !== "player") return { H: false, S: false, D: false, P: false, R: false };
-    const allowed = allowedActions(hand, this.rules, { maxHandsReached: this.hands.length >= this.rules.maxHands });
-    if (hand.cards.length === 2 && allowed.D && hand.bet > this.bankroll) allowed.D = false;
+    if (!hand || this.phase !== "player")
+      return { H: false, S: false, D: false, P: false, R: false };
+    const allowed = allowedActions(hand, this.rules, {
+      maxHandsReached: this.hands.length >= this.rules.maxHands,
+    });
+    if (hand.cards.length === 2 && allowed.D && hand.bet > this.bankroll)
+      allowed.D = false;
     if (allowed.P && hand.bet > this.bankroll) allowed.P = false;
     return allowed;
   }
@@ -633,7 +714,9 @@ class Table {
         }
         this.emit();
         this.decisionStart = Date.now();
-        const action = await new Promise((resolve) => (this.actionResolver = resolve));
+        const action = await new Promise(
+          (resolve) => (this.actionResolver = resolve),
+        );
         this.actionResolver = null;
         this.evaluateDecision(hand, up, allowed, action);
         if (action === "S") hand.done = true;
@@ -649,7 +732,12 @@ class Table {
           await this.splitHand(this.hands, this.active);
           const firstOfSplit = this.hands[this.active];
           this.emit();
-          if (firstOfSplit.splitAces && !this.rules.hitSplitAces && !this.allowed().P) firstOfSplit.done = true;
+          if (
+            firstOfSplit.splitAces &&
+            !this.rules.hitSplitAces &&
+            !this.allowed().P
+          )
+            firstOfSplit.done = true;
           this.active--; // vuelve a jugar la primera mano del par separado
           break;
         } else if (action === "R") {
@@ -663,7 +751,12 @@ class Table {
   }
 
   act(action) {
-    if (this.phase !== "player" || !this.actionResolver || !this.allowed()[action]) return false;
+    if (
+      this.phase !== "player" ||
+      !this.actionResolver ||
+      !this.allowed()[action]
+    )
+      return false;
     const resolve = this.actionResolver;
     this.actionResolver = null;
     resolve(action);
@@ -679,17 +772,26 @@ class Table {
 
   // Compara tu jugada con la correcta. Las estadísticas se llevan siempre; el aviso solo si el coach está prendido.
   evaluateDecision(hand, up, allowed, chosen) {
-    const devPlay = this.useCountCoach && this.opts.deviations ? countPlay(hand, up.r, this.rules, this.tc, allowed) : null;
+    const devPlay =
+      this.useCountCoach && this.opts.deviations
+        ? countPlay(hand, up.r, this.rules, this.tc, allowed)
+        : null;
     const basic = basicPlay(hand, up.r, this.rules, allowed);
     const best = devPlay ? devPlay.action : basic.action;
-    const ok = chosen === best || (this.opts.lenient && chosen === basic.action);
+    const ok =
+      chosen === best || (this.opts.lenient && chosen === basic.action);
     this.session.decisions++;
     this.shoeStats.decisions++;
     if (ok) {
       this.session.decisionsOk++;
       this.shoeStats.decisionsOk++;
     }
-    if (this.opts.pressure && this.decisionStart && Date.now() - this.decisionStart > 5000) this.session.slow++;
+    if (
+      this.opts.pressure &&
+      this.decisionStart &&
+      Date.now() - this.decisionStart > 5000
+    )
+      this.session.slow++;
 
     const v = handValue(hand.cards);
     const spot = {
@@ -701,16 +803,36 @@ class Table {
     };
     let note = "";
     if (ok) {
-      if (devPlay && devPlay.source === "dev" && devPlay.dev && chosen === best) note = explainDeviation(devPlay.dev, best, this.rules, this.tc);
+      if (devPlay && devPlay.source === "dev" && devPlay.dev && chosen === best)
+        note = explainDeviation(devPlay.dev, best, this.rules, this.tc);
     } else {
-      const why = devPlay && devPlay.dev ? explainDeviation(devPlay.dev, best, this.rules, this.tc) : explainBest(spot, best, basic.code, this.rules);
-      note = [explainMistake(spot, chosen, best, this.rules), why].filter(Boolean).join(" ");
+      const why =
+        devPlay && devPlay.dev
+          ? explainDeviation(devPlay.dev, best, this.rules, this.tc)
+          : explainBest(spot, best, basic.code, this.rules);
+      note = [explainMistake(spot, chosen, best, this.rules), why]
+        .filter(Boolean)
+        .join(" ");
       this.session.mistakes = [
         ...this.session.mistakes,
-        { spot: `${spotLabel(spot)} vs ${upLabel(up.r)}`, chosen, best, tc: devPlay ? floorTC(this.tc) : null, note },
+        {
+          spot: `${spotLabel(spot)} vs ${upLabel(up.r)}`,
+          chosen,
+          best,
+          tc: devPlay ? floorTC(this.tc) : null,
+          note,
+        },
       ].slice(-30);
     }
-    if (this.opts.coach && !this.opts.silent) this.feedback = { ok, chosen, best, note, dev: !!(devPlay && devPlay.source === "dev"), id: Date.now() };
+    if (this.opts.coach && !this.opts.silent)
+      this.feedback = {
+        ok,
+        chosen,
+        best,
+        note,
+        dev: !!(devPlay && devPlay.source === "dev"),
+        id: Date.now(),
+      };
     this.emit();
   }
 
@@ -757,7 +879,8 @@ class Table {
         net += payout - hand.bet;
       }
     };
-    for (const seat of this.botSeats) for (const hand of seat.hands) settleHand(hand, false);
+    for (const seat of this.botSeats)
+      for (const hand of seat.hands) settleHand(hand, false);
     for (const hand of this.hands) settleHand(hand, true);
     this.bankroll += paid;
 
@@ -785,7 +908,8 @@ class Table {
     }
     this.countCheckDue = this.shouldCheck();
     this.shoeEnded = this.shoe.needsShuffle && rules.pen > 0;
-    if (this.shoeEnded) this.countCheckDue = this.opts.countCheck !== "off" ? "final" : false;
+    if (this.shoeEnded)
+      this.countCheckDue = this.opts.countCheck !== "off" ? "final" : false;
     if (this.countCheckDue) this.roundsSinceCheck = 0;
     if (this.onRoundEnd) this.onRoundEnd(this.result, this);
     this.emit();
@@ -801,7 +925,11 @@ class Table {
     }
     if (this.opts.pressure) return Math.random() < 0.3;
     const every = mode === "often" ? 2 : 4;
-    return this.roundsThisShoe > 0 && this.roundsThisShoe % every === 0 && Math.random() < 0.85;
+    return (
+      this.roundsThisShoe > 0 &&
+      this.roundsThisShoe % every === 0 &&
+      Math.random() < 0.85
+    );
   }
 
   submitCountCheck(value) {
@@ -814,7 +942,10 @@ class Table {
       this.shoeStats.checksOk++;
     }
     const final = this.countCheckDue === "final";
-    this.session.checkLog = [...this.session.checkLog, { value, correct, ok, final }].slice(-40);
+    this.session.checkLog = [
+      ...this.session.checkLog,
+      { value, correct, ok, final },
+    ].slice(-40);
     this.countCheckDue = false;
     this.lastCheck = { ok, value, correct, final };
     this.emit();
@@ -828,7 +959,10 @@ class Table {
 
   fmtTC() {
     const t = Math.round(this.tc * 10) / 10;
-    return (t > 0 ? "+" : t < 0 ? "−" : "") + Math.abs(t).toFixed(1).replace(".", ",");
+    return (
+      (t > 0 ? "+" : t < 0 ? "−" : "") +
+      Math.abs(t).toFixed(1).replace(".", ",")
+    );
   }
 
   randomChatter() {
@@ -839,7 +973,10 @@ class Table {
 function money(amount) {
   const rounded = Math.round(amount * 100) / 100;
   const whole = Math.abs(rounded - Math.round(rounded)) < 1e-9;
-  return Math.abs(rounded).toLocaleString("es-UY", { minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: 2 });
+  return Math.abs(rounded).toLocaleString("es-UY", {
+    minimumFractionDigits: whole ? 0 : 2,
+    maximumFractionDigits: 2,
+  });
 }
 
 export { TABLE_SPEEDS, Table, money };

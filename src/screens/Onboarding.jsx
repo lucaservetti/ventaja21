@@ -26,13 +26,13 @@ const ONB_SLIDES = [
   {
     eyebrow: "Siempre sabés por qué",
     title: ["Entendé ", "cada jugada"],
-    text: "Después de cada mano te explicamos la jugada correcta en criollo: aprendés la razón, no solo la regla.",
+    text: "Después de cada mano te explicamos la jugada correcta en palabras simples: aprendés la razón, no solo la regla.",
     demo: "note",
   },
   {
     eyebrow: "Afilá el conteo",
     title: ["Contá cada vez ", "más rápido"],
-    text: "Los ejercicios empujan tu velocidad y tu precisión más allá de donde están hoy, y te las sostienen bajo presión.",
+    text: "Los ejercicios te piden cada vez más velocidad y precisión, hasta que contar te salga solo, aun con presión.",
     demo: "count",
   },
   {
@@ -160,8 +160,8 @@ function Onboarding() {
         <div className="bottom-actions">
           <Button onClick={() => e("slides")}>Empezar</Button>
           <p className="center dim tiny" style={{ marginTop: 10 }}>
-            Para aprender. Contar mentalmente es legal; usar el celular en la
-            mesa, no.
+            Es para aprender: contar con la cabeza es legal, pero usar el
+            celular en la mesa no.
           </p>
         </div>
       </div>
