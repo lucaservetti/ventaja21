@@ -45,6 +45,9 @@ import {
 } from "../engine/systems.js";
 import { TopBar } from "../ui/common.jsx";
 import { useNav } from "../nav.js";
+import { recordLevel } from "../state.js";
+import { levelByN } from "../engine/countPath.js";
+import { LevelActions, LevelOutcome } from "./countPath.jsx";
 
 const DRILL_SPEEDS = [
   { id: "relaxed", label: "Relajado", ms: 1500 },
@@ -82,10 +85,13 @@ function ExitDrillModal({
     </Modal>
   );
 }
-function DrillValues({ count: a = 12, pathStep: e = null }) {
+function DrillValues({ count: a = 12, pathStep: e = null, level: lv = null }) {
+  const level = lv ? levelByN(lv) : null;
+  if (level) a = level.count;
   let t = useNav(),
     s = useStore(),
-    n = systemFor(s.settings.system),
+    // La ruta de conteo es en Hi-Lo; la práctica libre usa tu sistema.
+    n = systemFor(level ? "hilo" : s.settings.system),
     [l] = useState(() => {
       let B = getState().drills.values.ranks || {},
         Z = [],
@@ -170,7 +176,9 @@ function DrillValues({ count: a = 12, pathStep: e = null }) {
       if (ta / l.length >= 0.8) {
         markPathDone("values");
       }
-      b({ ok: ta, n: l.length, missed: Ba, bestRun: Z });
+      const passed = level ? ta >= level.pass : null;
+      if (level) recordLevel(level.id, passed, ta / l.length);
+      b({ ok: ta, n: l.length, missed: Ba, bestRun: Z, passed });
     };
   if (m) {
     let B = getState().drills.values.bestStreak || m.bestRun;
@@ -198,6 +206,8 @@ function DrillValues({ count: a = 12, pathStep: e = null }) {
         }))}
         onAgain={() => t.replace("drillValues", { count: a, pathStep: e })}
         onBack={() => t.pop()}
+        level={level}
+        passed={m.passed}
       />
     );
   }
@@ -289,6 +299,8 @@ function DrillResult({
   onBack: c,
   extra: r,
   ringValue: u,
+  level = null,
+  passed = null,
 }) {
   let d = t ? e / t : 0;
   return (
@@ -338,211 +350,308 @@ function DrillResult({
               <span className="grow">{p.text}</span>
             </div>
           ))}
-          <p className="muted small" style={{ marginTop: 8 }}>
-            Estas cartas van a salir un poco más seguido en los próximos
-            ejercicios.
-          </p>
-        </div>
-      ) : null}
-      {r}
-      <p className="center muted" style={{ margin: "18px 0" }}>
-        {l}
-      </p>
-      <div className="btns">
-        <Button onClick={o}>Otra vez</Button>
-        <Button kind="outline" onClick={c}>
-          Volver
-        </Button>
-      </div>
-    </div>
-  );
-}
-function DrillRunning({ daily: a = false, n: e, speed: t, mode: s }) {
-  let n = useNav(),
-    l = useStore(),
-    i = systemFor(l.settings.system),
-    [o, c] = useState(() => ({
-      n: a ? 20 : e || 15,
-      speed: a ? "normal" : t || "normal",
-      mode: a ? "single" : s || "single",
-    })),
-    [r, u] = useState(a ? "ready" : "setup"),
-    [d, p] = useState([]),
-    [f, y] = useState(0),
-    [C, k] = useState(""),
-    [v, m] = useState(null),
-    [b, S] = useState(false),
-    D = useRef(0),
-    _ = useRef(0);
-  useBackGuard(S);
-  let M = dayKey(),
-    R = useMemo(
-      () =>
-        Math.floor((Date.now() - new Date(2026, 0, 1).getTime()) / 86400000) +
-        1,
-      [],
-    ),
-    V = () => {
-      if (a) {
-        let w = seededRandom(hashString("v21-daily-" + M));
-        return shuffle(buildDecks(1), w).slice(0, o.n);
-      }
-      return shuffle(buildDecks(2)).slice(0, o.n);
-    },
-    B = () => {
-      let P = V();
-      p(P);
-      y(0);
-      k("");
-      m(null);
-      u("watch");
-      D.current = Date.now();
-    },
-    Z = o.mode === "pairs" ? 2 : 1,
-    ta = (DRILL_SPEEDS.find((P) => P.id === o.speed) || DRILL_SPEEDS[1]).ms;
-  useEffect(() => {
-    if (r !== "watch") return;
-    if (f >= d.length) {
-      _.current = Date.now();
-      u("answer");
-      return;
-    }
-    sfx.card();
-    let P = setTimeout(() => y((w) => w + Z), ta * (Z === 2 ? 1.5 : 1));
-    return () => clearTimeout(P);
-  }, [r, f]);
-  let Ba = d.reduce((P, w) => P + countValue(w, i), 0),
-    Ma = () => {
-      let P = parseKeypad(C);
-      if (P === null) return;
-      let w = Math.abs(P - Ba) < 1e-9;
-      if (w) {
-        sfx.good();
-      } else {
-        sfx.bad();
-      }
-      let J = (_.current || Date.now()) - D.current,
-        ba = { v: P, ok: w, err: P - Ba, elapsed: J };
-      m(ba);
-      u("review");
-      let ye = {
-        t: Date.now(),
-        n: d.length,
-        ok: w,
-        speed: o.speed,
-        mode: o.mode,
-        ms: J,
-        sys: i.id,
-        daily: a,
-      };
-      recordDrill("running", ye, (Ja) => {
-        let Ga = Ja.bestPerfect,
-          Zt = Ga || null;
-        if (w) {
-          let On = d.length / (J / 1000);
-          if (!Ga || On > Ga.rate) {
-            Zt = {
-              rate: On,
-              n: d.length,
-              speed: o.speed,
-              ms: J,
-              t: Date.now(),
-            };
-          }
-        }
-        return { bestPerfect: Zt };
-      });
-      markPathDone("running");
-      if (a) {
-        setState((Ja) => {
-          let Ga = Ja.daily;
-          if (Ga.results[M]) return Ja;
-          let Zt = new Date();
-          Zt.setDate(Zt.getDate() - 1);
-          let On = dayKey(Zt),
-            Ht = w ? (Ga.last === On || Ga.last === M ? Ga.streak + 1 : 1) : 0;
-          return markActive({
-            ...Ja,
-            daily: {
-              ...Ga,
-              last: w ? M : Ga.last,
-              streak: Ht,
-              best: Math.max(Ga.best, Ht),
-              results: { ...Ga.results, [M]: { ok: w, err: ba.err } },
-            },
-          });
-        });
-      }
-    },
-    ca = a ? `Desafío diario #${R}` : "Conteo corrido",
-    ha = (
-      <div className="phase-steps">
-        <span
-          className={cx(
-            r === "watch" && "on",
-            (r === "answer" || r === "review") && "past",
-          )}
-        >
-          1 Ver
-        </span>
-        <Icon name="chev" size={14} />
-        <span className={cx(r === "answer" && "on", r === "review" && "past")}>
-          2 Responder
-        </span>
-        <Icon name="chev" size={14} />
-        <span className={cx(r === "review" && "on")}>3 Revisar</span>
-      </div>
-    );
-  if (r === "setup" || r === "ready") {
-    let P = a && l.daily.results[M];
-    return (
-      <div className="drill fade-up">
-        <TopBar onClose={() => n.pop()} title={ca} />
-        <div className="card" style={{ marginTop: 6 }}>
-          <h2 style={{ fontSize: 24 }}>
-            {a
-              ? "El conteo del día"
-              : "Llevá el total mientras caen las cartas"}
-          </h2>
-          <p className="muted" style={{ marginTop: 8 }}>
-            {a
-              ? `20 cartas a ritmo normal, iguales para todos hoy. Tu primer intento cuenta para la racha${l.daily.streak ? ` (vas ${l.daily.streak} ${l.daily.streak === 1 ? "día" : "días"})` : ""}.`
-              : `Vas a ver las cartas de a ${o.mode === "pairs" ? "dos" : "una"}. Al final escribís el conteo corrido en ${i.short || i.name}. Arrancás en 0.`}
-          </p>
-          {P ? (
-            <p
-              className={cx("small", P.ok ? "good" : "bad")}
-              style={{ marginTop: 10, fontWeight: 700 }}
-            >
-              {"Hoy ya lo hiciste: "}
-              {P.ok ? "acertaste" : `le erraste por ${Math.abs(P.err)}`}. Podés
-              practicarlo igual.
+          {i.some((p) => p.card) ? (
+            <p className="muted small" style={{ marginTop: 8 }}>
+              Estas cartas van a salir un poco más seguido en los próximos
+              ejercicios.
             </p>
           ) : null}
         </div>
-        {a ? null : (
+      ) : null}
+      {r}
+      {level ? <LevelOutcome level={level} passed={passed} /> : null}
+      <p className="center muted" style={{ margin: "18px 0" }}>
+        {l}
+      </p>
+      {level ? (
+        <LevelActions level={level} passed={passed} />
+      ) : (
+        <div className="btns">
+          <Button onClick={o}>Otra vez</Button>
+          <Button kind="outline" onClick={c}>
+            Volver
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+// Conteo corrido: mirás una secuencia de cartas y al final escribís el conteo.
+// Sirve para la práctica libre, el desafío diario y los niveles 3 a 7 de la ruta de conteo.
+const DISTRACT_LINES = [
+  "¿Me cambiás estos billetes?",
+  "¡Vamos, que sale un diez!",
+  "Mozo, ¿me trae un café?",
+  "¿Cuánto paga el seguro?",
+  "Esta mesa está fría hoy…",
+  "¿Vos sabés a qué hora cierran?",
+  "¡Uh, otra vez 16!",
+  "¿Me pasás las fichas verdes?",
+  "¿Sos de acá?",
+  "Dale, dale, que viene el As.",
+];
+function DrillRunning({ daily = false, n, speed, mode, level: levelN = null }) {
+  const nav = useNav();
+  const st = useStore();
+  const level = levelN ? levelByN(levelN) : null;
+  const sys = systemFor(level ? "hilo" : st.settings.system);
+  const [cfg, setCfg] = useState(() =>
+    level
+      ? {
+          n: level.cards,
+          speed: level.speed,
+          mode: level.mode || "single",
+          distract: !!level.distract,
+        }
+      : {
+          n: daily ? 20 : n || 15,
+          speed: daily ? "normal" : speed || "normal",
+          mode: daily ? "single" : mode || "single",
+          distract: false,
+        },
+  );
+  const [phase, setPhase] = useState(daily || level ? "ready" : "setup");
+  const [cards, setCards] = useState([]);
+  const [pos, setPos] = useState(0);
+  const [value, setValue] = useState("");
+  const [result, setResult] = useState(null);
+  const [exitOpen, setExitOpen] = useState(false);
+  const startedAt = useRef(0);
+  const answeredAt = useRef(0);
+  useBackGuard(setExitOpen);
+  const today = dayKey();
+  const dailyNumber = useMemo(
+    () =>
+      Math.floor((Date.now() - new Date(2026, 0, 1).getTime()) / 86400000) + 1,
+    [],
+  );
+
+  // Con distracciones, cada "golpe" puede traer una o dos cartas, en distintos lugares de la mesa.
+  const steps = useMemo(() => {
+    const out = [];
+    let i = 0;
+    while (i < cards.length) {
+      const k =
+        cfg.mode === "pairs"
+          ? 2
+          : cfg.distract && i > 2 && randInt(4) === 0
+            ? 2
+            : 1;
+      out.push({
+        from: i,
+        to: Math.min(cards.length, i + k),
+        x: cfg.distract ? randInt(90) - 45 : 0,
+        y: cfg.distract ? randInt(40) - 20 : 0,
+        rot: cfg.distract ? randInt(17) - 8 : 0,
+        talk:
+          cfg.distract && i > 1 && randInt(3) === 0
+            ? DISTRACT_LINES[randInt(DISTRACT_LINES.length)]
+            : null,
+        chips: cfg.distract && randInt(5) === 0,
+      });
+      i += k;
+    }
+    return out;
+  }, [cards, cfg.mode, cfg.distract]);
+
+  const deal = () => {
+    const seq = daily
+      ? shuffle(
+          buildDecks(1),
+          seededRandom(hashString("v21-daily-" + today)),
+        ).slice(0, cfg.n)
+      : shuffle(buildDecks(2)).slice(0, cfg.n);
+    setCards(seq);
+    setPos(0);
+    setValue("");
+    setResult(null);
+    setPhase("watch");
+    startedAt.current = Date.now();
+  };
+  const per = cfg.mode === "pairs" ? 2 : 1;
+  const ms = (DRILL_SPEEDS.find((s) => s.id === cfg.speed) || DRILL_SPEEDS[1])
+    .ms;
+  useEffect(() => {
+    if (phase !== "watch") return;
+    if (pos >= steps.length) {
+      answeredAt.current = Date.now();
+      setPhase("answer");
+      return;
+    }
+    sfx.card();
+    const step = steps[pos];
+    const timer = setTimeout(
+      () => setPos((p) => p + 1),
+      ms * (step.to - step.from > 1 ? 1.5 : 1),
+    );
+    return () => clearTimeout(timer);
+  }, [phase, pos, steps.length]);
+
+  const correct = cards.reduce((sum, c) => sum + countValue(c, sys), 0);
+  const submit = () => {
+    const v = parseKeypad(value);
+    if (v === null) return;
+    const ok = Math.abs(v - correct) < 1e-9;
+    if (ok) sfx.good();
+    else sfx.bad();
+    const elapsed = (answeredAt.current || Date.now()) - startedAt.current;
+    const res = { v, ok, err: v - correct, elapsed };
+    setResult(res);
+    setPhase("review");
+    recordDrill(
+      "running",
+      {
+        t: Date.now(),
+        n: cards.length,
+        ok,
+        speed: cfg.speed,
+        mode: cfg.mode,
+        ms: elapsed,
+        sys: sys.id,
+        daily,
+        level: level ? level.id : undefined,
+      },
+      (d) => {
+        let best = d.bestPerfect || null;
+        if (ok) {
+          const rate = cards.length / (elapsed / 1000);
+          if (!best || rate > best.rate)
+            best = {
+              rate,
+              n: cards.length,
+              speed: cfg.speed,
+              ms: elapsed,
+              t: Date.now(),
+            };
+        }
+        return { bestPerfect: best };
+      },
+    );
+    markPathDone("running");
+    if (level) recordLevel(level.id, ok, ok ? 1 : 0);
+    if (daily) {
+      setState((s) => {
+        const d = s.daily;
+        if (d.results[today]) return s;
+        const y = new Date();
+        y.setDate(y.getDate() - 1);
+        const streak = ok
+          ? d.last === dayKey(y) || d.last === today
+            ? d.streak + 1
+            : 1
+          : 0;
+        return markActive({
+          ...s,
+          daily: {
+            ...d,
+            last: ok ? today : d.last,
+            streak,
+            best: Math.max(d.best, streak),
+            results: { ...d.results, [today]: { ok, err: res.err } },
+          },
+        });
+      });
+    }
+  };
+
+  const title = level
+    ? `Nivel ${level.n}: ${level.title}`
+    : daily
+      ? `Desafío diario #${dailyNumber}`
+      : "Conteo corrido";
+  const phases = (
+    <div className="phase-steps">
+      <span
+        className={cx(
+          phase === "watch" && "on",
+          (phase === "answer" || phase === "review") && "past",
+        )}
+      >
+        1 Ver
+      </span>
+      <Icon name="chev" size={14} />
+      <span
+        className={cx(phase === "answer" && "on", phase === "review" && "past")}
+      >
+        2 Responder
+      </span>
+      <Icon name="chev" size={14} />
+      <span className={cx(phase === "review" && "on")}>3 Revisar</span>
+    </div>
+  );
+  const exitModal = (
+    <ExitDrillModal
+      open={exitOpen}
+      onStay={() => setExitOpen(false)}
+      onLeave={() => nav.pop()}
+    />
+  );
+
+  if (phase === "setup" || phase === "ready") {
+    const doneToday = daily && st.daily.results[today];
+    return (
+      <div className="drill fade-up">
+        <TopBar
+          onClose={() => nav.pop()}
+          title={level ? "Ruta de conteo" : title}
+          sub={level ? `Nivel ${level.n} de 10` : null}
+        />
+        <div className="card" style={{ marginTop: 6 }}>
+          <h2 style={{ fontSize: 24 }}>
+            {level
+              ? level.title
+              : daily
+                ? "El conteo del día"
+                : "Llevá el total mientras caen las cartas"}
+          </h2>
+          <p className="muted" style={{ marginTop: 8 }}>
+            {level
+              ? `${cfg.n} cartas ${cfg.distract ? "con distracciones" : `a ritmo ${(DRILL_SPEEDS.find((s) => s.id === cfg.speed) || {}).label.toLowerCase()}`}. Arrancás en 0 y al final escribís el conteo corrido (running count) en Hi-Lo.`
+              : daily
+                ? `20 cartas a ritmo normal, iguales para todos hoy. Tu primer intento cuenta para el desafío${st.daily.streak ? ` (vas ${st.daily.streak} ${st.daily.streak === 1 ? "día" : "días"} seguidos)` : ""}.`
+                : `Vas a ver las cartas de a ${cfg.mode === "pairs" ? "dos" : "una"}. Al final escribís el conteo corrido (running count) en ${sys.short || sys.name}. Arrancás en 0.`}
+          </p>
+          {level ? (
+            <p className="small" style={{ marginTop: 10, fontWeight: 700 }}>
+              Para aprobar: {level.goal}
+            </p>
+          ) : null}
+          {doneToday ? (
+            <p
+              className={cx("small", doneToday.ok ? "good" : "bad")}
+              style={{ marginTop: 10, fontWeight: 700 }}
+            >
+              Hoy ya lo hiciste:{" "}
+              {doneToday.ok
+                ? "acertaste"
+                : `le erraste por ${Math.abs(doneToday.err)}`}
+              . Podés practicarlo igual.
+            </p>
+          ) : null}
+        </div>
+        {daily || level ? null : (
           <div className="card" style={{ marginTop: 14 }}>
             <div className="eyebrow">Velocidad</div>
             <Pills
               className="left"
-              options={DRILL_SPEEDS.map((w) => ({
-                value: w.id,
-                label: w.label,
+              options={DRILL_SPEEDS.map((s) => ({
+                value: s.id,
+                label: s.label,
               }))}
-              value={o.speed}
-              onChange={(w) => c({ ...o, speed: w })}
+              value={cfg.speed}
+              onChange={(v) => setCfg({ ...cfg, speed: v })}
             />
             <div className="eyebrow" style={{ marginTop: 18 }}>
               Cantidad de cartas
             </div>
             <Pills
               className="left"
-              options={[10, 15, 20, 30, 52].map((w) => ({
-                value: w,
-                label: w === 52 ? "52 (un mazo)" : String(w),
+              options={[10, 15, 20, 30, 52].map((v) => ({
+                value: v,
+                label: v === 52 ? "52 (un mazo)" : String(v),
               }))}
-              value={o.n}
-              onChange={(w) => c({ ...o, n: w })}
+              value={cfg.n}
+              onChange={(v) => setCfg({ ...cfg, n: v })}
             />
             <div className="eyebrow" style={{ marginTop: 18 }}>
               Cómo salen
@@ -553,126 +662,156 @@ function DrillRunning({ daily: a = false, n: e, speed: t, mode: s }) {
                 { value: "single", label: "De a una" },
                 { value: "pairs", label: "De a dos" },
               ]}
-              value={o.mode}
-              onChange={(w) => c({ ...o, mode: w })}
+              value={cfg.mode}
+              onChange={(v) => setCfg({ ...cfg, mode: v })}
             />
             <p className="muted small" style={{ marginTop: 12 }}>
               De a dos te obliga a cancelar parejas: una alta y una baja juntas
               suman 0.
             </p>
+            <div className="eyebrow" style={{ marginTop: 18 }}>
+              Distracciones
+            </div>
+            <Pills
+              className="left"
+              options={[
+                { value: false, label: "Sin" },
+                { value: true, label: "Con charla y movimiento" },
+              ]}
+              value={cfg.distract}
+              onChange={(v) => setCfg({ ...cfg, distract: v })}
+            />
           </div>
         )}
         <div className="bottom-actions">
-          <Button onClick={B}>Empezar</Button>
+          <Button onClick={deal}>Empezar</Button>
         </div>
       </div>
     );
   }
-  if (r === "watch") {
-    let P = d.slice(f, f + Z);
+
+  if (phase === "watch") {
+    const step = steps[Math.min(pos, steps.length - 1)];
+    const shown = step ? cards.slice(step.from, step.to) : [];
+    const seen = step ? step.to : 0;
     return (
       <div className="drill">
         <TopBar
-          onClose={() => S(true)}
-          title={ca}
-          sub={`${Math.min(f + Z, d.length)} / ${d.length}`}
+          onClose={() => setExitOpen(true)}
+          title={title}
+          sub={`${seen} / ${cards.length}`}
         />
         <div className="drill-progress">
-          <span
-            style={{
-              width: `${(Math.min(f + Z, d.length) / d.length) * 100}%`,
-            }}
-          />
+          <span style={{ width: `${(seen / cards.length) * 100}%` }} />
         </div>
-        {ha}
-        <div className="watch-stage">
-          {P.map((w) => (
-            <PlayingCard
-              card={w}
-              size={Z === 2 ? "lg" : "xl"}
-              deal={true}
-              key={w.id}
-            />
-          ))}
+        {phases}
+        <div className={cx("watch-stage", cfg.distract && "distract")}>
+          {cfg.distract && step && step.talk ? (
+            <div className="distract-talk" key={"t" + pos}>
+              “{step.talk}”
+            </div>
+          ) : null}
+          {cfg.distract && step && step.chips ? (
+            <span className="distract-chips" key={"c" + pos} />
+          ) : null}
+          <div
+            className="watch-cards"
+            key={pos}
+            style={
+              step
+                ? {
+                    transform: `translate(${step.x}px, ${step.y}px) rotate(${step.rot}deg)`,
+                  }
+                : null
+            }
+          >
+            {shown.map((c) => (
+              <PlayingCard
+                card={c}
+                size={shown.length === 2 ? "lg" : "xl"}
+                deal={true}
+                key={c.id}
+              />
+            ))}
+          </div>
         </div>
-        <ExitDrillModal
-          open={b}
-          onStay={() => S(false)}
-          onLeave={() => n.pop()}
-        />
+        {exitModal}
       </div>
     );
   }
-  if (r === "answer")
+
+  if (phase === "answer") {
     return (
       <div className="drill">
-        <TopBar onClose={() => S(true)} title={ca} sub={`${d.length} cartas`} />
+        <TopBar
+          onClose={() => setExitOpen(true)}
+          title={title}
+          sub={`${cards.length} cartas`}
+        />
         <div className="drill-progress">
           <span style={{ width: "100%" }} />
         </div>
-        {ha}
+        {phases}
         <h2 className="center drill-q">¿Cuál es el conteo corrido?</h2>
-        <div className="keypad-display">{formatKeypad(C)}</div>
+        <div className="keypad-display">{formatKeypad(value)}</div>
         <Keypad
-          value={C}
-          onChange={k}
-          onSubmit={Ma}
-          allowHalf={i.id === "halves"}
+          value={value}
+          onChange={setValue}
+          onSubmit={submit}
+          allowHalf={sys.id === "halves"}
           submitLabel="Comprobar"
         />
-        <ExitDrillModal
-          open={b}
-          onStay={() => S(false)}
-          onLeave={() => n.pop()}
-        />
+        {exitModal}
       </div>
     );
-  let Ia = 0,
-    X = v.ok
-      ? "Exacto. Probá una velocidad más rápida cuando te salga seguido."
-      : Math.abs(v.err) === 1
-        ? "Te faltó o sobró una carta. Mirá la tabla: casi siempre es una neutra que contaste o una alta que se escapó."
-        : "Hacelo de a parejas: cancelá una alta con una baja apenas caen, y solo las que sobran mueven tu conteo.";
+  }
+
+  let running = 0;
+  const tip = result.ok
+    ? level
+      ? "Exacto."
+      : "Exacto. Probá una velocidad más rápida cuando te salga seguido."
+    : Math.abs(result.err) === 1
+      ? "Te faltó o sobró una carta. Mirá el repaso: casi siempre es una neutra que contaste o una alta que se escapó."
+      : "Hacelo de a parejas: cancelá una alta con una baja apenas caen, y solo las que sobran mueven tu conteo.";
   return (
     <div className="drill fade-up">
       <TopBar
-        onClose={() => n.pop()}
-        title={ca}
-        sub={`${d.length} / ${d.length}`}
+        onClose={() => nav.pop()}
+        title={title}
+        sub={`${cards.length} / ${cards.length}`}
       />
       <div className="drill-progress">
         <span style={{ width: "100%" }} />
       </div>
-      {ha}
+      {phases}
       <div className="card review-head">
-        <h2 className={v.ok ? "good" : "bad"} style={{ fontSize: 34 }}>
-          {v.ok
+        <h2 className={result.ok ? "good" : "bad"} style={{ fontSize: 34 }}>
+          {result.ok
             ? "¡Exacto!"
-            : `Le erraste por ${fmtSigned(Math.abs(v.err)).replace("+", "")}`}
+            : `Le erraste por ${fmtSigned(Math.abs(result.err)).replace("+", "")}`}
         </h2>
         <p className="muted num" style={{ marginTop: 4 }}>
-          {d.length}
-          {" cartas · "}
-          {(v.elapsed / 1000).toFixed(0)}
-          {" s en total · "}
-          {(DRILL_SPEEDS.find((P) => P.id === o.speed) || {}).label}
+          {cards.length} cartas · {(result.elapsed / 1000).toFixed(0)} s en
+          total · {(DRILL_SPEEDS.find((s) => s.id === cfg.speed) || {}).label}
         </p>
         <div className="res-moves" style={{ marginTop: 14 }}>
           <div>
             <div className="eyebrow">Pusiste</div>
-            <div className={cx("res-move num", v.ok ? "good" : "bad")}>
-              {fmtSigned(v.v)}
+            <div className={cx("res-move num", result.ok ? "good" : "bad")}>
+              {fmtSigned(result.v)}
             </div>
           </div>
           <div>
             <div className="eyebrow">Conteo correcto</div>
-            <div className="res-move num acc">{fmtSigned(Ba)}</div>
+            <div className="res-move num acc">{fmtSigned(correct)}</div>
           </div>
         </div>
         <p className="muted" style={{ marginTop: 12 }}>
-          {X}
+          {tip}
         </p>
       </div>
+      {level ? <LevelOutcome level={level} passed={result.ok} /> : null}
       <div className="card seq-review">
         <h3>Repaso de la secuencia</h3>
         <div className="seq-head">
@@ -680,32 +819,36 @@ function DrillRunning({ daily: a = false, n: e, speed: t, mode: s }) {
           <span>Valor</span>
           <span>Conteo</span>
         </div>
-        {d.map((P, w) => {
-          let J = countValue(P, i);
-          Ia += J;
+        {cards.map((c, i) => {
+          const v = countValue(c, sys);
+          running += v;
           return (
-            <div className="seq-row" key={P.id}>
+            <div className="seq-row" key={c.id}>
               <span className="row" style={{ gap: 10 }}>
-                <PlayingCard card={P} size="xs" />
-                <span className="muted small num">{w + 1}</span>
+                <PlayingCard card={c} size="xs" />
+                <span className="muted small num">{i + 1}</span>
               </span>
               <span
-                className={cx("num", J > 0 ? "good" : J < 0 ? "bad" : "muted")}
+                className={cx("num", v > 0 ? "good" : v < 0 ? "bad" : "muted")}
               >
-                {fmtTag(J)}
+                {fmtTag(v)}
               </span>
-              <b className="num">{fmtSigned(Ia)}</b>
+              <b className="num">{fmtSigned(running)}</b>
             </div>
           );
         })}
       </div>
       <div className="bottom-actions">
-        <div className="btns">
-          <Button onClick={B}>Otra vez</Button>
-          <Button kind="outline" onClick={() => n.pop()}>
-            Volver
-          </Button>
-        </div>
+        {level ? (
+          <LevelActions level={level} passed={result.ok} />
+        ) : (
+          <div className="btns">
+            <Button onClick={deal}>Otra vez</Button>
+            <Button kind="outline" onClick={() => nav.pop()}>
+              Volver
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -755,25 +898,29 @@ function QuizDrill({
   explain: n,
   onAgain: l,
   resultMessage: i,
+  level = null,
 }) {
   let o = useNav(),
     [c, r] = useState(false);
   useBackGuard(r);
   let u = useRef(false);
-  if (
-    (useEffect(() => {
-      if (t.done && !u.current) {
-        u.current = true;
-        recordDrill(e, {
-          t: Date.now(),
-          n: t.qs.length,
-          ok: t.marks.filter(Boolean).length,
-        });
-      }
-    }, [t.done]),
-    t.done)
-  ) {
-    let f = t.marks.filter(Boolean).length;
+  const okCount = t.marks.filter(Boolean).length;
+  const passed = level && t.done ? okCount >= level.pass : null;
+  useEffect(() => {
+    if (t.done && !u.current) {
+      u.current = true;
+      recordDrill(e, {
+        t: Date.now(),
+        n: t.qs.length,
+        ok: okCount,
+        level: level ? level.id : undefined,
+      });
+      if (level)
+        recordLevel(level.id, okCount >= level.pass, okCount / t.qs.length);
+    }
+  }, [t.done]);
+  if (t.done) {
+    let f = okCount;
     return (
       <DrillResult
         title={a}
@@ -786,6 +933,8 @@ function QuizDrill({
           .map((y) => ({ text: y.missText }))}
         onAgain={l}
         onBack={() => o.pop()}
+        level={level}
+        passed={passed}
       />
     );
   }
@@ -879,7 +1028,8 @@ const halfText = (a) => {
 function optionSet(a, e) {
   return [...new Set([a, ...e])].slice(0, 4).sort((n, l) => n - l);
 }
-function DrillTrue() {
+function DrillTrue({ level: levelN = null }) {
+  const level = levelN ? levelByN(levelN) : null;
   let a = useNav(),
     t = useQuiz(() => {
       let s = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5][randInt(9)],
@@ -912,9 +1062,10 @@ function DrillTrue() {
     }, 10);
   return (
     <QuizDrill
-      title="Conteo real"
+      title={level ? `Nivel ${level.n}: Conteo real` : "Conteo real"}
       kind="true"
       d={t}
+      level={level}
       onAgain={() => a.replace("drillTrue")}
       resultMessage={(s) =>
         s === 1
@@ -1031,7 +1182,8 @@ function Tray({ shoe: a, cards: e, small: t, marks: s = true, height }) {
     </div>
   );
 }
-function DrillBet() {
+function DrillBet({ level: levelN = null }) {
+  const level = levelN ? levelByN(levelN) : null;
   let a = useNav(),
     t = useStore().table.unit || 10,
     n = useQuiz(() => {
@@ -1049,9 +1201,12 @@ function DrillBet() {
     }, 10);
   return (
     <QuizDrill
-      title="Apuesta según el conteo"
+      title={
+        level ? `Nivel ${level.n}: Cuánto apostar` : "Apuesta según el conteo"
+      }
       kind="bet"
       d={n}
+      level={level}
       onAgain={() => a.replace("drillBet")}
       resultMessage={(l) =>
         l === 1

@@ -5269,3 +5269,312 @@ i.en {
   font-style: italic;
   color: var(--text-2);
 }
+/* Conteo corrido con distracciones (nivel 7 de la ruta). */
+.watch-cards {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+.watch-stage.distract {
+  position: relative;
+  min-height: 300px;
+}
+.distract-talk {
+  position: absolute;
+  top: -6px;
+  left: 0;
+  max-width: 70%;
+  background: #f3f3ee;
+  color: #111;
+  border-radius: 16px 16px 16px 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  z-index: 2;
+  animation: fadeUp 0.25s ease both;
+}
+.distract-chips {
+  position: absolute;
+  right: 6px;
+  bottom: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 22%, #1d8a4f 23% 60%, #fff 61% 66%, #1d8a4f 67%);
+  box-shadow: 0 4px 10px #0008;
+  animation: chipSlide 0.6s ease both;
+}
+@keyframes chipSlide {
+  0% {
+    transform: translate(60px, 30px) rotate(40deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.pair-stage {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin: 26px 0 8px;
+}
+.tag-btns.pair-btns {
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.pair-btns .tag-btn {
+  font-size: 26px;
+  min-height: 64px;
+  border-radius: 16px;
+}
+.unit-bets {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.unit-bet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-height: 54px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  border: 2px solid transparent;
+}
+.unit-bet b {
+  font-size: 20px;
+  line-height: 1.05;
+}
+.unit-bet span {
+  font-size: 12px;
+  color: var(--text-2);
+  font-weight: 700;
+}
+.unit-bet.on {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.unit-bet.on b {
+  color: var(--accent);
+}
+.unit-bet:disabled {
+  opacity: 0.35;
+}
+/* ---- Ruta de conteo ---- */
+.cpath {
+  padding: 20px 18px 16px;
+  border: 1.5px solid var(--accent-line);
+  background: linear-gradient(180deg, #1e1f14, var(--surface) 55%);
+}
+.cpath-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.cpath-title {
+  font-size: 22px;
+  margin-top: 4px;
+}
+.cpath-count {
+  color: var(--text-2);
+  font-size: 15px;
+  white-space: nowrap;
+}
+.cpath-count b {
+  font-size: 26px;
+  color: var(--text);
+}
+.cpath-segs {
+  gap: 5px;
+  margin: 14px 0 16px;
+}
+.cpath-segs .segment {
+  height: 7px;
+}
+.cpath-segs .segment.cur {
+  background: var(--accent-line);
+}
+.cpath-next {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 14px;
+}
+.cpath-n {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.cpath-next-title {
+  display: block;
+  font-size: 20px;
+  margin: 2px 0 2px;
+}
+.cpath-done {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  color: var(--accent);
+}
+.cpath-done p {
+  color: var(--text-2);
+}
+.cpath-done b {
+  color: var(--text);
+}
+.cpath-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 14px auto 0;
+}
+.cpath-chev.up {
+  transform: rotate(180deg);
+}
+.cpath-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.cpath-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  padding: 10px 2px;
+  border-top: 1px solid var(--line);
+}
+.cpath-row .li-sub {
+  display: block;
+}
+.cpath-row-title {
+  font-weight: 700;
+  font-size: 16px;
+}
+.cpath-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--surface-3);
+  font-weight: 800;
+  font-size: 14px;
+}
+.cpath-row.done .cpath-dot {
+  background: var(--good);
+  color: var(--good-ink);
+}
+.cpath-row.cur .cpath-dot {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.cpath-row.locked {
+  opacity: 0.5;
+}
+.level-hero {
+  text-align: center;
+  margin: 18px 0 18px;
+}
+.level-hero h1 {
+  font-size: 30px;
+  margin-top: 12px;
+}
+.level-hero p {
+  margin-top: 6px;
+}
+.level-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 30px;
+  font-weight: 800;
+}
+.level-goal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.level-goal span {
+  color: var(--text);
+}
+.level-lesson {
+  margin-top: 14px;
+  width: 100%;
+}
+.level-outcome {
+  margin-top: 16px;
+  border: 1.5px solid #1f5a3d;
+  background: var(--good-soft);
+}
+.level-outcome.bad {
+  border-color: #5a2420;
+  background: var(--bad-soft);
+}
+.level-outcome-title {
+  font-size: 20px;
+}
+.challenge-top {
+  gap: 10px;
+}
+.challenge-title {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.challenge-title b {
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.challenge-progress {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.challenge-progress i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+.challenge-verdict {
+  font-size: 28px;
+  margin-top: 12px;
+}
+.challenge-result .res-icon.big {
+  margin: 0 auto;
+}
+.challenge-result .kv-k .muted.small {
+  display: block;
+  font-weight: 500;
+}

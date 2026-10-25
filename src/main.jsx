@@ -25,6 +25,8 @@ import { Lesson } from "./lessons/Lesson.jsx";
 import { Guide, GuideChapter } from "./screens/Guide.jsx";
 import { ChartSheet, SettingsSheet, SystemSheet } from "./screens/sheets.jsx";
 import { NavContext } from "./nav.js";
+import { CountLevel, DrillPairs } from "./screens/countPath.jsx";
+import { ShoeChallenge } from "./screens/ShoeChallenge.jsx";
 
 const TABS = [
   { id: "conteo", label: "Conteo", icon: "drills" },
@@ -53,6 +55,9 @@ const SCREENS = {
   guide: Guide,
   guideChapter: GuideChapter,
   placement: Placement,
+  countLevel: CountLevel,
+  drillPairs: DrillPairs,
+  shoeChallenge: ShoeChallenge,
 };
 const SHEETS = {
   settings: SettingsSheet,

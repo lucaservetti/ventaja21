@@ -276,6 +276,7 @@ class Table {
   }
 
   addChip(value) {
+    if (this.countCheckDue) return false; // primero el chequeo de conteo
     if (this.phase !== "bet" && this.phase !== "settle") return;
     if (this.phase === "settle") this.newBet();
     const next = Math.min(this.bet + value, this.maxBet, this.bankroll);
@@ -306,6 +307,7 @@ class Table {
 
   // "Nueva apuesta": limpia la mesa y deja la apuesta en cero.
   newBet() {
+    if (this.countCheckDue) return false; // primero el chequeo de conteo
     if (this.running) return;
     this.clearTable();
     this.bet = 0;
@@ -315,6 +317,7 @@ class Table {
 
   // Pone la apuesta anterior (o el doble) y deja todo listo para repartir.
   rebet(mult = 1) {
+    if (this.countCheckDue) return false; // primero el chequeo de conteo
     if (this.phase === "settle") this.clearTable();
     if (this.phase !== "bet") return false;
     const amount = Math.min(this.lastBet * mult, this.maxBet);
@@ -329,6 +332,7 @@ class Table {
   }
 
   setBet(amount) {
+    if (this.countCheckDue) return false; // primero el chequeo de conteo
     if (this.phase === "settle") this.clearTable();
     if (this.phase !== "bet") return false;
     const bet = Math.min(amount, this.maxBet, this.bankroll);
@@ -358,7 +362,7 @@ class Table {
   }
 
   async deal() {
-    if (this.running) return;
+    if (this.running || this.countCheckDue) return;
     if (this.phase === "settle") this.clearTable();
     if (this.phase !== "bet") return;
     if (this.bet <= 0) {

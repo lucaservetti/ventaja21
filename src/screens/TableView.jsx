@@ -70,6 +70,7 @@ function TableView({
   countLabel,
   xray = false,
   betHint = false,
+  unitBets = false,
   onCheck,
   onShoeEnd,
 }) {
@@ -227,7 +228,7 @@ function TableView({
 
   return (
     <div className="sim">
-      {top}
+      {typeof top === "function" ? top(table) : top}
       <div className="sim-hud">
         <div className="hud-side">
           <Tray
@@ -440,7 +441,11 @@ function TableView({
       </div>
 
       <div className="controls">
-        {table.phase === "bet" ? (
+        {table.phase === "settle" && table.countCheckDue ? (
+          <div className="phase-msg muted">Chequeo de conteo…</div>
+        ) : unitBets && (table.phase === "bet" || table.phase === "settle") ? (
+          <UnitBets table={table} />
+        ) : table.phase === "bet" ? (
           <>
             <div className="bet-hint tiny">
               {suggested ? (
@@ -689,6 +694,60 @@ function TableView({
         ) : null}
       </Sheet>
     </div>
+  );
+}
+
+// Apuesta en unidades (1, 2, 4, 6 u 8), la escala de la lección 20. La usan los desafíos de zapato completo.
+const UNIT_STEPS = [1, 2, 4, 6, 8];
+function UnitBets({ table }) {
+  const unit = table.opts.unit;
+  const settled = table.phase === "settle";
+  const current = settled ? 0 : table.bet;
+  return (
+    <>
+      <div className="bet-hint tiny">
+        {settled
+          ? "Elegí la apuesta de la próxima mano según el conteo real."
+          : `Tu unidad es $${unit}. Elegí cuántas unidades apostar.`}
+      </div>
+      <div className="unit-bets">
+        {UNIT_STEPS.map((u) => (
+          <button
+            type="button"
+            className={cx("unit-bet", current === u * unit && "on")}
+            onClick={() => {
+              vibrate(6);
+              sfx.chip();
+              table.setBet(u * unit);
+            }}
+            disabled={u * unit > table.bankroll}
+            key={u}
+          >
+            <b className="num">{u}</b>
+            <span className="num">${u * unit}</span>
+          </button>
+        ))}
+      </div>
+      <div className="bet-row">
+        {table.bankroll < unit ? (
+          <Button small={true} onClick={() => table.refill()} className="grow">
+            Recargar fichas
+          </Button>
+        ) : (
+          <Button
+            small={true}
+            onClick={() => {
+              vibrate(10);
+              table.deal();
+            }}
+            disabled={settled || !table.bet}
+            className="grow deal-btn"
+          >
+            {settled ? "Elegí tu apuesta" : `Repartir · $${money(table.bet)}`}
+          </Button>
+        )}
+      </div>
+    </>
   );
 }
 

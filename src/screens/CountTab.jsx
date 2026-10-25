@@ -4,7 +4,6 @@ import { Icon } from "../ui/icons.jsx";
 import { RANKS, makeCard } from "../engine/cards.js";
 import {
   Button,
-  Flame,
   IconButton,
   PlayingCard,
   Segmented,
@@ -20,87 +19,28 @@ import {
 } from "../ui/common.jsx";
 import { HiLoValues } from "../lessons/visuals.jsx";
 import { useNav } from "../nav.js";
+import { CountPathCard } from "./countPath.jsx";
 
 const SAMPLE_CARD = makeCard("5", "h");
 function CountTab() {
-  let a = useStore(),
-    e = useNav(),
-    t = systemFor(a.settings.system),
-    [s, n] = useState("values"),
-    [l, i] = useState(false),
-    [o, c] = useState(false),
-    r = {
-      how: !!(a.lessons.l16 && a.lessons.l16.done) || !!a.path.done.how,
-      values: !!a.path.done.values,
-      running: !!a.path.done.running,
-      use: !!(a.lessons.use && a.lessons.use.done),
-    },
-    u = Object.values(r).filter(Boolean).length,
-    d = [
-      {
-        id: "how",
-        title: "Cómo funciona el conteo",
-        sub: "Por qué las cartas que salen cambian todo",
-        go: () =>
-          e.push("lesson", {
-            id: "l16",
-            confirmExit: true,
-            then: {
-              markPath: "how",
-              text: "Ahora aprendé los valores de cada carta.",
-              screen: "lesson",
-              params: { id: "l17", confirmExit: true, then: AFTER_VALUES },
-              label: "Seguir: los valores",
-              backLabel: "Volver a Conteo",
-            },
-          }),
-      },
-      {
-        id: "values",
-        title: "Valores de las cartas",
-        sub: "Hi-Lo: +1, 0 y −1",
-        go: () =>
-          e.push("lesson", {
-            id: "l17",
-            confirmExit: true,
-            then: AFTER_VALUES,
-          }),
-      },
-      {
-        id: "running",
-        title: "Conteo corrido",
-        sub: "Llevá el total mientras caen las cartas",
-        go: () => e.push("drillRunning", { confirmExit: true }),
-      },
-      {
-        id: "use",
-        title: "Usar el conteo",
-        sub: "Conteo real y cuánto apostar",
-        go: () =>
-          e.push("lesson", {
-            id: "use",
-            confirmExit: true,
-            then: {
-              markPath: "use",
-              text: "Ya sabés contar y apostar. Probalo en el simulador.",
-              backLabel: "Volver a Conteo",
-            },
-          }),
-      },
-    ],
-    p = d.find((M) => !r[M.id]),
-    f = a.daily,
-    y = dayKey(),
-    C = new Date();
-  C.setDate(C.getDate() - 1);
-  let k = dayKey(C),
-    v = f.last === y || f.last === k ? f.streak : 0,
-    m = !!f.results[y],
-    b =
-      Math.floor((Date.now() - new Date(2026, 0, 1).getTime()) / 86400000) + 1,
-    S = a.drills.values.sessions.slice(-7),
-    D = a.drills.running.sessions,
-    _ = a.drills.running.bestPerfect;
+  const st = useStore();
+  const nav = useNav();
+  const sys = systemFor(st.settings.system);
+  const [practice, setPractice] = useState("values");
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const daily = st.daily;
+  const today = dayKey();
+  const y = new Date();
+  y.setDate(y.getDate() - 1);
+  const dailyStreak =
+    daily.last === today || daily.last === dayKey(y) ? daily.streak : 0;
+  const dailyDone = daily.results[today];
+  const dailyNumber =
+    Math.floor((Date.now() - new Date(2026, 0, 1).getTime()) / 86400000) + 1;
+  const valueSessions = st.drills.values.sessions.slice(-7);
+  const running = st.drills.running.sessions;
+  const bestRun = st.drills.running.bestPerfect;
   return (
     <div className="fade-up">
       <BrandBar
@@ -120,17 +60,24 @@ function CountTab() {
           <button
             type="button"
             className="sys-pill"
-            onClick={() => e.openSheet("system")}
+            onClick={() => nav.openSheet("system")}
           >
-            {t.short || t.name} <Icon name="chev" size={14} />
+            {sys.short || sys.name} <Icon name="chev" size={14} />
           </button>
           <IconButton
             icon="help"
             label="Cómo funciona el conteo"
-            onClick={() => i(true)}
+            onClick={() => setHelpOpen(true)}
             className="acc-icon"
           />
         </div>
+      </div>
+
+      <CountPathCard />
+
+      <div className="section-title">
+        <h2>Práctica libre</h2>
+        <span className="side">En {sys.short || sys.name}</span>
       </div>
       <div className="card drill-hero">
         <Segmented
@@ -139,15 +86,15 @@ function CountTab() {
             { value: "values", label: "Valores" },
             { value: "running", label: "Conteo corrido" },
           ]}
-          value={s}
-          onChange={n}
+          value={practice}
+          onChange={setPractice}
         />
-        {s === "values" ? (
+        {practice === "values" ? (
           <>
             <div className="hero-preview">
               <PlayingCard card={SAMPLE_CARD} size="lg" />
               <span className="hero-tag good num">
-                {fmtTag(countValue(SAMPLE_CARD, t))}
+                {fmtTag(countValue(SAMPLE_CARD, sys))}
               </span>
             </div>
             <p className="muted">
@@ -157,12 +104,12 @@ function CountTab() {
             <div className="tags" style={{ margin: "12px 0 16px" }}>
               <span className="chip-tag">12 cartas</span>
               <span className="chip-tag">Sin reloj</span>
-              <span className="chip-tag">Pasás con 80 %</span>
             </div>
             <Button
-              onClick={() => e.push("drillValues", { confirmExit: true })}
+              kind="secondary"
+              onClick={() => nav.push("drillValues", { confirmExit: true })}
             >
-              Empezar
+              Practicar valores
             </Button>
           </>
         ) : (
@@ -176,8 +123,9 @@ function CountTab() {
               <span className="hero-tag good num">+1</span>
             </div>
             <p className="muted">
-              Mirás una secuencia de cartas y al final escribís el conteo.
-              Después repasás carta por carta.
+              Mirás una secuencia de cartas y al final escribís el conteo
+              corrido (<i className="en">running count</i>). Elegís la
+              velocidad, la cantidad y si hay distracciones.
             </p>
             <div className="tags" style={{ margin: "12px 0 16px" }}>
               <span className="chip-tag">4 velocidades</span>
@@ -185,60 +133,44 @@ function CountTab() {
               <span className="chip-tag">Hasta un mazo</span>
             </div>
             <Button
-              onClick={() => e.push("drillRunning", { confirmExit: true })}
+              kind="secondary"
+              onClick={() => nav.push("drillRunning", { confirmExit: true })}
             >
-              Empezar
+              Practicar conteo corrido
             </Button>
           </>
         )}
       </div>
-      <div className="card path-card">
-        <div className="row between">
-          <h2 style={{ fontSize: 21 }}>Empezá acá: contar en 4 pasos</h2>
-          <span
-            className="muted small num"
-            style={{ fontWeight: 700, whiteSpace: "nowrap" }}
-          >
-            {u}
-            {" de 4"}
+
+      <button
+        type="button"
+        className="card list-item daily-card"
+        onClick={() =>
+          nav.push("drillRunning", { daily: true, confirmExit: true })
+        }
+      >
+        <span className="li-icon">
+          <Icon name="calendar" />
+        </span>
+        <span className="li-text">
+          <span className="li-title" style={{ fontSize: 17 }}>
+            Desafío diario{" "}
+            <span className="chip-tag acc num">#{dailyNumber}</span>
           </span>
-        </div>
-        <div className="path-steps">
-          {d.map((M, R) => {
-            let V = r[M.id],
-              B = p && p.id === M.id;
-            return (
-              <button
-                type="button"
-                className={cx("pstep", B && "next", V && "done")}
-                onClick={M.go}
-                key={M.id}
-              >
-                <span className="pstep-dot">
-                  {V ? <Icon name="check" size={16} stroke={3} /> : R + 1}
-                </span>
-                <span className="li-text">
-                  <span className="li-title" style={{ fontSize: 17 }}>
-                    {M.title}
-                  </span>
-                  <span className="li-sub" style={{ display: "block" }}>
-                    {V ? "Hecho" : M.sub}
-                  </span>
-                </span>
-                {B ? (
-                  <span className="pstep-go">Empezar</span>
-                ) : (
-                  <Icon name="chev" className="li-chev" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+          <span className="li-sub" style={{ display: "block" }}>
+            {dailyDone
+              ? dailyDone.ok
+                ? `Hoy: ¡acertaste!${dailyStreak > 1 ? ` · ${dailyStreak} días seguidos` : ""}`
+                : "Hoy: lo intentaste"
+              : "20 cartas, las mismas para todos hoy"}
+          </span>
+        </span>
+        <Icon name="chev" className="li-chev" />
+      </button>
       <button
         type="button"
         className="card list-item sim-card"
-        onClick={() => e.setTab("jugar")}
+        onClick={() => nav.setTab("jugar")}
       >
         <span className="li-icon">
           <Icon name="play" />
@@ -252,81 +184,60 @@ function CountTab() {
         </span>
         <Icon name="chev" className="li-chev" />
       </button>
-      <button
-        type="button"
-        className="card list-item daily-card"
-        onClick={() =>
-          e.push("drillRunning", { daily: true, confirmExit: true })
-        }
-      >
-        <span className="li-icon">
-          <Icon name="calendar" />
-        </span>
-        <span className="li-text">
-          <span className="li-title" style={{ fontSize: 17 }}>
-            {"Desafío diario "}
-            <span className="chip-tag acc num">#{b}</span>
-          </span>
-          <span className="li-sub" style={{ display: "block" }}>
-            {m
-              ? f.results[y].ok
-                ? "Hoy: ¡acertaste!"
-                : "Hoy: lo intentaste"
-              : "20 cartas, el mismo para todos hoy"}
-          </span>
-        </span>
-        <span className="row" style={{ gap: 4, fontWeight: 700 }}>
-          <Flame size={20} lit={v > 0} />
-          <span className="num">{v}</span>
-        </span>
-        <Icon name="chev" className="li-chev" />
-      </button>
+
       <div className="section-title">
         <h2>Más ejercicios</h2>
       </div>
       <div className="list">
         <DrillRow
           icon="layers"
+          title="Cancelar de a pares"
+          sub="Una alta y una baja juntas suman 0"
+          onClick={() => nav.push("drillPairs", { confirmExit: true })}
+          n={((st.drills.pairs && st.drills.pairs.sessions) || []).length}
+        />
+        <DrillRow
+          icon="target"
           title="Conteo real"
-          sub="Pasá el conteo corrido a conteo real"
-          onClick={() => e.push("drillTrue", { confirmExit: true })}
-          n={a.drills.true.sessions.length}
+          sub="Pasá el conteo corrido a conteo real (true count)"
+          onClick={() => nav.push("drillTrue", { confirmExit: true })}
+          n={st.drills.true.sessions.length}
         />
         <DrillRow
           icon="shoe"
           title="Estimar mazos"
           sub="Leé la bandeja de descarte"
-          onClick={() => e.push("drillDecks", { confirmExit: true })}
-          n={a.drills.decks.sessions.length}
+          onClick={() => nav.push("drillDecks", { confirmExit: true })}
+          n={st.drills.decks.sessions.length}
         />
         <DrillRow
-          icon="target"
+          icon="bolt"
           title="Apuesta según el conteo"
           sub="La escala de 1 a 8 unidades"
-          onClick={() => e.push("drillBet", { confirmExit: true })}
-          n={a.drills.bet.sessions.length}
+          onClick={() => nav.push("drillBet", { confirmExit: true })}
+          n={st.drills.bet.sessions.length}
         />
         <DrillRow
           icon="clock"
           title="Mazo completo"
           sub="Contá 51 cartas contra reloj"
-          onClick={() => e.push("deckCountdown", { confirmExit: true })}
-          n={(a.drills.deck.sessions || []).length}
+          onClick={() => nav.push("deckCountdown", { confirmExit: true })}
+          n={(st.drills.deck.sessions || []).length}
         />
         <DrillRow
           icon="sparkle"
           title="Desviaciones"
           sub="Jugadas que cambian con el conteo"
           onClick={() =>
-            e.push("trainSession", { mode: "count", confirmExit: true })
+            nav.push("trainSession", { mode: "count", confirmExit: true })
           }
-          n={(a.drills.count.sessions || []).length}
+          n={(st.drills.count.sessions || []).length}
         />
       </div>
+
       <div className="section-title">
         <h2>
-          {"Tu progreso "}
-          <InfoDot onClick={() => c(true)} />
+          Tu progreso <InfoDot onClick={() => setDetailOpen(true)} />
         </h2>
         <span className="chip-tag">Valores</span>
       </div>
@@ -335,64 +246,73 @@ function CountTab() {
           Precisión por ejercicio, del más viejo al más nuevo.
         </p>
         <div className="bars" style={{ marginBottom: 30 }}>
-          {Array.from({ length: 7 }, (M, R) => {
-            let V = S[S.length - 7 + R];
-            if (!V)
-              return <span className="b" style={{ height: 14 }} key={R} />;
-            let B = V.ok / V.n;
+          {Array.from({ length: 7 }, (_, i) => {
+            const s = valueSessions[valueSessions.length - 7 + i];
+            if (!s)
+              return <span className="b" style={{ height: 14 }} key={i} />;
+            const acc = s.ok / s.n;
             return (
               <span
-                className={cx("b", B >= 0.9 ? "on" : B >= 0.7 ? "mid" : "low")}
-                style={{ height: `${Math.max(10, B * 100)}%` }}
-                key={R}
+                className={cx(
+                  "b",
+                  acc >= 0.9 ? "on" : acc >= 0.7 ? "mid" : "low",
+                )}
+                style={{ height: `${Math.max(10, acc * 100)}%` }}
+                key={i}
               >
-                <span>{Math.round(B * 100)}%</span>
+                <span>{Math.round(acc * 100)}%</span>
               </span>
             );
           })}
         </div>
         <div className="row between small">
           <span className="muted">
-            {a.drills.values.sessions.length}{" "}
-            {a.drills.values.sessions.length === 1 ? "ejercicio" : "ejercicios"}
+            {st.drills.values.sessions.length}{" "}
+            {st.drills.values.sessions.length === 1
+              ? "ejercicio"
+              : "ejercicios"}
           </span>
-          <button type="button" className="link small" onClick={() => c(true)}>
+          <button
+            type="button"
+            className="link small"
+            onClick={() => setDetailOpen(true)}
+          >
             Detalles ›
           </button>
         </div>
-        {D.length ? (
+        {running.length ? (
           <p className="muted small" style={{ marginTop: 12 }}>
-            {"Conteo corrido: "}
-            {D.filter((M) => M.ok).length}
-            {" de "}
-            {D.length}
-            {" exactos"}
-            {_
-              ? ` · récord ${_.n} cartas a ${_.rate.toFixed(1).replace(".", ",")} cartas/s`
+            Conteo corrido: {running.filter((r) => r.ok).length} de{" "}
+            {running.length} exactos
+            {bestRun
+              ? ` · récord ${bestRun.n} cartas a ${bestRun.rate.toFixed(1).replace(".", ",")} cartas/s`
               : ""}
           </p>
         ) : null}
       </div>
-      <Sheet open={l} onClose={() => i(false)} title="Cómo se cuenta">
+      <Sheet
+        open={helpOpen}
+        onClose={() => setHelpOpen(false)}
+        title="Cómo se cuenta"
+      >
         <p className="muted">
-          {"Contar cartas es llevar un solo número. Con "}
-          <b style={{ color: "var(--text)" }}>{t.name}</b>, cada carta suma o
+          Contar cartas es llevar un solo número. Con{" "}
+          <b style={{ color: "var(--text)" }}>{sys.name}</b>, cada carta suma o
           resta:
         </p>
-        {t.id === "hilo" ? <HiLoValues /> : <SystemValues sys={t} />}
+        {sys.id === "hilo" ? <HiLoValues /> : <SystemValues sys={sys} />}
         <p className="muted" style={{ marginTop: 14 }}>
-          {
-            "Un conteo alto quiere decir que quedan muchas cartas altas en el zapato: es el momento de subir la apuesta. "
-          }
-          {t.balanced
-            ? "Para decidir, dividí el conteo corrido por los mazos que quedan (conteo real)."
+          Un conteo alto quiere decir que quedan muchas cartas altas en el
+          zapato: es el momento de subir la apuesta.{" "}
+          {sys.balanced
+            ? "Para decidir, dividí el conteo corrido (running count) por los mazos que quedan: eso es el conteo real (true count)."
             : "Con KO no dividís: arrancás en 4 − 4 × mazos y mirás el conteo corrido directo."}
         </p>
         <Button
           kind="secondary"
           onClick={() => {
-            i(false);
-            e.push("lesson", { id: "l16", confirmExit: true });
+            setHelpOpen(false);
+            nav.push("lesson", { id: "l16", confirmExit: true });
           }}
           style={{ marginTop: 18 }}
         >
@@ -400,12 +320,12 @@ function CountTab() {
         </Button>
       </Sheet>
       <Sheet
-        open={o}
-        onClose={() => c(false)}
+        open={detailOpen}
+        onClose={() => setDetailOpen(false)}
         title="Valores: carta por carta"
         tall={true}
       >
-        <ValuesDetail st={a} sys={t} />
+        <ValuesDetail st={st} sys={sys} />
       </Sheet>
     </div>
   );

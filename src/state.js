@@ -201,6 +201,14 @@ const DEFAULT_STATE = {
     count: { sessions: [] },
   },
   path: { done: {} },
+  // Ruta de conteo de 10 niveles: niveles superados (con su mejor puntaje) e intentos.
+  countPath: { passed: {}, tries: {} },
+  // Meta diaria: minutos por día y segundos practicados cada día ({ s, g }: segundos y meta de ese día).
+  dailyGoal: { minutes: 10, chosen: false, days: {}, celebrated: null },
+  // Repaso: preguntas de lecciones que fallaste ({ [lessonId:step]: { misses, ok, due, at } }).
+  review: { items: {} },
+  // Examen final (zapato completo jugando, contando y apostando).
+  finalExam: { attempts: [], passed: null },
   lessons: {},
   daily: { last: null, streak: 0, best: 0, results: {} },
   play: {
@@ -244,12 +252,22 @@ function loadState() {
   try {
     let a = localStorage.getItem(STORAGE_KEY);
     return a
-      ? deepMerge(clone(DEFAULT_STATE), JSON.parse(a))
+      ? migrate(deepMerge(clone(DEFAULT_STATE), JSON.parse(a)))
       : clone(DEFAULT_STATE);
   } catch {
     storageBroken = true;
     return clone(DEFAULT_STATE);
   }
+}
+// Datos guardados por versiones anteriores.
+function migrate(st) {
+  if (st.path.done.values && !st.countPath.passed.values) {
+    st.countPath = {
+      ...st.countPath,
+      passed: { ...st.countPath.passed, values: { at: Date.now(), score: 1 } },
+    };
+  }
+  return st;
 }
 function clone(a) {
   return JSON.parse(JSON.stringify(a));
@@ -429,6 +447,75 @@ function markPathDone(a) {
     }),
   );
 }
+function recordLevel(id, ok, score) {
+  setState((st) => {
+    const cp = st.countPath;
+    const prev = cp.passed[id];
+    const passed =
+      ok && (!prev || score > prev.score)
+        ? { ...cp.passed, [id]: { at: Date.now(), score } }
+        : cp.passed;
+    return markActive({
+      ...st,
+      countPath: {
+        ...cp,
+        passed,
+        tries: { ...cp.tries, [id]: (cp.tries[id] || 0) + 1 },
+      },
+    });
+  });
+}
+// Meta diaria
+function goalSeconds(st) {
+  return st.dailyGoal.minutes * 60;
+}
+function goalDay(st, day = dayKey()) {
+  const d = st.dailyGoal.days[day];
+  return { s: d ? d.s : 0, g: d ? d.g : goalSeconds(st) };
+}
+function goalMet(st, day = dayKey()) {
+  const d = goalDay(st, day);
+  return d.s >= d.g;
+}
+// Días seguidos cumpliendo la meta (si hoy todavía no la cumpliste, cuenta hasta ayer).
+function goalStreak(st) {
+  let day = dayKey();
+  if (!goalMet(st, day)) day = addDays(day, -1);
+  let n = 0;
+  while (goalMet(st, day) && st.dailyGoal.days[day]) {
+    n++;
+    day = addDays(day, -1);
+  }
+  return n;
+}
+function addPracticeTime(seconds) {
+  setState((st) => {
+    const day = dayKey();
+    const cur = goalDay(st, day);
+    return {
+      ...st,
+      dailyGoal: {
+        ...st.dailyGoal,
+        days: { ...st.dailyGoal.days, [day]: { s: cur.s + seconds, g: cur.g } },
+      },
+    };
+  });
+}
+function setGoalMinutes(minutes) {
+  setState((st) => {
+    const day = dayKey();
+    const cur = goalDay(st, day);
+    return {
+      ...st,
+      dailyGoal: {
+        ...st.dailyGoal,
+        minutes,
+        chosen: true,
+        days: { ...st.dailyGoal.days, [day]: { s: cur.s, g: minutes * 60 } },
+      },
+    };
+  });
+}
 function resetAll() {
   currentState = clone(DEFAULT_STATE);
   saveNow();
@@ -448,7 +535,7 @@ function importBackup(a) {
     s = JSON.parse(t);
   if (!s || s.v !== 1)
     throw new Error("El respaldo no tiene un formato válido.");
-  currentState = deepMerge(clone(DEFAULT_STATE), s);
+  currentState = migrate(deepMerge(clone(DEFAULT_STATE), s));
   saveNow();
   for (let n of listeners) {
     n();
@@ -456,6 +543,13 @@ function importBackup(a) {
 }
 export {
   TABLE_PRESETS,
+  addPracticeTime,
+  goalDay,
+  goalMet,
+  goalSeconds,
+  goalStreak,
+  recordLevel,
+  setGoalMinutes,
   activityStreak,
   addDays,
   applyRating,
