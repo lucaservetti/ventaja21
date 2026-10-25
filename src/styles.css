@@ -970,6 +970,7 @@ button.chip:active:not(:disabled) {
   position: relative;
   display: grid;
   place-items: center;
+  flex-shrink: 0;
 }
 .ring svg {
   position: absolute;
@@ -3892,6 +3893,9 @@ button.chip:active:not(:disabled) {
 .demo-actions {
   pointer-events: none;
 }
+.demo-pick {
+  display: grid;
+}
 .demo-pick .act-btn {
   outline: 3px solid var(--accent);
   background: var(--accent-soft);
@@ -5837,4 +5841,14 @@ i.en {
   justify-content: center;
   gap: 12px;
   margin-top: 4px;
+}
+
+/* Panel de crupier y mano en pantallas angostas: si las cartas no entran, se superponen en vez de salirse */
+.deal-side .card-row > .pc:not(:last-child) {
+  flex-shrink: 1;
+  min-width: calc(var(--w) * 0.3);
+}
+.deal-side .card-row > .pc > .pc-inner {
+  right: auto;
+  width: var(--w);
 }

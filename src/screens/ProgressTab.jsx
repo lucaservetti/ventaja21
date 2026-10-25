@@ -180,7 +180,7 @@ function ProgressOverview({ st: a, nav: e }) {
         <span className="li-text">
           <span className="eyebrow">Meta de hoy</span>
           <span className="li-title" style={{ display: "block", fontSize: 19 }}>
-            {Math.floor(today.s / 60)} de {Math.round(today.g / 60)} minutos
+            {Math.floor(today.s / 60)} de {Math.round(today.g / 60)} min
           </span>
           <span className="li-sub">
             {o} {o === 1 ? "día seguido" : "días seguidos"} cumpliendo la meta

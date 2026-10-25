@@ -33,5 +33,15 @@ Cómo está organizado `src/`:
 | `screens/` | Pantallas: Conteo, Entrenar, Jugar, Aprender, Progreso, ejercicios, guía y ajustes |
 | `ui/` | Componentes compartidos: cartas, botones, hojas, tabla de estrategia e íconos |
 | `styles.css` | Todos los estilos |
+| `tests/` | Pruebas del simulador y de la tabla de estrategia |
 
 La versión que se muestra en Ajustes sale de `version` en `package.json`.
+
+## Pruebas
+
+```
+npm test
+```
+
+- `tests/simulador.mjs` juega miles de manos con decisiones al azar (crupier que se planta o pide con 17 blando, 2 y 6 mazos, con y sin mezcladora continua) y revisa en cada una que los pagos, la banca, el juego del crupier y el conteo den bien.
+- `tests/estrategia.mjs` compara cada casilla de la tabla de estrategia contra el valor esperado que calcula la app. Las únicas diferencias que acepta son dos dobles blandos (A,2 contra 5 y A,4 contra 4) que son correctos con 6 mazos.
