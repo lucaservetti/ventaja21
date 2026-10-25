@@ -6664,3 +6664,12 @@ i.en {
     margin-top: -2px;
   }
 }
+.lesson-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.level-unknown {
+  width: 100%;
+  text-align: left;
+}

@@ -193,24 +193,50 @@ function ProgressOverview({ st: a, nav: e }) {
         </span>
         <Icon name="chev" className="li-chev" />
       </button>
-      <div className="card" style={{ marginTop: 14 }}>
-        <div className="row between">
-          <div>
-            <div className="eyebrow">Tu nivel</div>
-            <div style={{ fontSize: 28, fontWeight: 700 }}>{t.name}</div>
+      {a.train.sessions.length ? (
+        <div className="card" style={{ marginTop: 14 }}>
+          <div className="row between">
+            <div>
+              <div className="eyebrow">Tu nivel</div>
+              <div style={{ fontSize: 28, fontWeight: 700 }}>{t.name}</div>
+            </div>
+            <div className="mid-num" style={{ fontSize: 44 }}>
+              {a.rating.value}
+            </div>
           </div>
-          <div className="mid-num" style={{ fontSize: 44 }}>
-            {a.rating.value}
-          </div>
+          <Sparkline points={c} />
+          <p className="muted small" style={{ marginTop: 6 }}>
+            {s
+              ? `Te faltan ${s.min - a.rating.value} puntos para ${s.name}.`
+              : "Llegaste al nivel más alto."}
+            {" Tu puntaje sube cuando acertás manos en Entrenar."}
+          </p>
         </div>
-        <Sparkline points={c} />
-        <p className="muted small" style={{ marginTop: 6 }}>
-          {s
-            ? `Te faltan ${s.min - a.rating.value} puntos para ${s.name}.`
-            : "Llegaste al nivel más alto."}
-          {" Tu puntaje sube cuando acertás manos en Entrenar."}
-        </p>
-      </div>
+      ) : (
+        <button
+          type="button"
+          className="card list-item level-unknown"
+          style={{ marginTop: 14 }}
+          onClick={() =>
+            e.push("trainSession", { mode: "level", confirmExit: true })
+          }
+        >
+          <span className="li-text">
+            <span className="eyebrow">Tu nivel</span>
+            <span
+              className="li-title"
+              style={{ display: "block", fontSize: 22 }}
+            >
+              Todavía sin medir
+            </span>
+            <span className="li-sub" style={{ display: "block" }}>
+              Hacé tu primera tanda de 10 manos en Entrenar y vas a ver tu nivel
+              y cómo crece.
+            </span>
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+      )}
       <div className="tiles" style={{ marginTop: 14 }}>
         <div className="tile">
           <div className="tile-v num">{a.train.totalHands}</div>

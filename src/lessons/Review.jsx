@@ -162,7 +162,7 @@ function Review() {
           <Icon name="close" size={22} />
         </button>
       </div>
-      <div className="eyebrow lesson-name">De la lección: {lesson.title}</div>
+      <div className="eyebrow lesson-name">{lesson.title}</div>
       <div className={cx("lesson-body", isScene && "is-scene")} key={i}>
         <QuestionBody step={step} saved={saved} onAnswer={answer} />
       </div>
