@@ -30,6 +30,7 @@ import { CountLevel, DrillPairs } from "./screens/countPath.jsx";
 import { ShoeChallenge } from "./screens/ShoeChallenge.jsx";
 import { MyChart } from "./screens/MyChart.jsx";
 import { JumpTest } from "./lessons/JumpTest.jsx";
+import { TrainHistory } from "./screens/TrainHistory.jsx";
 import {
   GoalSheet,
   PRACTICE_SCREENS,
@@ -70,6 +71,7 @@ const SCREENS = {
   shoeChallenge: ShoeChallenge,
   myChart: MyChart,
   jumpTest: JumpTest,
+  trainHistory: TrainHistory,
 };
 const SHEETS = {
   settings: SettingsSheet,

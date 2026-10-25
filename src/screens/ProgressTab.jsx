@@ -30,6 +30,7 @@ import { spotsAccuracy, strongSpots, weakSpots } from "../engine/skills.js";
 import { shortDate } from "./TrainTab.jsx";
 import { useNav } from "../nav.js";
 import { GoalBadge, bestGoalStreak } from "./goal.jsx";
+import { NextSteps, ProfileCard } from "./profile.jsx";
 
 function ProgressTab() {
   let a = useStore(),
@@ -166,9 +167,11 @@ function ProgressOverview({ st: a, nav: e }) {
     y = f.length ? f.reduce((C, k) => C + k.ok / k.n, 0) / f.length : null;
   return (
     <>
+      <NextSteps st={a} />
       <button
         type="button"
         className="card goal-card"
+        style={{ marginTop: 14 }}
         onClick={() => e.openSheet("goal")}
       >
         <Ring
@@ -279,28 +282,8 @@ function ProgressOverview({ st: a, nav: e }) {
           </span>
         </div>
       </div>
-      <div className="card" style={{ marginTop: 14 }}>
-        <div className="eyebrow" style={{ marginBottom: 6 }}>
-          Conteo
-        </div>
-        <div className="kv">
-          <span className="kv-k">Valores de las cartas</span>
-          <span className="kv-v num">
-            {y === null ? "—" : `${Math.round(y * 100)} %`}
-          </span>
-        </div>
-        <div className="kv">
-          <span className="kv-k">Conteos corridos exactos</span>
-          <span className="kv-v num">
-            {p === null ? "—" : `${Math.round(p * 100)} %`}
-          </span>
-        </div>
-        <div className="kv">
-          <span className="kv-k">Chequeos en la mesa</span>
-          <span className="kv-v num">
-            {a.play.checks ? `${a.play.checksOk}/${a.play.checks}` : "—"}
-          </span>
-        </div>
+      <div style={{ marginTop: 14 }}>
+        <ProfileCard st={a} />
       </div>
       {a.train.totalHands === 0 ? (
         <Button onClick={() => e.setTab("entrenar")} style={{ marginTop: 16 }}>

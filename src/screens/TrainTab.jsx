@@ -14,6 +14,7 @@ import {
 import { skillGrade, skillStats } from "../engine/skills.js";
 import { useNav } from "../nav.js";
 import { GoalBadge } from "./goal.jsx";
+import { ProfileChips } from "./profile.jsx";
 
 const SKILL_SUITS = {
   stiff: ["s", "h"],
@@ -95,6 +96,7 @@ function TrainTab() {
           ) : null}
         </div>
       )}
+      {!i ? <ForYou st={a} nav={e} /> : null}
       {l.length < 3 ? (
         <>
           <hr className="hr" />
@@ -207,15 +209,15 @@ function TrainTab() {
         <button
           type="button"
           className="list-item"
-          onClick={() => e.openSheet("chartView")}
+          onClick={() => e.push("myChart")}
         >
           <span className="li-icon">
             <Icon name="grid" />
           </span>
           <span className="li-text">
-            <span className="li-title">Tabla de estrategia</span>
+            <span className="li-title">Tu tabla de estrategia</span>
             <span className="li-sub" style={{ display: "block" }}>
-              Según las reglas de tu mesa
+              Con cómo te va en cada casilla
             </span>
           </span>
           <Icon name="chev" className="li-chev" />
@@ -223,9 +225,18 @@ function TrainTab() {
       </div>
       <div className="section-title">
         <h2>
-          Tandas recientes
+          Historial
           <InfoDot onClick={() => n("recent")} />
         </h2>
+        {l.length > 4 ? (
+          <button
+            type="button"
+            className="link small"
+            onClick={() => e.push("trainHistory")}
+          >
+            Ver todo ({l.length}) →
+          </button>
+        ) : null}
       </div>
       {l.length ? (
         <div className="list">
@@ -233,7 +244,12 @@ function TrainTab() {
             .slice(-4)
             .reverse()
             .map((u, d) => (
-              <div className="list-item" key={d}>
+              <button
+                type="button"
+                className="list-item"
+                onClick={() => e.push("trainHistory", { open: u.t })}
+                key={d}
+              >
                 <span
                   className={cx(
                     "score-pill",
@@ -259,7 +275,8 @@ function TrainTab() {
                     {" puntaje"}
                   </span>
                 </span>
-              </div>
+                <Icon name="chev" className="li-chev" />
+              </button>
             ))}
         </div>
       ) : (
@@ -273,7 +290,7 @@ function TrainTab() {
         <button
           type="button"
           className="cta-bar"
-          onClick={() => r(i ? "level" : "mixed")}
+          onClick={() => r(i ? "level" : "foryou")}
         >
           <span className="cta-play">
             <Icon name="play" size={26} />
@@ -285,7 +302,9 @@ function TrainTab() {
             <span className="cta-sub">
               {i
                 ? "Encontrá tu nivel inicial"
-                : "Apuntadas a tus puntos débiles"}
+                : (a.train.mistakes || []).length
+                  ? "Con tus errores y puntos débiles"
+                  : "Apuntadas a tus puntos débiles"}
             </span>
           </span>
           <span className="cta-arrow">
@@ -326,6 +345,56 @@ function TrainTab() {
         </p>
       </Sheet>
     </div>
+  );
+}
+// "Para vos": tus errores para repetir y tu perfil en chips.
+function ForYou({ st, nav }) {
+  const mistakes = st.train.mistakes || [];
+  const fromTable = mistakes.filter((m) => m.src === "mesa").length;
+  return (
+    <>
+      <div className="section-title">
+        <h2>Para vos</h2>
+      </div>
+      {mistakes.length ? (
+        <button
+          type="button"
+          className="card list-item mistakes-card"
+          onClick={() =>
+            nav.push("trainSession", { mode: "mistakes", confirmExit: true })
+          }
+        >
+          <span className="mistake-fan" aria-hidden="true">
+            <MiniCards
+              ranks={mistakes[mistakes.length - 1].cards.slice(0, 2)}
+              suits={["s", "h"]}
+            />
+            <span className="mistake-count num">{mistakes.length}</span>
+          </span>
+          <span className="li-text">
+            <span className="li-title">Repetí tus errores</span>
+            <span className="li-sub" style={{ display: "block" }}>
+              {mistakes.length}{" "}
+              {mistakes.length === 1
+                ? "mano que fallaste"
+                : "manos que fallaste"}
+              {fromTable ? `, ${fromTable} en la mesa` : ""}. Cada una sale
+              cuando la acertás dos veces.
+            </span>
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+      ) : (
+        <div className="card flat mistakes-empty">
+          <Icon name="check" size={20} className="good" />
+          <span>
+            No tenés manos falladas pendientes. Las que falles (acá o en la
+            mesa) aparecen acá para repetirlas.
+          </span>
+        </div>
+      )}
+      <ProfileChips st={st} onMore={() => nav.goTab("progreso")} />
+    </>
   );
 }
 function shortDate(a) {

@@ -190,6 +190,8 @@ const DEFAULT_STATE = {
     exams: [],
     totalHands: 0,
     totalOk: 0,
+    // Manos que fallaste, tal cual te tocaron: { key, cards, up, chosen, best, src, t, misses, streak }.
+    mistakes: [],
   },
   drills: {
     values: { sessions: [], ranks: {}, bestStreak: 0 },
@@ -465,6 +467,41 @@ function recordLevel(id, ok, score) {
     });
   });
 }
+// Errores para repetir: una mano fallada entra a la lista (o suma un fallo si ya estaba);
+// sale cuando la acertás dos veces seguidas, en cualquier lado.
+const MAX_MISTAKES = 40;
+function recordHandResult(hand, ok) {
+  setState((st) => {
+    const list = st.train.mistakes || [];
+    const i = list.findIndex((m) => m.key === hand.key);
+    let next;
+    if (ok) {
+      if (i < 0) return st;
+      const streak = (list[i].streak || 0) + 1;
+      next =
+        streak >= 2
+          ? list.filter((_, k) => k !== i)
+          : list.map((m, k) => (k === i ? { ...m, streak } : m));
+    } else {
+      const prev = i >= 0 ? list[i] : null;
+      const item = {
+        key: hand.key,
+        cards: hand.cards,
+        up: hand.up,
+        chosen: hand.chosen,
+        best: hand.best,
+        src: hand.src || "train",
+        t: Date.now(),
+        misses: (prev ? prev.misses : 0) + 1,
+        streak: 0,
+      };
+      next = [...list.filter((_, k) => k !== i), item]
+        .sort((a, b) => a.t - b.t)
+        .slice(-MAX_MISTAKES);
+    }
+    return { ...st, train: { ...st.train, mistakes: next } };
+  });
+}
 // Práctica con ayuda de un nivel de la ruta de conteo (no cuenta como intento).
 function recordLevelPractice(id) {
   setState((st) => {
@@ -599,6 +636,7 @@ export {
   goalMet,
   goalSeconds,
   goalStreak,
+  recordHandResult,
   recordLevel,
   recordLevelPractice,
   setGoalMinutes,
