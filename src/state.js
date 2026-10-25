@@ -1,0 +1,485 @@
+import { useSyncExternalStore } from "react";
+
+const DEFAULT_RULES = {
+  decks: 6,
+  h17: false,
+  das: true,
+  surrender: false,
+  bjPays: 1.5,
+  doubleOn: "any",
+  rsa: false,
+  maxHands: 4,
+  pen: 0.75,
+};
+const TABLE_PRESETS = [
+  {
+    id: "casino",
+    name: "Casino clásico",
+    desc: "6 mazos, el crupier se planta con 17 blando, corte al 75 %.",
+    rules: {
+      decks: 6,
+      h17: false,
+      das: true,
+      surrender: false,
+      bjPays: 1.5,
+      pen: 0.75,
+    },
+  },
+  {
+    id: "casino8",
+    name: "Casino 8 mazos",
+    desc: "8 mazos, el crupier pide con 17 blando, corte al 75 %.",
+    rules: {
+      decks: 8,
+      h17: true,
+      das: true,
+      surrender: false,
+      bjPays: 1.5,
+      pen: 0.75,
+    },
+  },
+  {
+    id: "vegas",
+    name: "Vegas con rendición",
+    desc: "6 mazos, pide con 17 blando, rendición tardía, corte al 80 %.",
+    rules: {
+      decks: 6,
+      h17: true,
+      das: true,
+      surrender: true,
+      bjPays: 1.5,
+      pen: 0.8,
+    },
+  },
+  {
+    id: "live",
+    name: "Online en vivo",
+    desc: "8 mazos con crupier real. Cortan cerca de la mitad del zapato.",
+    rules: {
+      decks: 8,
+      h17: false,
+      das: true,
+      surrender: false,
+      bjPays: 1.5,
+      pen: 0.5,
+    },
+  },
+  {
+    id: "rng",
+    name: "Online automático (RNG)",
+    desc: "Se mezcla después de cada mano. Contar no sirve: probalo.",
+    rules: {
+      decks: 6,
+      h17: false,
+      das: true,
+      surrender: false,
+      bjPays: 1.5,
+      pen: 0,
+    },
+  },
+  {
+    id: "trap",
+    name: "Mesa 6:5 (trampa)",
+    desc: "Paga 6:5 el blackjack y pide con 17 blando. Para ver cuánto cuesta.",
+    rules: {
+      decks: 6,
+      h17: true,
+      das: true,
+      surrender: false,
+      bjPays: 1.2,
+      pen: 0.75,
+    },
+  },
+];
+function withRules(a) {
+  return { ...DEFAULT_RULES, ...(a || {}) };
+}
+function rulesKey(a) {
+  return [
+    a.h17 ? "H17" : "S17",
+    a.das ? "DAS" : "NDAS",
+    a.surrender ? "LS" : "NS",
+    a.doubleOn,
+  ].join("|");
+}
+function describeRules(a) {
+  let e = [];
+  e.push(`${a.decks} mazos`);
+  e.push(a.h17 ? "Pide con 17 blando (H17)" : "Se planta con 17 blando (S17)");
+  e.push(a.bjPays === 1.5 ? "Blackjack paga 3:2" : "Blackjack paga 6:5");
+  e.push(a.das ? "Doblar después de separar" : "Sin doblar tras separar");
+  if (a.surrender) {
+    e.push("Rendición tardía");
+  }
+  if (a.doubleOn !== "any") {
+    e.push(a.doubleOn === "9-11" ? "Doblar solo 9–11" : "Doblar solo 10–11");
+  }
+  e.push(
+    a.pen > 0 ? `Corte al ${Math.round(a.pen * 100)} %` : "Mezcla cada mano",
+  );
+  return e;
+}
+function eloExpected(a, e) {
+  return 1 / (1 + Math.pow(10, (e - a) / 400));
+}
+function eloDelta(a, e, t, s = 40) {
+  let n = eloExpected(a, e),
+    l = t ? s * (1 - n) : -s * n,
+    i = Math.round(l);
+  return i === 0 ? (t ? 1 : -1) : i;
+}
+const LEVELS = [
+  { min: 0, name: "Aprendiz", note: "Estás aprendiendo las bases." },
+  { min: 950, name: "Jugador", note: "Ya jugás la mayoría de las manos bien." },
+  { min: 1100, name: "Estratega", note: "Dominás la estrategia básica." },
+  { min: 1250, name: "Experto", note: "Casi no cometés errores." },
+  { min: 1400, name: "Maestro", note: "Nivel de jugador profesional." },
+];
+function levelFor(a) {
+  let e = LEVELS[0];
+  for (let t of LEVELS) {
+    if (a >= t.min) {
+      e = t;
+    }
+  }
+  return e;
+}
+function nextLevel(a) {
+  return LEVELS.find((e) => e.min > a) || null;
+}
+const STORAGE_KEY = "ventaja21.state.v1";
+const DEFAULT_STATE = {
+  v: 1,
+  profile: {
+    onboarded: false,
+    experience: null,
+    goal: null,
+    startSection: 1,
+    createdAt: null,
+    placement: null,
+  },
+  settings: {
+    system: "hilo",
+    sound: true,
+    haptics: true,
+    rules: { ...DEFAULT_RULES },
+    unlockAll: false,
+    showCost: true,
+  },
+  table: {
+    bankroll: 1000,
+    startBankroll: 1000,
+    unit: 10,
+    bots: 0,
+    speed: "normal",
+    coach: true,
+    betCoach: true,
+    deviations: false,
+    countCheck: "sometimes",
+    pressure: false,
+    showCount: true,
+    xray: false,
+    preset: "casino",
+  },
+  rating: { value: 1000, peak: 1000, history: [] },
+  train: {
+    cells: {},
+    sessions: [],
+    longestStreak: 0,
+    bestSession: null,
+    exams: [],
+    totalHands: 0,
+    totalOk: 0,
+  },
+  drills: {
+    values: { sessions: [], ranks: {}, bestStreak: 0 },
+    running: { sessions: [], bestPerfectTime: null },
+    true: { sessions: [] },
+    decks: { sessions: [] },
+    bet: { sessions: [] },
+    deck: { sessions: [] },
+    count: { sessions: [] },
+  },
+  path: { done: {} },
+  lessons: {},
+  daily: { last: null, streak: 0, best: 0, results: {} },
+  play: {
+    hands: 0,
+    net: 0,
+    decisions: 0,
+    decisionsOk: 0,
+    checks: 0,
+    checksOk: 0,
+    shoes: 0,
+    bets: 0,
+    betsOk: 0,
+  },
+  activity: {},
+  lastTab: "aprender",
+};
+function deepMerge(a, e) {
+  if (!e || typeof e != "object" || Array.isArray(e))
+    return e === undefined ? a : e;
+  let t = Array.isArray(a) ? [...a] : { ...a };
+  for (let s of Object.keys(e)) {
+    let n = a ? a[s] : undefined,
+      l = e[s];
+    if (
+      n &&
+      typeof n == "object" &&
+      !Array.isArray(n) &&
+      l &&
+      typeof l == "object" &&
+      !Array.isArray(l)
+    ) {
+      t[s] = deepMerge(n, l);
+    } else {
+      t[s] = l;
+    }
+  }
+  return t;
+}
+let storageBroken = false;
+function loadState() {
+  try {
+    let a = localStorage.getItem(STORAGE_KEY);
+    return a
+      ? deepMerge(clone(DEFAULT_STATE), JSON.parse(a))
+      : clone(DEFAULT_STATE);
+  } catch {
+    storageBroken = true;
+    return clone(DEFAULT_STATE);
+  }
+}
+function clone(a) {
+  return JSON.parse(JSON.stringify(a));
+}
+let currentState = loadState();
+const listeners = new Set();
+let saveTimer = null;
+function saveNow() {
+  if (!storageBroken)
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState));
+    } catch {
+      storageBroken = true;
+    }
+}
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveNow, 250);
+}
+if (typeof document < "u") {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      saveNow();
+    }
+  });
+  window.addEventListener("pagehide", saveNow);
+}
+function getState() {
+  return currentState;
+}
+function setState(a) {
+  let e = typeof a == "function" ? a(currentState) : { ...currentState, ...a };
+  if (e !== currentState) {
+    currentState = e;
+    scheduleSave();
+    for (let t of listeners) {
+      t();
+    }
+  }
+}
+function subscribe(a) {
+  listeners.add(a);
+  return () => listeners.delete(a);
+}
+function useStore() {
+  return useSyncExternalStore(subscribe, getState, getState);
+}
+function canPersist() {
+  return !storageBroken;
+}
+function dayKey(a = new Date()) {
+  let e = a.getFullYear(),
+    t = String(a.getMonth() + 1).padStart(2, "0"),
+    s = String(a.getDate()).padStart(2, "0");
+  return `${e}-${t}-${s}`;
+}
+function addDays(a, e) {
+  let [t, s, n] = a.split("-").map(Number),
+    l = new Date(t, s - 1, n);
+  l.setDate(l.getDate() + e);
+  return dayKey(l);
+}
+function activityStreak(a) {
+  let e = dayKey(),
+    t = a[e] ? e : a[addDays(e, -1)] ? addDays(e, -1) : null;
+  if (!t) return 0;
+  let s = 0,
+    n = t;
+  for (; a[n];) {
+    s++;
+    n = addDays(n, -1);
+  }
+  return s;
+}
+function markActive(a) {
+  let e = dayKey();
+  return a.activity[e] ? a : { ...a, activity: { ...a.activity, [e]: true } };
+}
+function setSettings(a) {
+  setState((e) => ({ ...e, settings: { ...e.settings, ...a } }));
+}
+function setRules(a) {
+  setState((e) => ({
+    ...e,
+    settings: { ...e.settings, rules: { ...e.settings.rules, ...a } },
+  }));
+}
+function setTable(a) {
+  setState((e) => ({ ...e, table: { ...e.table, ...a } }));
+}
+function applyRating(a, e) {
+  let t = Math.max(100, a.rating.value + e),
+    s = Math.max(a.rating.peak, t);
+  return { ...a, rating: { ...a.rating, value: t, peak: s } };
+}
+function recordSpot(a, e) {
+  setState((t) => {
+    let s = { ...t.train.cells },
+      n = s[a] ? { ...s[a] } : { n: 0, ok: 0, recent: [] };
+    n.n += 1;
+    if (e) {
+      n.ok += 1;
+    }
+    n.recent = [...(n.recent || []), e ? 1 : 0].slice(-6);
+    n.last = Date.now();
+    s[a] = n;
+    return markActive({
+      ...t,
+      train: {
+        ...t.train,
+        cells: s,
+        totalHands: t.train.totalHands + 1,
+        totalOk: t.train.totalOk + (e ? 1 : 0),
+      },
+    });
+  });
+}
+function recordTrainSession(a) {
+  setState((e) => {
+    let t = [...e.train.sessions, a].slice(-120),
+      s = [...e.rating.history, { t: Date.now(), v: a.after }].slice(-200),
+      n = e.train.bestSession;
+    if (
+      a.kind !== "exam" &&
+      (!n ||
+        a.ok / a.n > n.ok / n.n ||
+        (a.ok / a.n === n.ok / n.n && a.n > n.n))
+    ) {
+      n = { ok: a.ok, n: a.n, t: a.t };
+    }
+    let l = Math.max(e.train.longestStreak, a.bestStreak || 0),
+      i =
+        a.kind === "exam"
+          ? [...e.train.exams, { t: a.t, ok: a.ok, n: a.n }].slice(-50)
+          : e.train.exams;
+    return markActive({
+      ...e,
+      train: {
+        ...e.train,
+        sessions: t,
+        bestSession: n,
+        longestStreak: l,
+        exams: i,
+      },
+      rating: { ...e.rating, history: s },
+    });
+  });
+}
+function recordDrill(a, e, t) {
+  setState((s) => {
+    let n = { ...(s.drills[a] || { sessions: [] }) };
+    n.sessions = [...(n.sessions || []), e].slice(-100);
+    if (t) {
+      Object.assign(n, t(n));
+    }
+    return markActive({ ...s, drills: { ...s.drills, [a]: n } });
+  });
+}
+function completeLesson(a, e) {
+  setState((t) => {
+    let s = t.lessons[a] || {},
+      n = Math.max(s.best || 0, e);
+    return markActive({
+      ...t,
+      lessons: {
+        ...t.lessons,
+        [a]: { done: true, best: n, at: Date.now(), viaTest: false },
+      },
+    });
+  });
+}
+function markPathDone(a) {
+  setState((e) =>
+    markActive({
+      ...e,
+      path: { ...e.path, done: { ...e.path.done, [a]: true } },
+    }),
+  );
+}
+function resetAll() {
+  currentState = clone(DEFAULT_STATE);
+  saveNow();
+  for (let a of listeners) {
+    a();
+  }
+}
+function exportBackup() {
+  let a = JSON.stringify(currentState);
+  return "V21:" + btoa(unescape(encodeURIComponent(a)));
+}
+function importBackup(a) {
+  let e = a.trim();
+  if (!e.startsWith("V21:"))
+    throw new Error("El código no es un respaldo de Ventaja 21.");
+  let t = decodeURIComponent(escape(atob(e.slice(4)))),
+    s = JSON.parse(t);
+  if (!s || s.v !== 1)
+    throw new Error("El respaldo no tiene un formato válido.");
+  currentState = deepMerge(clone(DEFAULT_STATE), s);
+  saveNow();
+  for (let n of listeners) {
+    n();
+  }
+}
+export {
+  TABLE_PRESETS,
+  activityStreak,
+  addDays,
+  applyRating,
+  canPersist,
+  completeLesson,
+  dayKey,
+  describeRules,
+  eloDelta,
+  exportBackup,
+  getState,
+  importBackup,
+  levelFor,
+  markActive,
+  markPathDone,
+  nextLevel,
+  recordDrill,
+  recordSpot,
+  recordTrainSession,
+  resetAll,
+  rulesKey,
+  setRules,
+  setSettings,
+  setState,
+  setTable,
+  useStore,
+  withRules,
+};

@@ -1,0 +1,17 @@
+{
+  "name": "ventaja21",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ventaja 21: aprendé a contar cartas en blackjack (PWA en español).",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

@@ -1,5 +1,5 @@
-// Ventaja 21 · service worker 1.0.0 (8d4f3d366f)
-const CACHE = 'v21-1.0.0-8d4f3d366f';
+// Ventaja 21 · service worker 1.0.0 (c288e849fa)
+const CACHE = 'v21-1.0.0-c288e849fa';
 const CORE = ['./', './index.html', './manifest.webmanifest', './favicon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 const FONT_CSS = 'https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..800&family=Oswald:wght@500;600&display=swap';
 
