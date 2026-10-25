@@ -21,7 +21,7 @@ import { LESSONS } from "../lessons/content.js";
 import { UPS, skillSpots } from "../engine/trainer.js";
 import {
   InfoDot,
-  RatingBadge,
+  PageHeader,
   SettingsButton,
   spotTitle,
   useRules,
@@ -38,14 +38,16 @@ function ProgressTab() {
     [n, l] = useState(null);
   return (
     <div className="fade-up">
-      <div className="page-head" style={{ alignItems: "center" }}>
-        <h1 style={{ fontSize: 34 }}>Progreso</h1>
-        <div className="page-head-right">
-          <GoalBadge />
-          <RatingBadge showDelta={true} />
-          <SettingsButton />
-        </div>
-      </div>
+      <PageHeader
+        title="Progreso"
+        sub="Cómo venís y qué te conviene practicar"
+        actions={
+          <>
+            <GoalBadge />
+            <SettingsButton />
+          </>
+        }
+      />
       <Segmented
         options={[
           { value: "overview", label: "Resumen" },

@@ -28,6 +28,8 @@ import { ChartSheet, SettingsSheet, SystemSheet } from "./screens/sheets.jsx";
 import { NavContext } from "./nav.js";
 import { CountLevel, DrillPairs } from "./screens/countPath.jsx";
 import { ShoeChallenge } from "./screens/ShoeChallenge.jsx";
+import { MyChart } from "./screens/MyChart.jsx";
+import { JumpTest } from "./lessons/JumpTest.jsx";
 import {
   GoalSheet,
   PRACTICE_SCREENS,
@@ -66,6 +68,8 @@ const SCREENS = {
   review: Review,
   drillPairs: DrillPairs,
   shoeChallenge: ShoeChallenge,
+  myChart: MyChart,
+  jumpTest: JumpTest,
 };
 const SHEETS = {
   settings: SettingsSheet,
@@ -271,8 +275,10 @@ function TabBar({ tab: a, onTab: e }) {
             aria-current={t.id === a ? "page" : undefined}
             key={t.id}
           >
-            <Icon name={t.icon} size={25} stroke={t.id === a ? 2.3 : 2} />
-            <span>{t.label}</span>
+            <span className="tab-ic">
+              <Icon name={t.icon} size={24} stroke={t.id === a ? 2.3 : 2} />
+            </span>
+            <span className="tab-label">{t.label}</span>
           </button>
         ))}
       </div>

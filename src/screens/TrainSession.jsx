@@ -35,6 +35,7 @@ import {
 import { fmtSigned } from "../engine/systems.js";
 import { TopBar, spotTitle, useRules } from "../ui/common.jsx";
 import { useNav } from "../nav.js";
+import { ChartRowHint } from "../lessons/visuals.jsx";
 
 const SESSION_TITLES = {
   level: "Encontrá tu nivel",
@@ -308,17 +309,10 @@ function TrainSession({ mode: a = "mixed", focus: e = null }) {
             {d.costText && s.settings.showCost ? (
               <p className="res-cost">{d.costText}</p>
             ) : null}
-            {a !== "count" ? (
-              <button
-                type="button"
-                className="link small"
-                onClick={() => S(true)}
-                style={{ marginTop: 6 }}
-              >
-                Ver en la tabla →
-              </button>
-            ) : null}
           </div>
+          {a !== "count" ? (
+            <ChartRowHint cards={B.cards} up={B.upRank} rules={l} />
+          ) : null}
           <Button kind="white" onClick={() => X(false)} className="next-btn">
             {r + 1 >= c.length ? "Ver resultado" : "Siguiente mano"}
           </Button>

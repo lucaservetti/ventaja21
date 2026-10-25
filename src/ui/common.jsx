@@ -70,6 +70,18 @@ function SettingsButton() {
     />
   );
 }
+// Encabezado de cada pestaña: título, botones a la derecha y una línea opcional debajo.
+function PageHeader({ title, sub, actions }) {
+  return (
+    <header className="ph">
+      <div className="ph-row">
+        <h1 className="ph-title">{title}</h1>
+        {actions ? <div className="ph-actions">{actions}</div> : null}
+      </div>
+      {sub ? <p className="ph-sub">{sub}</p> : null}
+    </header>
+  );
+}
 function BrandBar({ right: a }) {
   return (
     <div className="topbar">
@@ -147,6 +159,7 @@ function pct(a) {
 }
 export {
   BrandBar,
+  PageHeader,
   InfoDot,
   Logo,
   MiniCards,

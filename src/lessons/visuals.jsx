@@ -1,4 +1,7 @@
 import { useMemo } from "react";
+import { HARD_ROWS, PAIR_ROWS, SOFT_ROWS } from "../ui/components.jsx";
+import { chartRules, chartSpot } from "./chartMap.js";
+import { useNav } from "../nav.js";
 import { handValue, parseCard } from "../engine/cards.js";
 import {
   CHART_CLASS,
@@ -120,7 +123,9 @@ function Visual({ v: a }) {
     case "bust":
       return <BustChart />;
     case "chart":
-      return <MiniChart tab={a.tab} rows={a.rows} />;
+      return <MiniChart tab={a.tab} rows={a.rows} hl={a.hl || null} />;
+    case "chartWords":
+      return <ChartWords tab={a.tab} />;
     case "tray":
       return <TrayVisual shoe={a.shoe} played={a.played} />;
     case "payout":
@@ -279,6 +284,7 @@ function MiniChart({
   hl: t = null,
   fixedRules: s = null,
   caption: n = true,
+  legend = true,
 }) {
   let l = useRules(),
     i = s || l,
@@ -334,18 +340,20 @@ function MiniChart({
           })}
         </div>
       ))}
-      <ChartLegend
-        show={[
-          ["H", "hit"],
-          ["S", "stand"],
-          ["D", "dbl"],
-          ["P", "split"],
-          ["R", "surr"],
-        ]
-          .filter(([, cls]) => d.has(cls))
-          .map(([l]) => l)}
-        style={{ marginTop: 10 }}
-      />
+      {legend ? (
+        <ChartLegend
+          show={[
+            ["H", "hit"],
+            ["S", "stand"],
+            ["D", "dbl"],
+            ["P", "split"],
+            ["R", "surr"],
+          ]
+            .filter(([, cls]) => d.has(cls))
+            .map(([l]) => l)}
+          style={{ marginTop: 10 }}
+        />
+      ) : null}
       {n ? (
         <p className="chart-cap">
           {i.h17
@@ -488,4 +496,58 @@ function DevList({ which: a = "top" }) {
     </div>
   );
 }
-export { BetRamp, BustCards, HiLoValues, MiniChart, Visual, rich, useCards };
+// La tabla dicha en palabras, con las reglas de tu mesa.
+function ChartWords({ tab }) {
+  const rules = useRules();
+  const rows =
+    tab === "soft" ? SOFT_ROWS : tab === "pairs" ? PAIR_ROWS : HARD_ROWS;
+  const groups = chartRules(tab, rows, rules);
+  return (
+    <div className="vis chart-words">
+      {groups.map((g) => (
+        <div className="mc-rule" key={g.label}>
+          <b>{g.label}</b>
+          <span>{g.text}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+// Después de responder una mano: la fila de la tabla donde cae, con la casilla marcada.
+function ChartRowHint({ cards, up, rules, title = "Así está en la tabla" }) {
+  const nav = useNav();
+  const spot = useMemo(() => chartSpot(cards, up, rules), [cards, up, rules]);
+  return (
+    <div className="chart-hint fade-up">
+      <div className="row between">
+        <span className="eyebrow">{title}</span>
+        <button
+          type="button"
+          className="link small"
+          onClick={() => nav.push("myChart", { tab: spot.tab })}
+        >
+          Tu tabla →
+        </button>
+      </div>
+      <MiniChart
+        tab={spot.tab}
+        rows={[spot.row]}
+        hl={[spot.row, spot.col]}
+        fixedRules={rules}
+        caption={false}
+        legend={false}
+      />
+    </div>
+  );
+}
+export {
+  BetRamp,
+  BustCards,
+  ChartRowHint,
+  ChartWords,
+  HiLoValues,
+  MiniChart,
+  Visual,
+  rich,
+  useCards,
+};

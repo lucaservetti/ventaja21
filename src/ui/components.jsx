@@ -719,6 +719,10 @@ function useWidth() {
   return [a, e];
 }
 export {
+  CHART_COLS,
+  HARD_ROWS,
+  PAIR_ROWS,
+  SOFT_ROWS,
   Badge,
   Button,
   CHIP_VALUES,

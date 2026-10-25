@@ -247,14 +247,14 @@ const SECTIONS = [
             { cards: ["Kd", "7s"] },
           ),
           quiz(
-            "¿Y esta?",
+            "¿Cuánto suma esta mano con un As?",
             ["10", "20", "19", "21"],
             1,
             "El As vale 11 mientras no te pases: 11 + 9 = 20.",
             { cards: ["Ah", "9c"] },
           ),
           quiz(
-            "¿Y esta?",
+            "¿Cuánto suma esta mano con dos ases?",
             ["21", "11", "31", "12"],
             0,
             "Un As vale 11 y el otro 1: 11 + 1 + 9 = 21.",
@@ -401,7 +401,7 @@ const SECTIONS = [
             },
             {
               ask: {
-                q: "¿Y ahora tu mano es blanda o dura?",
+                q: "Con A, 6 y 8, ¿tu mano es blanda o dura?",
                 o: ["Blanda", "Dura"],
                 a: 1,
                 x: "El As ya tiene que valer 1: es un 15 duro. Ahora sí te podés pasar.",
@@ -436,7 +436,7 @@ const SECTIONS = [
             { cards: ["Ac", "5d"] },
           ),
           quiz(
-            "¿Y esta?",
+            "¿Qué mano es A, 5 y 10?",
             ["Blando 16", "Duro 16", "Te pasaste"],
             1,
             "Con el 10, el As como 11 te pasaría (26), así que vale 1: duro 16.",
@@ -1162,6 +1162,108 @@ const SECTIONS = [
           decide("7", ["7c", "7h"], "P", "Separá los 7 contra 7."),
         ],
       },
+      {
+        id: "lt",
+        title: "La tabla completa",
+        sum: [
+          "La tabla junta todo: tu mano en las filas, la carta del crupier en las columnas.",
+          "H pedir, S plantarse, D doblar, P separar: las letras que vas a ver en todo el mundo.",
+          "Primero fijate si tenés un par, después si es blanda; si no, es dura.",
+        ],
+        steps: [
+          info(
+            "Todo en una tabla",
+            [
+              "Ya sabés jugar cada tipo de mano. La **tabla de estrategia básica** (*basic strategy*) las junta todas: en cada casilla está la jugada que más plata te deja, o la que menos te hace perder.",
+              "Las letras son las que se usan en todo el mundo: **H** pedir (*hit*), **S** plantarse (*stand*), **D** doblar (*double*) y **P** separar (*split*).",
+            ],
+            { v: "chart", tab: "hard" },
+          ),
+          info(
+            "Cómo se lee",
+            [
+              "Buscá **tu mano** en la columna de la izquierda y la **carta visible del crupier** arriba. Donde se cruzan está la jugada.",
+              "Acá: tenés **16** y el crupier muestra un **10**. La casilla marcada dice **H**: pedí.",
+            ],
+            {
+              v: "chart",
+              tab: "hard",
+              rows: [17, 16, 15, 14, 13, 12],
+              hl: [16, 8],
+            },
+          ),
+          info("Tres tablas", [
+            "**Pares**: tus dos primeras cartas son iguales. Es lo primero que mirás, porque ahí aparece la opción de separar.",
+            "**Blandas** (*soft*): tenés un As que vale 11.",
+            "**Duras** (*hard*): todo lo demás, incluso si tenés un As que ya vale 1.",
+          ]),
+          quiz(
+            "Tenés A,7. ¿En qué tabla lo buscás?",
+            ["Duras", "Blandas", "Pares"],
+            1,
+            "El As vale 11, así que es un 18 blando.",
+          ),
+          quiz(
+            "Tenés 8,8. ¿En qué tabla lo buscás?",
+            ["Duras", "Blandas", "Pares"],
+            2,
+            "Dos cartas iguales: primero mirás la tabla de pares.",
+          ),
+          quiz(
+            "Tenés A, 5 y 10. ¿En qué tabla lo buscás?",
+            ["Duras", "Blandas", "Pares"],
+            0,
+            "Si el As valiera 11 te pasarías: vale 1 y tenés 16 duro.",
+            { cards: ["Ah", "5c", "Ts"] },
+          ),
+          info(
+            "Las duras, en palabras",
+            [
+              "Así se dice la tabla de duras con las reglas de tu mesa. Leela de arriba abajo: es más fácil de lo que parece.",
+            ],
+            { v: "chartWords", tab: "hard" },
+          ),
+          info(
+            "Las blandas, en palabras",
+            [
+              "Con las blandas casi nunca te plantás antes de 18, porque no te podés pasar con una carta.",
+            ],
+            { v: "chartWords", tab: "soft" },
+          ),
+          info(
+            "Los pares, en palabras",
+            [
+              "Ases y ochos: siempre. Dieces y cincos: nunca. El resto depende de la carta del crupier.",
+            ],
+            { v: "chartWords", tab: "pairs" },
+          ),
+          decide(
+            "10",
+            ["Ts", "6h"],
+            "H",
+            "Pedí: 13 a 16 se plantan solo contra 2 a 6.",
+          ),
+          decide(
+            "4",
+            ["Th", "2c"],
+            "S",
+            "Plantate: con 12, plantate contra 4, 5 y 6.",
+          ),
+          decide("6", ["Ah", "7d"], "D", "Doblá: A,7 contra 3 a 6 se dobla."),
+          decide("A", ["8h", "8s"], "P", "Separá: ases y ochos, siempre."),
+          decide("5", ["9s", "2d"], "D", "Doblá: 11 se dobla casi siempre."),
+          decide(
+            "9",
+            ["Ad", "7c"],
+            "H",
+            "Pedí: A,7 contra 9, 10 o As es una mano floja.",
+          ),
+          info("Tu tabla, siempre a mano", [
+            "En **Aprender**, tocá el botón de la tabla (arriba a la derecha) para verla cuando quieras.",
+            "Cada casilla te dice por qué se juega así y cómo te va con esa mano en Entrenar: un punto verde si la dominás y uno rojo si te cuesta.",
+          ]),
+        ],
+      },
     ],
   },
   {
@@ -1511,7 +1613,12 @@ const SECTIONS = [
             1,
             "El 7, el 8 y el 9 son neutros.",
           ),
-          quiz("¿Y un As?", ["+1", "0", "−1"], 2, "El As es carta alta: −1."),
+          quiz(
+            "¿Cuánto vale un As en Hi-Lo?",
+            ["+1", "0", "−1"],
+            2,
+            "El As es carta alta: −1.",
+          ),
           quiz(
             "Un mazo completo tiene 20 cartas de +1, 12 de 0 y 20 de −1. ¿Cuánto suma?",
             ["0", "+20", "−20"],
@@ -2256,7 +2363,7 @@ const SECTIONS = [
             "Cuanto más atrás el corte, más seguido llegan los conteos altos.",
           ),
           quiz(
-            "¿Y la estrategia básica online?",
+            "¿La estrategia básica sirve online?",
             ["No sirve", "Sirve siempre: baja la ventaja de la casa"],
             1,
             "La estrategia básica funciona en cualquier mesa.",

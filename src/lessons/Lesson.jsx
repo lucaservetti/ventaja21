@@ -40,9 +40,10 @@ import {
 } from "../engine/systems.js";
 import { useRules } from "../ui/common.jsx";
 import { ActionButton } from "../screens/TrainSession.jsx";
-import { BetRamp, Visual, rich, useCards } from "./visuals.jsx";
+import { BetRamp, ChartRowHint, Visual, rich, useCards } from "./visuals.jsx";
 import { Scene, SceneActions } from "./scene.jsx";
 import { useNav } from "../nav.js";
+import { CHART_LESSON, ROW_LESSON } from "./chartMap.js";
 
 const GRADED_STEPS = new Set(["quiz", "decide", "tags", "count"]);
 // Huella de un paso, para saber si una pregunta guardada en el repaso sigue siendo la misma.
@@ -470,7 +471,9 @@ function DecideStep({ step: a, saved: e, onPicked: t }) {
               : `Con las reglas de tu mesa (${n.h17 ? "H17" : "S17"}${n.das ? "" : ", sin doblar tras separar"}${n.surrender ? ", con rendición" : ""}) la jugada es ${ACTION_NAMES[u].toLowerCase()}.`
           }
         />
-      ) : (
+      ) : null}
+      {d && !r ? <ChartRowHint cards={i} up={l.r} rules={n} /> : null}
+      {d ? null : (
         <div className="action-grid">
           <ActionButton a="H" allowed={c} onClick={f} />
           <ActionButton a="S" allowed={c} onClick={f} />
@@ -913,6 +916,62 @@ function UseCountStep({ step: a }) {
     </div>
   );
 }
+// Al terminar una lección de estrategia: qué filas se encendieron en tu tabla.
+const TAB_NAMES = { hard: "duras", soft: "blandas", pairs: "pares" };
+function ChartUnlocked({ lessonId }) {
+  const nav = useNav();
+  const groups = [];
+  for (const [tab, rows] of Object.entries(ROW_LESSON)) {
+    const mine = Object.keys(rows).filter((r) => rows[r] === lessonId);
+    if (mine.length) groups.push({ tab, rows: mine });
+  }
+  const all = lessonId === CHART_LESSON;
+  if (!groups.length && !all) return null;
+  const label = (tab, r) =>
+    tab === "pairs"
+      ? r === "T"
+        ? "10,10"
+        : `${r},${r}`
+      : tab === "soft"
+        ? `A,${r - 11}`
+        : r === "17"
+          ? "17+"
+          : r === "8"
+            ? "5–8"
+            : r;
+  return (
+    <button
+      type="button"
+      className="card list-item lr-chart"
+      onClick={() =>
+        nav.push("myChart", { tab: groups[0] ? groups[0].tab : "hard" })
+      }
+    >
+      <span className="li-icon acc">
+        <Icon name="grid" />
+      </span>
+      <span className="li-text">
+        <span className="li-title">
+          {all ? "Tu tabla está completa" : "Nuevo en tu tabla"}
+        </span>
+        <span className="li-sub" style={{ display: "block" }}>
+          {all
+            ? "Mirala cuando quieras desde Aprender."
+            : groups
+                .map(
+                  (g) =>
+                    `${TAB_NAMES[g.tab]}: ${g.rows
+                      .map((r) => label(g.tab, r))
+                      .sort((x, y) => parseInt(x) - parseInt(y))
+                      .join(", ")}`,
+                )
+                .join(" · ")}
+        </span>
+      </span>
+      <Icon name="chev" className="li-chev" />
+    </button>
+  );
+}
 function LessonResult({ lesson: a, score: e, then: t }) {
   let s = useNav(),
     n = useStore(),
@@ -980,6 +1039,7 @@ function LessonResult({ lesson: a, score: e, then: t }) {
             </ul>
           </div>
         ) : null}
+        <ChartUnlocked lessonId={a.id} />
         {t && t.text ? (
           <p className="muted center" style={{ marginTop: 16 }}>
             {t.text}

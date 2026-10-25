@@ -6,7 +6,7 @@ import { SKILLS } from "../engine/trainer.js";
 import {
   InfoDot,
   MiniCards,
-  RatingBadge,
+  PageHeader,
   SettingsButton,
   pct,
   useRules,
@@ -36,14 +36,16 @@ function TrainTab() {
       e.push("trainSession", { mode: u, focus: d, confirmExit: true });
   return (
     <div className="fade-up">
-      <div className="page-head" style={{ alignItems: "center" }}>
-        <h1 style={{ fontSize: 34 }}>Entrenar</h1>
-        <div className="page-head-right">
-          <GoalBadge />
-          <RatingBadge />
-          <SettingsButton />
-        </div>
-      </div>
+      <PageHeader
+        title="Entrenar"
+        sub="La jugada correcta en cada mano"
+        actions={
+          <>
+            <GoalBadge />
+            <SettingsButton />
+          </>
+        }
+      />
       {i ? (
         <button
           type="button"

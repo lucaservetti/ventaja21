@@ -34,6 +34,7 @@ const PRACTICE_SCREENS = new Set([
   "shoeChallenge",
   "placement",
   "review",
+  "jumpTest",
 ]);
 const TICK = 5; // segundos
 const IDLE_LIMIT = 90000; // sin tocar la pantalla por más de 90 s, el tiempo deja de contar
