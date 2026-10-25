@@ -6618,3 +6618,49 @@ i.en {
     height: 46px;
   }
 }
+/* Lo que aparece al responder se desliza a la vista sin quedar debajo del botón fijo. */
+.feedback,
+.chart-hint {
+  scroll-margin-bottom: 120px;
+  scroll-margin-top: 90px;
+}
+.hilo-cards {
+  white-space: nowrap;
+}
+.step-text.text-first {
+  margin-bottom: 16px;
+}
+.summary-replay {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 12px;
+}
+.summary-replay b {
+  color: var(--text);
+}
+/* Pantallas bajas (320×640 y parecidas): la mesa gana alto achicando lo de alrededor. */
+@media (max-height: 700px) {
+  .sim-hud {
+    margin: 2px 0 4px;
+  }
+  .sim-hud .hud-side {
+    gap: 0;
+  }
+  .sim-hud .tray.small {
+    transform: scale(0.8);
+    transform-origin: 50% 100%;
+    margin-top: -6px;
+  }
+  .sim-msgs {
+    min-height: 36px;
+    margin-top: 6px;
+  }
+  .controls {
+    margin-top: 6px;
+  }
+  .felt.has-bots .p-meta {
+    margin-top: -2px;
+  }
+}

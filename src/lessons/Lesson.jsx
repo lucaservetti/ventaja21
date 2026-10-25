@@ -40,7 +40,14 @@ import {
 } from "../engine/systems.js";
 import { useRules } from "../ui/common.jsx";
 import { ActionButton } from "../screens/TrainSession.jsx";
-import { BetRamp, ChartRowHint, Visual, rich, useCards } from "./visuals.jsx";
+import {
+  BetRamp,
+  ChartRowHint,
+  Visual,
+  rich,
+  useCards,
+  useReveal,
+} from "./visuals.jsx";
 import { Scene, SceneActions } from "./scene.jsx";
 import { useNav } from "../nav.js";
 import { CHART_LESSON, ROW_LESSON } from "./chartMap.js";
@@ -281,22 +288,34 @@ function Step({ step: a, report: e, saved: t, onPicked: s, setReady: n }) {
       return null;
   }
 }
+// Las tablas son altas: con ellas el texto va primero, así no queda escondido debajo del botón.
+const TALL_VISUALS = new Set(["chart", "chartWords"]);
 function InfoStep({ step: a }) {
+  const textFirst = a.visual && TALL_VISUALS.has(a.visual.v);
+  const text = (
+    <div className={cx("step-text", textFirst && "text-first")}>
+      {a.body.map((e, t) => (
+        <p key={t}>{rich(e)}</p>
+      ))}
+    </div>
+  );
   return (
     <div className="step fade-up">
       <h1 className="step-title">{a.title}</h1>
+      {textFirst ? text : null}
       {a.visual ? <Visual v={a.visual} /> : null}
-      <div className="step-text">
-        {a.body.map((e, t) => (
-          <p key={t}>{rich(e)}</p>
-        ))}
-      </div>
+      {textFirst ? null : text}
     </div>
   );
 }
 function Feedback({ ok: a, title: e, text: t }) {
+  const ref = useReveal();
   return (
-    <div className={cx("feedback fade-up", a ? "ok" : "bad")} role="status">
+    <div
+      className={cx("feedback fade-up", a ? "ok" : "bad")}
+      role="status"
+      ref={ref}
+    >
       <span className="fb-icon">
         <Icon name={a ? "check" : "x"} size={18} stroke={3} />
       </span>

@@ -48,7 +48,7 @@ import { useNav } from "../nav.js";
 import { recordLevel, recordLevelPractice } from "../state.js";
 import { levelByN } from "../engine/countPath.js";
 import { CardTag, LevelActions, LevelOutcome } from "./countPath.jsx";
-import { BetRamp } from "../lessons/visuals.jsx";
+import { BetRamp, useReveal } from "../lessons/visuals.jsx";
 
 const DRILL_SPEEDS = [
   { id: "relaxed", label: "Relajado", ms: 1500 },
@@ -982,6 +982,14 @@ function useQuiz(a, e = 10) {
     done: r,
   };
 }
+function RevealBox({ className, children }) {
+  const ref = useReveal();
+  return (
+    <div className={className} ref={ref}>
+      {children}
+    </div>
+  );
+}
 function QuizDrill({
   title: a,
   kind: e,
@@ -1080,7 +1088,7 @@ function QuizDrill({
           })}
         </div>
         {t.picked !== null ? (
-          <div
+          <RevealBox
             className={cx(
               "feedback fade-up",
               t.picked === p.answer ? "ok" : "bad",
@@ -1097,7 +1105,7 @@ function QuizDrill({
               <b>{t.picked === p.answer ? "Correcto" : "No es así"}</b>
               <p>{n(p)}</p>
             </div>
-          </div>
+          </RevealBox>
         ) : null}
       </div>
       {t.picked !== null ? (
@@ -1267,7 +1275,7 @@ function DrillDecks() {
             {" mazos. Esta es la bandeja de descarte"}
             {t.i >= 5 ? ", ahora sin marcas" : ""}:
           </p>
-          <Tray shoe={s.shoe} cards={s.cards} marks={t.i < 5} />
+          <Tray shoe={s.shoe} cards={s.cards} marks={t.i < 5} height={170} />
         </>
       )}
       explain={(s) =>

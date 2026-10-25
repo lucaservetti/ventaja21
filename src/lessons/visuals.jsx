@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { HARD_ROWS, PAIR_ROWS, SOFT_ROWS } from "../ui/components.jsx";
 import { chartRules, chartSpot } from "./chartMap.js";
 import { useNav } from "../nav.js";
@@ -231,17 +231,17 @@ function HiLoValues({ sysValues: a }) {
     <div className="vis hilo">
       <div className="hilo-box">
         <b className="good">+1</b>
-        <span className="hilo-cards">2 3 4 5 6</span>
+        <span className="hilo-cards">2 a 6</span>
         <span className="muted">bajas</span>
       </div>
       <div className="hilo-box wide">
         <b>0</b>
-        <span className="hilo-cards">7 8 9</span>
+        <span className="hilo-cards">7, 8 y 9</span>
         <span className="muted">neutras</span>
       </div>
       <div className="hilo-box">
         <b className="bad">−1</b>
-        <span className="hilo-cards">10 J Q K A</span>
+        <span className="hilo-cards">10 a As</span>
         <span className="muted">altas</span>
       </div>
     </div>
@@ -496,6 +496,19 @@ function DevList({ which: a = "top" }) {
     </div>
   );
 }
+// Lo que aparece después de responder (corrección, fila de la tabla) se desliza a la vista,
+// para que no quede tapado por el botón de abajo.
+function useReveal() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (ref.current)
+        ref.current.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }, 120);
+    return () => clearTimeout(t);
+  }, []);
+  return ref;
+}
 // La tabla dicha en palabras, con las reglas de tu mesa.
 function ChartWords({ tab }) {
   const rules = useRules();
@@ -516,9 +529,10 @@ function ChartWords({ tab }) {
 // Después de responder una mano: la fila de la tabla donde cae, con la casilla marcada.
 function ChartRowHint({ cards, up, rules, title = "Así está en la tabla" }) {
   const nav = useNav();
+  const ref = useReveal();
   const spot = useMemo(() => chartSpot(cards, up, rules), [cards, up, rules]);
   return (
-    <div className="chart-hint fade-up">
+    <div className="chart-hint fade-up" ref={ref}>
       <div className="row between">
         <span className="eyebrow">{title}</span>
         <button
@@ -550,4 +564,5 @@ export {
   Visual,
   rich,
   useCards,
+  useReveal,
 };
