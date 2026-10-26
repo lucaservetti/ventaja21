@@ -1,6 +1,6 @@
 {
   "name": "ventaja21",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "private": true,
   "description": "Ventaja 21: aprendé a contar cartas en blackjack (PWA en español).",
   "type": "module",
