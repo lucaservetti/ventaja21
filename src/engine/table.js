@@ -96,6 +96,8 @@ class Table {
   // las apuestas), deviations (el coach usa el Illustrious 18), countCheck (off|shoe|sometimes|often|exam),
   // pressure, silent (sin avisos durante el juego), quietResults (sin aviso de ganaste/perdiste),
   // lenient (acepta la jugada básica aunque el conteo pida una desviación), rules.
+  // Modo casino: minBet y maxBet (límites de la mesa), decisionTime (segundos para decidir; si se
+  // pasa, la mano se planta) y heat (la vigilancia del casino mira cómo movés la apuesta).
   configure(options = {}, initial = false) {
     const prevRules = this.rules;
     this.opts = {
@@ -110,6 +112,10 @@ class Table {
       countCheck: "sometimes",
       pressure: false,
       lenient: false,
+      minBet: 0,
+      maxBet: 0,
+      decisionTime: 0,
+      heat: false,
       ...(this.opts || {}),
       ...options,
     };
@@ -137,6 +143,10 @@ class Table {
       this.lastBet = this.opts.unit;
       this.active = 0;
       this.session = this.emptySession();
+      this.heat = 0;
+      this.heatPrevBet = 0;
+      this.backedOff = false;
+      this.decisionDeadline = 0;
     }
     if (!this.running) this.setupBots();
     this.emit();
@@ -161,6 +171,10 @@ class Table {
       shoes: 0,
       biggestWin: 0,
       slow: 0,
+      timeouts: 0,
+      heatPeak: 0,
+      betLow: 0,
+      betHigh: 0,
       mistakes: [],
       betMistakes: [],
       checkLog: [],
@@ -243,7 +257,37 @@ class Table {
     return this.opts.system === "hilo";
   }
   get maxBet() {
-    return this.opts.unit * 100;
+    return this.opts.maxBet || this.opts.unit * 100;
+  }
+  get minBet() {
+    return this.opts.minBet || 1;
+  }
+
+  // La vigilancia del casino: subir mucho la apuesta (y justo con el conteo alto) o bajarla de golpe
+  // apenas se mezcla llama la atención. Apostar parejo la enfría. A 100 te piden que te retires.
+  updateHeat(tc) {
+    const min = this.minBet;
+    const prev = this.heatPrevBet || this.bet;
+    const ratio = this.bet / Math.max(1, prev);
+    let add = -2.5;
+    if (ratio >= 2) add += 7 * Math.log2(ratio);
+    if (ratio >= 2 && tc >= 2) add += 6;
+    if (this.roundsThisShoe === 0 && prev >= 4 * min && this.bet <= 1.5 * min)
+      add += 12;
+    if (this.bet >= 10 * min) add += 2;
+    const before = this.heat;
+    this.heat = Math.max(0, Math.min(100, before + add));
+    this.heatPrevBet = this.bet;
+    this.session.heatPeak = Math.max(this.session.heatPeak, this.heat);
+    if (before < 35 && this.heat >= 35)
+      this.toast("El jefe de mesa empezó a mirar tus apuestas.", "warn", 3200);
+    else if (before < 70 && this.heat >= 70)
+      this.toast(
+        "Te están vigilando de cerca. Mové la apuesta con más cuidado.",
+        "warn",
+        3600,
+      );
+    if (this.heat >= 100) this.backedOff = true;
   }
   // Apuesta que corresponde al conteo real de ahora (1 unidad si se mezcla antes de la mano).
   get suggestedBet() {
@@ -373,6 +417,14 @@ class Table {
       this.toast("No te alcanzan las fichas.", "warn");
       return;
     }
+    if (this.bet < this.minBet) {
+      this.toast(
+        `La apuesta mínima de esta mesa es $${money(this.minBet)}.`,
+        "warn",
+      );
+      return;
+    }
+    if (this.backedOff) return;
     this.running = true;
     this.countCheckDue = false;
     this.shoeEnded = false;
@@ -443,6 +495,10 @@ class Table {
       };
     }
 
+    if (this.opts.heat) this.updateHeat(tcBefore);
+    const s = this.session;
+    s.betLow = s.betLow ? Math.min(s.betLow, this.bet) : this.bet;
+    s.betHigh = Math.max(s.betHigh, this.bet);
     this.lastBet = this.bet;
     this.bankroll -= this.bet;
     this.phase = "deal";
@@ -716,11 +772,26 @@ class Table {
           hand.done = true;
           break;
         }
-        this.emit();
         this.decisionStart = Date.now();
-        const action = await new Promise(
-          (resolve) => (this.actionResolver = resolve),
-        );
+        const limit = this.opts.decisionTime * 1000;
+        this.decisionDeadline = limit ? this.decisionStart + limit : 0;
+        this.emit();
+        const action = await new Promise((resolve) => {
+          this.actionResolver = resolve;
+          if (limit)
+            this.decisionTimer = setTimeout(() => {
+              if (this.actionResolver !== resolve) return;
+              this.actionResolver = null;
+              this.session.timeouts++;
+              this.toast(
+                "Se te pasó el tiempo: el crupier lo tomó como plantarte.",
+                "warn",
+              );
+              resolve("S");
+            }, limit);
+        });
+        clearTimeout(this.decisionTimer);
+        this.decisionDeadline = 0;
         this.actionResolver = null;
         this.evaluateDecision(hand, up, allowed, action);
         if (action === "S") hand.done = true;

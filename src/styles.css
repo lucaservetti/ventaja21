@@ -6673,3 +6673,317 @@ i.en {
   width: 100%;
   text-align: left;
 }
+
+/* ===== Versión 1.3 ===== */
+/* Pantallas sin pestañas: los botones fijos de abajo se pegan al borde. El relleno de abajo de la capa
+   corría el punto donde se pegan y en el iPhone quedaban flotando, con el contenido asomando por debajo. */
+.layer.full .bottom-actions {
+  bottom: calc(-1 * (var(--safe-b) + 24px));
+}
+.layer.full .lesson > .bottom-actions,
+.layer.full .lesson-result > .bottom-actions {
+  bottom: auto;
+}
+/* Lo que se desliza por debajo de la hora y la batería se funde con el fondo. */
+.app::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--safe-t);
+  background: linear-gradient(var(--bg) 70%, rgba(0, 0, 0, 0));
+  z-index: 80;
+  pointer-events: none;
+}
+
+/* Modo casino: tiempo para decidir */
+.sim-actions {
+  position: relative;
+}
+.decide-timer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -9px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.decide-timer i {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+  animation:
+    timerDrain linear forwards,
+    timerColor linear forwards;
+}
+@keyframes timerDrain {
+  to {
+    width: 0;
+  }
+}
+@keyframes timerColor {
+  0%,
+  60% {
+    background: var(--accent);
+  }
+  100% {
+    background: var(--bad);
+  }
+}
+.casino-ib {
+  color: var(--accent);
+}
+.casino-entry {
+  margin-bottom: 16px;
+  border: 1px solid var(--accent-line);
+}
+.casino-entry .li-icon,
+.casino-hero-ic {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.casino-hero {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-top: 6px;
+}
+.casino-hero p {
+  color: var(--text-2);
+  font-size: 15px;
+}
+.casino-hero p b {
+  color: var(--text);
+}
+.casino-hero-ic {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+}
+.casino-warn {
+  border-left: 3px solid var(--warn);
+}
+.casino-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+  min-height: 20px;
+}
+.heat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-2);
+}
+.heat-bar {
+  width: 64px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.heat-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s;
+}
+.heat.good .heat-bar i {
+  background: var(--good);
+}
+.heat.mid .heat-bar i {
+  background: var(--accent);
+}
+.heat.bad .heat-bar i {
+  background: var(--bad);
+}
+.heat.bad {
+  color: var(--bad);
+}
+.casino-trip .score-pill {
+  width: auto;
+  min-width: 76px;
+  padding: 0 8px;
+}
+.casino-trip .score-pill b {
+  font-size: 15px;
+}
+.casino-net {
+  font-size: 46px;
+  margin-top: 6px;
+  letter-spacing: -0.03em;
+}
+.casino-result .kv-v .heat {
+  justify-content: flex-end;
+}
+
+/* Tarjetas de la tabla */
+.srs-card:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.srs-deck {
+  position: relative;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+}
+.srs-deck i,
+.srs-deck-n {
+  position: absolute;
+  inset: 4px 8px;
+  border-radius: 8px;
+  background: var(--surface-3);
+  border: 1px solid var(--line);
+}
+.srs-deck i:nth-child(1) {
+  transform: rotate(-10deg) translateX(-4px);
+}
+.srs-deck i:nth-child(2) {
+  transform: rotate(7deg) translateX(4px);
+}
+.srs-deck-n {
+  display: grid;
+  place-items: center;
+  background: var(--card-face);
+  color: var(--card-ink);
+  font-weight: 800;
+  font-size: 17px;
+}
+.srs-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.srs-progress > :first-child {
+  flex: 1;
+}
+
+/* Logros */
+.medal {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text-3);
+  border: 2px solid var(--line);
+}
+.medal.got {
+  background: radial-gradient(circle at 35% 30%, #fff6a8, var(--accent) 55%, #9c9a2c);
+  color: var(--accent-ink);
+  border-color: #fffbd0;
+  box-shadow: 0 4px 14px rgba(230, 230, 128, 0.18);
+}
+.ach-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+.ach-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+  min-height: 44px;
+}
+.ach-next {
+  display: block;
+  margin-top: 12px;
+}
+.ach-next .small {
+  display: block;
+  margin-bottom: 8px;
+}
+.ach-list {
+  display: grid;
+  gap: 10px;
+}
+.ach-item {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 14px;
+}
+.ach-item:not(.got) b {
+  color: var(--text-2);
+}
+.ach-prog {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.ach-prog > :first-child {
+  flex: 1;
+}
+
+/* Simulador de banca */
+.br-tiles {
+  margin-top: 18px;
+}
+.br-tiles .tile-v {
+  font-size: 20px;
+}
+.br-chart,
+.br-read {
+  margin-top: 14px;
+}
+.br-read p + p {
+  margin-top: 10px;
+}
+.fan svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 10px;
+  touch-action: pan-y;
+}
+.fan-band {
+  fill: var(--accent);
+  opacity: 0.18;
+}
+.fan-mid {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.fan-zero {
+  stroke: var(--text-3);
+  stroke-width: 1;
+}
+.fan-ruin {
+  stroke: var(--bad);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+.fan-cross {
+  stroke: var(--text-2);
+  stroke-width: 1;
+}
+.fan-dot {
+  fill: var(--accent);
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+.fan-lbl {
+  fill: var(--text-3);
+  font-size: 11px;
+}
+.fan-tip {
+  min-height: 42px;
+  margin-top: 8px;
+}

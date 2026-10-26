@@ -73,6 +73,8 @@ function TableView({
   unitBets = false,
   onCheck,
   onShoeEnd,
+  onRefill,
+  refillLabel = "Recargar fichas",
 }) {
   useTable(table);
   const [check, setCheck] = useState(null); // { value, result, final }
@@ -494,13 +496,13 @@ function TableView({
               >
                 Borrar
               </Button>
-              {table.bankroll < 1 ? (
+              {table.bankroll < table.minBet ? (
                 <Button
                   small={true}
-                  onClick={() => table.refill()}
+                  onClick={() => (onRefill ? onRefill() : table.refill())}
                   className="grow"
                 >
-                  Recargar fichas
+                  {refillLabel}
                 </Button>
               ) : (
                 <Button
@@ -544,6 +546,12 @@ function TableView({
           </div>
         ) : table.phase === "player" ? (
           <div className="sim-actions">
+            {table.decisionDeadline ? (
+              <DecisionTimer
+                deadline={table.decisionDeadline}
+                total={table.opts.decisionTime * 1000}
+              />
+            ) : null}
             <SimAction action="P" allowed={allowed} table={table} />
             <SimAction action="D" allowed={allowed} table={table} />
             <SimAction action="H" allowed={allowed} table={table} />
@@ -748,6 +756,22 @@ function UnitBets({ table }) {
         )}
       </div>
     </>
+  );
+}
+
+// Modo casino: la barra que se vacía mientras decidís.
+function DecisionTimer({ deadline, total }) {
+  const left = Math.max(0, deadline - Date.now());
+  return (
+    <div className="decide-timer" aria-hidden="true">
+      <i
+        key={deadline}
+        style={{
+          width: `${(left / total) * 100}%`,
+          animationDuration: `${left}ms`,
+        }}
+      />
+    </div>
   );
 }
 

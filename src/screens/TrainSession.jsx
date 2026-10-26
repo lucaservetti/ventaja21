@@ -6,6 +6,7 @@ import {
   recordDrill,
   recordHandResult,
   recordSpot,
+  recordSrs,
   recordTrainSession,
   setState,
   useStore,
@@ -39,6 +40,7 @@ import { fmtSigned } from "../engine/systems.js";
 import { TopBar, spotTitle, useRules } from "../ui/common.jsx";
 import { useNav } from "../nav.js";
 import { ChartRowHint } from "../lessons/visuals.jsx";
+import { cardsQueue } from "./chartCards.jsx";
 
 const SESSION_TITLES = {
   level: "Encontrá tu nivel",
@@ -50,6 +52,7 @@ const SESSION_TITLES = {
   mistakes: "Tus errores",
   foryou: "Tanda para vos",
   replay: "Repaso de una tanda",
+  cards: "Tarjetas de la tabla",
 };
 const SKILL_TITLES = {
   stiff: "Duras 12–16",
@@ -75,6 +78,10 @@ function TrainSession({ mode: a = "mixed", focus: e = null, hands = null }) {
       if (a === "count")
         return Array.from({ length: i }, () => deviationSpot(l));
       const st = getState();
+      // Tarjetas de la tabla: las casillas que vencieron y algunas nuevas, siempre con 2 cartas.
+      const deck = a === "cards" ? cardsQueue(st) : [];
+      if (deck.length)
+        return deck.map((key) => ({ spot: makeSpot(key, { nCards: 2 }) }));
       // Tus errores: las manos exactas que fallaste. Tanda para vos: algunos errores y el resto
       // apuntado a tus puntos débiles.
       const replays =
@@ -93,14 +100,21 @@ function TrainSession({ mode: a = "mixed", focus: e = null, hands = null }) {
             : [];
       const rest = buildSession({
         mode:
-          o || a === "foryou" || a === "mistakes" || a === "replay"
+          o ||
+          a === "foryou" ||
+          a === "mistakes" ||
+          a === "replay" ||
+          a === "cards"
             ? "mixed"
             : a,
         focus: e,
         rules: l,
         stats: st.train.cells,
         size: Math.max(0, i - replays.length),
-      }).map((J) => ({ spot: makeSpot(J, { nCards: cardsForSpot(J) }) }));
+      }).map((J) => ({
+        // En la práctica puntual, siempre 2 cartas: es la casilla de la tabla tal cual.
+        spot: makeSpot(J, { nCards: a === "spot" ? 2 : cardsForSpot(J) }),
+      }));
       return (a === "mistakes" || a === "replay") && replays.length
         ? replays
         : [...replays, ...rest];
@@ -138,6 +152,7 @@ function TrainSession({ mode: a = "mixed", focus: e = null, hands = null }) {
         Ja = getState().rating.value,
         Ga = o ? 0 : eloDelta(Ja, ye, J.correct);
       recordSpot(ba, J.correct);
+      if (a === "cards") recordSrs(B.key, J.correct);
       if (!o) setState((Ht) => applyRating(Ht, Ga));
       if (a !== "count")
         recordHandResult(

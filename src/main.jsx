@@ -32,6 +32,12 @@ import { MyChart } from "./screens/MyChart.jsx";
 import { JumpTest } from "./lessons/JumpTest.jsx";
 import { TrainHistory } from "./screens/TrainHistory.jsx";
 import {
+  AchievementsScreen,
+  useAchievementWatcher,
+} from "./screens/achievements.jsx";
+import { CasinoPlay, CasinoSetup } from "./screens/Casino.jsx";
+import { BankrollSim } from "./screens/Bankroll.jsx";
+import {
   GoalSheet,
   PRACTICE_SCREENS,
   useGoalCelebration,
@@ -72,6 +78,10 @@ const SCREENS = {
   myChart: MyChart,
   jumpTest: JumpTest,
   trainHistory: TrainHistory,
+  achievements: AchievementsScreen,
+  casino: CasinoSetup,
+  casinoPlay: CasinoPlay,
+  bankroll: BankrollSim,
 };
 const SHEETS = {
   settings: SettingsSheet,
@@ -217,6 +227,15 @@ function App() {
     setGoalToast({ id: Date.now(), msg, kind: "good" });
     setTimeout(() => setGoalToast(null), 3600);
   });
+  const [achToast, setAchToast] = useState(null);
+  useAchievementWatcher((ach) => {
+    setAchToast({
+      id: Date.now() + ach.id,
+      msg: `Logro: ${ach.title}`,
+      kind: "good",
+    });
+    setTimeout(() => setAchToast(null), 3800);
+  });
   if (!a.profile.onboarded)
     return (
       <NavContext.Provider value={y}>
@@ -260,7 +279,7 @@ function App() {
         {C ? (
           <C open={true} onClose={() => y.closeSheet()} {...o.props} />
         ) : null}
-        <Toasts items={goalToast ? [goalToast] : []} />
+        <Toasts items={[goalToast, achToast].filter(Boolean)} />
       </div>
     </NavContext.Provider>
   );
