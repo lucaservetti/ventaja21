@@ -240,6 +240,8 @@ const DEFAULT_STATE = {
     },
     trips: [],
   },
+  // Diario de casino real: sesiones jugadas de verdad ({ id, date, place, hours, result }).
+  journal: { entries: [] },
   // Logros: { [id]: fecha }. "init" evita festejar de golpe los que ya tenías.
   achievements: { got: {}, init: false },
   lastTab: "aprender",

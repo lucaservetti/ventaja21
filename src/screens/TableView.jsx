@@ -762,6 +762,17 @@ function UnitBets({ table }) {
 // Modo casino: la barra que se vacía mientras decidís.
 function DecisionTimer({ deadline, total }) {
   const left = Math.max(0, deadline - Date.now());
+  // A 2 segundos del final, un toque de aviso.
+  useEffect(() => {
+    const timer = setTimeout(
+      () => {
+        sfx.tap();
+        vibrate(15);
+      },
+      Math.max(0, deadline - Date.now() - 2000),
+    );
+    return () => clearTimeout(timer);
+  }, [deadline]);
   return (
     <div className="decide-timer" aria-hidden="true">
       <i

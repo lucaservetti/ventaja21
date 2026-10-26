@@ -74,7 +74,7 @@ function TrainSession({ mode: a = "mixed", focus: e = null, hands = null }) {
     ),
     i = a === "exam" ? 25 : 10,
     o = a === "exam",
-    [c] = useState(() => {
+    [c, setQueue] = useState(() => {
       if (a === "count")
         return Array.from({ length: i }, () => deviationSpot(l));
       const st = getState();
@@ -152,7 +152,15 @@ function TrainSession({ mode: a = "mixed", focus: e = null, hands = null }) {
         Ja = getState().rating.value,
         Ga = o ? 0 : eloDelta(Ja, ye, J.correct);
       recordSpot(ba, J.correct);
-      if (a === "cards") recordSrs(B.key, J.correct);
+      // Tarjetas: la que fallás vuelve al final de la tanda (esa repetición no mueve su caja).
+      if (a === "cards" && !V.again) {
+        recordSrs(B.key, J.correct);
+        if (!J.correct)
+          setQueue((q) => [
+            ...q,
+            { spot: makeSpot(B.key, { nCards: 2 }), again: true },
+          ]);
+      }
       if (!o) setState((Ht) => applyRating(Ht, Ga));
       if (a !== "count")
         recordHandResult(
