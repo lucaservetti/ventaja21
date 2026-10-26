@@ -7338,3 +7338,7 @@ i.en {
   color: var(--accent);
   background: var(--accent-soft);
 }
+/* Si igual quedara un hueco abajo (otra versión de iOS), que tenga el color de la barra de pestañas. */
+html {
+  background: var(--tabbar-bg);
+}

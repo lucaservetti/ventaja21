@@ -219,6 +219,12 @@ function App() {
     }),
     [e],
   );
+  // Sin pantallas encima ni hojas abiertas: momento seguro para recargar si hay una versión nueva.
+  const idle = l.length === 0 && !o;
+  useEffect(() => {
+    window.__v21Idle = idle;
+    if (idle) window.dispatchEvent(new Event("v21-idle"));
+  }, [idle]);
   // Meta diaria: el reloj corre en pantallas de práctica y jugando en el simulador.
   const top = l.length ? l[l.length - 1].name : null;
   const practicing =
@@ -372,38 +378,59 @@ const ErrorBoundary = class extends Component {
 // iPhone con la app instalada en la pantalla de inicio: en iOS 26 el alto de la pantalla que informa
 // el sistema le resta la barra de estado, y la app terminaba antes del borde (la barra de pestañas
 // quedaba flotando, con una franja negra abajo). Se mide ese hueco y se estira lo que va pegado abajo.
+// Se vuelve a medir al abrir, al volver a la app y un rato después: al arrancar, iOS puede informar
+// medidas que todavía no son las finales.
+function isIOS() {
+  const ua = navigator.userAgent || "";
+  return (
+    /iP(hone|ad|od)/.test(ua) ||
+    (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)
+  );
+}
 function fitScreen() {
-  if (window.navigator.standalone !== true) return;
-  const probe = (css) => {
-    const el = document.createElement("div");
-    el.style.cssText = `position:fixed;left:0;width:1px;visibility:hidden;pointer-events:none;${css}`;
-    document.body.appendChild(el);
-    const h = el.offsetHeight;
-    el.remove();
-    return h;
-  };
-  const safeTop = probe("top:0;height:env(safe-area-inset-top)");
-  const viewH = probe("top:0;bottom:0");
+  const standalone =
+    window.navigator.standalone === true ||
+    window.matchMedia("(display-mode: standalone)").matches;
+  if (!standalone || !isIOS()) return;
+  const el = document.createElement("div");
+  el.style.cssText =
+    "position:fixed;left:0;top:0;bottom:0;width:1px;visibility:hidden;pointer-events:none";
+  document.body.appendChild(el);
+  const viewH = el.offsetHeight;
+  el.remove();
   const portrait = viewH >= window.innerWidth;
   const screenH = portrait
     ? Math.max(screen.width, screen.height)
     : Math.min(screen.width, screen.height);
   const gap = screenH - viewH;
-  document.documentElement.style.setProperty(
-    "--app-gap",
-    gap > 0 && gap <= safeTop + 12 ? `${gap}px` : "0px",
-  );
+  // Solo huecos del tamaño de una barra de estado: si fuera más, es otra cosa y no se toca.
+  const fix = gap > 0 && gap <= 80 ? gap : 0;
+  document.documentElement.style.setProperty("--app-gap", `${fix}px`);
+  window.__v21Fit = { screenH, viewH, gap, fix };
 }
 fitScreen();
-window.addEventListener("resize", fitScreen);
+for (const ev of ["resize", "pageshow", "load"])
+  window.addEventListener(ev, fitScreen);
 window.addEventListener("orientationchange", () => setTimeout(fitScreen, 300));
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") setTimeout(fitScreen, 100);
+});
+setTimeout(fitScreen, 400);
+setTimeout(fitScreen, 1500);
 const appRoot = createRoot(document.getElementById("root"));
 appRoot.render(
   <ErrorBoundary>
     <App />
   </ErrorBoundary>,
 );
+// Actualizaciones: el iPhone retoma la app suspendida sin recargarla, así que al volver se busca
+// una versión nueva; cuando llega, se recarga en cuanto estés en una pestaña (nunca a mitad de algo).
 if ("serviceWorker" in navigator) {
+  const hadController = !!navigator.serviceWorker.controller;
+  let updateReady = false;
+  const reloadIfIdle = () => {
+    if (updateReady && window.__v21Idle) location.reload();
+  };
   window.addEventListener("load", () => {
     try {
       if (location.protocol === "https:" || location.hostname === "localhost") {
@@ -411,4 +438,18 @@ if ("serviceWorker" in navigator) {
       }
     } catch {}
   });
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController) return;
+    updateReady = true;
+    reloadIfIdle();
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible") return;
+    navigator.serviceWorker
+      .getRegistration()
+      .then((r) => r && r.update())
+      .catch(() => {});
+    reloadIfIdle();
+  });
+  window.addEventListener("v21-idle", reloadIfIdle);
 }
