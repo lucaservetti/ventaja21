@@ -12,6 +12,7 @@ import {
 import { LESSONS, SECTIONS } from "../lessons/content.js";
 import { rowLearned } from "../lessons/chartMap.js";
 import { COUNT_LEVELS, passedCount } from "../engine/countPath.js";
+import { devPassedCount } from "../engine/devPath.js";
 import { TopBar } from "../ui/common.jsx";
 import { bestGoalStreak } from "./goal.jsx";
 import { MASTERED_BOX } from "./chartCards.jsx";
@@ -170,6 +171,14 @@ const GROUPS = [
     title: "Conteo",
     items: [
       {
+        id: "dev-all",
+        icon: "target",
+        title: "Desviaciones dominadas",
+        desc: "Terminá los 10 niveles de la ruta de desviaciones.",
+        goal: 10,
+        value: (st) => devPassedCount(st),
+      },
+      {
         id: "level-5",
         icon: "drills",
         title: "Mitad de la ruta",
@@ -229,6 +238,14 @@ const GROUPS = [
         desc: "Retirate del casino con más plata de la que llevaste.",
         goal: 1,
         value: (st) => (trips(st).some((t) => t.net > 0) ? 1 : 0),
+      },
+      {
+        id: "casino-cert",
+        icon: "trophy",
+        title: "Certificado de casino",
+        desc: "Aprobá el examen de casino.",
+        goal: 1,
+        value: (st) => (st.casino.exam && st.casino.exam.passed ? 1 : 0),
       },
       {
         id: "casino-stealth",

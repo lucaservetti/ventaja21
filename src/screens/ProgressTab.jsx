@@ -30,6 +30,7 @@ import { spotsAccuracy, strongSpots, weakSpots } from "../engine/skills.js";
 import { shortDate } from "./TrainTab.jsx";
 import { AchievementsCard } from "./achievements.jsx";
 import { WeekCard } from "./week.jsx";
+import { BackupNudge } from "./Backup.jsx";
 import { useNav } from "../nav.js";
 import { GoalBadge, bestGoalStreak } from "./goal.jsx";
 import { NextSteps, ProfileCard } from "./profile.jsx";
@@ -355,6 +356,7 @@ function ProgressOverview({ st: a, nav: e }) {
         </span>
         <Icon name="chev" className="li-chev" />
       </button>
+      <BackupNudge st={a} nav={e} />
       {a.train.totalHands === 0 ? (
         <Button onClick={() => e.setTab("entrenar")} style={{ marginTop: 16 }}>
           Hacer mi primera tanda

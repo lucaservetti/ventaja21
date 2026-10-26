@@ -1,5 +1,6 @@
 // Modo casino real: llevás tu plata, cambiás fichas al sentarte y jugás sin ayudas, con los límites
 // de la mesa, tiempo para decidir y la vigilancia del casino mirando cómo apostás.
+// También el examen de casino: 40 manos en esas condiciones; si lo aprobás, te llevás el certificado.
 import { useEffect, useRef, useState } from "react";
 import {
   describeRules,
@@ -20,15 +21,20 @@ import {
   Toggle,
   cx,
 } from "../ui/components.jsx";
-import { Table, money } from "../engine/table.js";
+import { Table } from "../engine/table.js";
 import { TopBar, useRules } from "../ui/common.jsx";
+import {
+  AmountPills,
+  CURRENCIES,
+  CurrencyPills,
+  chipsFor,
+  fmtMoney,
+  fmtSignedMoney,
+  useCurrency,
+} from "../ui/money.jsx";
 import { TableView } from "./TableView.jsx";
 import { useNav } from "../nav.js";
 
-const WALLETS = [300, 500, 1000, 2000, 5000];
-const BUY_INS = [100, 200, 300, 500, 1000, 2000];
-const MINS = [5, 10, 25, 50, 100];
-const MAXES = [100, 250, 500, 1000, 2500, 5000];
 const TIMES = [
   { value: 0, label: "Sin límite" },
   { value: 10, label: "10 s" },
@@ -41,11 +47,18 @@ const END_TEXT = {
   left: "Te retiraste",
   broke: "Te quedaste sin plata",
   backoff: "Te pidieron que te retires",
+  exam: "Examen de casino",
+};
+const EXAM = {
+  hands: 40,
+  bots: 2,
+  decisionTime: 6,
+  decisions: 0.9,
+  bets: 0.8,
+  checks: 0.66,
+  timeouts: 2,
 };
 
-function signedMoney(v) {
-  return `${v > 0 ? "+" : v < 0 ? "−" : ""}$${money(Math.abs(v))}`;
-}
 function pct(ok, n) {
   return n ? `${Math.round((ok / n) * 100)} %` : "—";
 }
@@ -55,17 +68,72 @@ function setSetup(patch) {
     casino: { ...st.casino, setup: { ...st.casino.setup, ...patch } },
   }));
 }
+function tripCur(t) {
+  return CURRENCIES[t.cur] || CURRENCIES.USD;
+}
+
+function gradeExam(t) {
+  const decisions = t.decisions ? t.decisionsOk / t.decisions : 0;
+  const bets = t.bets ? t.betsOk / t.bets : 0;
+  const checks = t.checks ? t.checksOk / t.checks : 0;
+  const rows = [
+    {
+      l: "Jugadas correctas",
+      v: pct(t.decisionsOk, t.decisions),
+      ok: decisions >= EXAM.decisions,
+      need: "90 %",
+    },
+    {
+      l: "Apuestas según el conteo",
+      v: pct(t.betsOk, t.bets),
+      ok: bets >= EXAM.bets,
+      need: "80 %",
+    },
+    {
+      l: "Chequeos de conteo",
+      v: `${t.checksOk || 0}/${t.checks || 0}`,
+      ok: !t.checks || checks >= EXAM.checks,
+      need: "2 de 3",
+    },
+    {
+      l: "Decisiones a tiempo",
+      v: `${t.timeouts} tarde`,
+      ok: t.timeouts <= EXAM.timeouts,
+      need: `máx. ${EXAM.timeouts}`,
+    },
+    {
+      l: "Sin que te echen",
+      v: t.end === "backoff" ? "Te echaron" : "Bien",
+      ok: t.end !== "backoff",
+      need: "",
+    },
+    {
+      l: "Manos jugadas",
+      v: String(t.hands),
+      ok: t.hands >= EXAM.hands,
+      need: String(EXAM.hands),
+    },
+  ];
+  return { rows, passed: rows.every((r) => r.ok) };
+}
 
 function CasinoSetup() {
   const st = useStore();
   const nav = useNav();
   const rules = useRules();
+  const cur = useCurrency();
   const s = st.casino.setup;
   const buyIn = Math.min(s.buyIn, s.wallet);
-  const maxes = MAXES.filter((v) => v >= s.minBet * 10);
-  const maxBet = maxes.includes(s.maxBet) ? s.maxBet : maxes[0];
+  const maxBet = Math.max(s.maxBet, s.minBet * 2);
   const minBets = Math.floor(s.wallet / s.minBet);
   const trips = st.casino.trips.slice().reverse();
+  const exam = st.casino.exam || { attempts: [], passed: null };
+  const examSetup = {
+    ...cur.exam,
+    bots: EXAM.bots,
+    decisionTime: EXAM.decisionTime,
+    heat: true,
+  };
   return (
     <div className="casino fade-up">
       <TopBar
@@ -87,42 +155,60 @@ function CasinoSetup() {
 
       <h3 className="sheet-sub">Tu plata</h3>
       <div className="field">
+        <span>Moneda</span>
+        <CurrencyPills />
+      </div>
+      <div className="field">
         <span>Plata que llevás al casino</span>
-        <Pills
-          options={WALLETS.map((v) => ({ value: v, label: `$${money(v)}` }))}
+        <AmountPills
+          cur={cur}
+          title="Plata que llevás"
+          options={cur.wallet}
           value={s.wallet}
+          min={s.minBet}
           onChange={(wallet) => setSetup({ wallet })}
         />
       </div>
       <div className="field">
         <span>Fichas que cambiás al sentarte (entrada)</span>
-        <Pills
-          options={BUY_INS.filter((v) => v <= s.wallet).map((v) => ({
-            value: v,
-            label: `$${money(v)}`,
-          }))}
+        <AmountPills
+          cur={cur}
+          title="Fichas al sentarte"
+          options={cur.buyIn.filter((v) => v <= s.wallet)}
           value={buyIn}
-          onChange={(v) => setSetup({ buyIn: v })}
+          min={s.minBet}
+          onChange={(v) => setSetup({ buyIn: Math.min(v, s.wallet) })}
         />
       </div>
 
       <h3 className="sheet-sub">La mesa</h3>
       <div className="field">
         <span>Apuesta mínima</span>
-        <Pills
-          options={MINS.map((v) => ({ value: v, label: `$${v}` }))}
+        <AmountPills
+          cur={cur}
+          title="Apuesta mínima"
+          options={cur.min}
           value={s.minBet}
           onChange={(minBet) => setSetup({ minBet })}
         />
       </div>
       <div className="field">
         <span>Apuesta máxima</span>
-        <Pills
-          options={maxes.map((v) => ({ value: v, label: `$${money(v)}` }))}
+        <AmountPills
+          cur={cur}
+          title="Apuesta máxima"
+          options={cur.max.filter((v) => v >= s.minBet * 2)}
           value={maxBet}
+          min={s.minBet * 2}
           onChange={(v) => setSetup({ maxBet: v })}
         />
       </div>
+      {maxBet < s.minBet * 8 ? (
+        <p className="muted small">
+          Con una máxima menor a 8 mínimas no vas a poder seguir toda la escala
+          de apuestas del conteo.
+        </p>
+      ) : null}
       <div className="field">
         <span>Otros jugadores en la mesa</span>
         <Pills
@@ -155,9 +241,9 @@ function CasinoSetup() {
       </div>
       {minBets < 30 ? (
         <div className="note-box casino-warn" style={{ marginTop: 10 }}>
-          Con ${money(s.wallet)} y mínima de ${s.minBet} te alcanza para{" "}
-          {minBets} apuestas mínimas: una mala racha te deja sin plata
-          enseguida.
+          Con {fmtMoney(s.wallet, cur)} y mínima de {fmtMoney(s.minBet, cur)} te
+          alcanza para {minBets} apuestas mínimas: una mala racha te deja sin
+          plata enseguida.
         </div>
       ) : null}
       <button
@@ -178,6 +264,49 @@ function CasinoSetup() {
         <Icon name="chev" className="li-chev" />
       </button>
 
+      <div className="section-title">
+        <h2>Examen de casino</h2>
+      </div>
+      <button
+        type="button"
+        className={cx("card exam-card", exam.passed && "passed")}
+        onClick={() =>
+          nav.push("casinoPlay", {
+            setup: examSetup,
+            exam: true,
+            confirmExit: true,
+            flex: true,
+          })
+        }
+      >
+        <span className="exam-seal" aria-hidden="true">
+          <Icon name={exam.passed ? "trophy" : "shield"} size={26} />
+        </span>
+        <span className="li-text">
+          <span className="li-title">
+            {exam.passed
+              ? "Aprobado: tenés el certificado"
+              : "Ganate el certificado"}
+          </span>
+          <span className="li-sub" style={{ display: "block" }}>
+            {EXAM.hands} manos con {EXAM.bots} jugadores más,{" "}
+            {EXAM.decisionTime} s para decidir, vigilancia y chequeos de conteo.
+            Necesitás 90 % de jugadas bien y 80 % de apuestas según el conteo,
+            sin que te echen.
+          </span>
+          {exam.attempts.length ? (
+            <span
+              className="tiny muted"
+              style={{ display: "block", marginTop: 6 }}
+            >
+              {exam.attempts.length}{" "}
+              {exam.attempts.length === 1 ? "intento" : "intentos"}
+            </span>
+          ) : null}
+        </span>
+        <Icon name="chev" className="li-chev" />
+      </button>
+
       {trips.length ? (
         <>
           <div className="section-title">
@@ -192,16 +321,21 @@ function CasinoSetup() {
                     t.net > 0 ? "good" : t.net < 0 ? "bad" : "mid",
                   )}
                 >
-                  <b className="num">{signedMoney(t.net)}</b>
+                  <b className="num">{fmtSignedMoney(t.net, tripCur(t))}</b>
                 </span>
                 <span className="li-text">
-                  <span className="li-title">{END_TEXT[t.end]}</span>
+                  <span className="li-title">
+                    {t.exam
+                      ? `Examen: ${t.passed ? "aprobado" : "no aprobado"}`
+                      : END_TEXT[t.end]}
+                  </span>
                   <span className="li-sub num" style={{ display: "block" }}>
                     {new Date(t.t).toLocaleDateString("es-UY", {
                       day: "numeric",
                       month: "short",
                     })}{" "}
-                    · {t.hands} manos · mesa ${t.minBet}–${money(t.maxBet)}
+                    · {t.hands} manos · mesa {fmtMoney(t.minBet, tripCur(t))}–
+                    {fmtMoney(t.maxBet, tripCur(t))}
                   </span>
                 </span>
               </div>
@@ -221,7 +355,7 @@ function CasinoSetup() {
           }
           iconRight="arrow"
         >
-          Sentarme con ${money(buyIn)} en fichas
+          Sentarme con {fmtMoney(buyIn, cur)}
         </Button>
       </div>
     </div>
@@ -243,8 +377,9 @@ function HeatMeter({ heat }) {
   );
 }
 
-function CasinoPlay({ setup }) {
+function CasinoPlay({ setup, exam = false }) {
   const nav = useNav();
+  const cur = useCurrency();
   const [table] = useState(() => {
     const st = getState();
     return new Table({
@@ -259,7 +394,7 @@ function CasinoPlay({ setup }) {
       betCoach: true,
       deviations: true,
       lenient: true,
-      countCheck: "off",
+      countCheck: exam ? "exam" : "off",
       pressure: false,
       silent: true,
       quietResults: true,
@@ -267,6 +402,8 @@ function CasinoPlay({ setup }) {
       maxBet: setup.maxBet,
       decisionTime: setup.decisionTime,
       heat: setup.heat,
+      sym: cur.sym,
+      chips: chipsFor(setup.minBet),
     });
   });
   const [, setTick] = useState(0);
@@ -274,7 +411,7 @@ function CasinoPlay({ setup }) {
   const bought = useRef(setup.buyIn);
   const started = useRef(Date.now());
   const seenSeq = useRef(0);
-  const [modal, setModal] = useState(null); // leave | buy | broke | backoff
+  const [modal, setModal] = useState(null); // leave | buy | broke | backoff | examEnd
   const [result, setResult] = useState(null);
 
   useEffect(() => table.subscribe(() => setTick((x) => x + 1)), [table]);
@@ -298,6 +435,17 @@ function CasinoPlay({ setup }) {
       table.onRoundEnd = null;
     };
   }, []);
+  // Examen: después de la mano 40 (y del chequeo de conteo, si tocaba), se termina.
+  const examDone =
+    exam &&
+    !result &&
+    table.session.hands >= EXAM.hands &&
+    table.phase === "settle" &&
+    !table.running &&
+    !table.countCheckDue;
+  useEffect(() => {
+    if (examDone && !modal) setModal("examEnd");
+  }, [examDone, modal]);
 
   const finish = (end) => {
     const s = table.session;
@@ -305,6 +453,7 @@ function CasinoPlay({ setup }) {
     const trip = {
       t: Date.now(),
       end,
+      cur: cur.id,
       wallet: setup.wallet,
       bought: bought.current,
       cashOut,
@@ -314,6 +463,8 @@ function CasinoPlay({ setup }) {
       decisionsOk: s.decisionsOk,
       bets: s.bets,
       betsOk: s.betsOk,
+      checks: s.checks,
+      checksOk: s.checksOk,
       timeouts: s.timeouts,
       heatOn: setup.heat,
       heatPeak: Math.round(s.heatPeak),
@@ -325,6 +476,33 @@ function CasinoPlay({ setup }) {
       decisionTime: setup.decisionTime,
       ms: Date.now() - started.current,
     };
+    if (exam) {
+      trip.exam = true;
+      trip.passed = gradeExam(trip).passed;
+      setState((st) => {
+        const prev = st.casino.exam || { attempts: [], passed: null };
+        return {
+          ...st,
+          casino: {
+            ...st.casino,
+            exam: {
+              attempts: [
+                ...prev.attempts,
+                {
+                  t: trip.t,
+                  passed: trip.passed,
+                  decisions: trip.decisions
+                    ? trip.decisionsOk / trip.decisions
+                    : 0,
+                  bets: trip.bets ? trip.betsOk / trip.bets : 0,
+                },
+              ].slice(-20),
+              passed: prev.passed || (trip.passed ? trip.t : null),
+            },
+          },
+        };
+      });
+    }
     if (s.hands > 0) recordCasinoTrip(trip);
     else setState((st) => markActive(st));
     setModal(null);
@@ -335,7 +513,7 @@ function CasinoPlay({ setup }) {
     pocket.current -= amount;
     bought.current += amount;
     table.bankroll += amount;
-    table.toast(`Cambiaste $${money(amount)} en fichas.`, "info");
+    table.toast(`Cambiaste ${fmtMoney(amount, cur)} en fichas.`, "info");
     setModal(null);
   };
 
@@ -347,18 +525,22 @@ function CasinoPlay({ setup }) {
       <div className="sim-top casino-top">
         <IconButton
           icon="close"
-          label="Retirarme"
+          label={exam ? "Dejar el examen" : "Retirarme"}
           className="sq small-ib"
           size={20}
           onClick={() => setModal("leave")}
         />
         <div className="sim-stat">
           <span className="eyebrow">Fichas</span>
-          <b className="num">${money(t.bankroll)}</b>
+          <b className="num">{fmtMoney(t.bankroll, cur)}</b>
         </div>
         <div className="sim-stat">
-          <span className="eyebrow">Bolsillo</span>
-          <b className="num">${money(pocket.current)}</b>
+          <span className="eyebrow">{exam ? "Mano" : "Bolsillo"}</span>
+          <b className="num">
+            {exam
+              ? `${Math.min(t.session.hands + (t.running ? 1 : 0), EXAM.hands)}/${EXAM.hands}`
+              : fmtMoney(pocket.current, cur)}
+          </b>
         </div>
         <span className="grow" />
         <button
@@ -374,7 +556,8 @@ function CasinoPlay({ setup }) {
       </div>
       <div className="casino-strip">
         <span className="tiny muted num">
-          Mesa ${setup.minBet}–${money(setup.maxBet)}
+          {exam ? "Examen · " : ""}Mesa {fmtMoney(setup.minBet, cur)}–
+          {fmtMoney(setup.maxBet, cur)}
           {setup.decisionTime ? ` · ${setup.decisionTime} s` : ""}
         </span>
         {setup.heat ? <HeatMeter heat={t.heat} /> : null}
@@ -402,11 +585,15 @@ function CasinoPlay({ setup }) {
         refillLabel={canBuy ? "Comprar fichas" : "Te quedaste sin fichas"}
       />
       <Modal open={modal === "leave"} onClose={() => setModal(null)}>
-        <h2 style={{ fontSize: 24 }}>¿Te retirás de la mesa?</h2>
+        <h2 style={{ fontSize: 24 }}>
+          {exam ? "¿Dejar el examen?" : "¿Te retirás de la mesa?"}
+        </h2>
         <p className="muted" style={{ margin: "10px 0 20px" }}>
-          {table.running
-            ? "Terminá la mano que está en juego y después te retirás."
-            : `Te vas con $${money(table.bankroll + pocket.current)} (llegaste con $${money(setup.wallet)}).`}
+          {exam
+            ? "No cuenta como intento: podés rendirlo de nuevo cuando quieras."
+            : table.running
+              ? "Terminá la mano que está en juego y después te retirás."
+              : `Te vas con ${fmtMoney(table.bankroll + pocket.current, cur)} (llegaste con ${fmtMoney(setup.wallet, cur)}).`}
         </p>
         <div className="btns">
           <Button kind="secondary" onClick={() => setModal(null)}>
@@ -414,22 +601,23 @@ function CasinoPlay({ setup }) {
           </Button>
           <Button
             kind="danger"
-            onClick={() => finish("left")}
-            disabled={table.running}
+            onClick={() => (exam ? nav.pop() : finish("left"))}
+            disabled={!exam && table.running}
           >
-            Retirarme
+            {exam ? "Salir" : "Retirarme"}
           </Button>
         </div>
       </Modal>
       <Modal open={modal === "buy"} onClose={() => setModal(null)}>
         <h2 style={{ fontSize: 24 }}>Comprar fichas</h2>
         <p className="muted" style={{ margin: "10px 0 16px" }}>
-          Te quedan ${money(pocket.current)} en el bolsillo. ¿Cuánto cambiás?
+          Te quedan {fmtMoney(pocket.current, cur)} en el bolsillo. ¿Cuánto
+          cambiás?
         </p>
         <div className="btns">
           {buyOptions.map((v) => (
             <Button kind="secondary" onClick={() => buy(v)} key={v}>
-              ${money(v)}
+              {fmtMoney(v, cur)}
               {v === pocket.current ? " (todo)" : ""}
             </Button>
           ))}
@@ -441,8 +629,8 @@ function CasinoPlay({ setup }) {
       <Modal open={modal === "broke"} onClose={() => finish("broke")}>
         <h2 style={{ fontSize: 24 }}>Te quedaste sin plata</h2>
         <p className="muted" style={{ margin: "10px 0 20px" }}>
-          No te alcanza para la apuesta mínima de ${setup.minBet}. Pasa hasta
-          jugando perfecto: por eso importa cuánta plata llevás.
+          No te alcanza para la apuesta mínima de {fmtMoney(setup.minBet, cur)}.
+          Pasa hasta jugando perfecto: por eso importa cuánta plata llevás.
         </p>
         <Button onClick={() => finish("broke")}>Ver cómo te fue</Button>
       </Modal>
@@ -458,13 +646,76 @@ function CasinoPlay({ setup }) {
         </p>
         <Button onClick={() => finish("backoff")}>Ver cómo te fue</Button>
       </Modal>
+      <Modal open={modal === "examEnd"} onClose={() => finish("exam")}>
+        <h2 style={{ fontSize: 24 }}>Terminó el examen</h2>
+        <p className="muted" style={{ margin: "10px 0 20px" }}>
+          Jugaste las {EXAM.hands} manos. Veamos cómo te fue.
+        </p>
+        <Button onClick={() => finish("exam")}>Ver el resultado</Button>
+      </Modal>
     </>
+  );
+}
+
+function Certificate({ trip }) {
+  const [msg, setMsg] = useState(null);
+  const date = new Date(trip.t).toLocaleDateString("es-UY", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const text = `Aprobé el examen de casino de Ventaja 21 (${date}): ${pct(trip.decisionsOk, trip.decisions)} de jugadas correctas y ${pct(trip.betsOk, trip.bets)} de apuestas según el conteo, sin que me descubran.`;
+  const share = async () => {
+    try {
+      if (navigator.share) await navigator.share({ text });
+      else {
+        await navigator.clipboard.writeText(text);
+        setMsg("Copiado. Pegalo donde quieras.");
+      }
+    } catch {
+      /* el usuario canceló */
+    }
+  };
+  return (
+    <div className="cert fade-up">
+      <span className="cert-seal" aria-hidden="true">
+        <Icon name="trophy" size={34} stroke={2.2} />
+      </span>
+      <div className="eyebrow acc">Ventaja 21</div>
+      <h2 className="cert-title">Certificado de contador de casino</h2>
+      <p className="muted small">{date}</p>
+      <div className="cert-stats">
+        <span>
+          <b className="num">{pct(trip.decisionsOk, trip.decisions)}</b>
+          jugadas bien
+        </span>
+        <span>
+          <b className="num">{pct(trip.betsOk, trip.bets)}</b>
+          apuestas con el conteo
+        </span>
+        <span>
+          <b className="num">
+            {trip.checksOk || 0}/{trip.checks || 0}
+          </b>
+          chequeos
+        </span>
+      </div>
+      <Button kind="secondary" small={true} icon="copy" onClick={share}>
+        Compartir
+      </Button>
+      {msg ? (
+        <p className="tiny good" style={{ marginTop: 8 }}>
+          {msg}
+        </p>
+      ) : null}
+    </div>
   );
 }
 
 function CasinoResult({ trip }) {
   const nav = useNav();
   const st = useStore();
+  const cur = tripCur(trip);
   const hours = trip.hands / HANDS_PER_HOUR[trip.bots || 0];
   const timeText =
     hours >= 1
@@ -472,11 +723,12 @@ function CasinoResult({ trip }) {
       : `≈ ${Math.max(1, Math.round(hours * 60))} min de casino`;
   const decisions = trip.decisions ? trip.decisionsOk / trip.decisions : 1;
   const bets = trip.bets ? trip.betsOk / trip.bets : 1;
+  const grade = trip.exam ? gradeExam(trip) : null;
   const tip =
     trip.end === "backoff"
       ? "Para durar más en un casino: subí la apuesta de a poco (no de 1 a 8 de golpe), no la bajes a la mínima justo después de mezclar y cada tanto hacé una apuesta que no siga el conteo."
       : decisions < 0.9
-        ? "Las jugadas te costaron plata: repasá la tabla en Entrenar antes de volver."
+        ? "Las jugadas te costaron plata: repasá la tabla y las desviaciones en Entrenar antes de volver."
         : bets < 0.7
           ? "Tus apuestas no siguieron bien el conteo: sin eso, contar no te da ventaja. Practicá «Apostar según el conteo» en Conteo."
           : trip.net < 0
@@ -487,76 +739,117 @@ function CasinoResult({ trip }) {
   ).length;
   return (
     <div className="casino-result fade-up drill-result">
-      <div className="center" style={{ marginTop: 26 }}>
-        <div className="eyebrow">{END_TEXT[trip.end]}</div>
-        <h1
-          className={cx(
-            "num casino-net",
-            trip.net > 0 ? "good" : trip.net < 0 ? "bad" : "",
-          )}
-        >
-          {signedMoney(trip.net)}
-        </h1>
-        <p className="muted">
-          Llegaste con ${money(trip.wallet)} y te vas con ${money(trip.cashOut)}
-          .
-        </p>
-      </div>
-      <div className="card" style={{ marginTop: 20 }}>
-        <div className="kv">
-          <span className="kv-k">Manos jugadas</span>
-          <span className="kv-v num">
-            {trip.hands} <span className="muted">· {timeText}</span>
-          </span>
-        </div>
-        <div className="kv">
-          <span className="kv-k">Fichas que compraste</span>
-          <span className="kv-v num">${money(trip.bought)}</span>
-        </div>
-        <div className="kv">
-          <span className="kv-k">Jugadas correctas</span>
-          <span
-            className={cx("kv-v num", decisions >= 0.9 ? "t-good" : "t-bad")}
-          >
-            {pct(trip.decisionsOk, trip.decisions)}
-          </span>
-        </div>
-        <div className="kv">
-          <span className="kv-k">Apuestas según el conteo</span>
-          <span className={cx("kv-v num", bets >= 0.7 ? "t-good" : "t-bad")}>
-            {pct(trip.betsOk, trip.bets)}
-          </span>
-        </div>
-        {trip.betHigh ? (
-          <div className="kv">
-            <span className="kv-k">Tus apuestas</span>
-            <span className="kv-v num">
-              ${money(trip.betLow)} a ${money(trip.betHigh)}
-            </span>
+      {grade && grade.passed ? (
+        <Certificate trip={trip} />
+      ) : (
+        <div className="center" style={{ marginTop: 26 }}>
+          <div className="eyebrow">
+            {grade ? "Examen de casino" : END_TEXT[trip.end]}
           </div>
-        ) : null}
-        {trip.decisionTime ? (
-          <div className="kv">
-            <span className="kv-k">Se te pasó el tiempo</span>
-            <span
-              className={cx("kv-v num", trip.timeouts ? "t-bad" : "t-good")}
+          {grade ? (
+            <h1 className="casino-net bad">Todavía no</h1>
+          ) : (
+            <h1
+              className={cx(
+                "num casino-net",
+                trip.net > 0 ? "good" : trip.net < 0 ? "bad" : "",
+              )}
             >
-              {trip.timeouts} {trip.timeouts === 1 ? "vez" : "veces"}
-            </span>
-          </div>
-        ) : null}
-        {trip.heatOn ? (
+              {fmtSignedMoney(trip.net, cur)}
+            </h1>
+          )}
+          <p className="muted">
+            {grade
+              ? "Mirá qué te faltó y volvé a intentarlo."
+              : `Llegaste con ${fmtMoney(trip.wallet, cur)} y te vas con ${fmtMoney(trip.cashOut, cur)}.`}
+          </p>
+        </div>
+      )}
+      {grade ? (
+        <div className="card" style={{ marginTop: 20 }}>
+          {grade.rows.map((r) => (
+            <div className="kv" key={r.l}>
+              <span className="kv-k">
+                <Icon
+                  name={r.ok ? "check" : "x"}
+                  size={16}
+                  className={r.ok ? "good" : "bad"}
+                />{" "}
+                {r.l}
+              </span>
+              <span className={cx("kv-v num", r.ok ? "t-good" : "t-bad")}>
+                {r.v}
+                {r.need ? (
+                  <span className="muted tiny"> / {r.need}</span>
+                ) : null}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="card" style={{ marginTop: 20 }}>
           <div className="kv">
-            <span className="kv-k">Vigilancia más alta</span>
-            <span className="kv-v">
-              <HeatMeter heat={trip.heatPeak} />
+            <span className="kv-k">Manos jugadas</span>
+            <span className="kv-v num">
+              {trip.hands} <span className="muted">· {timeText}</span>
             </span>
           </div>
-        ) : null}
-      </div>
-      <div className="note-box" style={{ marginTop: 14 }}>
-        {tip}
-      </div>
+          <div className="kv">
+            <span className="kv-k">Fichas que compraste</span>
+            <span className="kv-v num">{fmtMoney(trip.bought, cur)}</span>
+          </div>
+          <div className="kv">
+            <span className="kv-k">Jugadas correctas</span>
+            <span
+              className={cx("kv-v num", decisions >= 0.9 ? "t-good" : "t-bad")}
+            >
+              {pct(trip.decisionsOk, trip.decisions)}
+            </span>
+          </div>
+          <div className="kv">
+            <span className="kv-k">Apuestas según el conteo</span>
+            <span className={cx("kv-v num", bets >= 0.7 ? "t-good" : "t-bad")}>
+              {pct(trip.betsOk, trip.bets)}
+            </span>
+          </div>
+          {trip.betHigh ? (
+            <div className="kv">
+              <span className="kv-k">Tus apuestas</span>
+              <span className="kv-v num">
+                {fmtMoney(trip.betLow, cur)} a {fmtMoney(trip.betHigh, cur)}
+              </span>
+            </div>
+          ) : null}
+          {trip.decisionTime ? (
+            <div className="kv">
+              <span className="kv-k">Se te pasó el tiempo</span>
+              <span
+                className={cx("kv-v num", trip.timeouts ? "t-bad" : "t-good")}
+              >
+                {trip.timeouts} {trip.timeouts === 1 ? "vez" : "veces"}
+              </span>
+            </div>
+          ) : null}
+          {trip.heatOn ? (
+            <div className="kv">
+              <span className="kv-k">Vigilancia más alta</span>
+              <span className="kv-v">
+                <HeatMeter heat={trip.heatPeak} />
+              </span>
+            </div>
+          ) : null}
+        </div>
+      )}
+      {grade && grade.passed ? (
+        <p className="muted small center" style={{ marginTop: 14 }}>
+          Resultado de la mesa: {fmtSignedMoney(trip.net, cur)} en {trip.hands}{" "}
+          manos.
+        </p>
+      ) : (
+        <div className="note-box" style={{ marginTop: 14 }}>
+          {tip}
+        </div>
+      )}
       {mistakes ? (
         <p className="muted small" style={{ marginTop: 12 }}>
           Las {mistakes === 1 ? "jugada" : `${mistakes} jugadas`} que fallaste

@@ -240,6 +240,8 @@ const DEFAULT_STATE = {
     },
     trips: [],
   },
+  // Ruta de desviaciones: niveles aprobados (con su mejor puntaje) e intentos.
+  devPath: { passed: {}, tries: {} },
   // Diario de casino real: sesiones jugadas de verdad ({ id, date, place, hours, result }).
   journal: { entries: [] },
   // Logros: { [id]: fecha }. "init" evita festejar de golpe los que ya tenías.
@@ -561,6 +563,24 @@ function recordSrs(key, ok) {
     };
   });
 }
+function recordDevLevel(id, passed, score) {
+  setState((st) => {
+    const prev = st.devPath.passed[id];
+    return markActive({
+      ...st,
+      devPath: {
+        passed:
+          passed && (!prev || score > prev.score)
+            ? {
+                ...st.devPath.passed,
+                [id]: { at: prev ? prev.at : Date.now(), score },
+              }
+            : st.devPath.passed,
+        tries: { ...st.devPath.tries, [id]: (st.devPath.tries[id] || 0) + 1 },
+      },
+    });
+  });
+}
 function recordCasinoTrip(trip) {
   setState((st) =>
     markActive({
@@ -680,15 +700,25 @@ function exportBackup() {
   let a = JSON.stringify(currentState);
   return "V21:" + btoa(unescape(encodeURIComponent(a)));
 }
-function importBackup(a) {
-  let e = a.trim();
+// Lee un respaldo sin aplicarlo (para mostrar qué tiene antes de restaurar).
+function readBackup(a) {
+  let e = String(a || "").trim();
   if (!e.startsWith("V21:"))
     throw new Error("El código no es un respaldo de Ventaja 21.");
-  let t = decodeURIComponent(escape(atob(e.slice(4)))),
-    s = JSON.parse(t);
+  let s;
+  try {
+    s = JSON.parse(
+      decodeURIComponent(escape(atob(e.slice(4).replace(/\s+/g, "")))),
+    );
+  } catch {
+    throw new Error("El código está incompleto o dañado.");
+  }
   if (!s || s.v !== 1)
     throw new Error("El respaldo no tiene un formato válido.");
-  currentState = migrate(deepMerge(clone(DEFAULT_STATE), s));
+  return migrate(deepMerge(clone(DEFAULT_STATE), s));
+}
+function importBackup(a) {
+  currentState = readBackup(a);
   saveNow();
   for (let n of listeners) {
     n();
@@ -705,6 +735,7 @@ export {
   goalStreak,
   recordHandResult,
   recordCasinoTrip,
+  recordDevLevel,
   recordSrs,
   SRS_DAYS,
   recordLevel,
@@ -719,6 +750,7 @@ export {
   describeRules,
   eloDelta,
   exportBackup,
+  readBackup,
   getState,
   importBackup,
   levelFor,

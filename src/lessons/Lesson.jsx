@@ -993,6 +993,12 @@ function ChartUnlocked({ lessonId }) {
 }
 // Lecciones que tienen una herramienta para ponerlas en práctica enseguida.
 const LESSON_TOOLS = {
+  l23: {
+    screen: "devLevel",
+    icon: "target",
+    title: "Ruta de desviaciones",
+    sub: "Aprendelas de a pocas, en 10 niveles",
+  },
   l25: {
     screen: "bankroll",
     icon: "stats",

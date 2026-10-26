@@ -262,6 +262,10 @@ class Table {
   get minBet() {
     return this.opts.minBet || 1;
   }
+  // Monto con el símbolo de la moneda de la mesa ($ si no se eligió otra).
+  fmt(v) {
+    return `${this.opts.sym || "$"}${money(v)}`;
+  }
 
   // La vigilancia del casino: subir mucho la apuesta (y justo con el conteo alto) o bajarla de golpe
   // apenas se mezcla llama la atención. Apostar parejo la enfría. A 100 te piden que te retires.
@@ -388,10 +392,7 @@ class Table {
 
   refill() {
     this.bankroll = this.opts.startBankroll;
-    this.toast(
-      `Fichas recargadas a $${this.bankroll.toLocaleString("es-UY")}.`,
-      "info",
-    );
+    this.toast(`Fichas recargadas a ${this.fmt(this.bankroll)}.`, "info");
     this.emit();
   }
 
@@ -419,7 +420,7 @@ class Table {
     }
     if (this.bet < this.minBet) {
       this.toast(
-        `La apuesta mínima de esta mesa es $${money(this.minBet)}.`,
+        `La apuesta mínima de esta mesa es ${this.fmt(this.minBet)}.`,
         "warn",
       );
       return;
@@ -514,7 +515,7 @@ class Table {
     if (this.betFeedback && !this.betFeedback.ok && !this.opts.silent) {
       const f = this.betFeedback;
       this.toast(
-        `Con conteo real ${fmtSigned(f.tc)} la apuesta ideal era ${f.units} ${f.units === 1 ? "unidad" : "unidades"} ($${f.ideal}).`,
+        `Con conteo real ${fmtSigned(f.tc)} la apuesta ideal era ${f.units} ${f.units === 1 ? "unidad" : "unidades"} (${this.fmt(f.ideal)}).`,
         "warn",
         3400,
       );
@@ -990,8 +991,8 @@ class Table {
     this.phase = "settle";
     this.emit();
     if (!this.opts.quietResults) {
-      if (net > 0) this.toast(`Ganaste $${money(net)}`, "good", 2000);
-      else if (net < 0) this.toast(`Perdiste $${money(-net)}`, "bad", 2000);
+      if (net > 0) this.toast(`Ganaste ${this.fmt(net)}`, "good", 2000);
+      else if (net < 0) this.toast(`Perdiste ${this.fmt(-net)}`, "bad", 2000);
       else this.toast("Empate", "info", 1600);
     }
     this.countCheckDue = this.shouldCheck();

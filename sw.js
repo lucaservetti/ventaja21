@@ -1,5 +1,5 @@
-// Ventaja 21 · service worker 1.4.0 (793ec06494)
-const CACHE = "v21-1.4.0-793ec06494";
+// Ventaja 21 · service worker 1.5.0 (520c27e4c2)
+const CACHE = "v21-1.5.0-520c27e4c2";
 const CORE = [
   "./",
   "./index.html",
