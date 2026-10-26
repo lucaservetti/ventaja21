@@ -28,6 +28,7 @@ import {
 } from "../ui/common.jsx";
 import { spotsAccuracy, strongSpots, weakSpots } from "../engine/skills.js";
 import { shortDate } from "./TrainTab.jsx";
+import { AchievementsCard } from "./achievements.jsx";
 import { useNav } from "../nav.js";
 import { GoalBadge, bestGoalStreak } from "./goal.jsx";
 import { NextSteps, ProfileCard } from "./profile.jsx";
@@ -309,8 +310,28 @@ function ProgressOverview({ st: a, nav: e }) {
         </div>
       </div>
       <div style={{ marginTop: 14 }}>
+        <AchievementsCard st={a} />
+      </div>
+      <div style={{ marginTop: 14 }}>
         <ProfileCard st={a} />
       </div>
+      <button
+        type="button"
+        className="card list-item"
+        style={{ marginTop: 14 }}
+        onClick={() => e.push("bankroll")}
+      >
+        <span className="li-icon">
+          <Icon name="stats" />
+        </span>
+        <span className="li-text">
+          <span className="li-title">Simulador de banca</span>
+          <span className="li-sub" style={{ display: "block" }}>
+            Cuánta plata necesitás y cuánto podés perder en una mala racha
+          </span>
+        </span>
+        <Icon name="chev" className="li-chev" />
+      </button>
       {a.train.totalHands === 0 ? (
         <Button onClick={() => e.setTab("entrenar")} style={{ marginTop: 16 }}>
           Hacer mi primera tanda

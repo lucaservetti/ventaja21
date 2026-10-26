@@ -893,7 +893,7 @@ function DrillRunning({
             </div>
           </div>
           <div>
-            <div className="eyebrow">Conteo correcto</div>
+            <div className="eyebrow">Correcto</div>
             <div className="res-move num acc">{fmtSigned(correct)}</div>
           </div>
         </div>
@@ -1528,7 +1528,7 @@ function DeckCountdown() {
             </div>
           </div>
           <div>
-            <div className="eyebrow">Conteo correcto</div>
+            <div className="eyebrow">Correcto</div>
             <div className="res-move num acc">{fmtSigned(D)}</div>
           </div>
         </div>

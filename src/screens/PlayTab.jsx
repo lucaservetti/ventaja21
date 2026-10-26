@@ -30,6 +30,7 @@ import { evFor } from "../engine/ev.js";
 import { systemFor } from "../engine/systems.js";
 import { TABLE_SPEEDS, Table, money } from "../engine/table.js";
 import { TableView } from "./TableView.jsx";
+import { useNav } from "../nav.js";
 
 let tableInstance = null;
 function tableOptions(st) {
@@ -62,6 +63,7 @@ function getTable() {
 
 function PlayTab({ active }) {
   const st = useStore();
+  const nav = useNav();
   const table = getTable();
   const [sheet, setSheet] = useState(null); // chart | stats | table
   const [shoeSummary, setShoeSummary] = useState(null);
@@ -102,6 +104,7 @@ function PlayTab({ active }) {
               state.play.decisionsOk + (s.decisionsOk - prev.decisionsOk),
             bets: state.play.bets + (s.bets - prev.bets),
             betsOk: state.play.betsOk + (s.betsOk - prev.betsOk),
+            shoes: (state.play.shoes || 0) + (s.shoes - (prev.shoes || 0)),
           },
         }),
       );
@@ -130,10 +133,10 @@ function PlayTab({ active }) {
   const top = (
     <div className="sim-top">
       <IconButton
-        icon={st.settings.sound ? "volume" : "mute"}
-        label={st.settings.sound ? "Silenciar" : "Activar sonido"}
-        onClick={() => setSettings({ sound: !st.settings.sound })}
-        className="sq small-ib sim-sound"
+        icon="crown"
+        label="Modo casino real"
+        onClick={() => nav.push("casino")}
+        className="sq small-ib casino-ib"
         size={20}
       />
       <div className="sim-stat">
@@ -392,6 +395,7 @@ function SessionStats({ table, st }) {
 
 function TableSheet({ open, onClose, table }) {
   const st = useStore();
+  const nav = useNav();
   const t = st.table;
   const rules = withRules(st.settings.rules);
   const houseEdge = useMemo(() => {
@@ -411,6 +415,25 @@ function TableSheet({ open, onClose, table }) {
   );
   return (
     <Sheet open={open} onClose={onClose} title="Mesa" tall={true}>
+      <button
+        type="button"
+        className="card list-item casino-entry"
+        onClick={() => {
+          onClose();
+          nav.push("casino");
+        }}
+      >
+        <span className="li-icon">
+          <Icon name="crown" />
+        </span>
+        <span className="li-text">
+          <span className="li-title">Modo casino real</span>
+          <span className="li-sub" style={{ display: "block" }}>
+            Tu plata, límites de mesa, tiempo para decidir y vigilancia
+          </span>
+        </span>
+        <Icon name="chev" className="li-chev" />
+      </button>
       <div className="eyebrow">Tipo de mesa</div>
       <div className="preset-list">
         {TABLE_PRESETS.map((p) => (

@@ -225,6 +225,23 @@ const DEFAULT_STATE = {
     betsOk: 0,
   },
   activity: {},
+  // Tarjetas de la tabla (repaso espaciado): { [spotKey]: { box, due, n, ok } } y cuántas nuevas hoy.
+  srs: { cards: {}, newDay: null, newToday: 0 },
+  // Modo casino real: lo último que elegiste y tus visitas al casino.
+  casino: {
+    setup: {
+      wallet: 1000,
+      buyIn: 300,
+      minBet: 10,
+      maxBet: 500,
+      decisionTime: 6,
+      bots: 3,
+      heat: true,
+    },
+    trips: [],
+  },
+  // Logros: { [id]: fecha }. "init" evita festejar de golpe los que ya tenías.
+  achievements: { got: {}, init: false },
   lastTab: "aprender",
 };
 function deepMerge(a, e) {
@@ -478,10 +495,17 @@ function recordHandResult(hand, ok) {
     if (ok) {
       if (i < 0) return st;
       const streak = (list[i].streak || 0) + 1;
-      next =
-        streak >= 2
-          ? list.filter((_, k) => k !== i)
-          : list.map((m, k) => (k === i ? { ...m, streak } : m));
+      if (streak >= 2) {
+        return {
+          ...st,
+          train: {
+            ...st.train,
+            mistakes: list.filter((_, k) => k !== i),
+            fixed: (st.train.fixed || 0) + 1,
+          },
+        };
+      }
+      next = list.map((m, k) => (k === i ? { ...m, streak } : m));
     } else {
       const prev = i >= 0 ? list[i] : null;
       const item = {
@@ -501,6 +525,47 @@ function recordHandResult(hand, ok) {
     }
     return { ...st, train: { ...st.train, mistakes: next } };
   });
+}
+// Tarjetas de la tabla: cada casilla sube de caja cuando la acertás y vuelve a la primera si fallás.
+const SRS_DAYS = [0, 1, 3, 7, 14, 30, 60];
+function recordSrs(key, ok) {
+  setState((st) => {
+    const prev = st.srs.cards[key];
+    const box = ok
+      ? Math.min(SRS_DAYS.length - 1, (prev ? prev.box : 0) + 1)
+      : 1;
+    const due = ok
+      ? Date.now() + SRS_DAYS[box] * DAY_MS - 3 * 3600e3
+      : Date.now();
+    const today = dayKey();
+    const isNew = !prev;
+    return {
+      ...st,
+      srs: {
+        ...st.srs,
+        cards: {
+          ...st.srs.cards,
+          [key]: {
+            box,
+            due,
+            n: (prev ? prev.n : 0) + 1,
+            ok: (prev ? prev.ok : 0) + (ok ? 1 : 0),
+          },
+        },
+        newDay: today,
+        newToday:
+          (st.srs.newDay === today ? st.srs.newToday : 0) + (isNew ? 1 : 0),
+      },
+    };
+  });
+}
+function recordCasinoTrip(trip) {
+  setState((st) =>
+    markActive({
+      ...st,
+      casino: { ...st.casino, trips: [...st.casino.trips, trip].slice(-40) },
+    }),
+  );
 }
 // Práctica con ayuda de un nivel de la ruta de conteo (no cuenta como intento).
 function recordLevelPractice(id) {
@@ -637,6 +702,9 @@ export {
   goalSeconds,
   goalStreak,
   recordHandResult,
+  recordCasinoTrip,
+  recordSrs,
+  SRS_DAYS,
   recordLevel,
   recordLevelPractice,
   setGoalMinutes,

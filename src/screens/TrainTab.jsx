@@ -12,6 +12,7 @@ import {
   useRules,
 } from "../ui/common.jsx";
 import { skillGrade, skillStats } from "../engine/skills.js";
+import { ChartCards } from "./chartCards.jsx";
 import { useNav } from "../nav.js";
 import { GoalBadge } from "./goal.jsx";
 import { ProfileChips } from "./profile.jsx";
@@ -97,6 +98,10 @@ function TrainTab() {
         </div>
       )}
       {!i ? <ForYou st={a} nav={e} /> : null}
+      <div className="section-title">
+        <h2>Memorizá la tabla</h2>
+      </div>
+      <ChartCards st={a} nav={e} />
       {l.length < 3 ? (
         <>
           <hr className="hr" />
