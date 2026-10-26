@@ -37,6 +37,7 @@ import {
 } from "./screens/achievements.jsx";
 import { CasinoPlay, CasinoSetup } from "./screens/Casino.jsx";
 import { BankrollSim } from "./screens/Bankroll.jsx";
+import { Journal } from "./screens/Journal.jsx";
 import {
   GoalSheet,
   PRACTICE_SCREENS,
@@ -82,6 +83,7 @@ const SCREENS = {
   casino: CasinoSetup,
   casinoPlay: CasinoPlay,
   bankroll: BankrollSim,
+  journal: Journal,
 };
 const SHEETS = {
   settings: SettingsSheet,
@@ -363,6 +365,34 @@ const ErrorBoundary = class extends Component {
     );
   }
 };
+// iPhone con la app instalada en la pantalla de inicio: en iOS 26 el alto de la pantalla que informa
+// el sistema le resta la barra de estado, y la app terminaba antes del borde (la barra de pestañas
+// quedaba flotando, con una franja negra abajo). Se mide ese hueco y se estira lo que va pegado abajo.
+function fitScreen() {
+  if (window.navigator.standalone !== true) return;
+  const probe = (css) => {
+    const el = document.createElement("div");
+    el.style.cssText = `position:fixed;left:0;width:1px;visibility:hidden;pointer-events:none;${css}`;
+    document.body.appendChild(el);
+    const h = el.offsetHeight;
+    el.remove();
+    return h;
+  };
+  const safeTop = probe("top:0;height:env(safe-area-inset-top)");
+  const viewH = probe("top:0;bottom:0");
+  const portrait = viewH >= window.innerWidth;
+  const screenH = portrait
+    ? Math.max(screen.width, screen.height)
+    : Math.min(screen.width, screen.height);
+  const gap = screenH - viewH;
+  document.documentElement.style.setProperty(
+    "--app-gap",
+    gap > 0 && gap <= safeTop + 12 ? `${gap}px` : "0px",
+  );
+}
+fitScreen();
+window.addEventListener("resize", fitScreen);
+window.addEventListener("orientationchange", () => setTimeout(fitScreen, 300));
 const appRoot = createRoot(document.getElementById("root"));
 appRoot.render(
   <ErrorBoundary>

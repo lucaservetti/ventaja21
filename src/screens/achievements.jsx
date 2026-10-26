@@ -207,6 +207,14 @@ const GROUPS = [
         value: (st) => st.play.shoes || 0,
       },
       {
+        id: "journal-1",
+        icon: "book",
+        title: "Bitácora",
+        desc: "Anotá tu primera sesión en el diario de casino real.",
+        goal: 1,
+        value: (st) => st.journal.entries.length,
+      },
+      {
         id: "casino-1",
         icon: "play",
         title: "Primera visita",

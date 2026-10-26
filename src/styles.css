@@ -6987,3 +6987,131 @@ i.en {
   min-height: 42px;
   margin-top: 8px;
 }
+
+/* iPhone con la app instalada: si el sistema informa una pantalla más corta que la real (ver fitScreen
+   en main.jsx), lo que va pegado abajo se estira hasta el borde. En el resto de los casos vale 0. */
+:root {
+  --app-gap: 0px;
+}
+.app,
+.sheet-wrap,
+.modal-wrap {
+  bottom: calc(-1 * var(--app-gap));
+}
+.tabbar {
+  bottom: calc(-1 * var(--app-gap));
+}
+.float-cta {
+  bottom: calc(var(--tabbar-h) + var(--safe-b) + 10px - var(--app-gap));
+}
+
+/* Lecciones: herramienta para practicar */
+.lr-tool {
+  margin-top: 14px;
+  border: 1px solid var(--accent-line);
+}
+.lr-tool .li-icon {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Tu semana */
+.week-bars {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 12px;
+}
+.week-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-3);
+}
+.week-col {
+  position: relative;
+  width: 100%;
+  max-width: 34px;
+  height: 64px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.week-col i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 4px 4px 0 0;
+  background: #5c5d33;
+}
+.week-bar.today .week-col i {
+  background: var(--accent);
+}
+.week-bar.on {
+  color: var(--text);
+}
+.week-bar.on .week-col {
+  box-shadow: 0 0 0 2px var(--text-2);
+}
+.week-tiles {
+  margin-top: 14px;
+}
+.week-tiles .tile {
+  background: var(--surface-2);
+  padding: 12px 6px;
+}
+.week-tiles .tile-v {
+  font-size: 20px;
+}
+.week-insight {
+  margin-top: 12px;
+  color: var(--text-2);
+}
+
+/* Diario de casino real */
+.inp {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  font-size: 17px;
+  color-scheme: dark;
+}
+.inp:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.jr-result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.jr-amount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 140px;
+}
+.jr-amount b {
+  font-size: 20px;
+}
+.jr-item .score-pill {
+  width: auto;
+  min-width: 82px;
+  padding: 0 8px;
+}
+.jr-item .score-pill b {
+  font-size: 15px;
+}
+.jr-empty {
+  padding: 28px 20px;
+  margin-top: 8px;
+}

@@ -991,6 +991,53 @@ function ChartUnlocked({ lessonId }) {
     </button>
   );
 }
+// Lecciones que tienen una herramienta para ponerlas en práctica enseguida.
+const LESSON_TOOLS = {
+  l25: {
+    screen: "bankroll",
+    icon: "stats",
+    title: "Simulador de banca",
+    sub: "Mirá cuánta plata necesitás con tu forma de apostar",
+  },
+  l26: {
+    screen: "casino",
+    icon: "crown",
+    title: "Modo casino real",
+    sub: "Jugá con la vigilancia prendida y fijate si te descubren",
+  },
+  l29: {
+    screen: "casino",
+    icon: "users",
+    title: "Modo casino real",
+    sub: "Elegí 3 o 4 jugadores y contá la mesa llena a ritmo de casino",
+  },
+};
+function LessonTool({ lessonId }) {
+  const nav = useNav();
+  const tool = LESSON_TOOLS[lessonId];
+  if (!tool) return null;
+  return (
+    <button
+      type="button"
+      className="card list-item lr-tool"
+      onClick={() => nav.push(tool.screen)}
+    >
+      <span className="li-icon">
+        <Icon name={tool.icon} />
+      </span>
+      <span className="li-text">
+        <span className="eyebrow acc">Ponelo en práctica</span>
+        <span className="li-title" style={{ display: "block", marginTop: 2 }}>
+          {tool.title}
+        </span>
+        <span className="li-sub" style={{ display: "block" }}>
+          {tool.sub}
+        </span>
+      </span>
+      <Icon name="chev" className="li-chev" />
+    </button>
+  );
+}
 function LessonResult({ lesson: a, score: e, then: t }) {
   let s = useNav(),
     n = useStore(),
@@ -1059,6 +1106,7 @@ function LessonResult({ lesson: a, score: e, then: t }) {
           </div>
         ) : null}
         <ChartUnlocked lessonId={a.id} />
+        <LessonTool lessonId={a.id} />
         {t && t.text ? (
           <p className="muted center" style={{ marginTop: 16 }}>
             {t.text}
