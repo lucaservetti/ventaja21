@@ -403,9 +403,19 @@ function fitScreen() {
     ? Math.max(screen.width, screen.height)
     : Math.min(screen.width, screen.height);
   const gap = screenH - viewH;
-  // Solo huecos del tamaño de una barra de estado: si fuera más, es otra cosa y no se toca.
-  const fix = gap > 0 && gap <= 80 ? gap : 0;
-  document.documentElement.style.setProperty("--app-gap", `${fix}px`);
+  // Hueco del tamaño de la barra de estado y contenido metido debajo de ella: es el error de iOS.
+  // Esa franja de abajo el iPhone no la dibuja, así que la app termina ahí: sin el margen de la
+  // barra de inicio (que queda fuera de la vista), la barra de pestañas se apoya en ese borde.
+  const probe = document.createElement("div");
+  probe.style.cssText =
+    "position:fixed;top:0;height:env(safe-area-inset-top);width:1px;visibility:hidden";
+  document.body.appendChild(probe);
+  const safeTop = probe.offsetHeight;
+  probe.remove();
+  const fix = gap > 0 && gap <= 80 && safeTop > 0 ? gap : 0;
+  const root = document.documentElement.style;
+  if (fix) root.setProperty("--safe-b", "0px");
+  else root.removeProperty("--safe-b");
   window.__v21Fit = { screenH, viewH, gap, fix };
 }
 fitScreen();
