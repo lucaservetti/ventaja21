@@ -13,6 +13,7 @@ import {
 } from "../ui/common.jsx";
 import { skillGrade, skillStats } from "../engine/skills.js";
 import { ChartCards } from "./chartCards.jsx";
+import { DevPathCard } from "./DevPath.jsx";
 import { useNav } from "../nav.js";
 import { GoalBadge } from "./goal.jsx";
 import { ProfileChips } from "./profile.jsx";
@@ -102,6 +103,10 @@ function TrainTab() {
         <h2>Memorizá la tabla</h2>
       </div>
       <ChartCards st={a} nav={e} />
+      <div className="section-title">
+        <h2>Desviaciones</h2>
+      </div>
+      <DevPathCard st={a} nav={e} />
       {l.length < 3 ? (
         <>
           <hr className="hr" />

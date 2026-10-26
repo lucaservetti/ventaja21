@@ -412,7 +412,7 @@ function TableView({
                     </span>
                     <span className="p-bet">
                       <ChipStack amount={hand.bet} size={24} />
-                      <span className="tiny num">${money(hand.bet)}</span>
+                      <span className="tiny num">{table.fmt(hand.bet)}</span>
                     </span>
                   </div>
                 </div>
@@ -426,14 +426,14 @@ function TableView({
                 <span className="bet-ring">APOSTÁ</span>
               )}
               {table.bet ? (
-                <b className="num bet-amt">${money(table.bet)}</b>
+                <b className="num bet-amt">{table.fmt(table.bet)}</b>
               ) : null}
             </div>
           )}
         </div>
         {table.insuranceBet ? (
           <div className="ins-chip tiny">
-            Seguro ${money(table.insuranceBet)}
+            Seguro {table.fmt(table.insuranceBet)}
           </div>
         ) : null}
       </div>
@@ -454,12 +454,13 @@ function TableView({
                 reshuffling ? (
                   <>
                     Se mezcla antes de esta mano: apuesta sugerida{" "}
-                    <b>${suggested}</b> (1 u.)
+                    <b>{table.fmt(suggested)}</b> (1 u.)
                   </>
                 ) : (
                   <>
                     Con conteo real {fmtSigned(tcNow)}: apuesta sugerida{" "}
-                    <b>${suggested}</b> ({suggested / table.opts.unit} u.)
+                    <b>{table.fmt(suggested)}</b> ({suggested / table.opts.unit}{" "}
+                    u.)
                   </>
                 )
               ) : reshuffling ? (
@@ -469,7 +470,7 @@ function TableView({
               )}
             </div>
             <div className="chip-rack">
-              {CHIP_VALUES.map((value) => (
+              {(table.opts.chips || CHIP_VALUES).map((value) => (
                 <Chip
                   value={value}
                   size={52}
@@ -533,7 +534,7 @@ function TableView({
               onClick={() => table.rebet(1) && table.deal()}
               disabled={table.lastBet > table.bankroll}
             >
-              Repetir ${money(table.lastBet)}
+              Repetir {table.fmt(table.lastBet)}
             </Button>
             <Button
               kind="secondary"
@@ -570,7 +571,7 @@ function TableView({
             <p className="muted small">
               {isBlackjack(table.hands[0].cards)
                 ? "Tenés blackjack y el crupier muestra As. Pago parejo: cobrás 1 a 1 ya, tenga o no blackjack."
-                : `El crupier muestra As. El seguro cuesta $${money(table.hands[0].bet / 2)} y paga 2 a 1 si tiene blackjack.`}
+                : `El crupier muestra As. El seguro cuesta ${table.fmt(table.hands[0].bet / 2)} y paga 2 a 1 si tiene blackjack.`}
             </p>
             <div className="ins-btns">
               <Button
@@ -716,7 +717,7 @@ function UnitBets({ table }) {
       <div className="bet-hint tiny">
         {settled
           ? "Elegí la apuesta de la próxima mano según el conteo real."
-          : `Tu unidad es $${unit}. Elegí cuántas unidades apostar.`}
+          : `Tu unidad es ${table.fmt(unit)}. Elegí cuántas unidades apostar.`}
       </div>
       <div className="unit-bets">
         {UNIT_STEPS.map((u) => (
@@ -732,7 +733,7 @@ function UnitBets({ table }) {
             key={u}
           >
             <b className="num">{u}</b>
-            <span className="num">${u * unit}</span>
+            <span className="num">{table.fmt(u * unit)}</span>
           </button>
         ))}
       </div>
@@ -751,7 +752,9 @@ function UnitBets({ table }) {
             disabled={settled || !table.bet}
             className="grow deal-btn"
           >
-            {settled ? "Elegí tu apuesta" : `Repartir · $${money(table.bet)}`}
+            {settled
+              ? "Elegí tu apuesta"
+              : `Repartir · ${table.fmt(table.bet)}`}
           </Button>
         )}
       </div>

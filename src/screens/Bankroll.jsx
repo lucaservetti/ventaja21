@@ -2,12 +2,18 @@
 // cuánto se mueve el resultado y qué tan probable es quedarte sin plata.
 // Modelo: el conteo real se mide jugando zapatos simulados (Hi-Lo); cada +1 de conteo real suma ≈ 0,5 %
 // de ventaja y cada mano tiene una varianza de ≈ 1,3 apuestas al cuadrado.
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Pills, cx } from "../ui/components.jsx";
 import { evFor } from "../engine/ev.js";
 import { betUnits } from "../engine/systems.js";
-import { money } from "../engine/table.js";
 import { TopBar, useRules } from "../ui/common.jsx";
+import {
+  AmountPills,
+  CurrencyPills,
+  fmtMoney,
+  fmtSignedMoney,
+  useCurrency,
+} from "../ui/money.jsx";
 import { useNav } from "../nav.js";
 
 const RAMPS = [
@@ -127,14 +133,14 @@ function simulate({ bank, unit, hours, hph, h }) {
   return { bands, ruin: ruined / PATHS, mu, sd };
 }
 
-function sm(v) {
-  return `${v > 0 ? "+" : v < 0 ? "−" : ""}$${money(Math.round(Math.abs(v)))}`;
+function sm(v, cur) {
+  return fmtSignedMoney(v, cur);
 }
 function pctText(v, digits = 1) {
   return `${(v * 100).toFixed(digits).replace(".", ",")} %`;
 }
 
-function FanChart({ bands, bank }) {
+function FanChart({ bands, bank, cur }) {
   const [hover, setHover] = useState(null);
   const W = 340;
   const H = 190;
@@ -172,7 +178,7 @@ function FanChart({ bands, bank }) {
       <svg
         viewBox={`0 0 ${W} ${H}`}
         role="img"
-        aria-label={`Resultado después de ${last.t} horas: la mitad de las veces ${sm(last.mid)}; 8 de cada 10 veces entre ${sm(last.lo)} y ${sm(last.hi)}.`}
+        aria-label={`Resultado después de ${last.t} horas: la mitad de las veces ${sm(last.mid, cur)}; 8 de cada 10 veces entre ${sm(last.lo, cur)} y ${sm(last.hi, cur)}.`}
         onPointerMove={onMove}
         onPointerDown={onMove}
         onPointerLeave={() => setHover(null)}
@@ -227,8 +233,8 @@ function FanChart({ bands, bank }) {
       <div className="fan-tip small" aria-live="polite">
         {hb ? (
           <>
-            <b>Hora {hb.t}</b> · mitad de las veces {sm(hb.mid)} · 8 de cada 10
-            entre {sm(hb.lo)} y {sm(hb.hi)}
+            <b>Hora {hb.t}</b> · mitad de las veces {sm(hb.mid, cur)} · 8 de
+            cada 10 entre {sm(hb.lo, cur)} y {sm(hb.hi, cur)}
           </>
         ) : (
           <span className="muted">
@@ -241,11 +247,20 @@ function FanChart({ bands, bank }) {
   );
 }
 
-function BankrollSim({ unit: unit0 = 10, bank: bank0 = 2000 }) {
+function BankrollSim({ unit: unit0, bank: bank0 }) {
   const nav = useNav();
   const rules = useRules();
-  const [bank, setBank] = useState(bank0);
-  const [unit, setUnit] = useState(unit0);
+  const cur = useCurrency();
+  const [bank, setBank] = useState(bank0 || cur.bank[2]);
+  const [unit, setUnit] = useState(unit0 || cur.min[1]);
+  // Al cambiar de moneda, montos típicos de esa moneda.
+  const firstCur = useRef(cur.id);
+  useEffect(() => {
+    if (firstCur.current === cur.id) return;
+    firstCur.current = cur.id;
+    setBank(cur.bank[2]);
+    setUnit(cur.min[1]);
+  }, [cur.id]);
   const [rampId, setRampId] = useState("app");
   const [seats, setSeats] = useState(0);
   const [hours, setHours] = useState(100);
@@ -283,23 +298,26 @@ function BankrollSim({ unit: unit0 = 10, bank: bank0 = 2000 }) {
         sub={`${rules.decks} mazos · corte ${Math.round(rules.pen * 100)} % · Hi-Lo`}
       />
       <div className="field">
+        <span>Moneda</span>
+        <CurrencyPills />
+      </div>
+      <div className="field">
         <span>Tu banca (toda la plata para jugar)</span>
-        <Pills
-          options={[500, 1000, 2000, 5000, 10000, 20000].map((v) => ({
-            value: v,
-            label: `$${money(v)}`,
-          }))}
+        <AmountPills
+          cur={cur}
+          title="Tu banca"
+          options={cur.bank}
           value={bank}
+          min={unit * 10}
           onChange={setBank}
         />
       </div>
       <div className="field">
         <span>Apuesta mínima (tu unidad)</span>
-        <Pills
-          options={[5, 10, 25, 50, 100].map((v) => ({
-            value: v,
-            label: `$${v}`,
-          }))}
+        <AmountPills
+          cur={cur}
+          title="Apuesta mínima"
+          options={cur.min}
           value={unit}
           onChange={setUnit}
         />
@@ -349,7 +367,7 @@ function BankrollSim({ unit: unit0 = 10, bank: bank0 = 2000 }) {
         </div>
         <div className="tile">
           <div className={cx("tile-v num", sim.mu > 0 ? "t-good" : "t-bad")}>
-            {sm(sim.mu)}
+            {sm(sim.mu, cur)}
           </div>
           <div className="tile-l">por hora, en promedio</div>
         </div>
@@ -368,17 +386,18 @@ function BankrollSim({ unit: unit0 = 10, bank: bank0 = 2000 }) {
 
       <div className="card br-chart">
         <div className="eyebrow">Tu resultado en {hours} horas</div>
-        <FanChart bands={sim.bands} bank={bank} />
+        <FanChart bands={sim.bands} bank={bank} cur={cur} />
       </div>
 
       <div className="card br-read">
         <p>
           Después de {hours} horas, la mitad de las veces terminás{" "}
-          <b className={last.mid >= 0 ? "good" : "bad"}>{sm(last.mid)}</b>. 8 de
-          cada 10 veces, entre <b>{sm(last.lo)}</b> y <b>{sm(last.hi)}</b>.
+          <b className={last.mid >= 0 ? "good" : "bad"}>{sm(last.mid, cur)}</b>.
+          8 de cada 10 veces, entre <b>{sm(last.lo, cur)}</b> y{" "}
+          <b>{sm(last.hi, cur)}</b>.
         </p>
         <p>
-          Cada hora el resultado se mueve ± <b>${money(Math.round(sim.sd))}</b>:
+          Cada hora el resultado se mueve ± <b>{fmtMoney(sim.sd, cur)}</b>:
           {sim.sd > Math.abs(sim.mu) * 5
             ? " muchísimo más que lo que ganás en promedio. Por eso hay días y semanas malas aunque juegues perfecto."
             : " más que lo que ganás en promedio."}
@@ -389,7 +408,7 @@ function BankrollSim({ unit: unit0 = 10, bank: bank0 = 2000 }) {
               En estas {hours} horas te quedaste sin plata{" "}
               <b>{pctText(sim.ruin, 0)}</b> de las veces. Para bajar el riesgo
               total a 5 %, necesitás una banca de unos{" "}
-              <b>${money(Math.ceil(bank5 / 100) * 100)}</b>.
+              <b>{fmtMoney(Math.ceil(bank5 / 100) * 100, cur)}</b>.
             </p>
             <p className="muted small">
               La ventaja le gana a la suerte después de unas{" "}

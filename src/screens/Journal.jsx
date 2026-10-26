@@ -3,14 +3,19 @@ import { useState } from "react";
 import { dayKey, setState, useStore } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
 import { Button, Modal, Pills, cx } from "../ui/components.jsx";
-import { money } from "../engine/table.js";
 import { TopBar } from "../ui/common.jsx";
+import {
+  CurrencyPills,
+  fmtMoney,
+  fmtSignedMoney,
+  useCurrency,
+} from "../ui/money.jsx";
 import { useNav } from "../nav.js";
 
 const HOURS = [0.5, 1, 1.5, 2, 3, 4, 5, 6];
 
-function sm(v) {
-  return `${v > 0 ? "+" : v < 0 ? "−" : ""}$${money(Math.round(Math.abs(v)))}`;
+function sm(v, c) {
+  return fmtSignedMoney(v, c);
 }
 function hoursText(h) {
   return `${String(h).replace(".", ",")} h`;
@@ -24,7 +29,7 @@ function dateText(d) {
 }
 
 // Resultado acumulado, sesión por sesión.
-function JournalChart({ entries }) {
+function JournalChart({ entries, cy }) {
   const [sel, setSel] = useState(entries.length - 1);
   const W = 340;
   const H = 150;
@@ -54,7 +59,7 @@ function JournalChart({ entries }) {
       <svg
         viewBox={`0 0 ${W} ${H}`}
         role="img"
-        aria-label={`Resultado acumulado: ${sm(pts[pts.length - 1].v)} en ${entries.length} sesiones.`}
+        aria-label={`Resultado acumulado: ${sm(pts[pts.length - 1].v, cy)} en ${entries.length} sesiones.`}
         onPointerDown={pick}
         onPointerMove={(e) => e.buttons && pick(e)}
       >
@@ -76,14 +81,15 @@ function JournalChart({ entries }) {
         <circle cx={x(sel + 1)} cy={y(cur.v)} r="4.5" className="fan-dot" />
       </svg>
       <div className="fan-tip small">
-        <b>{dateText(cur.e.date)}</b> · {sm(cur.e.result)} · acumulado{" "}
-        <b className={cur.v >= 0 ? "good" : "bad"}>{sm(cur.v)}</b>
+        <b>{dateText(cur.e.date)}</b> · {sm(cur.e.result, cy)} · acumulado{" "}
+        <b className={cur.v >= 0 ? "good" : "bad"}>{sm(cur.v, cy)}</b>
       </div>
     </div>
   );
 }
 
 function EntryForm({ onClose }) {
+  const cy = useCurrency();
   const [date, setDate] = useState(dayKey());
   const [place, setPlace] = useState("");
   const [hours, setHours] = useState(2);
@@ -93,6 +99,7 @@ function EntryForm({ onClose }) {
   const save = () => {
     const entry = {
       id: Date.now(),
+      cur: cy.id,
       date,
       place: place.trim().slice(0, 40),
       hours,
@@ -154,7 +161,7 @@ function EntryForm({ onClose }) {
             onChange={setSign}
           />
           <span className="jr-amount">
-            <b>$</b>
+            <b>{cy.sym}</b>
             <input
               className="inp num"
               type="text"
@@ -171,7 +178,7 @@ function EntryForm({ onClose }) {
       </div>
       <div className="btns" style={{ marginTop: 10 }}>
         <Button onClick={save}>
-          Guardar {value || sign < 0 ? sm(sign * value) : "$0"}
+          Guardar {value || sign < 0 ? sm(sign * value, cy) : fmtMoney(0, cy)}
         </Button>
         <Button kind="ghost" onClick={onClose}>
           Cancelar
@@ -186,7 +193,10 @@ function Journal() {
   const nav = useNav();
   const [adding, setAdding] = useState(false);
   const [del, setDel] = useState(null);
-  const entries = st.journal.entries;
+  const cy = useCurrency();
+  // Cada sesión queda en su moneda; se muestran las de la moneda elegida.
+  const entries = st.journal.entries.filter((e) => (e.cur || "USD") === cy.id);
+  const others = st.journal.entries.length - entries.length;
   const total = entries.reduce((a, e) => a + e.result, 0);
   const hours = entries.reduce((a, e) => a + e.hours, 0);
   const wins = entries.filter((e) => e.result > 0).length;
@@ -198,6 +208,16 @@ function Journal() {
         title="Diario de casino real"
         sub="Lo que jugás de verdad"
       />
+      <div className="field jr-cur">
+        <span>Moneda</span>
+        <CurrencyPills />
+        {others ? (
+          <span className="muted small" style={{ fontWeight: 400 }}>
+            Tenés {others} {others === 1 ? "sesión" : "sesiones"} en otra
+            moneda: cambiala para verlas.
+          </span>
+        ) : null}
+      </div>
       {entries.length ? (
         <>
           <div className="tiles">
@@ -208,7 +228,7 @@ function Journal() {
                   total > 0 ? "t-good" : total < 0 ? "t-bad" : "",
                 )}
               >
-                {sm(total)}
+                {sm(total, cy)}
               </div>
               <div className="tile-l">resultado</div>
             </div>
@@ -223,7 +243,7 @@ function Journal() {
                   total > 0 ? "t-good" : total < 0 ? "t-bad" : "",
                 )}
               >
-                {sm(hours ? total / hours : 0)}
+                {sm(hours ? total / hours : 0, cy)}
               </div>
               <div className="tile-l">por hora</div>
             </div>
@@ -231,7 +251,7 @@ function Journal() {
           {entries.length >= 2 ? (
             <div className="card" style={{ marginTop: 14 }}>
               <div className="eyebrow">Resultado acumulado</div>
-              <JournalChart entries={entries} />
+              <JournalChart entries={entries} cy={cy} />
             </div>
           ) : null}
           <p className="muted small" style={{ marginTop: 12 }}>
@@ -256,7 +276,7 @@ function Journal() {
                       e.result > 0 ? "good" : e.result < 0 ? "bad" : "mid",
                     )}
                   >
-                    <b className="num">{sm(e.result)}</b>
+                    <b className="num">{sm(e.result, cy)}</b>
                   </span>
                   <span className="li-text">
                     <span className="li-title">{e.place || "Casino"}</span>
@@ -300,7 +320,7 @@ function Journal() {
       <Modal open={!!del} onClose={() => setDel(null)}>
         <h2 style={{ fontSize: 24 }}>¿Borrar esta sesión?</h2>
         <p className="muted" style={{ margin: "10px 0 20px" }}>
-          {del ? `${dateText(del.date)} · ${sm(del.result)}` : ""}
+          {del ? `${dateText(del.date)} · ${sm(del.result, cy)}` : ""}
         </p>
         <div className="btns">
           <Button kind="secondary" onClick={() => setDel(null)}>

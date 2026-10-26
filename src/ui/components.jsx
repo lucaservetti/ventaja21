@@ -95,7 +95,7 @@ function Chip({
 function chipBreakdown(a) {
   let e = [],
     t = Math.round(a);
-  for (let s of [500, 100, 25, 5, 1])
+  for (let s of [10000, 5000, 1000, 500, 100, 25, 5, 1])
     for (; t >= s && e.length < 7;) {
       e.push(s);
       t -= s;

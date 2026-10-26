@@ -38,6 +38,8 @@ import {
 import { CasinoPlay, CasinoSetup } from "./screens/Casino.jsx";
 import { BankrollSim } from "./screens/Bankroll.jsx";
 import { Journal } from "./screens/Journal.jsx";
+import { DevLevel } from "./screens/DevPath.jsx";
+import { Backup } from "./screens/Backup.jsx";
 import {
   GoalSheet,
   PRACTICE_SCREENS,
@@ -84,6 +86,8 @@ const SCREENS = {
   casinoPlay: CasinoPlay,
   bankroll: BankrollSim,
   journal: Journal,
+  devLevel: DevLevel,
+  backup: Backup,
 };
 const SHEETS = {
   settings: SettingsSheet,

@@ -3,8 +3,6 @@ import {
   TABLE_PRESETS,
   canPersist,
   describeRules,
-  exportBackup,
-  importBackup,
   resetAll,
   setRules,
   setSettings,
@@ -26,13 +24,6 @@ import { SystemValues } from "./CountTab.jsx";
 import { useNav } from "../nav.js";
 
 const VERSION = __APP_VERSION__;
-function inIframe() {
-  try {
-    return window.self !== window.top;
-  } catch {
-    return true;
-  }
-}
 function isStandalone() {
   try {
     return (
@@ -49,48 +40,9 @@ function SettingsSheet({ open: a, onClose: e }) {
     n = t.settings,
     l = withRules(n.rules),
     [i, o] = useState(false),
-    [c, r] = useState(null),
-    [u, d] = useState(""),
-    [p, f] = useState(null),
     y = TABLE_PRESETS.find((m) =>
       Object.entries(m.rules).every(([b, S]) => l[b] === S),
-    ),
-    C = async () => {
-      let m = exportBackup();
-      r(m);
-      try {
-        await navigator.clipboard.writeText(m);
-        f({
-          ok: true,
-          text: "Código copiado. Guardalo en una nota o mandátelo por mensaje.",
-        });
-      } catch {
-        f({ ok: true, text: "Seleccioná el código de abajo y copialo." });
-      }
-    },
-    k = () => {
-      try {
-        let m = new Blob([exportBackup()], { type: "text/plain" }),
-          b = document.createElement("a");
-        b.href = URL.createObjectURL(m);
-        b.download = `ventaja21-respaldo-${new Date().toISOString().slice(0, 10)}.txt`;
-        document.body.appendChild(b);
-        b.click();
-        b.remove();
-        setTimeout(() => URL.revokeObjectURL(b.href), 2000);
-      } catch {
-        f({ ok: false, text: 'No se pudo descargar. Usá "Copiar código".' });
-      }
-    },
-    v = () => {
-      try {
-        importBackup(u);
-        f({ ok: true, text: "Listo: restauramos tu progreso." });
-        d("");
-      } catch (m) {
-        f({ ok: false, text: m.message || "El código no es válido." });
-      }
-    };
+    );
   return (
     <Sheet open={a} onClose={e} title="Ajustes" tall={true}>
       <h3 className="sheet-sub" style={{ marginTop: 4 }}>
@@ -213,62 +165,24 @@ function SettingsSheet({ open: a, onClose: e }) {
           Instalá la app o usá otro navegador.
         </p>
       )}
-      <p className="muted small">
-        Se guarda solo en este dispositivo. Para pasarlo a otro, copiá el código
-        de respaldo y pegalo allá.
-      </p>
-      <div className="btns" style={{ marginTop: 10 }}>
-        <Button kind="secondary" icon="copy" onClick={C}>
-          Copiar código de respaldo
-        </Button>
-        {inIframe() ? null : (
-          <Button kind="secondary" icon="download" onClick={k}>
-            Descargar respaldo
-          </Button>
-        )}
-      </div>
-      {c ? (
-        <textarea
-          className="code-box"
-          readOnly={true}
-          value={c}
-          onFocus={(m) => m.target.select()}
-          rows={3}
-          id="backup-out"
-        />
-      ) : null}
-      <label
-        className="muted small"
-        htmlFor="backup-in"
-        style={{ display: "block", marginTop: 14 }}
+      <button
+        type="button"
+        className="list-item setting-link"
+        onClick={() => {
+          e();
+          s.push("backup");
+        }}
       >
-        Restaurar desde un código
-      </label>
-      <textarea
-        id="backup-in"
-        className="code-box"
-        value={u}
-        onChange={(m) => d(m.target.value)}
-        placeholder="Pegá acá el código V21:…"
-        rows={3}
-      />
-      <Button
-        kind="secondary"
-        onClick={v}
-        disabled={!u.trim()}
-        style={{ marginTop: 8 }}
-      >
-        Restaurar
-      </Button>
-      {p ? (
-        <p
-          className={cx("small", p.ok ? "good" : "bad")}
-          style={{ marginTop: 10, fontWeight: 600 }}
-          role="status"
-        >
-          {p.text}
-        </p>
-      ) : null}
+        <span className="li-text">
+          <span className="li-title" style={{ fontSize: 17 }}>
+            Respaldo y otro celular
+          </span>
+          <span className="li-sub" style={{ display: "block" }}>
+            Guardá tu progreso o pasalo a otro celular
+          </span>
+        </span>
+        <Icon name="chev" className="li-chev" />
+      </button>
       <div className="btns" style={{ marginTop: 14 }}>
         <Button
           kind="secondary"

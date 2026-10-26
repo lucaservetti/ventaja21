@@ -7115,3 +7115,226 @@ i.en {
   padding: 28px 20px;
   margin-top: 8px;
 }
+
+/* Montos a elección y fichas grandes */
+.amount-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.amount-input b {
+  font-size: 22px;
+  white-space: nowrap;
+}
+.amount-input .inp {
+  font-size: 22px;
+  font-weight: 700;
+}
+.jr-cur {
+  padding-top: 4px;
+}
+.chip-1000 {
+  --c: #e8a93a;
+  --e: #fff4dc;
+  --t: #2a1c05;
+}
+.chip-5000 {
+  --c: #c94f7c;
+  --e: #ffe6f0;
+  --t: #ffffff;
+}
+.chip-10000 {
+  --c: #2f6fd6;
+  --e: #e3edff;
+  --t: #ffffff;
+}
+
+/* Examen de casino y certificado */
+.exam-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--accent-line);
+}
+.exam-card.passed {
+  border-color: var(--good);
+}
+.exam-seal {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.exam-card.passed .exam-seal {
+  color: var(--accent-ink);
+  background: radial-gradient(circle at 35% 30%, #fff6a8, var(--accent) 55%, #9c9a2c);
+}
+.cert {
+  margin-top: 22px;
+  padding: 28px 20px 22px;
+  border-radius: 24px;
+  text-align: center;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(230, 230, 128, 0.16), transparent 60%),
+    var(--surface);
+  border: 1px solid var(--accent-line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.cert-seal {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 8px;
+  color: var(--accent-ink);
+  background: radial-gradient(circle at 35% 30%, #fff6a8, var(--accent) 55%, #9c9a2c);
+  box-shadow: 0 0 0 6px rgba(230, 230, 128, 0.12);
+}
+.cert-title {
+  font-size: 26px;
+  line-height: 1.15;
+  margin: 2px 0 4px;
+}
+.cert-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin: 14px 0 16px;
+}
+.cert-stats span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+.cert-stats b {
+  font-size: 20px;
+  color: var(--text);
+}
+
+/* Ruta de desviaciones */
+.dpath {
+  border: 1px solid var(--accent-line);
+}
+.dpath-title {
+  font-size: 22px;
+  margin-top: 8px;
+}
+.dpath .muted.small {
+  margin-top: 4px;
+}
+.dpath-dots {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 4px;
+  margin: 14px 0 16px;
+}
+.dpath-dots i {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface-3);
+}
+.dpath-dots i.on {
+  background: var(--accent);
+}
+.dpath-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  margin-top: 12px;
+}
+.dpath-more .up {
+  transform: rotate(180deg);
+}
+.dpath-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+.dpath-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  text-align: left;
+  border-top: 1px solid var(--line);
+}
+.dpath-row.locked {
+  opacity: 0.5;
+}
+.dpath-row.ok .how-n {
+  background: var(--good);
+  color: var(--good-ink);
+}
+.dev-title {
+  font-size: 30px;
+  margin-top: 12px;
+}
+.level-badge.done {
+  background: var(--good);
+  color: var(--good-ink);
+}
+.dev-rules {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+.dev-rule {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.dev-rule span {
+  color: var(--text-2);
+  font-size: 15px;
+}
+.dev-how {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 12px;
+  color: var(--text-2);
+}
+.dev-how > svg {
+  flex-shrink: 0;
+  color: var(--accent);
+  margin-top: 2px;
+}
+.ins-choices {
+  display: grid;
+  gap: 10px;
+}
+
+/* Respaldo */
+.bk-sum {
+  margin-top: 8px;
+}
+.bk-steps {
+  margin-top: 16px;
+}
+.bk-steps li {
+  align-items: center;
+}
+.bk-nudge {
+  margin-top: 10px;
+  border: 1px solid var(--accent-line);
+}
+.bk-nudge .li-icon {
+  color: var(--accent);
+  background: var(--accent-soft);
+}

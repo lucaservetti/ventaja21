@@ -30,7 +30,7 @@ Cómo está organizado `src/`:
 | `state.js` | Progreso guardado en el celular (localStorage), reglas de mesa y respaldo |
 | `engine/` | Lógica del juego: cartas, estrategia básica, desviaciones, sistemas de conteo, probabilidades, mesa del simulador |
 | `lessons/` | Contenido de las lecciones y el reproductor de lecciones (mesa narrada, preguntas, ejercicios) |
-| `screens/` | Pantallas: Conteo, Entrenar (con las tarjetas de la tabla), Jugar (y el modo casino real), Aprender, Progreso (con tu semana, logros, el simulador de banca y el diario de casino real), ejercicios, guía y ajustes |
+| `screens/` | Pantallas: Conteo, Entrenar (con las tarjetas de la tabla y la ruta de desviaciones), Jugar (y el modo casino real con su examen), Aprender, Progreso (con tu semana, logros, el simulador de banca y el diario de casino real), ejercicios, guía y ajustes |
 | `ui/` | Componentes compartidos: cartas, botones, hojas, tabla de estrategia e íconos |
 | `styles.css` | Todos los estilos |
 | `tests/` | Pruebas del simulador y de la tabla de estrategia |
