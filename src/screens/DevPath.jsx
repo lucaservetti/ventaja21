@@ -21,6 +21,7 @@ import { TopBar, useRules } from "../ui/common.jsx";
 import { sfx, vibrate } from "../sound.js";
 import { ActionButton } from "./TrainSession.jsx";
 import { useNav } from "../nav.js";
+import { PremiumTag } from "./Premium.jsx";
 
 const ANSWER_NAMES = {
   ...ACTION_NAMES,
@@ -98,7 +99,7 @@ function DevPathCard({ st, nav }) {
                   )}
                 </span>
                 <span className="grow">
-                  <b>{l.title}</b>
+                  <b>{l.title}</b> {l.n >= 3 ? <PremiumTag st={st} /> : null}
                   <span className="muted tiny" style={{ display: "block" }}>
                     {l.sub}
                   </span>

@@ -31,6 +31,7 @@ import { systemFor } from "../engine/systems.js";
 import { TABLE_SPEEDS, Table, money } from "../engine/table.js";
 import { TableView } from "./TableView.jsx";
 import { useNav } from "../nav.js";
+import { PremiumTag } from "./Premium.jsx";
 
 let tableInstance = null;
 function tableOptions(st) {
@@ -427,7 +428,9 @@ function TableSheet({ open, onClose, table }) {
           <Icon name="crown" />
         </span>
         <span className="li-text">
-          <span className="li-title">Modo casino real</span>
+          <span className="li-title">
+            Modo casino real <PremiumTag st={st} />
+          </span>
           <span className="li-sub" style={{ display: "block" }}>
             Tu plata, límites de mesa, tiempo para decidir y vigilancia
           </span>

@@ -1,0 +1,80 @@
+# Arma la app de Android para Play Store (archivo .aab) en la nube.
+# - Se corre a mano desde la pestaña Actions ("Run workflow") o solo cuando cambia algo de la app.
+# - Si están cargados los secretos de firma, el .aab sale firmado y listo para subir a Play Console.
+#   Sin ellos, sale sin firmar (sirve para comprobar que compila).
+# Secretos (Settings → Secrets and variables → Actions → Secrets):
+#   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+# Variables (misma pantalla → Variables):
+#   ADMOB_APP_ID (ca-app-pub-…~…) y ADMOB_INTERSTITIAL_ID (ca-app-pub-…/…).
+#   Sin ellas se usan los anuncios de prueba de Google (no generan plata).
+name: Android
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "src/**"
+      - "android/**"
+      - "package.json"
+      - "capacitor.config.json"
+      - ".github/workflows/android.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Armar la app web
+        env:
+          ADMOB_INTERSTITIAL_ID: ${{ vars.ADMOB_INTERSTITIAL_ID }}
+        run: npm run build
+
+      - name: Copiar la app al proyecto Android
+        run: npx cap sync android
+
+      - name: Preparar la clave de firma
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+            echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+            echo "Se va a firmar con tu clave."
+          else
+            echo "::warning::No hay clave de firma cargada: el .aab sale sin firmar (no se puede subir a Play)."
+          fi
+
+      - name: Armar el .aab
+        working-directory: android
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+          ADMOB_APP_ID: ${{ vars.ADMOB_APP_ID }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon bundleRelease
+
+      - name: Guardar el .aab
+        uses: actions/upload-artifact@v4
+        with:
+          name: ventaja21-${{ github.run_number }}
+          path: android/app/build/outputs/bundle/release/*.aab
+          retention-days: 30

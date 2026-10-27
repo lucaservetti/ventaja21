@@ -22,6 +22,7 @@ import { SYSTEMS, SYSTEM_IDS } from "../engine/systems.js";
 import { HiLoValues } from "../lessons/visuals.jsx";
 import { SystemValues } from "./CountTab.jsx";
 import { useNav } from "../nav.js";
+import { APP_MODE } from "../platform.js";
 
 const VERSION = __APP_VERSION__;
 function isStandalone() {
@@ -45,6 +46,28 @@ function SettingsSheet({ open: a, onClose: e }) {
     );
   return (
     <Sheet open={a} onClose={e} title="Ajustes" tall={true}>
+      {APP_MODE ? (
+        <button
+          type="button"
+          className="list-item setting-link prem-setting"
+          onClick={() => {
+            e();
+            s.push("premium");
+          }}
+        >
+          <span className="li-text">
+            <span className="li-title" style={{ fontSize: 17 }}>
+              {n.premium ? "Sos Premium" : "Ventaja 21 Premium"}
+            </span>
+            <span className="li-sub" style={{ display: "block" }}>
+              {n.premium
+                ? "Gracias por apoyar la app"
+                : "Sin anuncios y con todo lo avanzado, en un solo pago"}
+            </span>
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+      ) : null}
       <h3 className="sheet-sub" style={{ marginTop: 4 }}>
         Meta diaria
       </h3>
