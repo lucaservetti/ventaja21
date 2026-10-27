@@ -173,6 +173,8 @@ class Table {
       slow: 0,
       timeouts: 0,
       heatPeak: 0,
+      coverBets: 0,
+      obviousJumps: 0,
       betLow: 0,
       betHigh: 0,
       mistakes: [],
@@ -274,11 +276,43 @@ class Table {
     const prev = this.heatPrevBet || this.bet;
     const ratio = this.bet / Math.max(1, prev);
     let add = -2.5;
+    // Camuflaje: subir después de ganar (como cualquier jugador) o con el conteo en contra
+    // parece natural y enfría la vigilancia.
+    const s = this.session;
+    const wonLast = this.result && this.result.net > 0;
+    let note = null;
+    if (ratio > 1 && (tc <= 0 || (wonLast && ratio <= 2))) {
+      add -= 4;
+      s.coverBets++;
+      note = {
+        ok: true,
+        text: wonLast
+          ? "Bien: subiste después de ganar, como un jugador común."
+          : "Bien: una apuesta alta con el conteo en contra despista.",
+      };
+    }
     if (ratio >= 2) add += 7 * Math.log2(ratio);
-    if (ratio >= 2 && tc >= 2) add += 6;
-    if (this.roundsThisShoe === 0 && prev >= 4 * min && this.bet <= 1.5 * min)
+    if (ratio >= 2 && tc >= 2 && !wonLast) {
+      add += 6;
+      if (ratio >= 3) {
+        s.obviousJumps++;
+        note = {
+          ok: false,
+          text: "Muy obvio: saltaste la apuesta de golpe justo con el conteo alto.",
+        };
+      }
+    }
+    if (this.roundsThisShoe === 0 && prev >= 4 * min && this.bet <= 1.5 * min) {
       add += 12;
+      s.obviousJumps++;
+      note = {
+        ok: false,
+        text: "Sospechoso: bajaste a la mínima apenas mezclaron.",
+      };
+    }
     if (this.bet >= 10 * min) add += 2;
+    if (note && this.opts.tourist)
+      this.toast(note.text, note.ok ? "good" : "warn", 3000);
     const before = this.heat;
     this.heat = Math.max(0, Math.min(100, before + add));
     this.heatPrevBet = this.bet;
@@ -292,6 +326,11 @@ class Table {
         3600,
       );
     if (this.heat >= 100) this.backedOff = true;
+  }
+  // Puntaje de camuflaje (0 a 100): cuánto parecés un jugador común.
+  get camo() {
+    const s = this.session;
+    return camoScore(s.heatPeak, s.obviousJumps, s.coverBets);
   }
   // Apuesta que corresponde al conteo real de ahora (1 unidad si se mezcla antes de la mano).
   get suggestedBet() {
@@ -1068,4 +1107,11 @@ function money(amount) {
   });
 }
 
-export { TABLE_SPEEDS, Table, money };
+function camoScore(heatPeak, jumps, cover) {
+  return Math.max(
+    0,
+    Math.min(100, Math.round(100 - heatPeak * 0.5 - jumps * 8 + cover * 2)),
+  );
+}
+
+export { TABLE_SPEEDS, Table, camoScore, money };

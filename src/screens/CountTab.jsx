@@ -13,6 +13,7 @@ import {
 import { countValue, fmtTag, systemFor } from "../engine/systems.js";
 import { InfoDot, PageHeader, SettingsButton } from "../ui/common.jsx";
 import { HiLoValues } from "../lessons/visuals.jsx";
+import { dailyFormat } from "./drills.jsx";
 import { useNav } from "../nav.js";
 import { GoalBadge } from "./goal.jsx";
 import { CountPathCard } from "./countPath.jsx";
@@ -148,10 +149,46 @@ function CountTab() {
           </span>
           <span className="li-sub" style={{ display: "block" }}>
             {dailyDone
-              ? dailyDone.ok
-                ? `Hoy: ¡acertaste!${dailyStreak > 1 ? ` · ${dailyStreak} días seguidos` : ""}`
-                : "Hoy: lo intentaste"
-              : "20 cartas, las mismas para todos hoy"}
+              ? `Hoy: ${dailyDone.score ?? (dailyDone.ok ? 100 : 0)} puntos${dailyStreak > 1 ? ` · ${dailyStreak} días seguidos` : ""}`
+              : `${dailyFormat().name}: ${dailyFormat().n} cartas, las mismas para todos hoy`}
+          </span>
+          <span className="daily-week" aria-label="Tus últimos 7 días">
+            {Array.from({ length: 7 }, (_, k) => {
+              const d = new Date();
+              d.setDate(d.getDate() - (6 - k));
+              const r = daily.results[dayKey(d)];
+              return (
+                <i
+                  className={cx(
+                    r ? (r.ok ? "ok" : "miss") : "",
+                    k === 6 && "today",
+                  )}
+                  key={k}
+                >
+                  {["D", "L", "M", "M", "J", "V", "S"][d.getDay()]}
+                </i>
+              );
+            })}
+          </span>
+        </span>
+        <Icon name="chev" className="li-chev" />
+      </button>
+      <button
+        type="button"
+        className="card list-item"
+        onClick={() => nav.push("speedDrill", { confirmExit: true })}
+      >
+        <span className="li-icon">
+          <Icon name="bolt" />
+        </span>
+        <span className="li-text">
+          <span className="li-title" style={{ fontSize: 17 }}>
+            Velocidad de conteo
+          </span>
+          <span className="li-sub" style={{ display: "block" }}>
+            {st.drills.speed && st.drills.speed.best
+              ? `Tu récord: ${st.drills.speed.best.toFixed(1).replace(".", ",")} cartas por segundo`
+              : "Cada tanda más rápida: ¿llegás al ritmo del casino?"}
           </span>
         </span>
         <Icon name="chev" className="li-chev" />

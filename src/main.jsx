@@ -40,6 +40,7 @@ import { BankrollSim } from "./screens/Bankroll.jsx";
 import { Journal } from "./screens/Journal.jsx";
 import { DevLevel } from "./screens/DevPath.jsx";
 import { Backup } from "./screens/Backup.jsx";
+import { SpeedDrill } from "./screens/SpeedDrill.jsx";
 import {
   GoalSheet,
   PRACTICE_SCREENS,
@@ -88,6 +89,7 @@ const SCREENS = {
   journal: Journal,
   devLevel: DevLevel,
   backup: Backup,
+  speedDrill: SpeedDrill,
 };
 const SHEETS = {
   settings: SettingsSheet,

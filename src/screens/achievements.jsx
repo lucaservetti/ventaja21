@@ -195,6 +195,14 @@ const GROUPS = [
         value: (st) => passedCount(st),
       },
       {
+        id: "speed-casino",
+        icon: "bolt",
+        title: "Ritmo de casino",
+        desc: "Contá bien una tanda a 2,5 cartas por segundo.",
+        goal: 1,
+        value: (st) => (st.drills.speed && st.drills.speed.best >= 2.5 ? 1 : 0),
+      },
+      {
         id: "checks-10",
         icon: "eye",
         title: "Ojo de halcón",

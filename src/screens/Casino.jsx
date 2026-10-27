@@ -21,7 +21,7 @@ import {
   Toggle,
   cx,
 } from "../ui/components.jsx";
-import { Table } from "../engine/table.js";
+import { Table, camoScore } from "../engine/table.js";
 import { TopBar, useRules } from "../ui/common.jsx";
 import {
   AmountPills,
@@ -232,8 +232,15 @@ function CasinoSetup() {
         id="c-heat"
         label="Vigilancia del casino"
         sub="Si subís mucho la apuesta cuando el conteo está alto, el jefe de mesa sospecha. Si se calienta del todo, te piden que te retires."
-        checked={s.heat}
-        onChange={(heat) => setSetup({ heat })}
+        checked={s.heat || !!s.tourist}
+        onChange={(heat) => setSetup({ heat, tourist: heat && s.tourist })}
+      />
+      <Toggle
+        id="c-tourist"
+        label="Modo turista"
+        sub="Practicá el camuflaje: te avisa qué apuesta pareció natural y cuál te delató, y al final te da un puntaje de cuánto parecés un jugador común."
+        checked={!!s.tourist}
+        onChange={(tourist) => setSetup({ tourist, heat: tourist || s.heat })}
       />
       <div className="note-box" style={{ marginTop: 12 }}>
         <b>Reglas:</b> {describeRules(rules).join(" · ")}. Las cambiás en Jugar
@@ -401,7 +408,8 @@ function CasinoPlay({ setup, exam = false }) {
       minBet: setup.minBet,
       maxBet: setup.maxBet,
       decisionTime: setup.decisionTime,
-      heat: setup.heat,
+      heat: setup.heat || !!setup.tourist,
+      tourist: !!setup.tourist,
       sym: cur.sym,
       chips: chipsFor(setup.minBet),
     });
@@ -466,8 +474,12 @@ function CasinoPlay({ setup, exam = false }) {
       checks: s.checks,
       checksOk: s.checksOk,
       timeouts: s.timeouts,
-      heatOn: setup.heat,
+      heatOn: setup.heat || !!setup.tourist,
       heatPeak: Math.round(s.heatPeak),
+      tourist: !!setup.tourist,
+      camo: camoScore(s.heatPeak, s.obviousJumps, s.coverBets),
+      coverBets: s.coverBets,
+      obviousJumps: s.obviousJumps,
       betLow: s.betLow,
       betHigh: s.betHigh,
       minBet: setup.minBet,
@@ -560,7 +572,12 @@ function CasinoPlay({ setup, exam = false }) {
           {fmtMoney(setup.maxBet, cur)}
           {setup.decisionTime ? ` · ${setup.decisionTime} s` : ""}
         </span>
-        {setup.heat ? <HeatMeter heat={t.heat} /> : null}
+        {setup.tourist ? (
+          <span className="tiny camo-live num">
+            Camuflaje <b>{t.camo}</b>
+          </span>
+        ) : null}
+        {setup.heat || setup.tourist ? <HeatMeter heat={t.heat} /> : null}
       </div>
     </>
   );
@@ -827,6 +844,36 @@ function CasinoResult({ trip }) {
                 className={cx("kv-v num", trip.timeouts ? "t-bad" : "t-good")}
               >
                 {trip.timeouts} {trip.timeouts === 1 ? "vez" : "veces"}
+              </span>
+            </div>
+          ) : null}
+          {trip.tourist ? (
+            <div className="kv">
+              <span className="kv-k">Camuflaje</span>
+              <span
+                className={cx(
+                  "kv-v num",
+                  trip.camo >= 75
+                    ? "t-good"
+                    : trip.camo >= 50
+                      ? "t-mid"
+                      : "t-bad",
+                )}
+              >
+                {trip.camo}/100 ·{" "}
+                {trip.camo >= 75
+                  ? "parecés turista"
+                  : trip.camo >= 50
+                    ? "algo sospechoso"
+                    : "contador evidente"}
+              </span>
+            </div>
+          ) : null}
+          {trip.tourist ? (
+            <div className="kv">
+              <span className="kv-k">Apuestas naturales / delatoras</span>
+              <span className="kv-v num">
+                {trip.coverBets} / {trip.obviousJumps}
               </span>
             </div>
           ) : null}

@@ -7001,3 +7001,86 @@ i.en {
   color: var(--accent);
   font-weight: 700;
 }
+.camo-live {
+  margin-left: auto;
+  margin-right: 10px;
+  color: var(--text-2);
+}
+.camo-live b {
+  color: var(--accent);
+}
+
+/* Desafío diario: los últimos 7 días */
+.daily-week {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+}
+.daily-week i {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-3);
+  background: var(--surface-2);
+}
+.daily-week i.ok {
+  background: var(--good);
+  color: var(--good-ink);
+}
+.daily-week i.miss {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+.daily-week i.today {
+  box-shadow: 0 0 0 2px var(--text-2);
+}
+.daily-score b {
+  color: var(--accent);
+}
+
+/* Velocidad de conteo */
+.speed-stage {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  margin-top: 16px;
+}
+.speed-meter {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 8px;
+}
+.speed-big {
+  font-size: 46px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.speed-ref {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+.speed-ref div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+.speed-ref div.on {
+  color: var(--text);
+  font-weight: 700;
+}
+.casino-strip {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+.casino-strip > * {
+  white-space: nowrap;
+}
