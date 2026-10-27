@@ -249,7 +249,7 @@ function SettingsSheet({ open: a, onClose: e }) {
         ser entretenimiento, frená y pedí ayuda.
       </p>
       <p className="dim tiny" style={{ marginTop: 18 }}>
-        {"Ventaja 21 · versión "}
+        {"Ventaja 21 by Luca · versión "}
         {VERSION}
         {window.__v21Fit
           ? ` · pantalla ${window.__v21Fit.screenH} · vista ${window.__v21Fit.viewH} · ajuste ${window.__v21Fit.fix}`

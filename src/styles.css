@@ -6988,3 +6988,16 @@ i.en {
   margin-top: 8px;
 }
 
+
+/* Firma al final de cada pestaña */
+.credit {
+  margin: 34px 0 4px;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--text-3);
+}
+.credit b {
+  color: var(--accent);
+  font-weight: 700;
+}
