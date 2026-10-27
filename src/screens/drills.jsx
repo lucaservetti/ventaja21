@@ -418,6 +418,31 @@ const SLOWER = {
   normal: "relaxed",
   relaxed: "relaxed",
 };
+// Desafío diario: cada día de la semana trae otro formato (igual para todos ese día).
+const DAILY_FORMATS = [
+  { name: "Maratón de domingo", n: 40, speed: "normal", mode: "single" },
+  { name: "Lunes tranqui", n: 20, speed: "normal", mode: "single" },
+  { name: "Martes rápido", n: 24, speed: "fast", mode: "single" },
+  { name: "Miércoles de a dos", n: 24, speed: "normal", mode: "pairs" },
+  {
+    name: "Jueves con ruido",
+    n: 20,
+    speed: "normal",
+    mode: "single",
+    distract: true,
+  },
+  { name: "Viernes largo", n: 30, speed: "normal", mode: "single" },
+  { name: "Sábado a fondo", n: 24, speed: "fast", mode: "pairs" },
+];
+function dailyFormat(date = new Date()) {
+  return DAILY_FORMATS[date.getDay()];
+}
+// Puntaje del desafío: 100 si acertás (más un extra si contestás rápido); cerca, algo de puntos.
+function dailyScore(err, answerMs) {
+  if (err === 0) return 100 + Math.max(0, Math.round((8000 - answerMs) / 400));
+  return Math.max(0, 60 - 20 * Math.abs(err));
+}
+
 function DrillRunning({
   daily = false,
   n,
@@ -439,12 +464,14 @@ function DrillRunning({
           mode: level.mode || "single",
           distract: !!level.distract,
         }
-      : {
-          n: daily ? 20 : n || 15,
-          speed: daily ? "normal" : speed || "normal",
-          mode: daily ? "single" : mode || "single",
-          distract: false,
-        },
+      : daily
+        ? { ...dailyFormat(), distract: !!dailyFormat().distract }
+        : {
+            n: n || 15,
+            speed: speed || "normal",
+            mode: mode || "single",
+            distract: false,
+          },
   );
   const [phase, setPhase] = useState(daily || level ? "ready" : "setup");
   const [cards, setCards] = useState([]);
@@ -532,7 +559,13 @@ function DrillRunning({
     if (ok) sfx.good();
     else sfx.bad();
     const elapsed = (answeredAt.current || Date.now()) - startedAt.current;
-    const res = { v, ok, err: v - correct, elapsed };
+    const res = {
+      v,
+      ok,
+      err: v - correct,
+      elapsed,
+      answerMs: Date.now() - (answeredAt.current || Date.now()),
+    };
     setResult(res);
     setPhase("review");
     recordDrill(
@@ -585,7 +618,14 @@ function DrillRunning({
             last: ok ? today : d.last,
             streak,
             best: Math.max(d.best, streak),
-            results: { ...d.results, [today]: { ok, err: res.err } },
+            results: {
+              ...d.results,
+              [today]: {
+                ok,
+                err: res.err,
+                score: dailyScore(res.err, res.answerMs || 9000),
+              },
+            },
           },
         });
       });
@@ -648,7 +688,7 @@ function DrillRunning({
             {level
               ? `${cfg.n} cartas ${cfg.distract ? "con distracciones" : `a ritmo ${(DRILL_SPEEDS.find((s) => s.id === cfg.speed) || {}).label.toLowerCase()}`}. Arrancás en 0 y al final escribís el conteo corrido (running count) en Hi-Lo.`
               : daily
-                ? `20 cartas a ritmo normal, iguales para todos hoy. Tu primer intento cuenta para el desafío${st.daily.streak ? ` (vas ${st.daily.streak} ${st.daily.streak === 1 ? "día" : "días"} seguidos)` : ""}.`
+                ? `${dailyFormat().name}: ${cfg.n} cartas${cfg.mode === "pairs" ? " de a dos" : ""}${cfg.distract ? " con distracciones" : ""} a ritmo ${(DRILL_SPEEDS.find((s) => s.id === cfg.speed) || {}).label.toLowerCase()}, iguales para todos hoy. Si acertás sumás 100 puntos, más un extra si contestás rápido. Tu primer intento cuenta${st.daily.streak ? ` (vas ${st.daily.streak} ${st.daily.streak === 1 ? "día" : "días"} seguidos)` : ""}.`
                 : `Vas a ver las cartas de a ${cfg.mode === "pairs" ? "dos" : "una"}. Al final escribís el conteo corrido (running count) en ${sys.short || sys.name}. Arrancás en 0.`}
           </p>
           {level && practice ? (
@@ -900,6 +940,12 @@ function DrillRunning({
         <p className="muted" style={{ marginTop: 12 }}>
           {tip}
         </p>
+        {daily && st.daily.results[today] ? (
+          <p className="small daily-score" style={{ marginTop: 10 }}>
+            Desafío de hoy:{" "}
+            <b className="num">{st.daily.results[today].score ?? 0} puntos</b>
+          </p>
+        ) : null}
       </div>
       {level ? (
         <LevelOutcome level={level} passed={result.ok} practice={practice} />
@@ -1559,6 +1605,8 @@ function DeckCountdown() {
   );
 }
 export {
+  DAILY_FORMATS,
+  dailyFormat,
   DeckCountdown,
   DrillBet,
   DrillDecks,
