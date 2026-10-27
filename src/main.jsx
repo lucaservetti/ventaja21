@@ -293,7 +293,7 @@ function App() {
               {_jsx(v, { active: k.id === e && l.length === 0 })}
               {k.id !== "jugar" ? (
                 <p className="credit">
-                  Ventaja 21 · hecho por <b>Luca</b> ♠
+                  Edge 21 · hecho por <b>Luca</b> ♠
                 </p>
               ) : null}
             </section>
@@ -353,7 +353,7 @@ const ErrorBoundary = class extends Component {
   }
   componentDidCatch(e, t) {
     try {
-      console.error("Ventaja 21:", e, t && t.componentStack);
+      console.error("Edge 21:", e, t && t.componentStack);
     } catch {}
   }
   render() {

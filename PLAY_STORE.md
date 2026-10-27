@@ -1,4 +1,4 @@
-# Publicar Ventaja 21 en Google Play
+# Publicar Edge 21 en Google Play
 
 Guía paso a paso. Lo técnico ya está hecho en el repositorio: el proyecto Android (`android/`), los anuncios, la compra de Premium y la compilación en GitHub Actions. Lo que queda son cuentas y formularios que solo podés completar vos.
 
@@ -38,7 +38,7 @@ Después, en GitHub: **Settings → Secrets and variables → Actions → New re
 ## Paso 3 · AdMob (los anuncios)
 
 1. Entrá a <https://admob.google.com> con la misma cuenta de Google y creá la cuenta. Cargá el perfil de pagos y los datos de impuestos: es donde te pagan.
-2. **Apps → Agregar app → Android → "¿Está publicada?": No.** Nombre: Ventaja 21.
+2. **Apps → Agregar app → Android → "¿Está publicada?": No.** Nombre: Edge 21.
 3. Dentro de la app, **Bloques de anuncios → Agregar → Intersticial**. Nombre: "Entre actividades".
 4. Copiá los dos IDs:
    - el **ID de la app**, con este formato: `ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY`;
@@ -64,7 +64,7 @@ Cada vez que corre se usa un número de versión nuevo (el número de ejecución
 ## Paso 5 · Crear la app en Play Console
 
 **Crear app**:
-- Nombre: *Ventaja 21: contar cartas*.
+- Nombre: *Edge 21: blackjack y conteo*.
 - Idioma: Español (Latinoamérica).
 - Tipo: Juego (o App, si preferís la categoría Educación).
 - Gratis.
@@ -92,7 +92,7 @@ Después completá el panel **"Configura tu app"**. Lo que va en cada formulario
 1. **Pruebas → Prueba interna → Crear versión** y subí el `.aab` del paso 4. Agregá tu mail como tester y abrí el enlace para instalarla en un Android.
 2. Con esa primera versión subida, ya se puede crear el producto (Google lo pide así). Andá a **Monetizar → Productos → Productos integrados en la aplicación → Crear producto**:
    - **ID del producto: `premium`.** Tiene que ser exactamente ese, porque la app lo busca con ese nombre.
-   - Nombre: *Ventaja 21 Premium*. Descripción: *Sin anuncios y con todo lo avanzado, para siempre.*
+   - Nombre: *Edge 21 Premium*. Descripción: *Sin anuncios y con todo lo avanzado, para siempre.*
    - Precio: por ejemplo US$4,99. Play lo convierte solo a pesos y a las demás monedas, y vos podés ajustarlo por país.
    - **Activar.**
 3. Para cobrar, Play te va a pedir completar el **perfil de pagos** (cuenta bancaria). Hacelo.

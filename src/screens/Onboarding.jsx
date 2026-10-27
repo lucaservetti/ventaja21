@@ -154,7 +154,7 @@ function Onboarding() {
       <div className="layer full onb onb-welcome">
         <div className="onb-hero">
           <Logo size={96} />
-          <h1>Ventaja 21</h1>
+          <h1>Edge 21</h1>
           <p className="muted">
             Aprendé estrategia básica y conteo de cartas, paso a paso, como un
             profesional.

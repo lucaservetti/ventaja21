@@ -1,13 +1,13 @@
 # Ficha de Play Store (para copiar y pegar en Play Console)
 
 ## Nombre de la app (máx. 30 caracteres)
-Ventaja 21: contar cartas
+Edge 21: blackjack y conteo
 
 ## Descripción breve (máx. 80 caracteres)
 Aprendé estrategia básica y conteo de cartas en blackjack, paso a paso.
 
 ## Descripción completa (máx. 4000 caracteres)
-Ventaja 21 te enseña a jugar blackjack como un profesional: primero la estrategia básica, después a contar cartas y, al final, a usar el conteo en una mesa de casino sin que te descubran.
+Edge 21 te enseña a jugar blackjack como un profesional: primero la estrategia básica, después a contar cartas y, al final, a usar el conteo en una mesa de casino sin que te descubran.
 
 APRENDÉ PASO A PASO
 • Más de 30 lecciones cortas con una mesa narrada: jugás cada mano mientras te explican por qué.
@@ -41,7 +41,7 @@ TU PROGRESO, TUYO
 • Todo se guarda en tu teléfono. Sin cuentas. Con respaldo para pasarlo a otro celular.
 
 IMPORTANTE
-Ventaja 21 es para aprender. No se apuesta ni se gana plata real. Contar cartas mentalmente es legal, pero los casinos pueden pedirte que dejes de jugar, y usar el celular en la mesa está prohibido. Jugá solo plata que no necesitás.
+Edge 21 es para aprender. No se apuesta ni se gana plata real. Contar cartas mentalmente es legal, pero los casinos pueden pedirte que dejes de jugar, y usar el celular en la mesa está prohibido. Jugá solo plata que no necesitás.
 
 ## Categoría
 Juegos → Cartas  (o Educación, si preferís que no aparezca entre los juegos de cartas)

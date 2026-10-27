@@ -1,5 +1,5 @@
-// Ventaja 21 · service worker 1.7.0 (8bb382f8ed)
-const CACHE = "v21-1.7.0-8bb382f8ed";
+// Edge 21 · service worker 1.8.0 (fb9bd2cbc6)
+const CACHE = "v21-1.8.0-fb9bd2cbc6";
 const CORE = [
   "./",
   "./index.html",

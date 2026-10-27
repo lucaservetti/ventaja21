@@ -1,4 +1,4 @@
-// Ventaja 21 Premium: un solo pago, sin anuncios y con todo lo avanzado.
+// Edge 21 Premium: un solo pago, sin anuncios y con todo lo avanzado.
 import { useEffect, useState } from "react";
 import { useStore } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
@@ -63,7 +63,7 @@ function Premium({ feature }) {
         <span className="cert-seal" aria-hidden="true">
           <Icon name="crown" size={34} stroke={2.2} />
         </span>
-        <h1 className="prem-title">Ventaja 21 Premium</h1>
+        <h1 className="prem-title">Edge 21 Premium</h1>
         <p className="muted">
           {owned
             ? "¡Ya sos Premium! Gracias por apoyar la app."
