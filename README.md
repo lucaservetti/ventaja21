@@ -11,6 +11,10 @@ Web app (PWA) en español para aprender a contar cartas en blackjack: lecciones,
 
 Después de abrirla una vez con internet, funciona sin conexión.
 
+## App de Android (Google Play)
+
+La misma app se arma para Android con Capacitor, con anuncios y una compra de Premium. Todos los pasos para publicarla están en [PLAY_STORE.md](PLAY_STORE.md).
+
 ## Código
 
 La app publicada es un solo archivo, `index.html`, que se genera a partir del código en `src/`. No hay que editar `index.html` a mano.

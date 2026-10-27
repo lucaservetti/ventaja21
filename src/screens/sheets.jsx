@@ -271,7 +271,17 @@ function SettingsSheet({ open: a, onClose: e }) {
         está prohibido. Jugá solo plata que no necesitás. Si el juego deja de
         ser entretenimiento, frená y pedí ayuda.
       </p>
-      <p className="dim tiny" style={{ marginTop: 18 }}>
+      <p className="small" style={{ marginTop: 18 }}>
+        <a
+          className="link"
+          href="https://lucaservetti.github.io/ventaja21/privacidad.html"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Política de privacidad
+        </a>
+      </p>
+      <p className="dim tiny" style={{ marginTop: 8 }}>
         {"Ventaja 21 by Luca · versión "}
         {VERSION}
         {window.__v21Fit
