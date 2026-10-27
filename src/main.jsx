@@ -271,6 +271,11 @@ function App() {
               key={k.id}
             >
               {_jsx(v, { active: k.id === e && l.length === 0 })}
+              {k.id !== "jugar" ? (
+                <p className="credit">
+                  Ventaja 21 · hecho por <b>Luca</b> ♠
+                </p>
+              ) : null}
             </section>
           );
         })}
