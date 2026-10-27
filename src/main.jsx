@@ -41,6 +41,8 @@ import { Journal } from "./screens/Journal.jsx";
 import { DevLevel } from "./screens/DevPath.jsx";
 import { Backup } from "./screens/Backup.jsx";
 import { SpeedDrill } from "./screens/SpeedDrill.jsx";
+import { Premium } from "./screens/Premium.jsx";
+import { NATIVE, initPlatform, maybeShowAd, needsPremium } from "./platform.js";
 import {
   GoalSheet,
   PRACTICE_SCREENS,
@@ -90,6 +92,7 @@ const SCREENS = {
   devLevel: DevLevel,
   backup: Backup,
   speedDrill: SpeedDrill,
+  premium: Premium,
 };
 const SHEETS = {
   settings: SettingsSheet,
@@ -166,10 +169,19 @@ function App() {
         }
       },
       push(k, v = {}) {
+        // En la app de Android, lo de Premium abre la pantalla de Premium.
+        if (needsPremium(k, v)) {
+          v = { feature: k };
+          k = "premium";
+        }
         let m = p();
         i((b) => [...b, { name: k, params: v, key: screenSeq++, hist: m }]);
       },
       replace(k, v = {}) {
+        if (needsPremium(k, v)) {
+          v = { feature: k };
+          k = "premium";
+        }
         i((m) => {
           if (!m.length)
             return [{ name: k, params: v, key: screenSeq++, hist: p() }];
@@ -227,6 +239,12 @@ function App() {
     window.__v21Idle = idle;
     if (idle) window.dispatchEvent(new Event("v21-idle"));
   }, [idle]);
+  // Al volver a una pestaña después de terminar algo, a veces un anuncio (solo en Android, sin Premium).
+  const depth = useRef(0);
+  useEffect(() => {
+    if (depth.current > 0 && l.length === 0) maybeShowAd();
+    depth.current = l.length;
+  }, [l.length]);
   // Meta diaria: el reloj corre en pantallas de práctica y jugando en el simulador.
   const top = l.length ? l[l.length - 1].name : null;
   const practicing =
@@ -442,7 +460,8 @@ appRoot.render(
 );
 // Actualizaciones: el iPhone retoma la app suspendida sin recargarla, así que al volver se busca
 // una versión nueva; cuando llega, se recarga en cuanto estés en una pestaña (nunca a mitad de algo).
-if ("serviceWorker" in navigator) {
+initPlatform();
+if ("serviceWorker" in navigator && !NATIVE) {
   const hadController = !!navigator.serviceWorker.controller;
   let updateReady = false;
   const reloadIfIdle = () => {

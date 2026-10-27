@@ -1,6 +1,6 @@
 {
   "name": "ventaja21",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
   "description": "Ventaja 21: aprendé a contar cartas en blackjack (PWA en español).",
   "type": "module",
@@ -10,10 +10,16 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@capacitor-community/admob": "8.2.1",
+    "@capacitor/android": "8.5.3",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.5.3",
+    "cordova-plugin-purchase": "13.20.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@capacitor/cli": "8.5.3",
     "esbuild": "0.28.2",
     "eslint": "9.39.1",
     "globals": "16.5.0"

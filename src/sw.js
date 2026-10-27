@@ -9,34 +9,13 @@ const CORE = [
   "./icon-512.png",
   "./icon-maskable-512.png",
   "./apple-touch-icon.png",
+  /*FONTS*/
 ];
-const FONT_CSS =
-  "https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..800&family=Oswald:wght@500;600&display=swap";
-
 self.addEventListener("install", (e) => {
   e.waitUntil(
     (async () => {
       const c = await caches.open(CACHE);
       await c.addAll(CORE);
-      try {
-        const r = await fetch(FONT_CSS);
-        if (r.ok) {
-          const text = await r.clone().text();
-          await c.put(FONT_CSS, r);
-          const urls = [...text.matchAll(/url\((https:[^)]+)\)/g)].map(
-            (m) => m[1],
-          );
-          await Promise.all(
-            urls.map((u) =>
-              fetch(u)
-                .then((fr) => (fr.ok ? c.put(u, fr) : null))
-                .catch(() => null),
-            ),
-          );
-        }
-      } catch (err) {
-        /* sin conexión: las fuentes se guardan más tarde */
-      }
       await self.skipWaiting();
     })(),
   );
@@ -81,10 +60,7 @@ self.addEventListener("fetch", (e) => {
     );
     return;
   }
-  const cacheable =
-    url.origin === self.location.origin ||
-    url.hostname.endsWith("gstatic.com") ||
-    url.hostname.endsWith("googleapis.com");
+  const cacheable = url.origin === self.location.origin;
   if (!cacheable) return;
   e.respondWith(
     (async () => {

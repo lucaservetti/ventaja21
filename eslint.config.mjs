@@ -13,6 +13,7 @@ export default [
         ...globals.browser,
         ...globals.node,
         __APP_VERSION__: "readonly",
+        __ADMOB_INTERSTITIAL__: "readonly",
       },
     },
     rules: { "no-undef": "error" },

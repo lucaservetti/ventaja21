@@ -30,6 +30,7 @@ import { spotsAccuracy, strongSpots, weakSpots } from "../engine/skills.js";
 import { shortDate } from "./TrainTab.jsx";
 import { AchievementsCard } from "./achievements.jsx";
 import { WeekCard } from "./week.jsx";
+import { PremiumTag } from "./Premium.jsx";
 import { BackupNudge } from "./Backup.jsx";
 import { useNav } from "../nav.js";
 import { GoalBadge, bestGoalStreak } from "./goal.jsx";
@@ -330,7 +331,9 @@ function ProgressOverview({ st: a, nav: e }) {
           <Icon name="stats" />
         </span>
         <span className="li-text">
-          <span className="li-title">Simulador de banca</span>
+          <span className="li-title">
+            Simulador de banca <PremiumTag st={a} />
+          </span>
           <span className="li-sub" style={{ display: "block" }}>
             Cuánta plata necesitás y cuánto podés perder en una mala racha
           </span>
@@ -347,7 +350,9 @@ function ProgressOverview({ st: a, nav: e }) {
           <Icon name="book" />
         </span>
         <span className="li-text">
-          <span className="li-title">Diario de casino real</span>
+          <span className="li-title">
+            Diario de casino real <PremiumTag st={a} />
+          </span>
           <span className="li-sub" style={{ display: "block" }}>
             {a.journal.entries.length
               ? `${a.journal.entries.length} ${a.journal.entries.length === 1 ? "sesión anotada" : "sesiones anotadas"}`

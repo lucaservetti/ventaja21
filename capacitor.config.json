@@ -1,0 +1,15 @@
+{
+  "appId": "com.lucaservetti.ventaja21",
+  "appName": "Ventaja 21",
+  "webDir": "www",
+  "backgroundColor": "#000000",
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "native",
+      "style": "DARK"
+    }
+  }
+}
