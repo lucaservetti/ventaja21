@@ -57,7 +57,7 @@ function SettingsSheet({ open: a, onClose: e }) {
         >
           <span className="li-text">
             <span className="li-title" style={{ fontSize: 17 }}>
-              {n.premium ? "Sos Premium" : "Ventaja 21 Premium"}
+              {n.premium ? "Sos Premium" : "Edge 21 Premium"}
             </span>
             <span className="li-sub" style={{ display: "block" }}>
               {n.premium
@@ -266,7 +266,7 @@ function SettingsSheet({ open: a, onClose: e }) {
       )}
       <h3 className="sheet-sub">Juego responsable</h3>
       <p className="muted small">
-        Ventaja 21 es para aprender. Contar cartas mentalmente es legal, pero
+        Edge 21 es para aprender. Contar cartas mentalmente es legal, pero
         los casinos pueden pedirte que no juegues, y usar el celular en la mesa
         está prohibido. Jugá solo plata que no necesitás. Si el juego deja de
         ser entretenimiento, frená y pedí ayuda.
@@ -282,7 +282,7 @@ function SettingsSheet({ open: a, onClose: e }) {
         </a>
       </p>
       <p className="dim tiny" style={{ marginTop: 8 }}>
-        {"Ventaja 21 by Luca · versión "}
+        {"Edge 21 by Luca · versión "}
         {VERSION}
         {window.__v21Fit
           ? ` · pantalla ${window.__v21Fit.screenH} · vista ${window.__v21Fit.viewH} · ajuste ${window.__v21Fit.fix}`

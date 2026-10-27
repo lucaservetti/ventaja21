@@ -1,4 +1,4 @@
-// Ventaja 21 · service worker __VERSION__ (__HASH__)
+// Edge 21 · service worker __VERSION__ (__HASH__)
 const CACHE = "v21-__VERSION__-__HASH__";
 const CORE = [
   "./",

@@ -681,7 +681,7 @@ function Certificate({ trip }) {
     month: "long",
     year: "numeric",
   });
-  const text = `Aprobé el examen de casino de Ventaja 21 (${date}): ${pct(trip.decisionsOk, trip.decisions)} de jugadas correctas y ${pct(trip.betsOk, trip.bets)} de apuestas según el conteo, sin que me descubran.`;
+  const text = `Aprobé el examen de casino de Edge 21 (${date}): ${pct(trip.decisionsOk, trip.decisions)} de jugadas correctas y ${pct(trip.betsOk, trip.bets)} de apuestas según el conteo, sin que me descubran.`;
   const share = async () => {
     try {
       if (navigator.share) await navigator.share({ text });
@@ -698,7 +698,7 @@ function Certificate({ trip }) {
       <span className="cert-seal" aria-hidden="true">
         <Icon name="trophy" size={34} stroke={2.2} />
       </span>
-      <div className="eyebrow acc">Ventaja 21</div>
+      <div className="eyebrow acc">Edge 21</div>
       <h2 className="cert-title">Certificado de contador de casino</h2>
       <p className="muted small">{date}</p>
       <div className="cert-stats">

@@ -26,7 +26,7 @@ function inIframe() {
   }
 }
 function fileName() {
-  return `ventaja21-respaldo-${new Date().toISOString().slice(0, 10)}.txt`;
+  return `edge21-respaldo-${new Date().toISOString().slice(0, 10)}.txt`;
 }
 function dateText(t) {
   return new Date(t).toLocaleDateString("es-UY", {
@@ -89,7 +89,7 @@ function Backup() {
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: "Respaldo de Ventaja 21",
+          title: "Respaldo de Edge 21",
         });
         mark();
         setMsg({
@@ -99,7 +99,7 @@ function Backup() {
         return;
       }
       if (navigator.share) {
-        await navigator.share({ text, title: "Respaldo de Ventaja 21" });
+        await navigator.share({ text, title: "Respaldo de Edge 21" });
         mark();
         return;
       }
@@ -228,7 +228,7 @@ function Backup() {
         <li>
           <span className="how-n">2</span>
           <span className="small">
-            En el otro celular, abrí Ventaja 21 y entrá a Ajustes → Respaldo.
+            En el otro celular, abrí Edge 21 y entrá a Ajustes → Respaldo.
           </span>
         </li>
         <li>

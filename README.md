@@ -1,4 +1,4 @@
-# Ventaja 21
+# Edge 21
 
 Web app (PWA) en español para aprender a contar cartas en blackjack: lecciones, entrenador de estrategia, ejercicios de conteo y simulador.
 

@@ -704,7 +704,7 @@ function exportBackup() {
 function readBackup(a) {
   let e = String(a || "").trim();
   if (!e.startsWith("V21:"))
-    throw new Error("El código no es un respaldo de Ventaja 21.");
+    throw new Error("El código no es un respaldo de Edge 21.");
   let s;
   try {
     s = JSON.parse(
