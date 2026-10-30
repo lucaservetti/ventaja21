@@ -98,13 +98,33 @@
   .vid figcaption { margin-top: 12px; font-weight: 700; }
   .vid figcaption span { display: block; font-weight: 400; color: var(--text-2); font-size: 14px; }
 
-  /* Pasos */
-  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; counter-reset: paso; }
-  .step { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 24px; }
-  .step b { display: block; font: 600 46px/1 Oswald, sans-serif; color: var(--gold); margin-bottom: 10px; }
-  .step h3 { margin: 0 0 6px; font-size: 20px; }
-  .step p { margin: 0; color: var(--text-2); font-size: 15.5px; }
+  /* Cómo funciona: bloques alternados con captura */
+  .flow { display: grid; gap: 26px; }
+  .flow-row { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 40px; align-items: center; background: linear-gradient(135deg, var(--surface) 0%, rgba(15, 34, 25, 0.35) 100%); border: 1px solid var(--line); border-radius: 28px; padding: 34px 40px; overflow: hidden; }
+  .flow-row:nth-child(even) .flow-text { order: 2; }
+  .flow-n { display: block; font: 600 56px/1 Oswald, sans-serif; color: transparent; -webkit-text-stroke: 1.5px var(--gold); margin-bottom: 12px; }
+  .flow-text h3 { font-size: clamp(26px, 3vw, 32px); letter-spacing: -0.5px; margin: 0 0 10px; }
+  .flow-text p { color: var(--text-2); margin: 0 0 16px; max-width: 30em; }
+  .flow-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .flow-list li { position: relative; padding-left: 28px; font-weight: 600; }
+  .flow-list li::before { content: ""; position: absolute; left: 0; top: 4px; width: 18px; height: 18px; border-radius: 50%; background: var(--gold) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231d1405' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12.5 4 4 8-9'/%3E%3C/svg%3E") center / 12px no-repeat; }
+  .flow-pic { position: relative; display: grid; place-items: center; height: 340px; }
+  .flow-pic::before { content: ""; position: absolute; width: 280px; height: 280px; border-radius: 50%; background: radial-gradient(circle, rgba(233, 185, 73, 0.22), transparent 70%); }
+  .flow-pic img { position: relative; width: 210px; border-radius: 26px; border: 4px solid var(--gold); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5); transform: rotate(3deg) translateY(40px); }
+  .flow-row:nth-child(even) .flow-pic img { transform: rotate(-3deg) translateY(40px); }
 
+  /* Funciones: cifras e íconos */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; margin-bottom: 18px; }
+  .stats div { background: var(--surface); padding: 20px 16px; text-align: center; }
+  .stats b { display: block; font: 600 44px/1 Oswald, sans-serif; color: var(--gold); }
+  .stats span { display: block; margin-top: 6px; color: var(--text-2); font-size: 14.5px; }
+  .feats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .feat { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 22px; transition: border-color 0.2s, transform 0.2s; }
+  .feat:hover { border-color: rgba(233, 185, 73, 0.5); transform: translateY(-3px); }
+  .feat-ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: rgba(233, 185, 73, 0.12); border: 1px solid rgba(233, 185, 73, 0.35); margin-bottom: 14px; }
+  .feat-ic svg { width: 24px; height: 24px; fill: none; stroke: var(--gold); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .feat h3 { margin: 0 0 6px; font-size: 18.5px; }
+  .feat p { margin: 0; color: var(--text-2); font-size: 15px; }
   /* Amigos y ranking */
   .social { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .rank { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 18px 20px; }
@@ -145,7 +165,15 @@
     .bar .btn.sm { padding: 8px 13px; font-size: 14px; }
     .vids { grid-template-columns: repeat(3, 72%); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
     .vid { scroll-snap-align: center; }
-    .steps, .social, .plans { grid-template-columns: 1fr; }
+    .social, .plans, .feats { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .feat { display: grid; grid-template-columns: 46px 1fr; column-gap: 14px; padding: 18px; }
+    .feat-ic { grid-row: span 2; margin: 0; }
+    .flow-row { grid-template-columns: 1fr; padding: 26px 22px 0; gap: 10px; }
+    .flow-row:nth-child(even) .flow-text { order: 0; }
+    .flow-pic { height: 250px; overflow: hidden; }
+    .flow-pic img { width: 190px; transform: rotate(3deg) translateY(70px); }
+    .flow-row:nth-child(even) .flow-pic img { transform: rotate(-3deg) translateY(70px); }
     .plans { gap: 22px; }
     .hero { grid-template-columns: 1fr; padding-top: 10px; }
     .phones { height: 430px; max-width: 380px; width: 100%; margin: 0 auto; }
@@ -188,7 +216,7 @@
       </ul>
     </div>
     <div class="phones" aria-hidden="true">
-      <img class="phone a" data-img="aprender" alt="">
+      <img class="phone a" data-img="mesa" alt="">
       <img class="phone b" data-img="mano" alt="">
     </div>
   </div>
@@ -203,26 +231,41 @@
     </div>
   </section>
 
-  <section class="reveal">
+  <section class="reveal" id="como">
     <h2 data-t="h-title"></h2>
     <p class="sub" data-t="h-sub"></p>
-    <div class="steps">
-      <div class="step"><b>1</b><h3 data-t="h1t"></h3><p data-t="h1p"></p></div>
-      <div class="step"><b>2</b><h3 data-t="h2t"></h3><p data-t="h2p"></p></div>
-      <div class="step"><b>3</b><h3 data-t="h3t"></h3><p data-t="h3p"></p></div>
+    <div class="flow">
+      <div class="flow-row">
+        <div class="flow-text"><span class="flow-n">01</span><h3 data-t="h1t"></h3><p data-t="h1p"></p><ul class="flow-list"><li data-t="h1a"></li><li data-t="h1b"></li></ul></div>
+        <div class="flow-pic"><img data-img="aprender" alt="" loading="lazy"></div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-text"><span class="flow-n">02</span><h3 data-t="h2t"></h3><p data-t="h2p"></p><ul class="flow-list"><li data-t="h2a"></li><li data-t="h2b"></li></ul></div>
+        <div class="flow-pic"><img data-img="progreso" alt="" loading="lazy"></div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-text"><span class="flow-n">03</span><h3 data-t="h3t"></h3><p data-t="h3p"></p><ul class="flow-list"><li data-t="h3a"></li><li data-t="h3b"></li></ul></div>
+        <div class="flow-pic"><img data-img="conteo" alt="" loading="lazy"></div>
+      </div>
     </div>
   </section>
 
   <section class="reveal" id="funciones">
     <h2 data-t="f-title"></h2>
     <p class="sub" data-t="f-sub"></p>
-    <div class="grid">
-      <div class="card"><div class="ic">1</div><h3 data-t="f1t"></h3><p data-t="f1p"></p></div>
-      <div class="card"><div class="ic">2</div><h3 data-t="f2t"></h3><p data-t="f2p"></p></div>
-      <div class="card"><div class="ic">3</div><h3 data-t="f3t"></h3><p data-t="f3p"></p></div>
-      <div class="card"><div class="ic">♠</div><h3 data-t="f4t"></h3><p data-t="f4p"></p></div>
-      <div class="card"><div class="ic">♥</div><h3 data-t="f5t"></h3><p data-t="f5p"></p></div>
-      <div class="card"><div class="ic">♦</div><h3 data-t="f6t"></h3><p data-t="f6p"></p></div>
+    <div class="stats">
+      <div><b>36</b><span data-t="st1"></span></div>
+      <div><b>10</b><span data-t="st2"></span></div>
+      <div><b>7</b><span data-t="st3"></span></div>
+      <div><b>2</b><span data-t="st4"></span></div>
+    </div>
+    <div class="feats">
+      <div class="feat"><span class="feat-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 12h5"/></svg></span><h3 data-t="f1t"></h3><p data-t="f1p"></p></div>
+      <div class="feat"><span class="feat-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg></span><h3 data-t="f2t"></h3><p data-t="f2p"></p></div>
+      <div class="feat"><span class="feat-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 8l10 5 10-5z"/><path d="m2 13 10 5 10-5"/><path d="m2 18 10 5 10-5" opacity=".5"/></svg></span><h3 data-t="f3t"></h3><p data-t="f3p"></p></div>
+      <div class="feat"><span class="feat-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg></span><h3 data-t="f4t"></h3><p data-t="f4p"></p></div>
+      <div class="feat"><span class="feat-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg></span><h3 data-t="f5t"></h3><p data-t="f5p"></p></div>
+      <div class="feat"><span class="feat-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="m9 15 2 2 4-4"/></svg></span><h3 data-t="f6t"></h3><p data-t="f6p"></p></div>
     </div>
   </section>
 
@@ -242,18 +285,6 @@
           <li><i>4</i><span data-t="r-you"></span><b>100</b></li>
         </ol>
       </div>
-    </div>
-  </section>
-
-  <section class="reveal">
-    <h2 data-t="s-title"></h2>
-    <div class="shots">
-      <figure><img data-img="aprender" alt="" loading="lazy"><figcaption data-t="c1"></figcaption></figure>
-      <figure><img data-img="mano" alt="" loading="lazy"><figcaption data-t="c2"></figcaption></figure>
-      <figure><img data-img="conteo" alt="" loading="lazy"><figcaption data-t="c3"></figcaption></figure>
-      <figure><img data-img="mesa" alt="" loading="lazy"><figcaption data-t="c4"></figcaption></figure>
-      <figure><img data-img="casino" alt="" loading="lazy"><figcaption data-t="c5"></figcaption></figure>
-      <figure><img data-img="progreso" alt="" loading="lazy"><figcaption data-t="c6"></figcaption></figure>
     </div>
   </section>
 
@@ -320,11 +351,15 @@
       "v-title": "Mirala en acción", "v-sub": "Así se ve por dentro: cada mano, cada carta y cada apuesta.",
       v1: "¿Sabés jugar esta mano?<span>La jugada correcta, con el porqué</span>", v2: "Así se cuentan cartas<span>Bajas +1, del 7 al 9 nada, altas −1</span>", v3: "Un casino en tu bolsillo<span>Contá y apostá con el conteo</span>",
       "h-title": "Cómo funciona", "h-sub": "Tres pasos, a tu ritmo, unos minutos por día.",
+      h1a: "Lecciones de 2 a 5 minutos", h1b: "Un mentor te explica cada jugada",
+      h2a: "Tandas que apuntan a tus errores", h2b: "Tu rango sube con cada acierto",
+      h3a: "Del valor de cada carta al conteo real", h3b: "Hi-Lo, KO, Zen y más sistemas",
+      st1: "lecciones", st2: "niveles de conteo", st3: "sistemas de conteo", st4: "idiomas",
       h1t: "Aprendé", h1p: "Lecciones cortas en una mesa narrada: las reglas, la estrategia básica y por qué funciona.",
       h2t: "Practicá", h2p: "Manos elegidas según tus errores, un contrarreloj y un desafío nuevo cada día.",
       h3t: "Contá", h3p: "Una ruta de 10 niveles hasta llevar el conteo real de un zapato entero, con la mesa llena.",
       "r-title": "Competí con tus amigos", "r-sub": "Desafiá a un amigo con las mismas cartas y mirá quién cuenta mejor. Entrá con tu cuenta de Google, si querés, y aparecé en el ranking del desafío diario.", "r-cta": "Jugar el desafío de hoy", "r-eyebrow": "Ranking de hoy", "r-you": "Vos",
-      pm: "Mensual", "pm-d": "Cancelás cuando quieras", pa: "Anual", "pa-tag": "7 días gratis", "pa-d": "US$1,67 por mes · ahorrás 44 %", pl: "Para siempre", "pl-d": "Un solo pago, sin suscripción",
+      pm: "Mensual", "pm-d": "Cancelás cuando quieras", pa: "Anual", "pa-tag": "5 días gratis", "pa-d": "US$1,67 por mes · ahorrás 44 %", pl: "Para siempre", "pl-d": "Un solo pago, sin suscripción",
       "p-note": "Precios en dólares; Google Play los muestra en tu moneda.",
       q5: "¿Necesito crear una cuenta?", a5: "No. Tu progreso se guarda en tu celular. Si querés, entrás con Google para guardarlo en la nube, pasarlo a otro celular y aparecer en el ranking.",
       q6: "¿Cuánto cuesta?", a6: "Aprender, practicar, la ruta de conteo y el simulador son gratis, con algunos anuncios. Premium suma las funciones avanzadas y saca los anuncios.",
@@ -342,7 +377,7 @@
       f6t: "Desafío diario y semanal", f6p: "Un formato distinto cada día, un reto por semana con insignia y un contrarreloj: ¿llegás al ritmo del casino?",
       "s-title": "Así se ve",
       c1: "Aprender", c2: "La jugada correcta", c3: "La ruta de conteo", c4: "La mesa", c5: "Modo casino real", c6: "Tu progreso",
-      "p-title": "Premium, a tu manera", "p-sub": "Por mes, por año con 7 días gratis, o un solo pago para siempre. Lo básico sigue siendo gratis.",
+      "p-title": "Premium, a tu manera", "p-sub": "Por mes, por año con 5 días gratis, o un solo pago para siempre. Lo básico sigue siendo gratis.",
       p1: "Sin anuncios", p2: "Modo casino real con tu plata, límites, vigilancia y examen con certificado", p3: "La ruta de desviaciones completa: Illustrious 18 y Fab 4", p4: "Simulador de banca y riesgo de quebrar", p5: "Diario para anotar lo que jugás de verdad",
       "q-title": "Preguntas",
       q1: "¿Contar cartas es legal?", a1: "Contar con la cabeza es legal. Lo prohibido es usar aparatos en la mesa, y el casino puede pedirte que no juegues al blackjack.",
@@ -357,11 +392,15 @@
       "v-title": "See it in action", "v-sub": "This is what it looks like inside: every hand, every card and every bet.",
       v1: "Can you play this hand?<span>The right play, with the why</span>", v2: "How to count cards<span>Low +1, 7 to 9 zero, high −1</span>", v3: "A casino in your pocket<span>Count and bet with the count</span>",
       "h-title": "How it works", "h-sub": "Three steps, at your own pace, a few minutes a day.",
+      h1a: "2 to 5 minute lessons", h1b: "A mentor explains every play",
+      h2a: "Rounds that target your mistakes", h2b: "Your rank climbs with every right play",
+      h3a: "From card values to the true count", h3b: "Hi-Lo, KO, Zen and more systems",
+      st1: "lessons", st2: "counting levels", st3: "counting systems", st4: "languages",
       h1t: "Learn", h1p: "Short lessons at a narrated table: the rules, basic strategy and why it works.",
       h2t: "Practice", h2p: "Hands picked from your mistakes, a beat-the-clock mode and a new challenge every day.",
       h3t: "Count", h3p: "A 10-level path until you keep the true count of a whole shoe at a full table.",
       "r-title": "Compete with your friends", "r-sub": "Challenge a friend with the same cards and see who counts better. Sign in with Google if you want and show up on the daily challenge leaderboard.", "r-cta": "Play today's challenge", "r-eyebrow": "Today's leaderboard", "r-you": "You",
-      pm: "Monthly", "pm-d": "Cancel anytime", pa: "Yearly", "pa-tag": "7 days free", "pa-d": "US$1.67 a month · save 44%", pl: "Lifetime", "pl-d": "One payment, no subscription",
+      pm: "Monthly", "pm-d": "Cancel anytime", pa: "Yearly", "pa-tag": "5 days free", "pa-d": "US$1.67 a month · save 44%", pl: "Lifetime", "pl-d": "One payment, no subscription",
       "p-note": "Prices in US dollars; Google Play shows them in your currency.",
       q5: "Do I need an account?", a5: "No. Your progress is saved on your phone. If you want, sign in with Google to save it in the cloud, move it to another phone and show up on the leaderboard.",
       q6: "How much does it cost?", a6: "Learning, practice, the counting path and the simulator are free, with some ads. Premium adds the advanced features and removes ads.",
@@ -379,7 +418,7 @@
       f6t: "Daily and weekly challenges", f6p: "A different format every day, a weekly goal with a badge and a beat-the-clock mode: can you keep up with casino speed?",
       "s-title": "See it in action",
       c1: "Learn", c2: "The right play", c3: "The counting path", c4: "The table", c5: "Real casino mode", c6: "Your progress",
-      "p-title": "Premium, your way", "p-sub": "Monthly, yearly with a 7-day free trial, or pay once and keep it forever. The basics stay free.",
+      "p-title": "Premium, your way", "p-sub": "Monthly, yearly with a 5-day free trial, or pay once and keep it forever. The basics stay free.",
       p1: "No ads", p2: "Real casino mode with your money, limits, surveillance and an exam with a certificate", p3: "The full deviations path: Illustrious 18 and Fab 4", p4: "Bankroll simulator and risk of ruin", p5: "A journal to log what you play for real",
       "q-title": "Questions",
       q1: "Is counting cards legal?", a1: "Counting in your head is legal. What's prohibited is using devices at the table, and the casino can ask you not to play blackjack.",
