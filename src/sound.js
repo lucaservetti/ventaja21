@@ -1,3 +1,5 @@
+import { Capacitor } from "@capacitor/core";
+import { Haptics } from "@capacitor/haptics";
 import { getState } from "./state.js";
 
 let audioCtx = null;
@@ -91,7 +93,11 @@ const sfx = {
 function vibrate(a = 10) {
   if (getState().settings.haptics)
     try {
-      if (navigator.vibrate) {
+      // En la app de Android el WebView no vibra: se usa el motor del celular.
+      if (Capacitor.isNativePlatform()) {
+        const ms = Array.isArray(a) ? a.reduce((t, x) => t + x, 0) : a;
+        Haptics.vibrate({ duration: Math.max(5, ms) }).catch(() => {});
+      } else if (navigator.vibrate) {
         navigator.vibrate(a);
       }
     } catch {}

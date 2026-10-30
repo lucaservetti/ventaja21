@@ -22,7 +22,7 @@ import { SYSTEMS, SYSTEM_IDS } from "../engine/systems.js";
 import { HiLoValues } from "../lessons/visuals.jsx";
 import { SystemValues } from "./CountTab.jsx";
 import { useNav } from "../nav.js";
-import { APP_MODE } from "../platform.js";
+import { APP_MODE, NATIVE } from "../platform.js";
 import { LANG, setLang } from "../i18n/index.js";
 
 const VERSION = __APP_VERSION__;
@@ -256,7 +256,7 @@ function SettingsSheet({ open: a, onClose: e }) {
           </Button>
         )}
       </div>
-      {isStandalone() ? null : (
+      {isStandalone() || NATIVE ? null : (
         <>
           <h3 className="sheet-sub">Instalar en el celular</h3>
           <div className="note-box">
@@ -286,7 +286,7 @@ function SettingsSheet({ open: a, onClose: e }) {
       <p className="small" style={{ marginTop: 18 }}>
         <a
           className="link"
-          href="https://lucaservetti.github.io/ventaja21/privacidad.html"
+          href={`https://lucaservetti.github.io/ventaja21/privacidad.html${LANG === "en" ? "#en" : ""}`}
           target="_blank"
           rel="noreferrer"
         >
