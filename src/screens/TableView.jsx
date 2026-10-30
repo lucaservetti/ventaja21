@@ -10,7 +10,7 @@ import {
 import { Icon } from "../ui/icons.jsx";
 import { handTotalText, handValue, isBlackjack } from "../engine/cards.js";
 import { ACTION_NAMES, ACTION_EN } from "../engine/strategy.js";
-import { sfx, vibrate } from "../sound.js";
+import { sfx, startAmbience, stopAmbience, vibrate } from "../sound.js";
 import {
   Button,
   CHIP_VALUES,
@@ -26,6 +26,7 @@ import {
 } from "../ui/components.jsx";
 import { floorTC, fmtSigned } from "../engine/systems.js";
 import { money } from "../engine/table.js";
+import { useStore } from "../state.js";
 import { Tray } from "./drills.jsx";
 
 const RESULT_LABELS = {
@@ -82,6 +83,15 @@ function TableView({
   const [chatter, setChatter] = useState(null);
   const sys = table.sys;
   const rules = table.rules;
+  const settings = useStore().settings;
+
+  // Ambiente de casino: solo mientras la mesa está a la vista.
+  const ambient = active && settings.sound && settings.ambience;
+  useEffect(() => {
+    if (ambient) startAmbience();
+    else stopAmbience();
+    return stopAmbience;
+  }, [ambient]);
 
   // Sonido de cada carta que cae y de la mezcla.
   const cardCount =
