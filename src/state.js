@@ -186,6 +186,7 @@ const DEFAULT_STATE = {
   settings: {
     system: "hilo",
     sound: true,
+    ambience: false,
     haptics: true,
     rules: { ...DEFAULT_RULES },
     unlockAll: false,
@@ -217,6 +218,7 @@ const DEFAULT_STATE = {
     totalOk: 0,
     // Manos que fallaste, tal cual te tocaron: { key, cards, up, chosen, best, src, t, misses, streak }.
     mistakes: [],
+    blitz: { best: 0, plays: 0 },
   },
   drills: {
     values: { sessions: [], ranks: {}, bestStreak: 0 },

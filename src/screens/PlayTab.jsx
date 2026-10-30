@@ -581,6 +581,13 @@ function TableSheet({ open, onClose, table }) {
         checked={st.settings.sound}
         onChange={(sound) => setSettings({ sound })}
       />
+      <Toggle
+        id="t-amb"
+        label="Ambiente de casino"
+        sub="Murmullo de salón y fichas a lo lejos, solo en la mesa"
+        checked={!!st.settings.ambience}
+        onChange={(ambience) => setSettings({ ambience })}
+      />
       <h3 className="sheet-sub">Ayudas</h3>
       <Toggle
         id="t-coach"
