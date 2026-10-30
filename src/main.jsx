@@ -1,4 +1,11 @@
-import { Component, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Activity,
+  Component,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { createRoot } from "react-dom/client";
 import { jsx as _jsx } from "react/jsx-runtime";
 import { getState, resetAll, setState, useStore } from "./state.js";
@@ -247,6 +254,23 @@ function App() {
     window.__v21Idle = idle;
     if (idle) window.dispatchEvent(new Event("v21-idle"));
   }, [idle]);
+  // Con la app quieta se preparan las otras pestañas, de a una, para que cambiar sea instantáneo.
+  const pending = a.profile.onboarded ? TABS.find((k) => !s[k.id]) : null;
+  useEffect(() => {
+    if (!pending) return undefined;
+    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 300));
+    const cancel = window.cancelIdleCallback || clearTimeout;
+    let id = 0;
+    const t0 = setTimeout(() => {
+      id = idle(() => n((v) => ({ ...v, [pending.id]: true })), {
+        timeout: 3000,
+      });
+    }, 700);
+    return () => {
+      clearTimeout(t0);
+      cancel(id);
+    };
+  }, [pending]);
   // Tema (oscuro o claro) y tamaño de letra.
   const theme = a.settings.theme || "dark";
   const bigText = !!a.settings.bigText;
@@ -302,20 +326,30 @@ function App() {
         {TABS.map((k) => {
           if (!s[k.id]) return null;
           let v = TAB_SCREENS[k.id];
-          return (
+          const shown = k.id === e && l.length === 0;
+          const sec = (
             <section
               className={cx("layer with-tabbar", k.layerClass)}
-              hidden={k.id !== e || l.length > 0}
+              hidden={!shown}
               aria-label={k.label}
               key={k.id}
             >
-              {_jsx(v, { active: k.id === e && l.length === 0 })}
+              {_jsx(v, { active: shown })}
               {k.id !== "jugar" ? (
                 <p className="credit">
                   Edge 21 · hecho por <b>Luca</b> ♠
                 </p>
               ) : null}
             </section>
+          );
+          // Las pestañas ocultas no se vuelven a dibujar mientras practicás (React las actualiza
+          // cuando hay tiempo libre). La mesa queda afuera: su ronda sigue andando aunque no se vea.
+          return k.id === "jugar" ? (
+            sec
+          ) : (
+            <Activity mode={shown ? "visible" : "hidden"} key={k.id}>
+              {sec}
+            </Activity>
           );
         })}
         {l.map((k, v) => {

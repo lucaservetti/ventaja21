@@ -7935,13 +7935,19 @@ button:disabled .act-letter {
   padding: 8px 4px 10px;
 }
 .blitz-time {
+  display: inline-block;
   font-size: 44px;
   font-weight: 800;
   line-height: 1;
 }
 .blitz-time.low {
   color: var(--bad);
-  animation: pop 1s ease infinite;
+  animation: secTick 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes secTick {
+  from {
+    transform: scale(1.18);
+  }
 }
 .blitz-pts {
   font-size: 30px;
@@ -7965,7 +7971,15 @@ button:disabled .act-letter {
   height: 100%;
   background: var(--accent);
   transform-origin: left center;
-  transition: transform 0.1s linear;
+  animation: blitzDrain linear forwards;
+}
+@keyframes blitzDrain {
+  from {
+    transform: scaleX(var(--from, 1));
+  }
+  to {
+    transform: scaleX(0);
+  }
 }
 .blitz-deal {
   animation: fadeUp 0.18s ease backwards;

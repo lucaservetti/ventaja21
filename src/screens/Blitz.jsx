@@ -42,14 +42,18 @@ function Blitz() {
   const [misses, setMisses] = useState(0);
   const [flash, setFlash] = useState(null); // { ok, text }
   const [left, setLeft] = useState(TOTAL_MS);
+  // La barra baja sola con una animación de CSS (60 cuadros por segundo sin redibujar la pantalla);
+  // solo se reinicia al empezar y con cada penalización.
+  const [bar, setBar] = useState({ k: 0, ms: TOTAL_MS });
   const endAt = useRef(0);
   const result = useRef(null);
 
   useEffect(() => {
     if (phase !== "play") return undefined;
+    // El número cambia una vez por segundo: no hace falta volver a dibujar más seguido.
     const id = setInterval(() => {
       const ms = Math.max(0, endAt.current - Date.now());
-      setLeft(ms);
+      setLeft((prev) => (Math.ceil(prev / 1000) === Math.ceil(ms / 1000) ? prev : ms));
       if (ms <= 0) finish();
     }, 100);
     return () => clearInterval(id);
@@ -63,6 +67,7 @@ function Blitz() {
     setFlash(null);
     endAt.current = Date.now() + TOTAL_MS;
     setLeft(TOTAL_MS);
+    setBar((b) => ({ k: b.k + 1, ms: TOTAL_MS }));
     setPhase("play");
   }
   function finish() {
@@ -105,6 +110,9 @@ function Blitz() {
     } else {
       setMisses((x) => x + 1);
       endAt.current -= PENALTY_MS;
+      const ms = Math.max(0, endAt.current - Date.now());
+      setLeft(ms);
+      setBar((b) => ({ k: b.k + 1, ms }));
       sfx.bad();
       vibrate([20, 40, 20]);
       setFlash({ ok: false, key: idx, text: ACTION_NAMES[g.best] });
@@ -200,11 +208,13 @@ function Blitz() {
     { cards: spot.cards, fromSplit: false },
     rules,
   );
-  const frac = left / TOTAL_MS;
   return (
     <div className="blitz">
       <div className="blitz-top">
-        <span className={cx("blitz-time num", left < 10000 && "low")}>
+        <span
+          className={cx("blitz-time num", left <= 10000 && "low")}
+          key={left <= 10000 ? Math.ceil(left / 1000) : "t"}
+        >
           {Math.ceil(left / 1000)}
         </span>
         <span className="blitz-pts num">
@@ -212,7 +222,13 @@ function Blitz() {
         </span>
       </div>
       <div className="blitz-bar">
-        <i style={{ transform: `scaleX(${frac})` }} />
+        <i
+          key={bar.k}
+          style={{
+            "--from": bar.ms / TOTAL_MS,
+            animationDuration: `${bar.ms}ms`,
+          }}
+        />
       </div>
       <div className="card deal-card blitz-deal" key={idx}>
         <div className="deal-grid">
