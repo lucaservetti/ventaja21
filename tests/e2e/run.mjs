@@ -133,6 +133,8 @@ const PRUEBAS = {
       s.lessons = { ...(s.lessons || {}), exam: { done: true, stars: 3 } };
       s.finalExam = { ...(s.finalExam || {}), passed: true };
       localStorage.setItem(k, JSON.stringify(s));
+      // Que la app no pise esto al guardar antes de recargar.
+      Storage.prototype.setItem = () => {};
     });
     // Reloj falso: en cada paso se adelanta un poco, así no se espera la narración ni las animaciones.
     await page.clock.install();
