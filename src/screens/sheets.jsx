@@ -327,7 +327,7 @@ function SettingsSheet({ open: a, onClose: e }) {
       <p className="small" style={{ marginTop: 18 }}>
         <a
           className="link"
-          href={`https://lucaservetti.github.io/ventaja21/privacidad.html${LANG === "en" ? "#en" : ""}`}
+          href={`https://edge21.app/privacidad.html${LANG === "en" ? "#en" : ""}`}
           target="_blank"
           rel="noreferrer"
         >

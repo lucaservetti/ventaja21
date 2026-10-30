@@ -3,7 +3,7 @@
 import { getState, setSettings } from "./state.js";
 import { shareText } from "./share.js";
 
-const SITE = "https://lucaservetti.github.io/ventaja21/";
+const SITE = "https://edge21.app/app/";
 const KEY = "edge21.reto";
 
 function b64url(s) {

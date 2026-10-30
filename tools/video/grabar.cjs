@@ -104,7 +104,7 @@ async function toma(browser, base, L, nombre, esc, seed, dir) {
   const page = await ctx.newPage();
   const errs = [];
   page.on("pageerror", (e) => errs.push(String(e)));
-  await page.goto(base + "/index.html");
+  await page.goto(base + "/app/index.html");
   await page.waitForLoadState("load");
   await page.waitForTimeout(300);
   const cdp = await ctx.newCDPSession(page);
