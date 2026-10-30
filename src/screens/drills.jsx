@@ -45,6 +45,7 @@ import {
 } from "../engine/systems.js";
 import { TopBar } from "../ui/common.jsx";
 import { useNav } from "../nav.js";
+import { ShareButton } from "../ui/ShareButton.jsx";
 import { recordLevel, recordLevelPractice } from "../state.js";
 import { levelByN } from "../engine/countPath.js";
 import { CardTag, LevelActions, LevelOutcome } from "./countPath.jsx";
@@ -110,7 +111,7 @@ function DrillValues({
           return !ca || !ca.n ? ha : ha + (1 - ca.ok / ca.n) * 4;
         }),
         Ba = null;
-      for (; Z.length < a;) {
+      for (; Z.length < a; ) {
         let Ma = RANKS[weightedIndex(ta)];
         if (Ma !== Ba) {
           Ba = Ma;
@@ -945,6 +946,34 @@ function DrillRunning({
             Desafío de hoy:{" "}
             <b className="num">{st.daily.results[today].score ?? 0} puntos</b>
           </p>
+        ) : null}
+        {daily && st.daily.results[today] ? (
+          <div style={{ marginTop: 12 }}>
+            <ShareButton
+              label="Compartir el desafío"
+              make={() => {
+                const pts = st.daily.results[today].score ?? 0;
+                const miss = Math.abs(result.err);
+                return {
+                  title: "Edge 21",
+                  text: result.ok
+                    ? `Desafío diario #${dailyNumber} de Edge 21: ✅ conteo exacto · ${pts} puntos 🃏`
+                    : `Desafío diario #${dailyNumber} de Edge 21: ❌ le erré por ${miss} · ${pts} puntos 🃏`,
+                  card: {
+                    eyebrow: `Desafío diario #${dailyNumber}`,
+                    big: `${pts} puntos`,
+                    sub: result.ok ? "Conteo exacto" : `Le erré por ${miss}`,
+                    lines: [
+                      `${cards.length} cartas · ${(result.elapsed / 1000).toFixed(0)} s`,
+                      st.daily.streak > 1
+                        ? `${st.daily.streak} días seguidos`
+                        : "",
+                    ],
+                  },
+                };
+              }}
+            />
+          </div>
         ) : null}
       </div>
       {level ? (

@@ -16,6 +16,7 @@ import {
 import { sfx, vibrate } from "../sound.js";
 import { useNav } from "../nav.js";
 import { ActionButton } from "./TrainSession.jsx";
+import { ShareButton } from "../ui/ShareButton.jsx";
 
 const TOTAL_MS = 60000;
 const PENALTY_MS = 3000;
@@ -164,6 +165,23 @@ function Blitz() {
         <div className="bottom-actions">
           <div className="btns">
             <Button onClick={start}>Otra vez</Button>
+            <ShareButton
+              make={() => ({
+                title: "Edge 21",
+                text: `Acerté ${score} manos en 60 segundos en Edge 21 🃏 ¿Me ganás?`,
+                card: {
+                  eyebrow: "Contrarreloj",
+                  big: `${score} manos`,
+                  sub: "en 60 segundos",
+                  lines: [
+                    total
+                      ? `${Math.round((score / total) * 100)} % de precisión`
+                      : "",
+                    rec ? "¡Récord nuevo!" : "",
+                  ],
+                },
+              })}
+            />
             <Button kind="ghost" onClick={() => nav.pop()}>
               Volver
             </Button>

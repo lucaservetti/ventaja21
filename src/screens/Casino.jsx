@@ -34,6 +34,7 @@ import {
 } from "../ui/money.jsx";
 import { TableView } from "./TableView.jsx";
 import { useNav } from "../nav.js";
+import { shareText } from "../share.js";
 
 const TIMES = [
   { value: 0, label: "Sin límite" },
@@ -683,15 +684,8 @@ function Certificate({ trip }) {
   });
   const text = `Aprobé el examen de casino de Edge 21 (${date}): ${pct(trip.decisionsOk, trip.decisions)} de jugadas correctas y ${pct(trip.betsOk, trip.bets)} de apuestas según el conteo, sin que me descubran.`;
   const share = async () => {
-    try {
-      if (navigator.share) await navigator.share({ text });
-      else {
-        await navigator.clipboard.writeText(text);
-        setMsg("Copiado. Pegalo donde quieras.");
-      }
-    } catch {
-      /* el usuario canceló */
-    }
+    const r = await shareText(text);
+    if (r === "copied") setMsg("Copiado. Pegalo donde quieras.");
   };
   return (
     <div className="cert fade-up">
