@@ -2974,5 +2974,9 @@
 "Hice {0} puntos contando cartas en Edge 21. ¿Me ganás con las mismas cartas? 🃏": "I scored {0} points counting cards in Edge 21. Can you beat me with the same cards? 🃏",
 "Hice {0} puntos contando {1} cartas en Edge 21. ¿Me ganás con las mismas cartas? 🃏": "I scored {0} points counting {1} cards in Edge 21. Can you beat me with the same cards? 🃏",
 "Acerté {0} manos en 60 segundos en Edge 21. ¿Me ganás con las mismas manos? 🃏": "I got {0} hands right in 60 seconds in Edge 21. Can you beat me with the same hands? 🃏",
-"Acertó {0} manos con estas mismas cartas. ¿Le ganás?": "They got {0} hands right with these same cards. Can you beat them?"
+"Acertó {0} manos con estas mismas cartas. ¿Le ganás?": "They got {0} hands right with these same cards. Can you beat them?",
+"Por ahora Premium se compra en la app de Android, que sale muy pronto en Google Play. Si ya sos Premium, entrá con tu cuenta de Google y lo tenés también acá.": "For now Premium is bought in the Android app, coming soon to Google Play. If you're already Premium, sign in with your Google account and you'll have it here too.",
+"Probarlo 30 minutos gratis": "Try it free for 30 minutes",
+"Ya soy Premium: entrar con mi cuenta": "I'm already Premium: sign in",
+"Muy pronto: pagar desde la web": "Coming soon: pay on the web"
 }

@@ -11,6 +11,13 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['gz', 'text', 'updatedAt', 'version']);
     }
 
+    // Premium por cuenta: lo marca el dueño de la app desde la consola (o un pago en la web, más
+    // adelante). Cada uno solo puede leer el suyo; desde la app nadie lo puede escribir.
+    match /premium/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
     // Ranking del desafío diario (daily/AAAA-MM-DD) y de la semana (weekly/AAAA-MM-DD del lunes).
     // Lo puede ver cualquiera; cada uno solo escribe su propio puntaje, con límites razonables.
     match /{kind}/{key}/scores/{uid} {

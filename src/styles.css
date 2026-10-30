@@ -8427,3 +8427,10 @@ html[data-theme="light"] .tab.on .tab-ic {
 .chal-cta {
   margin-top: 12px;
 }
+.prem-web {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  margin: 0;
+}

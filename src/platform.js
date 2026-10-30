@@ -36,8 +36,15 @@ const PLAN_YEARLY = "anual";
 const LIFETIME_ID = "premium"; // pago único, para siempre
 const TRIAL_MS = 30 * 60 * 1000; // probar una función Premium 30 minutos mirando un anuncio, una sola vez
 
+// Premium: comprado en Google Play (en Android) o marcado en tu cuenta (premium/{uid} en Firebase,
+// vale también en la web). La web ya no es Premium para todos.
 function hasPremium(st = getState()) {
-  return !APP_MODE || !!st.settings.premium;
+  const c = st.settings.cloudPremium;
+  return (
+    !!st.settings.premium ||
+    c === true ||
+    (typeof c === "number" && c > Date.now())
+  );
 }
 
 // Cada función Premium se puede probar una vez. El modo casino tiene dos pantallas.

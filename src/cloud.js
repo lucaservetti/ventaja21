@@ -10,6 +10,7 @@ import {
   getState,
   importBackup,
   readBackup,
+  setSettings,
   subscribe,
 } from "./state.js";
 
@@ -223,6 +224,7 @@ async function finishSignIn(googleIdToken) {
     posted: prev ? prev.posted || [] : [],
   });
   const result = await firstSync();
+  await checkPremium();
   // El puntaje de hoy entra al ranking apenas entrás.
   postScores().catch(() => {});
   return result;
@@ -244,8 +246,27 @@ async function token() {
   return acct.token;
 }
 function signOut() {
+  if (getState().settings.cloudPremium) setSettings({ cloudPremium: null });
   saveAcct(null);
   setSync({ status: "off", at: 0, conflict: null });
+}
+
+// ---- Premium por cuenta (premium/{uid}) ----
+// El dueño de la app lo marca a mano en Firebase (o, más adelante, un pago en la web). Vale en la web
+// y en Android. Campos: activo (sí/no) y, opcional, hasta (fecha en que vence).
+async function checkPremium() {
+  if (!acct) return;
+  try {
+    const doc = await http(`${FS}/premium/${acct.uid}`, {
+      token: await token(),
+    });
+    const f = doc ? fromFields(doc) : {};
+    const until = f.activo ? f.hasta || true : null;
+    if (getState().settings.cloudPremium !== until)
+      setSettings({ cloudPremium: until });
+  } catch {
+    // Sin conexión: queda lo último que se supo.
+  }
 }
 
 // ---- Progreso en la nube (users/{uid}) ----
@@ -348,6 +369,7 @@ async function resolveConflict(useCloud) {
 // Al abrir la app con sesión: si otro celular guardó algo más nuevo, se trae.
 async function checkRemote() {
   if (!acct) return;
+  checkPremium();
   try {
     const remote = await getRemote();
     if (!remote) return upload();
@@ -554,7 +576,13 @@ function reportError(err, where = "") {
 function initCloud() {
   if (!CLOUD) return;
   if (EMU)
-    window.__cloudTest = { finishSignIn, topScores, syncNow, checkRemote };
+    window.__cloudTest = {
+      checkPremium,
+      finishSignIn,
+      topScores,
+      syncNow,
+      checkRemote,
+    };
   window.addEventListener("error", (e) =>
     reportError(e.error || e.message, "window"),
   );

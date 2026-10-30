@@ -327,6 +327,16 @@ const PRUEBAS = {
     await other.close();
   },
 
+  // En la web (sin Android simulado) Premium también está bloqueado y explica cómo tenerlo.
+  async webPremium(h) {
+    await h.tab("Jugar", "Play");
+    await h.css("section:not([hidden]) button", 700);
+    await h.see("Edge 21 Premium", "Edge 21 Premium");
+    await h.see("Por ahora Premium se compra en la app de Android", "For now Premium is bought in the Android app");
+    await h.click("Probarlo 30 minutos gratis", "Try it free for 30 minutes", { wait: 800 });
+    await h.see("Modo casino real", "Real casino mode");
+  },
+
   // Premium en modo app (simulado): planes, condiciones y la prueba de 30 minutos una sola vez.
   async premium(h) {
     const { page } = h;
@@ -336,7 +346,7 @@ const PRUEBAS = {
     await h.tab("Jugar", "Play");
     await h.css("section:not([hidden]) button", 700);
     await h.see("Edge 21 Premium", "Edge 21 Premium");
-    await h.see("7 días gratis", "7 days free");
+    await h.see("5 días gratis", "5 days free");
     await h.see("Para siempre", "Lifetime");
     await h.foto("planes");
     await h.click("Probarlo 30 minutos con un anuncio", "Try it for 30 minutes with an ad", { wait: 800 });
