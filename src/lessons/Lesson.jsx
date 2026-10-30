@@ -50,6 +50,8 @@ import {
 } from "./visuals.jsx";
 import { Scene, SceneActions } from "./scene.jsx";
 import { useNav } from "../nav.js";
+import { needsPremium } from "../platform.js";
+import { PremiumTag } from "../screens/Premium.jsx";
 import { CHART_LESSON, ROW_LESSON } from "./chartMap.js";
 
 const GRADED_STEPS = new Set(["quiz", "decide", "tags", "count"]);
@@ -1020,6 +1022,7 @@ const LESSON_TOOLS = {
 };
 function LessonTool({ lessonId }) {
   const nav = useNav();
+  const st = useStore();
   const tool = LESSON_TOOLS[lessonId];
   if (!tool) return null;
   return (
@@ -1034,7 +1037,8 @@ function LessonTool({ lessonId }) {
       <span className="li-text">
         <span className="eyebrow acc">Ponelo en práctica</span>
         <span className="li-title" style={{ display: "block", marginTop: 2 }}>
-          {tool.title}
+          {tool.title}{" "}
+          {needsPremium(tool.screen, {}, st) ? <PremiumTag st={st} /> : null}
         </span>
         <span className="li-sub" style={{ display: "block" }}>
           {tool.sub}

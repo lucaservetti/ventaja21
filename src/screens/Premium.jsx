@@ -27,6 +27,7 @@ const FEATURES = {
   journal: "El diario de casino real",
   devLevel: "La ruta de desviaciones completa",
 };
+// Cada función (menos "sin anuncios") se puede probar 30 minutos una vez, mirando un anuncio.
 const PERKS = [
   {
     icon: "close",
@@ -35,21 +36,25 @@ const PERKS = [
   },
   {
     icon: "crown",
+    feature: "casino",
     title: "Modo casino real",
     sub: "Tu plata, límites de mesa, tiempo para decidir, vigilancia, modo turista y el examen con certificado.",
   },
   {
     icon: "target",
+    feature: "devLevel",
     title: "Ruta de desviaciones completa",
     sub: "Los 10 niveles: los Illustrious 18, el Fab 4 y calcular el conteo real.",
   },
   {
     icon: "stats",
+    feature: "bankroll",
     title: "Simulador de banca",
     sub: "Cuánta plata necesitás y tu riesgo de quebrar, en tu moneda.",
   },
   {
     icon: "book",
+    feature: "journal",
     title: "Diario de casino real",
     sub: "Anotá lo que jugás de verdad y mirá tu resultado por hora.",
   },
@@ -143,11 +148,11 @@ function Premium({ feature, then }) {
         ? `Gratis por ${info.trialDays} días; después, ${info.price} por año. Se renueva solo y lo cancelás cuando quieras en Google Play. Si cancelás antes de que termine la prueba, no se te cobra nada.`
         : `${info.price} por ${pick === "yearly" ? "año" : "mes"}. Se renueva solo y lo cancelás cuando quieras en Google Play.`;
 
-  async function tryWithAd() {
-    setPassBusy(true);
-    const ok = await earnFeatureTrial(feature);
+  async function tryWithAd(f = feature, params = then) {
+    setPassBusy(f);
+    const ok = await earnFeatureTrial(f);
     setPassBusy(false);
-    if (ok && feature) nav.replace(feature, then || {});
+    if (ok && f) nav.replace(f, params || {});
   }
 
   return (
@@ -164,24 +169,57 @@ function Premium({ feature, then }) {
               ? "Tenés Premium para siempre. ¡Gracias por apoyar la app!"
               : "¡Ya sos Premium! Gracias por apoyar la app."
             : feature && FEATURES[feature]
-              ? `${FEATURES[feature]} es parte de Premium.`
+              ? trial.used
+                ? `${FEATURES[feature]} es parte de Premium.`
+                : `${FEATURES[feature]} es parte de Premium. Podés probarlo gratis 30 minutos.`
               : "Todo lo avanzado y sin anuncios."}
         </p>
       </div>
       <div className="card prem-perks">
-        {PERKS.map((p) => (
-          <div className="prem-perk" key={p.title}>
-            <span className="li-icon">
-              <Icon name={p.icon} />
-            </span>
-            <span>
-              <b>{p.title}</b>
-              <span className="muted small" style={{ display: "block" }}>
-                {p.sub}
+        {PERKS.map((p) => {
+          const tr = p.feature ? trialFor(p.feature, st) : null;
+          return (
+            <div className="prem-perk" key={p.title}>
+              <span className="li-icon">
+                <Icon name={p.icon} />
               </span>
-            </span>
-          </div>
-        ))}
+              <span className="prem-perk-text">
+                <b>{p.title}</b>
+                <span className="muted small" style={{ display: "block" }}>
+                  {p.sub}
+                </span>
+              </span>
+              {owned || !tr ? null : tr.active ? (
+                <button
+                  type="button"
+                  className="prem-try on"
+                  onClick={() => nav.replace(p.feature, {})}
+                >
+                  Abrir
+                </button>
+              ) : !tr.used ? (
+                <button
+                  type="button"
+                  className="prem-try"
+                  onClick={() => tryWithAd(p.feature, {})}
+                  disabled={!!passBusy}
+                  aria-label={`Probar ${p.title} 30 minutos gratis`}
+                >
+                  {passBusy === p.feature ? "…" : "Probar"}
+                </button>
+              ) : (
+                <span className="prem-try used">Probada</span>
+              )}
+            </div>
+          );
+        })}
+        {!owned ? (
+          <p className="muted small prem-try-note">
+            {web
+              ? "Cada función la podés probar gratis 30 minutos, una sola vez."
+              : "Cada función la podés probar 30 minutos mirando un anuncio, una sola vez."}
+          </p>
+        ) : null}
       </div>
       {!owned && options.length ? (
         <div className="prem-plans" role="radiogroup" aria-label="Planes">
@@ -231,7 +269,11 @@ function Premium({ feature, then }) {
         <div className="btns prem-more">
           {feature && FEATURES[feature] && !trial.used ? (
             <>
-              <Button kind="outline" onClick={tryWithAd} disabled={passBusy}>
+              <Button
+                kind="outline"
+                onClick={() => tryWithAd()}
+                disabled={!!passBusy}
+              >
                 {passBusy
                   ? "Cargando…"
                   : web
@@ -297,7 +339,7 @@ function Premium({ feature, then }) {
   );
 }
 
-// Etiqueta "Premium" para lo que está bloqueado en la app de Android.
+// Etiqueta "Premium" para lo que está bloqueado sin Premium.
 function PremiumTag({ st }) {
   if (hasPremium(st)) return null;
   return (

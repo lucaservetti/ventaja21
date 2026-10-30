@@ -337,6 +337,27 @@ const PRUEBAS = {
     await h.see("Modo casino real", "Real casino mode");
   },
 
+  // Con 3 lecciones hechas aparece la tarjeta de Premium en Aprender; desde ahí se prueba cada función.
+  async tarjetaPremium(h) {
+    const { page } = h;
+    await page.evaluate(() => {
+      const k = "ventaja21.state.v1";
+      const s = JSON.parse(localStorage.getItem(k));
+      s.lessons = { l1: { done: true, stars: 3 }, l2: { done: true, stars: 3 }, l3: { done: true, stars: 3 } };
+      localStorage.setItem(k, JSON.stringify(s));
+      Storage.prototype.setItem = () => {};
+    });
+    await page.reload();
+    await page.waitForTimeout(1200);
+    await h.see("Modo casino real, las 10 desviaciones y sin anuncios", "Real casino mode, all 10 deviation levels and no ads");
+    await h.foto("tarjeta");
+    await h.css(".prem-card-main", 700);
+    await h.see("Cada función la podés probar gratis 30 minutos", "You can try each feature free for 30 minutes");
+    await h.foto("probar");
+    await h.css(".prem-try", 900);
+    await h.see("Tu plata", "Your money");
+  },
+
   // Premium en modo app (simulado): planes, condiciones y la prueba de 30 minutos una sola vez.
   async premium(h) {
     const { page } = h;

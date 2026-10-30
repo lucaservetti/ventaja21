@@ -57,10 +57,12 @@ import { Challenge } from "./screens/Challenge.jsx";
 import { pendingChallenge, takeChallengeFromUrl } from "./challenge.js";
 import {
   NATIVE,
+  hasPremium,
   initPlatform,
   maybeAskReview,
   maybeShowAd,
   needsPremium,
+  trialFor,
 } from "./platform.js";
 import {
   GoalSheet,
@@ -192,7 +194,7 @@ function App() {
         }
       },
       push(k, v = {}) {
-        // En la app de Android, lo de Premium abre la pantalla de Premium.
+        // Sin Premium (ni prueba activa), lo de Premium abre la pantalla de Premium.
         if (needsPremium(k, v)) {
           v = { feature: k, then: v };
           k = "premium";
@@ -307,12 +309,47 @@ function App() {
   }, [theme, bigText]);
   // Al volver a una pestaña después de terminar algo, a veces un anuncio (solo en Android, sin Premium).
   const depth = useRef(0);
+  const [premToast, setPremToast] = useState(null);
+  const showPremToast = (msg, ms = 4200) => {
+    setPremToast({ id: Date.now(), msg, kind: "info" });
+    setTimeout(() => setPremToast(null), ms);
+  };
   useEffect(() => {
-    if (depth.current > 0 && l.length === 0) maybeShowAd();
+    if (depth.current > 0 && l.length === 0)
+      maybeShowAd().then((n) => {
+        // Después del 2.º y el 5.º anuncio del día, un recordatorio de que con Premium no hay.
+        if (n === 2 || n === 5)
+          showPremToast(
+            "¿Muchos anuncios? Con Premium no ves ninguno. Está en Ajustes → Premium.",
+          );
+      });
     depth.current = l.length;
   }, [l.length]);
   // Meta diaria: el reloj corre en pantallas de práctica y jugando en el simulador.
   const top = l.length ? l[l.length - 1].name : null;
+  // Prueba de 30 minutos de una función Premium: avisa cuánto queda al entrar y cuando se termina.
+  // No te saca de la pantalla: lo que estabas haciendo lo terminás igual.
+  const trialUntil =
+    top && !hasPremium(a) && trialFor(top, a).active ? trialFor(top, a).until : 0;
+  useEffect(() => {
+    if (!trialUntil) return undefined;
+    const left = Math.max(1, Math.round((trialUntil - Date.now()) / 60000));
+    showPremToast(
+      left === 1
+        ? "Prueba de Premium: te queda 1 minuto."
+        : `Prueba de Premium: te quedan ${left} minutos.`,
+      2800,
+    );
+    const end = setTimeout(
+      () =>
+        showPremToast(
+          "Se terminó tu prueba de Premium. Terminá lo que estás haciendo; para volver a entrar, pasate a Premium.",
+          6000,
+        ),
+      trialUntil - Date.now(),
+    );
+    return () => clearTimeout(end);
+  }, [top, trialUntil]);
   const practicing =
     a.profile.onboarded && (top ? PRACTICE_SCREENS.has(top) : e === "jugar");
   usePracticeClock(practicing);
@@ -393,7 +430,7 @@ function App() {
         {C ? (
           <C open={true} onClose={() => y.closeSheet()} {...o.props} />
         ) : null}
-        <Toasts items={[goalToast, achToast].filter(Boolean)} />
+        <Toasts items={[goalToast, achToast, premToast].filter(Boolean)} />
       </div>
     </NavContext.Provider>
   );
