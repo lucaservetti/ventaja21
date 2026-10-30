@@ -793,6 +793,7 @@ export {
   levelFor,
   getActivityTick,
   markActive,
+  subscribe,
   markPathDone,
   nextLevel,
   recordDrill,

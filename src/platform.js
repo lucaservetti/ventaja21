@@ -8,7 +8,15 @@ import {
   RewardAdPluginEvents,
 } from "@capacitor-community/admob";
 import { InAppReview } from "@capacitor-community/in-app-review";
-import { getActivityTick, getState, setSettings } from "./state.js";
+import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
+import {
+  exportBackup,
+  getActivityTick,
+  getState,
+  importBackup,
+  setSettings,
+  subscribe,
+} from "./state.js";
 
 function simulated() {
   try {
@@ -26,28 +34,37 @@ const SUB_ID = "edge21_premium"; // suscripción con dos planes: "mensual" y "an
 const PLAN_MONTHLY = "mensual";
 const PLAN_YEARLY = "anual";
 const LIFETIME_ID = "premium"; // pago único, para siempre
-const PASS_MS = 60 * 60 * 1000; // probar una función Premium por 1 hora mirando un anuncio
+const TRIAL_MS = 30 * 60 * 1000; // probar una función Premium 30 minutos mirando un anuncio, una sola vez
 
 function hasPremium(st = getState()) {
   return !APP_MODE || !!st.settings.premium;
 }
-// Premium de verdad, o el pase de 1 hora que se gana mirando un anuncio.
-function unlocked(st = getState()) {
-  return hasPremium(st) || (st.settings.premiumPass || 0) > Date.now();
+
+// Cada función Premium se puede probar una vez. El modo casino tiene dos pantallas.
+const TRIAL_GROUP = {
+  casino: "casino",
+  casinoPlay: "casino",
+  bankroll: "bankroll",
+  journal: "journal",
+  devLevel: "devLevel",
+};
+function trialFor(name, st = getState()) {
+  const g = TRIAL_GROUP[name];
+  const until = g && st.settings.premiumTrials && st.settings.premiumTrials[g];
+  return { used: !!until, active: !!until && until > Date.now(), until };
 }
 
 // Pantallas que son de Premium. La ruta de desviaciones es gratis hasta el nivel 2.
 function needsPremium(name, params = {}, st = getState()) {
-  if (unlocked(st)) return false;
-  if (["casino", "casinoPlay", "bankroll", "journal"].includes(name))
-    return true;
+  if (hasPremium(st)) return false;
+  let locked = ["casino", "casinoPlay", "bankroll", "journal"].includes(name);
   if (name === "devLevel") {
     const n =
       params.level ||
       Object.keys((st.devPath && st.devPath.passed) || {}).length + 1;
-    return n >= 3;
+    locked = n >= 3;
   }
-  return false;
+  return locked && !trialFor(name, st).active;
 }
 
 // ---- Anuncios ----
@@ -207,10 +224,20 @@ async function watchAdForReward() {
   return result;
 }
 
-// Mirar un anuncio para usar las funciones Premium durante 1 hora.
-async function earnPremiumPass() {
+// Mirar un anuncio para probar una función Premium 30 minutos. Una sola vez por función.
+async function earnFeatureTrial(name) {
+  const g = TRIAL_GROUP[name];
+  if (!g || trialFor(name).used) return false;
   const ok = await watchAdForReward();
-  if (ok) setSettings({ premiumPass: Date.now() + PASS_MS });
+  if (ok) {
+    const st = getState();
+    setSettings({
+      premiumTrials: {
+        ...(st.settings.premiumTrials || {}),
+        [g]: Date.now() + TRIAL_MS,
+      },
+    });
+  }
   return ok;
 }
 
@@ -409,8 +436,50 @@ function maybeAskReview() {
   }
 }
 
+// ---- Copia automática del progreso ----
+// El progreso también se guarda en un archivo de la app. Android lo incluye en su copia de
+// seguridad automática en Google Drive: al reinstalar o cambiar de celular con la misma cuenta
+// de Google, el progreso vuelve solo, sin crear ninguna cuenta.
+const MIRROR = "progreso.txt";
+async function restoreFromMirror() {
+  if (getState().profile.onboarded) return;
+  try {
+    const r = await Filesystem.readFile({
+      path: MIRROR,
+      directory: Directory.Data,
+      encoding: Encoding.UTF8,
+    });
+    importBackup(r.data);
+  } catch {
+    // No hay copia (primera vez) o no se pudo leer.
+  }
+}
+function keepMirror() {
+  let timer = 0;
+  const write = () => {
+    if (!getState().profile.onboarded) return;
+    Filesystem.writeFile({
+      path: MIRROR,
+      data: exportBackup(),
+      directory: Directory.Data,
+      encoding: Encoding.UTF8,
+    }).catch(() => {});
+  };
+  subscribe(() => {
+    clearTimeout(timer);
+    timer = setTimeout(write, 4000);
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      clearTimeout(timer);
+      write();
+    }
+  });
+}
+
 function initPlatform() {
   if (!NATIVE) return;
+  restoreFromMirror().finally(keepMirror);
   initShop().catch(() => {});
   initAds();
 }
@@ -419,7 +488,7 @@ export {
   APP_MODE,
   NATIVE,
   buyPremium,
-  earnPremiumPass,
+  earnFeatureTrial,
   hasPremium,
   initPlatform,
   manageSubscription,
@@ -430,6 +499,6 @@ export {
   restorePremium,
   shop,
   showAdPrivacy,
-  unlocked,
+  trialFor,
   watchAdForReward,
 };

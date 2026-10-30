@@ -2883,11 +2883,13 @@
 "Todo lo avanzado y sin anuncios.": "Everything advanced, and no ads.",
 "Planes": "Plans",
 "Cambiar de plan o cancelar": "Change plan or cancel",
-"Probarlo 1 hora con un anuncio": "Try it for 1 hour with an ad",
 "Segunda oportunidad: este intento cuenta, con otras cartas.": "Second chance: this attempt counts, with different cards.",
 "Ibas {0} {1} seguidos. Salvá tu racha con otro intento que cuenta.": "You were on a {0}-{1} streak. Save it with another attempt that counts.",
 "Tenés un intento más que cuenta para el puntaje de hoy.": "You get one more attempt that counts for today's score.",
 "Segunda oportunidad (ver un anuncio)": "Second chance (watch an ad)",
 "Segunda oportunidad": "Second chance",
-"mes": "month"
+"mes": "month",
+"Probarlo 30 minutos con un anuncio": "Try it for 30 minutes with an ad",
+"Podés probar cada función una sola vez.": "You can try each feature only once.",
+"Ya usaste tu prueba de esta función. Para volver a usarla, pasate a Premium.": "You already used your trial of this feature. To use it again, go Premium."
 }

@@ -8,10 +8,10 @@ La idea: que lo gratis alcance para aprender de verdad, y que Premium sea para q
 | --- | --- | --- |
 | **Gratis** | Lecciones, ruta de conteo, Entrenar, ejercicios, desafíos y simulador | Siempre |
 | **Anuncio de pantalla completa** | Al volver al menú después de terminar 2 cosas | Como mucho 1 cada 5 min y 6 por día. Ninguno el primer día |
-| **Anuncio con premio** (opcional) | Segunda oportunidad del desafío diario. Probar una función Premium 1 hora | Cuando la persona lo elige |
+| **Anuncio con premio** (opcional) | Segunda oportunidad del desafío diario. Probar cada función Premium 30 minutos, una sola vez | Cuando la persona lo elige |
 | **Premium mensual** | US$2,99 por mes | Cancelás cuando quieras |
 | **Premium anual** | US$19,99 por año (US$1,67 por mes), **7 días gratis** | El plan que la app muestra primero |
-| **Premium para siempre** | US$39,99, un solo pago | Para quien no quiere suscripciones |
+| **Premium para siempre** | US$49,99, un solo pago | Para quien no quiere suscripciones |
 
 Todo esto ya está programado. Falta crear los productos en Play Console (ver `PLAY_STORE.md`, paso 6) y los bloques de AdMob (paso 3).
 
@@ -23,13 +23,13 @@ Todo esto ya está programado. Falta crear los productos en Play Console (ver `P
 | --- | --- | --- |
 | Mensual | US$2,99 | ≈ US$2,54 por mes |
 | Anual | US$19,99 | ≈ US$16,99 por año |
-| Para siempre | US$39,99 | ≈ US$33,99 una vez |
+| Para siempre | US$49,99 | ≈ US$42,49 una vez |
 
 Por qué estos números:
 
 - **El anual ahorra 44 % frente al mensual.** Así la mayoría elige el anual, que es el que más plata deja y el que menos gente cancela.
 - **La prueba gratis es solo en el anual.** Es el empujón para elegirlo. Google solo se la ofrece a quien nunca tuvo la suscripción, y la app lo detecta sola.
-- **El pago único cuesta como 2 años.** Para quien odia las suscripciones, sin que convenga más que el anual a quien lo usa un año.
+- **El pago único cuesta como 2 años y medio del anual.** Lo normal es entre 2 y 3 años. Le sirve a quien odia las suscripciones, pero no conviene más que el anual a quien solo lo va a usar un tiempo. Además hace que el anual parezca barato al lado.
 - **US$2,99 por mes** está por debajo de lo que cobran las apps de este tipo (US$4 a US$10 por mes). Para una app nueva sin reseñas, conviene arrancar accesible. Subir el precio después es fácil. Bajarlo da mala imagen.
 
 **Precios por país:** Play convierte solo cada precio a la moneda local. Revisalo en Latinoamérica: si el número convertido queda alto para el bolsillo de allá, bajalo un 30 a 40 % en *Monetizar → Productos → (el producto) → Precios → Editar por país*. En Estados Unidos y Europa dejalo como está.
@@ -43,7 +43,7 @@ Por qué estos números:
 - **Pantalla completa (intersticial):** solo al volver al menú, y solo si terminaste 2 cosas desde el último (lecciones, tandas, ejercicios, partidas). Como mucho uno cada 5 minutos y 6 por día. **Ninguno el primer día**: la primera impresión es la que decide si la gente se queda y qué reseña deja.
 - **Con premio (bonificado), siempre opcional:**
   - *Segunda oportunidad:* si fallaste el desafío diario, mirás un anuncio y tenés otro intento que cuenta, con otras cartas. Si ibas con racha, la salvás.
-  - *Probar Premium 1 hora:* al tocar algo de Premium (modo casino, simulador de banca, etc.), podés mirar un anuncio y usarlo una hora. Es la mejor publicidad de Premium: la persona lo prueba y ve qué se pierde.
+  - *Probar una función Premium 30 minutos:* al tocar algo de Premium (modo casino, ruta de desviaciones, simulador de banca, diario), podés mirar un anuncio y usarlo media hora. **Una sola vez por función**: después, para volver a usarla, hay que pasarse a Premium. Es la mejor publicidad de Premium, porque la persona lo prueba y ve qué se pierde. "Sin anuncios" no se puede probar así.
   - Si no hay anuncio disponible (sin conexión, por ejemplo), el premio se da igual. Nunca castigamos a nadie porque no cargó un anuncio.
 - **Con Premium o en la prueba gratis:** ningún anuncio.
 - **Nunca:** banners pegados abajo, anuncios en medio de una lección o una práctica, anuncios al abrir la app, ni botones de cerrar escondidos.

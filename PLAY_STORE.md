@@ -59,7 +59,7 @@ Después, en GitHub: **Settings → Secrets and variables → Actions → New re
 - un anuncio de pantalla completa solo al volver al menú después de terminar 2 cosas;
 - como mucho uno cada 5 minutos y 6 por día;
 - ninguno el primer día ni en medio de una práctica;
-- los anuncios con premio son siempre opcionales: segunda oportunidad del desafío diario, o probar una función Premium por 1 hora;
+- los anuncios con premio son siempre opcionales: segunda oportunidad del desafío diario, o probar cada función Premium 30 minutos (una sola vez);
 - con Premium o durante la prueba gratis, ninguno.
 
 ## Paso 4 · Armar el archivo de la app (.aab)
@@ -117,7 +117,7 @@ La app también está en inglés (sale en inglés en los celulares que no están
    - **Pago único.** Andá a **Monetizar → Productos → Productos integrados en la aplicación → Crear producto**.
      - ID del producto: **`premium`**.
      - Nombre: *Edge 21 Premium para siempre*. Descripción: *Sin anuncios y con todo lo avanzado, para siempre.*
-     - Precio: US$39,99.
+     - Precio: US$49,99.
      - **Activar.**
    - Play convierte los precios solo a pesos y a las demás monedas, y los podés ajustar por país. Ver la sección de precios en `store/monetizacion.md`.
 3. Para cobrar, Play te va a pedir completar el **perfil de pagos** (cuenta bancaria). Hacelo.

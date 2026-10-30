@@ -8234,3 +8234,7 @@ html[data-theme="light"] .tab.on .tab-ic {
   display: grid;
   gap: 10px;
 }
+.prem-once {
+  text-align: center;
+  margin-top: -2px;
+}

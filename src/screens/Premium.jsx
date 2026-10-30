@@ -7,13 +7,14 @@ import { TopBar } from "../ui/common.jsx";
 import {
   NATIVE,
   buyPremium,
-  earnPremiumPass,
+  earnFeatureTrial,
   hasPremium,
   manageSubscription,
   onShop,
   restorePremium,
   shop,
   showAdPrivacy,
+  trialFor,
 } from "../platform.js";
 import { useNav } from "../nav.js";
 
@@ -56,7 +57,7 @@ const PERKS = [
 const SAMPLE = {
   monthly: { micros: 2990000, currency: "USD", trialDays: 0 },
   yearly: { micros: 19990000, currency: "USD", trialDays: 7 },
-  lifetime: { micros: 39990000, currency: "USD", trialDays: 0 },
+  lifetime: { micros: 49990000, currency: "USD", trialDays: 0 },
 };
 function money(micros, currency) {
   try {
@@ -77,6 +78,7 @@ function Premium({ feature, then }) {
   const [passBusy, setPassBusy] = useState(false);
   useEffect(() => onShop(() => setTick((x) => x + 1)), []);
   const owned = hasPremium(st);
+  const trial = trialFor(feature, st);
   const plans = NATIVE
     ? shop.plans
     : Object.fromEntries(
@@ -138,7 +140,7 @@ function Premium({ feature, then }) {
 
   async function tryWithAd() {
     setPassBusy(true);
-    const ok = await earnPremiumPass();
+    const ok = await earnFeatureTrial(feature);
     setPassBusy(false);
     if (ok && feature) nav.replace(feature, then || {});
   }
@@ -215,10 +217,20 @@ function Premium({ feature, then }) {
       </p>
       {!owned ? (
         <div className="btns prem-more">
-          {feature ? (
-            <Button kind="outline" onClick={tryWithAd} disabled={passBusy}>
-              {passBusy ? "Cargando…" : "Probarlo 1 hora con un anuncio"}
-            </Button>
+          {feature && FEATURES[feature] && !trial.used ? (
+            <>
+              <Button kind="outline" onClick={tryWithAd} disabled={passBusy}>
+                {passBusy ? "Cargando…" : "Probarlo 30 minutos con un anuncio"}
+              </Button>
+              <p className="muted small prem-once">
+                Podés probar cada función una sola vez.
+              </p>
+            </>
+          ) : feature && FEATURES[feature] ? (
+            <p className="muted small prem-once">
+              Ya usaste tu prueba de esta función. Para volver a usarla, pasate
+              a Premium.
+            </p>
           ) : null}
           <Button
             kind="ghost"
