@@ -2753,6 +2753,141 @@ const SECTIONS = [
       },
     ],
   },
+  {
+    id: 7,
+    title: "Apuestas laterales y variantes",
+    desc: "Lo que te ofrecen al costado de la mesa, y otras formas de jugar",
+    icon: "sparkle",
+    lessons: [
+      {
+        id: "l32",
+        title: "Apuestas laterales",
+        sum: [
+          "Las apuestas laterales pagan mucho pero tienen mucha más ventaja para la casa que el juego normal.",
+          "Pares perfectos, 21+3 y Lucky Ladies le dejan a la casa entre 3 % y más de 10 %.",
+          "Si querés ventaja, jugá la mano principal con estrategia básica y conteo.",
+        ],
+        steps: [
+          info("Los casilleros chicos de la mesa", [
+            "Al lado de tu apuesta muchas mesas tienen casilleros extra: son **apuestas laterales** (*side bets*).",
+            "Se resuelven con tus primeras cartas, pagan premios grandes y no dependen de cómo jugás la mano.",
+          ]),
+          info("Las más comunes", [
+            "**Pares perfectos:** apostás a que tus dos primeras cartas forman un par. La casa se queda con alrededor de **4 a 6 %**.",
+            "**21+3:** tus dos cartas y la visible del crupier forman una mano de póker (color, escalera, trío). Alrededor de **3 a 4 %**.",
+            "**Lucky Ladies:** apostás a que tus dos cartas suman 20. Puede pasar el **10 %** para la casa.",
+          ]),
+          info("Comparalo con tu juego", [
+            "Con estrategia básica, la casa tiene alrededor de **0,5 %** en la mano principal. Las laterales cuestan de 6 a 20 veces más.",
+            "Algunas se pueden ganar contando con sistemas especiales, pero es muy avanzado y los casinos las vigilan. Para empezar: **no las juegues**.",
+          ]),
+          quiz(
+            "¿Por qué los casinos ponen apuestas laterales?",
+            [
+              "Porque ganan mucho más con ellas que con la mano normal",
+              "Para ayudar a los jugadores a recuperar",
+              "Porque pagan más que el blackjack",
+            ],
+            0,
+            "Pagan premios grandes, pero la ventaja de la casa es varias veces la del juego normal.",
+          ),
+          quiz(
+            "¿Qué apuesta te cuesta menos a la larga?",
+            ["21+3", "La mano principal con estrategia básica", "Lucky Ladies"],
+            1,
+            "La mano principal con estrategia básica deja a la casa alrededor de 0,5 %.",
+          ),
+          quiz(
+            "¿El resultado de una lateral depende de cómo jugás tu mano?",
+            ["Sí", "No: se decide con las primeras cartas"],
+            1,
+            "Se resuelve apenas salen las cartas: no hay ninguna decisión tuya que la mejore.",
+          ),
+        ],
+      },
+      {
+        id: "l33",
+        title: "Jugar dos manos",
+        sum: [
+          "Jugar dos manos no cambia la ventaja de cada una.",
+          "Dos manos de 50 tienen menos riesgo que una de 100, porque comparten la carta del crupier.",
+          "Con el conteo alto, algunos contadores pasan a dos manos para poner más plata con menos riesgo.",
+        ],
+        steps: [
+          info("Dos casilleros, dos manos", [
+            "En muchas mesas podés jugar **dos lugares a la vez**. Cada mano se juega por separado, con la misma tabla.",
+            "La ventaja de cada mano no cambia: si la casa tiene 0,5 % en una, tiene 0,5 % en cada una.",
+          ]),
+          info("Menos riesgo por la misma plata", [
+            "Una mano de **100** y dos manos de **50** ponen la misma plata en juego.",
+            "Pero las dos manos comparten la carta del crupier y no siempre ganan o pierden juntas: el resultado se mueve menos que con una sola mano grande.",
+          ]),
+          info("Cómo lo usan los contadores", [
+            "Con el conteo alto, en vez de apostar una sola mano enorme, pasan a **dos manos**: más plata con ventaja y menos riesgo.",
+            "Además se reparten más cartas por ronda, y el conteo avanza más rápido. Ojo: pasar de una mano chica a dos grandes de golpe también llama la atención.",
+          ]),
+          quiz(
+            "Jugando dos manos, ¿cambia la ventaja de la casa en cada una?",
+            ["Sí, sube", "No, es la misma", "Sí, baja"],
+            1,
+            "Cada mano tiene la misma ventaja que si la jugaras sola.",
+          ),
+          quiz(
+            "Con el conteo alto, ¿qué tiene menos riesgo?",
+            ["Una mano de 100", "Dos manos de 50"],
+            1,
+            "Las dos manos no siempre van juntas: con la misma plata, el resultado se mueve menos.",
+          ),
+        ],
+      },
+      {
+        id: "l34",
+        title: "Otras variantes",
+        sum: [
+          "Spanish 21 juega sin los 10 del mazo y tiene su propia tabla.",
+          "Free Bet y Blackjack Switch regalan algo, pero el crupier empata con 22.",
+          "El blackjack clásico 3:2 con buenas reglas sigue siendo el mejor para contar.",
+        ],
+        steps: [
+          info("Spanish 21", [
+            "Se juega con mazos de 48 cartas: **sacan los 10** (las figuras quedan). Eso solo le suma a la casa alrededor de 2 %.",
+            "Para compensar, tiene reglas generosas: tu 21 siempre gana, premios por algunos 21, doblar con cualquier cantidad de cartas y rendición.",
+            "Tiene **su propia tabla de estrategia**: la que aprendiste acá no sirve tal cual.",
+          ]),
+          info("Free Bet y Blackjack Switch", [
+            "**Free Bet:** te regalan los dobles con 9, 10 y 11 y muchas separaciones. La trampa: si el crupier termina en **22, empata con todos**.",
+            "**Blackjack Switch:** jugás dos manos y podés cambiar la segunda carta entre ellas. A cambio, el blackjack paga **1 a 1** y el crupier también empata con 22.",
+          ]),
+          info("¿Cuál conviene?", [
+            "Cada variante tiene su propia tabla, y el conteo Hi-Lo funciona peor en casi todas.",
+            "Para aplicar lo que aprendiste, buscá el **blackjack clásico que paga 3:2** con buenas reglas y el corte bien atrás.",
+          ]),
+          quiz(
+            "En Spanish 21, ¿qué cartas sacan del mazo?",
+            ["Los ases", "Los 10 (las figuras quedan)", "Las figuras"],
+            1,
+            "Se sacan los 10 de los cuatro palos: quedan 48 cartas por mazo.",
+          ),
+          quiz(
+            "¿Cuál es la trampa de Free Bet Blackjack?",
+            [
+              "No se puede doblar",
+              "Si el crupier termina en 22, empata con todos",
+              "Paga el blackjack 6:5",
+            ],
+            1,
+            "Con 22 el crupier no se pasa: empata, y eso compensa todo lo que te regalan.",
+          ),
+          quiz(
+            "¿Sirve la tabla que aprendiste en Spanish 21?",
+            ["Sí, igual", "No del todo: tiene su propia tabla"],
+            1,
+            "Sin los 10 cambian las probabilidades, y con ellas varias jugadas.",
+          ),
+        ],
+      },
+    ],
+  },
 ];
 const EXTRA_LESSONS = {
   use: {

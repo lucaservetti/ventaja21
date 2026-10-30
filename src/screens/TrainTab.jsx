@@ -197,6 +197,25 @@ function TrainTab() {
         <button
           type="button"
           className="list-item"
+          onClick={() => e.push("blitz")}
+        >
+          <span className="li-icon">
+            <Icon name="clock" />
+          </span>
+          <span className="li-text">
+            <span className="li-title">Contrarreloj</span>
+            <span className="li-sub" style={{ display: "block" }}>
+              60 segundos: ¿cuántas manos acertás?
+            </span>
+          </span>
+          <span className="li-side">
+            {a.train.blitz && a.train.blitz.best ? a.train.blitz.best : ""}
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+        <button
+          type="button"
+          className="list-item"
           onClick={() =>
             e.push("trainSession", { mode: "exam", confirmExit: true })
           }

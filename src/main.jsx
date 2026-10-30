@@ -41,6 +41,7 @@ import { Journal } from "./screens/Journal.jsx";
 import { DevLevel } from "./screens/DevPath.jsx";
 import { Backup } from "./screens/Backup.jsx";
 import { SpeedDrill } from "./screens/SpeedDrill.jsx";
+import { Blitz } from "./screens/Blitz.jsx";
 import { Premium } from "./screens/Premium.jsx";
 import {
   NATIVE,
@@ -98,6 +99,7 @@ const SCREENS = {
   devLevel: DevLevel,
   backup: Backup,
   speedDrill: SpeedDrill,
+  blitz: Blitz,
   premium: Premium,
 };
 const SHEETS = {

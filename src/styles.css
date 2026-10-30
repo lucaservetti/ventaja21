@@ -7886,3 +7886,103 @@ button:disabled .act-letter {
 .lcard-back {
   will-change: transform;
 }
+
+/* ---------- Contrarreloj ---------- */
+.blitz {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+.blitz-hero {
+  text-align: center;
+  padding: 30px 8px 20px;
+}
+.blitz-hero h1 {
+  font-size: 28px;
+  line-height: 1.15;
+  margin: 18px 0 10px;
+}
+.blitz-clock {
+  display: inline-grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--accent);
+  animation: pop 0.5s ease backwards;
+}
+.blitz-clock.gold {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.blitz-best {
+  margin-top: 14px;
+  font-size: 17px;
+}
+.blitz-score {
+  font-size: 84px;
+  font-weight: 800;
+  line-height: 1;
+  margin-top: 14px;
+  color: var(--accent);
+  animation: pop 0.5s ease backwards;
+}
+.blitz-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 8px 4px 10px;
+}
+.blitz-time {
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1;
+}
+.blitz-time.low {
+  color: var(--bad);
+  animation: pop 1s ease infinite;
+}
+.blitz-pts {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--accent);
+}
+.blitz-pts small {
+  font-size: 14px;
+  color: var(--text-2);
+  font-weight: 600;
+}
+.blitz-bar {
+  height: 6px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.blitz-bar i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transform-origin: left center;
+  transition: transform 0.1s linear;
+}
+.blitz-deal {
+  animation: fadeUp 0.18s ease backwards;
+}
+.blitz-flash {
+  height: 34px;
+  display: grid;
+  place-items: center;
+  margin: 8px 0;
+}
+.blitz-flash .bf {
+  font-weight: 700;
+  animation: fadeUp 0.2s ease backwards;
+}
+.blitz-flash .bf.ok {
+  color: var(--good);
+}
+.blitz-flash .bf.bad {
+  color: var(--bad);
+}
