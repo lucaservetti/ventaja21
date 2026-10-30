@@ -85,6 +85,7 @@ export function jsxText(raw) {
   return out;
 }
 
+const CARD_CODE = /^[2-9TJQKA][shdc]\??$/;
 const COMPARE = new Set(["===", "!==", "==", "!=", "in"]);
 // Un contexto donde el string es una clave/valor de lógica, no texto visible.
 function isKeyContext(parent, key, node) {
@@ -117,6 +118,15 @@ function isKeyContext(parent, key, node) {
   if (parent.type === "NewExpression" && key === "arguments")
     return calleeName(parent.callee) !== "Error";
   if (parent.type === "TaggedTemplateExpression") return true;
+  // Códigos de carta en una lista de cartas: "As" es el as de picas, no la palabra "As".
+  if (
+    parent.type === "ArrayExpression" &&
+    CARD_CODE.test(node.value) &&
+    parent.elements.some(
+      (e) => e && e !== node && e.type === "Literal" && CARD_CODE.test(e.value),
+    )
+  )
+    return true;
   return false;
 }
 

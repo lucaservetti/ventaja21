@@ -2,3 +2,5 @@ node_modules/
 www/
 scripts/i18n-faltan.json
 tools/video/salida/
+tests/e2e/fotos/
+tests/e2e/fallas/

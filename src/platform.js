@@ -1,7 +1,7 @@
 // Lo que cambia en la app de Android (Play Store): algunos anuncios y la compra de Premium.
 // En la web (GitHub Pages) no hay anuncios ni compras y todo queda abierto, como siempre.
 // Para probar en la compu cómo se ve en Android: localStorage.setItem("v21.sim", "1") y recargar.
-import { Capacitor } from "@capacitor/core";
+import { Capacitor, registerPlugin } from "@capacitor/core";
 import {
   AdMob,
   AdmobConsentStatus,
@@ -477,8 +477,26 @@ function keepMirror() {
   });
 }
 
+// Si en Android elegiste letra grande, la app activa "Letra más grande" (una vez por cada cambio
+// en los ajustes del celular; después manda lo que elijas en la app).
+const FontScale = registerPlugin("FontScale");
+async function followSystemFont() {
+  try {
+    const { scale } = await FontScale.get();
+    const st = getState().settings;
+    if (!scale || st.systemFontScale === scale) return;
+    setSettings({
+      systemFontScale: scale,
+      bigText: scale >= 1.15 ? true : st.bigText,
+    });
+  } catch {
+    // Versión vieja de la app sin el complemento: no pasa nada.
+  }
+}
+
 function initPlatform() {
   if (!NATIVE) return;
+  followSystemFont();
   restoreFromMirror().finally(keepMirror);
   initShop().catch(() => {});
   initAds();

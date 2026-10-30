@@ -50,7 +50,11 @@ const script = js.outputFiles[0].text.replace(/<\/script/gi, "<\\/script");
 const html = fs
   .readFileSync("src/index.html", "utf8")
   .replace("/*STYLES*/", () => css.code.trim())
-  .replace("/*SCRIPT*/", () => script.trim());
+  .replace("/*SCRIPT*/", () => script.trim())
+  .replace(
+    "<!--I18N-->",
+    () => `<script type="application/json" id="i18n-en">${JSON.stringify(EN).replace(/<\//g, "<\\/")}</script>`,
+  );
 fs.writeFileSync("index.html", html);
 
 const hash = crypto.createHash("sha256").update(html).digest("hex").slice(0, 10);

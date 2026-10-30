@@ -83,7 +83,7 @@ function WeekCard({ st }) {
       </div>
       <div
         className="week-bars"
-        role="list"
+        role="group"
         aria-label="Minutos practicados por día"
       >
         {now.days.map((d, i) => {
@@ -91,7 +91,7 @@ function WeekCard({ st }) {
           return (
             <button
               type="button"
-              role="listitem"
+              aria-pressed={i === sel}
               className={cx("week-bar", i === sel && "on", i === 6 && "today")}
               onClick={() => setSel(i)}
               aria-label={`${dt.toLocaleDateString("es-UY", { weekday: "long" })}: ${minutes(d.secs)} minutos`}

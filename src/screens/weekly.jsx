@@ -113,7 +113,7 @@ function WeeklyCard({ st }) {
         </span>
         <div className="grow">
           <div className="eyebrow acc">Desafío semanal</div>
-          <h3 className="weekly-title">{w.ch.title}</h3>
+          <h2 className="weekly-title">{w.ch.title}</h2>
           <p className="muted small">{w.ch.desc}</p>
         </div>
       </div>

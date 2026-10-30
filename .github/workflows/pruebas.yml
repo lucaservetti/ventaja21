@@ -1,0 +1,45 @@
+# Corre todas las pruebas en cada cambio: estrategia, simulador y la app de punta a punta
+# (en español y en inglés, incluidas todas las lecciones). Si algo se rompe, sale en rojo.
+name: Pruebas
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Instalar Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Armar la app
+        run: npm run build
+
+      - name: Estrategia, simulador y estilo
+        run: npm test
+
+      - name: La app de punta a punta
+        env:
+          TODAS: "1"
+        run: npm run test:e2e
+
+      - name: Capturas de lo que falló
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fallas
+          path: tests/e2e/fallas/
+          if-no-files-found: ignore
