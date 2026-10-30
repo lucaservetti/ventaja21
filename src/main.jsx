@@ -53,6 +53,8 @@ import { Premium } from "./screens/Premium.jsx";
 import { Account } from "./screens/Account.jsx";
 import { Ranking } from "./screens/Ranking.jsx";
 import { initCloud, reportError } from "./cloud.js";
+import { Challenge } from "./screens/Challenge.jsx";
+import { pendingChallenge, takeChallengeFromUrl } from "./challenge.js";
 import {
   NATIVE,
   initPlatform,
@@ -112,6 +114,7 @@ const SCREENS = {
   blitz: Blitz,
   premium: Premium,
   account: Account,
+  challenge: Challenge,
   ranking: Ranking,
 };
 const SHEETS = {
@@ -276,6 +279,22 @@ function App() {
       cancel(id);
     };
   }, [pending]);
+  // Un desafío de un amigo (enlace con #reto=…): se abre apenas termina la bienvenida.
+  const onboardedNow = a.profile.onboarded;
+  useEffect(() => {
+    if (!onboardedNow) return undefined;
+    const open = () => {
+      const c = pendingChallenge();
+      if (c) y.push("challenge", { challenge: c });
+    };
+    open();
+    const onHash = () => {
+      takeChallengeFromUrl();
+      open();
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, [onboardedNow]);
   // Tema (oscuro o claro) y tamaño de letra.
   const theme = a.settings.theme || "dark";
   const bigText = !!a.settings.bigText;
@@ -519,6 +538,7 @@ appRoot.render(
 );
 // Actualizaciones: el iPhone retoma la app suspendida sin recargarla, así que al volver se busca
 // una versión nueva; cuando llega, se recarga en cuanto estés en una pestaña (nunca a mitad de algo).
+takeChallengeFromUrl();
 initPlatform();
 initCloud();
 if ("serviceWorker" in navigator && !NATIVE) {

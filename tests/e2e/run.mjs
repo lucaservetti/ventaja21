@@ -130,8 +130,12 @@ const PRUEBAS = {
       s.settings = { ...(s.settings || {}), unlockAll: true };
       localStorage.setItem(k, JSON.stringify(s));
     });
+    // Reloj falso: en cada paso se adelanta un poco, así no se espera la narración ni las animaciones.
+    await page.clock.install();
+    await page.addStyleTag({ content: "*,*::before,*::after{animation-duration:1ms!important;transition-duration:1ms!important}" }).catch(() => {});
     await page.reload();
     await page.waitForTimeout(900);
+    await page.addStyleTag({ content: "*,*::before,*::after{animation-duration:1ms!important;transition-duration:1ms!important}" });
     await h.tab("Aprender", "Learn");
     const total = await page.locator("section:not([hidden]) .rail li").count();
     check(total > 20, `hay pocas lecciones (${total})`);
@@ -147,7 +151,7 @@ const PRUEBAS = {
       if (done >= total) break;
       stuck = done === last ? stuck + 1 : 0;
       last = done;
-      check(stuck < 400, `se trabó después de ${done} lecciones`);
+      check(stuck < 250, `se trabó después de ${done} lecciones`);
       if (!(await page.locator(".layer.full").filter({ visible: true }).count())) {
         // En la pestaña: abrir la primera lección sin terminar.
         const next = page.locator("section:not([hidden]) .rail li:not(.rr-done)").first();
@@ -188,7 +192,8 @@ const PRUEBAS = {
       } catch {
         // Cambió la pantalla: se sigue.
       }
-      await page.waitForTimeout(120);
+      await page.clock.fastForward(700);
+      await page.waitForTimeout(30);
     }
     const done = await doneCount();
     check(done >= total, `solo se terminaron ${done} de ${total} lecciones`);
@@ -260,6 +265,50 @@ const PRUEBAS = {
     const st = await h.state();
     check(st.daily && Object.keys(st.daily.results || {}).length === 1, "el desafío no se guardó");
     await h.foto("resultado");
+  },
+
+  // Desafiar a un amigo: el contrarreloj manda un enlace; quien lo abre ve las mismas manos y el resultado.
+  async amigo(h) {
+    const { page } = h;
+    await page.clock.install();
+    await page.reload();
+    await page.waitForTimeout(900);
+    await page.evaluate(() => {
+      navigator.share = async (d) => {
+        window.__shared = d;
+      };
+    });
+    await h.tab("Entrenar", "Train");
+    await h.click("Contrarreloj", "Beat the clock", { wait: 500 });
+    await h.click("Empezar", "Start", { exact: true, wait: 600 });
+    const firstHand = await page.locator(".blitz-deal").innerText();
+    await h.css(".act-btn.act-S", 200);
+    // Se adelanta el reloj: terminan los 60 segundos.
+    await page.clock.fastForward(62000);
+    await page.locator(".blitz-time").waitFor({ state: "detached", timeout: 5000 });
+    await h.foto("fin");
+    await h.click("Desafiar a un amigo", "Challenge a friend", { wait: 300 });
+    await page.locator(".modal input").fill("Ana");
+    await h.click("Mandar el desafío", "Send the challenge", { wait: 500 });
+    const shared = await page.evaluate(() => window.__shared && window.__shared.text);
+    check(shared && /#reto=/.test(shared), "no se compartió el enlace");
+    const link = shared.match(/https?:\/\/\S+#reto=[\w-]+/)[0];
+    const code = link.split("#reto=")[1];
+    // Otra persona abre el enlace.
+    const other = await page.context().browser().newContext({ viewport: { width: 390, height: 844 }, locale: h.T("es-UY", "en-US") });
+    await other.addInitScript(`localStorage.setItem("edge21.lang", ${JSON.stringify(h.T("es", "en"))}); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(ONB))});`);
+    const p2 = await other.newPage();
+    await p2.goto(page.url().split("#")[0] + "#reto=" + code);
+    await p2.waitForTimeout(1200);
+    await p2.getByText(h.T("Ana te desafía", "Ana challenges you")).first().waitFor({ timeout: 5000 });
+    if (FOTOS) await p2.screenshot({ path: path.join(FOTOS, `amigo-${h.T("es", "en")}-recibe.png`) });
+    await p2.getByText(h.T("Aceptar el desafío", "Accept the challenge")).click();
+    await p2.waitForTimeout(400);
+    await p2.getByText(h.T("Empezar", "Start"), { exact: true }).filter({ visible: true }).first().click();
+    await p2.waitForTimeout(600);
+    const hand2 = await p2.locator(".blitz-deal").innerText();
+    check(hand2 === firstHand, `la mano no es la misma (${firstHand} / ${hand2})`);
+    await other.close();
   },
 
   // Premium en modo app (simulado): planes, condiciones y la prueba de 30 minutos una sola vez.

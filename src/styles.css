@@ -8373,3 +8373,47 @@ html[data-theme="light"] .tab.on .tab-ic {
   width: 100%;
   margin: 8px 0 4px;
 }
+
+/* ---------- Desafiar a un amigo ---------- */
+.chal-hero {
+  display: grid;
+  gap: 10px;
+  margin-top: 6px;
+}
+.chal-hero h1 {
+  font-size: 28px;
+}
+.chal-score {
+  font-size: 18px;
+}
+.chal-score b {
+  color: var(--accent);
+  font-size: 24px;
+}
+.chal-out {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+  border: 1px solid var(--accent-line);
+}
+.chal-out h2 {
+  font-size: 26px;
+}
+.chal-out.win h2 {
+  color: var(--good);
+}
+.chal-out.lose h2 {
+  color: var(--bad);
+}
+.chal-vs {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  text-align: center;
+}
+.chal-vs b {
+  font-size: 30px;
+}
+.chal-cta {
+  margin-top: 12px;
+}
