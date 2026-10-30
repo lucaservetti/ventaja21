@@ -118,6 +118,18 @@ await paso("con progreso en los dos lados pregunta, y elegir el de la cuenta lo 
   check(st.train.totalHands === 42 && !(st.lessons.l2 && st.lessons.l2.done), "no se usó el progreso de la cuenta");
 });
 
+await paso("Premium por cuenta: lo marca el dueño en Firebase y se activa", async () => {
+  await fetch(`${FS}/premium/${uid}`, { method: "PATCH", headers: { Authorization: "Bearer owner", "Content-Type": "application/json" }, body: JSON.stringify({ fields: { activo: { booleanValue: true } } }) });
+  await a.evaluate(() => window.__cloudTest.checkPremium());
+  await a.waitForTimeout(500);
+  const st = await state(a);
+  check(st.settings.cloudPremium === true, "no se activó Premium");
+  // Desde la app nadie puede darse Premium a sí mismo.
+  const t = await a.evaluate(() => JSON.parse(localStorage.getItem("edge21.account")).token);
+  const r = await fetch(`${FS}/premium/${uid}`, { method: "PATCH", headers: { Authorization: `Bearer ${t}`, "Content-Type": "application/json" }, body: JSON.stringify({ fields: { activo: { booleanValue: true } } }) });
+  check(r.status === 403, `la app pudo escribir Premium (${r.status})`);
+});
+
 await paso("los errores de la app llegan a la nube", async () => {
   await a.evaluate(() => setTimeout(() => {
     throw new Error("error de prueba");

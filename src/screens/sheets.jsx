@@ -23,7 +23,7 @@ import { SYSTEMS, SYSTEM_IDS } from "../engine/systems.js";
 import { HiLoValues } from "../lessons/visuals.jsx";
 import { SystemValues } from "./CountTab.jsx";
 import { useNav } from "../nav.js";
-import { APP_MODE, NATIVE } from "../platform.js";
+import { NATIVE, hasPremium } from "../platform.js";
 import { LANG, setLang } from "../i18n/index.js";
 
 const VERSION = __APP_VERSION__;
@@ -49,7 +49,7 @@ function SettingsSheet({ open: a, onClose: e }) {
     );
   return (
     <Sheet open={a} onClose={e} title="Ajustes" tall={true}>
-      {APP_MODE ? (
+      {
         <button
           type="button"
           className="list-item setting-link prem-setting"
@@ -60,17 +60,17 @@ function SettingsSheet({ open: a, onClose: e }) {
         >
           <span className="li-text">
             <span className="li-title" style={{ fontSize: 17 }}>
-              {n.premium ? "Sos Premium" : "Edge 21 Premium"}
+              {hasPremium(t) ? "Sos Premium" : "Edge 21 Premium"}
             </span>
             <span className="li-sub" style={{ display: "block" }}>
-              {n.premium
+              {hasPremium(t)
                 ? "Gracias por apoyar la app"
                 : "Sin anuncios y con todo lo avanzado"}
             </span>
           </span>
           <Icon name="chev" className="li-chev" />
         </button>
-      ) : null}
+      }
       {ACCOUNTS ? (
         <button
           type="button"

@@ -5,6 +5,7 @@ import { Icon } from "../ui/icons.jsx";
 import { Button, cx } from "../ui/components.jsx";
 import { TopBar } from "../ui/common.jsx";
 import {
+  APP_MODE,
   NATIVE,
   buyPremium,
   earnFeatureTrial,
@@ -17,6 +18,7 @@ import {
   trialFor,
 } from "../platform.js";
 import { useNav } from "../nav.js";
+import { ACCOUNTS, useAccount } from "../cloud.js";
 
 const FEATURES = {
   casino: "El modo casino real",
@@ -78,6 +80,9 @@ function Premium({ feature, then }) {
   const [passBusy, setPassBusy] = useState(false);
   useEffect(() => onShop(() => setTick((x) => x + 1)), []);
   const owned = hasPremium(st);
+  const { acct } = useAccount();
+  // En la web (no en Android) todavía no se puede pagar: Premium llega por la cuenta.
+  const web = !APP_MODE;
   const trial = trialFor(feature, st);
   const plans = NATIVE
     ? shop.plans
@@ -180,6 +185,13 @@ function Premium({ feature, then }) {
       </div>
       {!owned && options.length ? (
         <div className="prem-plans" role="radiogroup" aria-label="Planes">
+          {web ? (
+            <p className="small prem-web">
+              Por ahora Premium se compra en la app de Android, que sale muy
+              pronto en Google Play. Si ya sos Premium, entrá con tu cuenta de
+              Google y lo tenés también acá.
+            </p>
+          ) : null}
           {options.map((o) => (
             <button
               type="button"
@@ -220,7 +232,11 @@ function Premium({ feature, then }) {
           {feature && FEATURES[feature] && !trial.used ? (
             <>
               <Button kind="outline" onClick={tryWithAd} disabled={passBusy}>
-                {passBusy ? "Cargando…" : "Probarlo 30 minutos con un anuncio"}
+                {passBusy
+                  ? "Cargando…"
+                  : web
+                    ? "Probarlo 30 minutos gratis"
+                    : "Probarlo 30 minutos con un anuncio"}
               </Button>
               <p className="muted small prem-once">
                 Podés probar cada función una sola vez.
@@ -260,6 +276,14 @@ function Premium({ feature, then }) {
               </Button>
             ) : null}
           </div>
+        ) : web ? (
+          ACCOUNTS && !acct ? (
+            <Button onClick={() => nav.push("account")}>
+              Ya soy Premium: entrar con mi cuenta
+            </Button>
+          ) : (
+            <Button disabled={true}>Muy pronto: pagar desde la web</Button>
+          )
         ) : (
           <Button
             onClick={() => buyPremium(pick)}

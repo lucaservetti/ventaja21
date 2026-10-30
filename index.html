@@ -9,7 +9,10 @@
 <link rel="icon" href="app/favicon.svg" type="image/svg+xml">
 <meta property="og:title" content="Edge 21 · Blackjack y conteo de cartas">
 <meta property="og:description" content="Aprendé estrategia básica y conteo de cartas, paso a paso.">
-<meta property="og:image" content="https://edge21.app/store/grafico-destacado.png">
+<meta property="og:image" content="https://edge21.app/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="Edge 21">
 <meta property="og:url" content="https://edge21.app/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -44,6 +47,7 @@
   .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
   .btn { display: inline-flex; align-items: center; gap: 10px; padding: 15px 22px; border-radius: 999px; font-weight: 800; text-decoration: none; font-size: 17px; transition: transform 0.15s; }
   .btn:active { transform: scale(0.97); }
+  button.btn { background: none; border: 0; cursor: pointer; font-family: inherit; }
   .btn.gold { background: var(--gold); color: var(--gold-ink); }
   .btn.ghost { border: 2px solid var(--gold); color: var(--gold); }
   .btn.soon { background: var(--surface-2); color: var(--text-2); cursor: default; }
@@ -152,6 +156,47 @@
   .final img { width: 74px; height: 74px; }
   .final .ctas { justify-content: center; }
   footer nav { display: flex; gap: 16px; flex-wrap: wrap; }
+
+  /* Mini juego */
+  .quiz { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; background: radial-gradient(90% 120% at 70% 30%, #17603f 0%, #0b2f1e 60%, var(--surface) 100%); border: 1px solid var(--line); border-radius: 30px; padding: 34px 40px; }
+  .qz-table { background: #0d3b26; border: 2px solid rgba(233, 185, 73, 0.35); border-radius: 26px; padding: 22px; display: grid; gap: 18px; box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.35); }
+  .qz-side { display: flex; align-items: center; gap: 14px; }
+  .qz-side small { display: block; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(243, 239, 226, 0.7); font-weight: 800; width: 92px; }
+  .qz-cards { display: flex; gap: 8px; }
+  .qz-card { width: 62px; height: 86px; border-radius: 10px; background: #fbf8ef; color: #15130f; display: grid; place-items: center; font: 600 30px/1 Oswald, sans-serif; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35); animation: qzIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+  .qz-card.red { color: #c8281e; }
+  .qz-card span { display: block; font-size: 22px; margin-top: -10px; }
+  .qz-card.back { background: repeating-linear-gradient(45deg, #1b5a3c 0 6px, #134a30 6px 12px); border: 3px solid #fbf8ef; }
+  .qz-total { color: var(--text-2); font-weight: 700; font-size: 15px; }
+  @keyframes qzIn { from { transform: translateY(-16px) rotate(-6deg); opacity: 0; } }
+  .qz-acts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .qz-acts button { border: 0; border-radius: 16px; padding: 14px 8px; font: 800 16px "DM Sans", sans-serif; cursor: pointer; background: #1d5a3d; color: var(--text); box-shadow: 0 4px 0 #0f3524; transition: transform 0.1s, background 0.2s; }
+  .qz-acts button:active { transform: translateY(3px); box-shadow: 0 1px 0 #0f3524; }
+  .qz-acts button:disabled { cursor: default; opacity: 0.55; }
+  .qz-acts button.ok { background: #2f9e5b; opacity: 1; }
+  .qz-acts button.bad { background: #b8402f; opacity: 1; }
+  .qz-fb { margin-top: 14px; }
+  .qz-fb:empty { display: none; }
+  .qz-fb b { font-size: 19px; }
+  .qz-fb b.ok { color: #6fdc96; }
+  .qz-fb b.bad { color: #ff8a73; }
+  .qz-fb p { margin: 4px 0 0; color: var(--text-2); font-size: 15.5px; }
+  .qz-next { margin-top: 12px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .qz-score { color: var(--text-2); font-weight: 700; }
+
+  /* Botón fijo en el celular */
+  .dock { display: none; }
+  @media (max-width: 820px) {
+    .dock { display: flex; position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 30; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-radius: 999px; background: rgba(15, 34, 25, 0.94); border: 1px solid rgba(233, 185, 73, 0.4); box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transform: translateY(140%); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .dock.on { transform: none; }
+    .dock img { width: 30px; height: 30px; }
+    .dock span { flex: 1; font-weight: 800; font-size: 15px; line-height: 1.2; }
+    .dock .btn { padding: 11px 18px; font-size: 15px; white-space: nowrap; }
+    footer { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
+    .quiz { grid-template-columns: 1fr; padding: 24px 18px; gap: 18px; }
+    .qz-card { width: 54px; height: 76px; font-size: 26px; }
+    .qz-side small { width: 74px; }
+  }
   .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
   .reveal.in { opacity: 1; transform: none; }
   @keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
@@ -220,6 +265,31 @@
       <img class="phone b" data-img="mano" alt="">
     </div>
   </div>
+
+  <section class="reveal" id="probar">
+    <div class="quiz">
+      <div>
+        <h2 data-t="qz-title"></h2>
+        <p class="sub" style="margin-bottom:0" data-t="qz-sub"></p>
+      </div>
+      <div>
+        <div class="qz-table">
+          <div class="qz-side"><small data-t="qz-dealer"></small><div class="qz-cards" id="qz-dealer"></div></div>
+          <div class="qz-side"><small data-t="qz-you"></small><div class="qz-cards" id="qz-you"></div><span class="qz-total" id="qz-total"></span></div>
+        </div>
+        <div class="qz-acts" style="margin-top:14px">
+          <button type="button" data-a="H" data-t="qz-h"></button>
+          <button type="button" data-a="S" data-t="qz-s"></button>
+          <button type="button" data-a="D" data-t="qz-d"></button>
+        </div>
+        <div class="qz-fb" id="qz-fb" aria-live="polite"></div>
+        <div class="qz-next" id="qz-next" hidden>
+          <button type="button" class="btn ghost" id="qz-again" data-t="qz-again"></button>
+          <span class="qz-score" id="qz-score"></span>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section class="reveal" id="video">
     <h2 data-t="v-title"></h2>
@@ -339,6 +409,11 @@
     </nav>
   </footer>
 </main>
+<div class="dock" id="dock" aria-hidden="true">
+  <img src="img/ficha.svg" alt="">
+  <span data-t="dock"></span>
+  <a class="btn gold" href="app/" data-t="go" tabindex="-1"></a>
+</div>
 
 <script>
   // Cuando la app esté publicada en Google Play, cambiá PUBLISHED a true.
@@ -346,6 +421,10 @@
   const PLAY_URL = "https://play.google.com/store/apps/details?id=com.lucaservetti.ventaja21";
   const T = {
     es: {
+      "qz-title": "¿Sabés jugar esta mano?", "qz-sub": "Probá acá mismo: elegí la jugada correcta según la estrategia básica.",
+      "qz-dealer": "Crupier", "qz-you": "Tu mano", "qz-h": "Pedir", "qz-s": "Plantarse", "qz-d": "Doblar",
+      "qz-again": "Otra mano", "qz-ok": "¡Correcto!", "qz-bad": "No era esa: la jugada es {0}.", "qz-score": "{0} de {1} bien",
+      "qz-more": "¿Te gustó? En la app hay miles de manos, la tabla completa y el conteo de cartas.", dock: "Aprendé blackjack gratis",
       n1: "Funciones", n2: "Premium", n3: "Preguntas", go: "Jugar ahora",
       t1: "36 lecciones", t2: "10 niveles de conteo", t3: "Español e inglés", t4: "Sin plata real",
       "v-title": "Mirala en acción", "v-sub": "Así se ve por dentro: cada mano, cada carta y cada apuesta.",
@@ -387,6 +466,10 @@
       foot: "Edge 21 · hecho por Luca ♠ · Es para aprender: jugá solo plata que no necesitás.", privacy: "Política de privacidad",
     },
     en: {
+      "qz-title": "Can you play this hand?", "qz-sub": "Try it right here: pick the correct play by basic strategy.",
+      "qz-dealer": "Dealer", "qz-you": "Your hand", "qz-h": "Hit", "qz-s": "Stand", "qz-d": "Double",
+      "qz-again": "Another hand", "qz-ok": "Correct!", "qz-bad": "Not quite: the play is {0}.", "qz-score": "{0} of {1} right",
+      "qz-more": "Liked it? The app has thousands of hands, the full chart and card counting.", dock: "Learn blackjack for free",
       n1: "Features", n2: "Premium", n3: "FAQ", go: "Play now",
       t1: "36 lessons", t2: "10 counting levels", t3: "Spanish and English", t4: "No real money",
       "v-title": "See it in action", "v-sub": "This is what it looks like inside: every hand, every card and every bet.",
@@ -446,11 +529,12 @@
     if (PUBLISHED) play.href = PLAY_URL; else play.removeAttribute("href");
     document.getElementById("privacy").href = lang === "en" ? "privacidad.html#en" : "privacidad.html";
     try { localStorage.setItem("edge21.lang", lang); } catch {}
+    if (typeof deal === "function" && document.getElementById("qz-you").innerHTML) deal();
   }
   let lang = "es";
   try { lang = localStorage.getItem("edge21.lang") || (/^es\b/i.test(navigator.language) ? "es" : "en"); } catch {}
   setLang(lang === "en" ? "en" : "es");
-  document.querySelectorAll(".lang button").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
+  document.querySelectorAll(".lang button").forEach((b) => b.addEventListener("click", () => { lang = b.dataset.lang; setLang(lang); }));
   const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.12 });
   document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
   // Los videos se cargan y se reproducen solo cuando se ven (no gastan datos si nadie baja hasta ahí).
@@ -461,6 +545,61 @@
     else v.pause();
   }), { threshold: 0.35 });
   document.querySelectorAll("[data-vid]").forEach((v) => { if (still) v.controls = true; vo.observe(v); });
+
+  // ---- Mini juego: manos de la estrategia básica (6 mazos, el crupier se planta con 17 blando) ----
+  const HANDS = [
+    { d: "10", p: ["10", "6"], a: "H", es: "Con 16 contra un 10 perdés seguido igual, pero plantarte pierde más: el crupier llega a 17 o más muy seguido.", en: "16 against a 10 loses often either way, but standing loses more: the dealer reaches 17+ very often." },
+    { d: "4", p: ["10", "2"], a: "S", es: "Contra un 4 el crupier se pasa mucho. Con 12 no te arriesgues: dejá que pida él.", en: "Against a 4 the dealer busts a lot. With 12 don't risk it: let them draw." },
+    { d: "6", p: ["5", "6"], a: "D", es: "11 contra un 6 es la mejor mano para doblar: hay muchas cartas de 10 y el 6 es la peor carta del crupier.", en: "11 against a 6 is the best double: lots of 10s and the 6 is the dealer's worst card." },
+    { d: "9", p: ["A", "7"], a: "H", es: "El 18 blando no alcanza contra un 9: el crupier suele llegar a 19. Pedí, que no te podés pasar.", en: "Soft 18 isn't enough against a 9: the dealer often makes 19. Hit, you can't bust." },
+    { d: "5", p: ["A", "7"], a: "D", es: "Contra un 5 el crupier está débil: doblá el 18 blando para ganar más cuando se pase.", en: "Against a 5 the dealer is weak: double soft 18 to win more when they bust." },
+    { d: "9", p: ["6", "4"], a: "D", es: "Con 10 contra un 9 doblás: tenés más chances que el crupier de llegar a una mano alta.", en: "With 10 against a 9 you double: you're more likely than the dealer to end up with a strong hand." },
+    { d: "2", p: ["7", "5"], a: "H", es: "12 contra un 2 es la excepción: el 2 no es tan débil, así que pedís una carta.", en: "12 against a 2 is the exception: the 2 isn't that weak, so you hit." },
+    { d: "2", p: ["9", "4"], a: "S", es: "Con 13 o más contra un 2 al 6 te plantás: que se arriesgue el crupier.", en: "With 13 or more against a 2 through 6 you stand: let the dealer take the risk." },
+    { d: "7", p: ["A", "6"], a: "H", es: "17 blando nunca se planta: pedís sin miedo, ninguna carta te pasa.", en: "Never stand on soft 17: hit without fear, no card can bust you." },
+    { d: "10", p: ["10", "7"], a: "S", es: "Con 17 duro siempre te plantás, incluso contra un 10.", en: "Always stand on hard 17, even against a 10." },
+    { d: "3", p: ["5", "4"], a: "D", es: "9 contra un 3 al 6: doblás, porque el crupier está débil.", en: "9 against a 3 through 6: double, the dealer is weak." },
+    { d: "7", p: ["9", "6"], a: "H", es: "15 contra un 7: el crupier tiene buena carta, así que pedís aunque te puedas pasar.", en: "15 against a 7: the dealer has a good card, so you hit even though you might bust." },
+  ];
+  const SUITS = ["♠", "♥", "♦", "♣"];
+  const VAL = (r) => (r === "A" ? 11 : Number(r));
+  let qOrder = HANDS.map((_, i) => i).sort(() => Math.random() - 0.5);
+  let qi = 0, qOk = 0, qN = 0, qDone = false;
+  const cardEl = (r, k) => { const s = SUITS[(k + r.length + qi) % 4]; return `<div class="qz-card${s === "♥" || s === "♦" ? " red" : ""}" style="animation-delay:${k * 0.08}s"><div>${r}<span>${s}</span></div></div>`; };
+  function total(p) { let t = p.reduce((a, r) => a + VAL(r), 0); const soft = p.includes("A") && t <= 21; if (t > 21 && p.includes("A")) t -= 10; return (soft ? (lang === "en" ? "Soft " : "Blando ") : "") + t; }
+  function deal() {
+    const h = HANDS[qOrder[qi % qOrder.length]];
+    qDone = false;
+    document.getElementById("qz-dealer").innerHTML = cardEl(h.d, 0) + '<div class="qz-card back"></div>';
+    document.getElementById("qz-you").innerHTML = h.p.map((r, k) => cardEl(r, k + 1)).join("");
+    document.getElementById("qz-total").textContent = total(h.p);
+    document.getElementById("qz-fb").innerHTML = "";
+    document.getElementById("qz-next").hidden = true;
+    document.querySelectorAll(".qz-acts button").forEach((b) => { b.disabled = false; b.className = ""; });
+  }
+  function answer(a) {
+    if (qDone) return;
+    qDone = true;
+    const h = HANDS[qOrder[qi % qOrder.length]];
+    const t = T[lang];
+    const ok = a === h.a;
+    qN++; if (ok) qOk++;
+    document.querySelectorAll(".qz-acts button").forEach((b) => { b.disabled = true; if (b.dataset.a === h.a) b.className = "ok"; else if (b.dataset.a === a) b.className = "bad"; });
+    const name = t["qz-" + h.a.toLowerCase()];
+    document.getElementById("qz-fb").innerHTML = `<b class="${ok ? "ok" : "bad"}">${ok ? t["qz-ok"] : t["qz-bad"].replace("{0}", name.toLowerCase())}</b><p>${h[lang]}</p>${qN >= 3 ? `<p><a href="app/">${t["qz-more"]}</a></p>` : ""}`;
+    document.getElementById("qz-score").textContent = t["qz-score"].replace("{0}", qOk).replace("{1}", qN);
+    document.getElementById("qz-next").hidden = false;
+  }
+  document.querySelectorAll(".qz-acts button").forEach((b) => b.addEventListener("click", () => answer(b.dataset.a)));
+  document.getElementById("qz-again").addEventListener("click", () => { qi++; deal(); });
+  deal();
+
+  // ---- Botón fijo en el celular: aparece cuando ya no se ve el de arriba ----
+  const dock = document.getElementById("dock");
+  let heroOut = false, endIn = false;
+  const showDock = () => { const on = heroOut && !endIn; dock.classList.toggle("on", on); dock.setAttribute("aria-hidden", on ? "false" : "true"); dock.querySelector("a").tabIndex = on ? 0 : -1; };
+  new IntersectionObserver(([e]) => { heroOut = !e.isIntersecting; showDock(); }).observe(document.querySelector(".hero .ctas"));
+  new IntersectionObserver(([e]) => { endIn = e.isIntersecting; showDock(); }).observe(document.querySelector(".final"));
   const bar = document.getElementById("bar");
   addEventListener("scroll", () => bar.classList.toggle("scrolled", scrollY > 8), { passive: true });
 </script>
