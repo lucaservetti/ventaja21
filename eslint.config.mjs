@@ -15,6 +15,7 @@ export default [
         ...globals.node,
         __APP_VERSION__: "readonly",
         __ADMOB_INTERSTITIAL__: "readonly",
+        __ADMOB_REWARDED__: "readonly",
       },
     },
     rules: { "no-undef": "error" },

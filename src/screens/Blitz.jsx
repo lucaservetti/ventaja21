@@ -53,7 +53,9 @@ function Blitz() {
     // El número cambia una vez por segundo: no hace falta volver a dibujar más seguido.
     const id = setInterval(() => {
       const ms = Math.max(0, endAt.current - Date.now());
-      setLeft((prev) => (Math.ceil(prev / 1000) === Math.ceil(ms / 1000) ? prev : ms));
+      setLeft((prev) =>
+        Math.ceil(prev / 1000) === Math.ceil(ms / 1000) ? prev : ms,
+      );
       if (ms <= 0) finish();
     }, 100);
     return () => clearInterval(id);

@@ -29,7 +29,7 @@ UN CASINO EN TU MANO
 • Simulador de blackjack con otros jugadores, chequeos de conteo y mentor de jugadas y apuestas.
 • Reglas configurables: mazos, corte del zapato, 3:2 o 6:5, H17 o S17, rendición y más.
 
-PREMIUM (UN SOLO PAGO, SIN SUSCRIPCIÓN)
+PREMIUM (MENSUAL, ANUAL CON 7 DÍAS GRATIS, O UN SOLO PAGO)
 • Sin anuncios.
 • Modo casino real: tu plata (dólares, pesos o euros), límites de mesa, tiempo para decidir, vigilancia del casino, modo turista y examen con certificado.
 • Ruta de desviaciones completa: los Illustrious 18 y el Fab 4, hasta calcular vos el conteo real.

@@ -8148,3 +8148,89 @@ html[data-theme="light"] .tab.on .tab-ic {
   gap: 10px;
   margin-top: 8px;
 }
+
+/* ---------- Premium: planes ---------- */
+.prem-plans {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+.prem-plan {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 14px;
+  border-radius: 18px;
+  background: var(--surface);
+  border: 2px solid var(--line, #1d4a33);
+  text-align: left;
+  color: inherit;
+  transition:
+    border-color 0.18s,
+    background-color 0.18s;
+}
+.prem-plan.on {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.prem-radio {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--muted, #8aa597);
+  flex: none;
+  display: grid;
+  place-items: center;
+}
+.prem-radio::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: scale(0);
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.prem-plan.on .prem-radio {
+  border-color: var(--accent);
+}
+.prem-plan.on .prem-radio::after {
+  transform: scale(1);
+}
+.prem-plan-main {
+  flex: 1;
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.prem-plan-price {
+  display: grid;
+  justify-items: end;
+  gap: 3px;
+  text-align: right;
+}
+.prem-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent-ink);
+  background: var(--accent);
+  white-space: nowrap;
+}
+.prem-terms {
+  margin-top: 10px;
+  line-height: 1.45;
+}
+.prem-more {
+  margin-top: 16px;
+}
+.second-chance {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px dashed var(--accent-line);
+  display: grid;
+  gap: 10px;
+}

@@ -41,6 +41,7 @@ const js = await esbuild.build({
     __APP_VERSION__: JSON.stringify(version),
     // Anuncio intersticial de AdMob para Android. Sin la variable, se usa el anuncio de prueba de Google.
     __ADMOB_INTERSTITIAL__: JSON.stringify(process.env.ADMOB_INTERSTITIAL_ID || "ca-app-pub-3940256099942544/1033173712"),
+    __ADMOB_REWARDED__: JSON.stringify(process.env.ADMOB_REWARDED_ID || "ca-app-pub-3940256099942544/5224354917"),
   },
 });
 const css = await esbuild.transform(fs.readFileSync("fonts/fonts.css", "utf8") + fs.readFileSync("src/styles.css", "utf8"), { loader: "css", minify: true, target: "safari15" });

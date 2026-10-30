@@ -39,19 +39,28 @@ Después, en GitHub: **Settings → Secrets and variables → Actions → New re
 
 1. Entrá a <https://admob.google.com> con la misma cuenta de Google y creá la cuenta. Cargá el perfil de pagos y los datos de impuestos: es donde te pagan.
 2. **Apps → Agregar app → Android → "¿Está publicada?": No.** Nombre: Edge 21.
-3. Dentro de la app, **Bloques de anuncios → Agregar → Intersticial**. Nombre: "Entre actividades".
-4. Copiá los dos IDs:
+3. Dentro de la app, creá dos **bloques de anuncios**:
+   - **Intersticial**, con el nombre "Entre actividades";
+   - **Bonificado** (*rewarded*), con el nombre "Segunda oportunidad". Premio: 1, "intento".
+4. Copiá los tres IDs:
    - el **ID de la app**, con este formato: `ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY`;
-   - el **ID del bloque intersticial**, con este formato: `ca-app-pub-XXXXXXXXXXXXXXXX/ZZZZZZZZZZ`.
+   - el **ID del bloque intersticial** y el **del bonificado**, con este formato: `ca-app-pub-XXXXXXXXXXXXXXXX/ZZZZZZZZZZ`.
 5. En GitHub: **Settings → Secrets and variables → Actions → pestaña Variables → New repository variable**:
    - `ADMOB_APP_ID` = el ID de la app;
-   - `ADMOB_INTERSTITIAL_ID` = el ID del bloque.
+   - `ADMOB_INTERSTITIAL_ID` = el ID del bloque intersticial;
+   - `ADMOB_REWARDED_ID` = el ID del bloque bonificado.
 6. En AdMob: **Privacidad y mensajes → GDPR → Crear mensaje**, y publicalo. Así a los usuarios de Europa les aparece el formulario de consentimiento que la app ya sabe mostrar.
 7. Cuando la app esté publicada, volvé a AdMob y **vinculala con Google Play** (Configuración de la app → Tiendas de aplicaciones).
 
 > Mientras no cargues esas variables, la app muestra **anuncios de prueba de Google** (dicen "Test Ad"). No generan plata, pero sirven para probar. **No publiques en producción sin cargar las variables.**
 
-**Cómo funcionan los anuncios en la app:** un anuncio de pantalla completa de vez en cuando, solo al volver a una pestaña después de terminar algo (una lección, una tanda o un ejercicio). Nunca en los primeros 3 minutos, nunca más de uno cada 4 minutos y nunca en medio de una práctica. Quien compra Premium no ve ninguno.
+**Cómo funcionan los anuncios en la app:** el detalle está en `store/monetizacion.md`. En resumen:
+
+- un anuncio de pantalla completa solo al volver al menú después de terminar 2 cosas;
+- como mucho uno cada 5 minutos y 6 por día;
+- ninguno el primer día ni en medio de una práctica;
+- los anuncios con premio son siempre opcionales: segunda oportunidad del desafío diario, o probar una función Premium por 1 hora;
+- con Premium o durante la prueba gratis, ninguno.
 
 ## Paso 4 · Armar el archivo de la app (.aab)
 
@@ -94,13 +103,26 @@ La app también está en inglés (sale en inglés en los celulares que no están
 ## Paso 6 · Prueba interna y el producto Premium
 
 1. **Pruebas → Prueba interna → Crear versión** y subí el `.aab` del paso 4. Agregá tu mail como tester y abrí el enlace para instalarla en un Android.
-2. Con esa primera versión subida, ya se puede crear el producto (Google lo pide así). Andá a **Monetizar → Productos → Productos integrados en la aplicación → Crear producto**:
-   - **ID del producto: `premium`.** Tiene que ser exactamente ese, porque la app lo busca con ese nombre.
-   - Nombre: *Edge 21 Premium*. Descripción: *Sin anuncios y con todo lo avanzado, para siempre.*
-   - Precio: por ejemplo US$4,99. Play lo convierte solo a pesos y a las demás monedas, y vos podés ajustarlo por país.
-   - **Activar.**
+2. Con esa primera versión subida, ya se pueden crear los productos (Google lo pide así). Los nombres tienen que ser **exactamente** estos, porque la app los busca así:
+   - **Suscripción.** Andá a **Monetizar → Productos → Suscripciones → Crear suscripción**.
+     - ID del producto: **`edge21_premium`**. Nombre: *Edge 21 Premium*.
+     - Adentro, creá dos **planes básicos**, los dos *de renovación automática*:
+       - ID **`mensual`**, período mensual, US$2,99;
+       - ID **`anual`**, período anual, US$19,99.
+     - En el plan `anual`, **Agregar oferta**:
+       - ID **`prueba-7-dias`**;
+       - elegibilidad: *adquisición de clientes nuevos*, "nunca tuvo esta suscripción";
+       - una fase: **prueba gratuita de 7 días**.
+     - **Activá** los dos planes y la oferta.
+   - **Pago único.** Andá a **Monetizar → Productos → Productos integrados en la aplicación → Crear producto**.
+     - ID del producto: **`premium`**.
+     - Nombre: *Edge 21 Premium para siempre*. Descripción: *Sin anuncios y con todo lo avanzado, para siempre.*
+     - Precio: US$39,99.
+     - **Activar.**
+   - Play convierte los precios solo a pesos y a las demás monedas, y los podés ajustar por país. Ver la sección de precios en `store/monetizacion.md`.
 3. Para cobrar, Play te va a pedir completar el **perfil de pagos** (cuenta bancaria). Hacelo.
-4. Para probar la compra sin pagar: **Configuración → Pruebas de licencias** y agregá tu mail. Las compras de prueba no cobran.
+4. Para probar la compra sin pagar: **Configuración → Pruebas de licencias** y agregá tu mail. Las compras de prueba no cobran, y en las suscripciones de prueba un mes dura 5 minutos y un año 30 minutos, así ves la renovación enseguida.
+5. Anotate en el programa de **comisión del 15 %**. En Play Console aparece como el nivel de tarifa de servicio del 15 %; si no lo encontrás, buscalo en la ayuda. Así Google se queda con el 15 % de los pagos únicos en vez del 30 %, hasta el primer millón de dólares por año. Las suscripciones ya pagan 15 % desde el primer día.
 
 ## Paso 7 · Prueba cerrada (12 personas, 14 días)
 
@@ -123,6 +145,9 @@ En `store/testers.md` están los mensajes listos para mandar (en español y en i
 3. Play Console → la pista que corresponda → **Crear versión** → subilo.
 
 ## Recomendado (no obligatorio)
+
+- **Precios y anuncios:** el plan completo, con números y el calendario hasta el lanzamiento, está en `store/monetizacion.md`.
+- **TikTok e Instagram:** cómo crear las cuentas, la bio, la foto y qué publicar están en `store/redes/README.md`.
 
 - **Página web:** ya está en `https://lucaservetti.github.io/ventaja21/sitio/` (carpeta `sitio/`). Ponela como "sitio web" en la ficha de Play. Cuando la app esté publicada, cambiá `PUBLISHED = false` a `true` en `sitio/index.html` y el botón pasa a llevar a Google Play.
 - **app-ads.txt:** AdMob lo recomienda para cobrar el máximo por los anuncios. Tiene que estar en la raíz del dominio del sitio, o sea `https://lucaservetti.github.io/app-ads.txt`, y para eso hace falta un repositorio llamado `lucaservetti.github.io` con ese archivo (y un `index.html` que redirija a `/ventaja21/sitio/`). AdMob te da el texto exacto en *Apps → app-ads.txt*. Pedímelo y lo armo.

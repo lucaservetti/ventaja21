@@ -186,7 +186,7 @@ function App() {
       push(k, v = {}) {
         // En la app de Android, lo de Premium abre la pantalla de Premium.
         if (needsPremium(k, v)) {
-          v = { feature: k };
+          v = { feature: k, then: v };
           k = "premium";
         }
         let m = p();
@@ -194,7 +194,7 @@ function App() {
       },
       replace(k, v = {}) {
         if (needsPremium(k, v)) {
-          v = { feature: k };
+          v = { feature: k, then: v };
           k = "premium";
         }
         i((m) => {

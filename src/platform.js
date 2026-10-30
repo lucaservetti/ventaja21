@@ -1,10 +1,14 @@
-// Lo que cambia en la app de Android (Play Store): anuncios de vez en cuando y la compra de Premium.
+// Lo que cambia en la app de Android (Play Store): algunos anuncios y la compra de Premium.
 // En la web (GitHub Pages) no hay anuncios ni compras y todo queda abierto, como siempre.
 // Para probar en la compu cómo se ve en Android: localStorage.setItem("v21.sim", "1") y recargar.
 import { Capacitor } from "@capacitor/core";
-import { AdMob, AdmobConsentStatus } from "@capacitor-community/admob";
+import {
+  AdMob,
+  AdmobConsentStatus,
+  RewardAdPluginEvents,
+} from "@capacitor-community/admob";
 import { InAppReview } from "@capacitor-community/in-app-review";
-import { getState, setSettings } from "./state.js";
+import { getActivityTick, getState, setSettings } from "./state.js";
 
 function simulated() {
   try {
@@ -17,18 +21,24 @@ const NATIVE = Capacitor.isNativePlatform();
 // "Modo app": la de Android, o la web simulándola.
 const APP_MODE = NATIVE || simulated();
 
-const PREMIUM_ID = "premium";
-const AD_EVERY_MS = 4 * 60 * 1000; // como mucho un anuncio cada 4 minutos
-const FIRST_AD_AFTER_MS = 3 * 60 * 1000; // y nunca en los primeros 3 minutos de uso
-const AD_ID = __ADMOB_INTERSTITIAL__;
+// Productos de Google Play (tienen que llamarse igual en Play Console, ver store/monetizacion.md).
+const SUB_ID = "edge21_premium"; // suscripción con dos planes: "mensual" y "anual"
+const PLAN_MONTHLY = "mensual";
+const PLAN_YEARLY = "anual";
+const LIFETIME_ID = "premium"; // pago único, para siempre
+const PASS_MS = 60 * 60 * 1000; // probar una función Premium por 1 hora mirando un anuncio
 
 function hasPremium(st = getState()) {
   return !APP_MODE || !!st.settings.premium;
 }
+// Premium de verdad, o el pase de 1 hora que se gana mirando un anuncio.
+function unlocked(st = getState()) {
+  return hasPremium(st) || (st.settings.premiumPass || 0) > Date.now();
+}
 
 // Pantallas que son de Premium. La ruta de desviaciones es gratis hasta el nivel 2.
 function needsPremium(name, params = {}, st = getState()) {
-  if (hasPremium(st)) return false;
+  if (unlocked(st)) return false;
   if (["casino", "casinoPlay", "bankroll", "journal"].includes(name))
     return true;
   if (name === "devLevel") {
@@ -41,8 +51,48 @@ function needsPremium(name, params = {}, st = getState()) {
 }
 
 // ---- Anuncios ----
-const ads = { ready: false, loaded: false, canRequest: false, lastAt: 0 };
-const startedAt = Date.now();
+// Reglas para que no molesten:
+// - nunca en medio de una lección, una tanda o la mesa: solo al volver al menú;
+// - solo después de terminar 2 cosas (lecciones, tandas, ejercicios) desde el último;
+// - como mucho uno cada 5 minutos y 6 por día;
+// - el primer día de uso, ninguno;
+// - con Premium (o la prueba gratis), ninguno.
+// Los anuncios con premio son siempre opcionales: los elegís vos para ganar algo.
+const AD_GAP_MS = 5 * 60 * 1000;
+const ADS_PER_DAY = 6;
+const ACTIVITIES_PER_AD = 2;
+const GRACE_MS = 24 * 60 * 60 * 1000;
+const AD_ID = __ADMOB_INTERSTITIAL__;
+const REWARD_ID = __ADMOB_REWARDED__;
+const ADS_KEY = "edge21.ads";
+const ads = {
+  ready: false,
+  loaded: false,
+  rewardLoaded: false,
+  canRequest: false,
+  lastAt: 0,
+  done: 0,
+  tick: 0,
+};
+
+function adsToday() {
+  try {
+    const d = JSON.parse(localStorage.getItem(ADS_KEY) || "{}");
+    return d.day === new Date().toDateString() ? d.n || 0 : 0;
+  } catch {
+    return 0;
+  }
+}
+function countAd() {
+  try {
+    localStorage.setItem(
+      ADS_KEY,
+      JSON.stringify({ day: new Date().toDateString(), n: adsToday() + 1 }),
+    );
+  } catch {
+    // Sin almacenamiento no se cuenta: igual queda la pausa de 5 minutos.
+  }
+}
 
 async function loadInterstitial() {
   if (!ads.ready || !ads.canRequest || ads.loaded) return;
@@ -51,6 +101,15 @@ async function loadInterstitial() {
     ads.loaded = true;
   } catch {
     ads.loaded = false;
+  }
+}
+async function loadRewarded() {
+  if (!ads.ready || !ads.canRequest || ads.rewardLoaded) return;
+  try {
+    await AdMob.prepareRewardVideoAd({ adId: REWARD_ID });
+    ads.rewardLoaded = true;
+  } catch {
+    ads.rewardLoaded = false;
   }
 }
 
@@ -69,26 +128,90 @@ async function initAds() {
     await AdMob.initialize();
     ads.ready = true;
     loadInterstitial();
+    loadRewarded();
   } catch {
     ads.ready = false;
   }
 }
 
-// Se llama al terminar algo (volver a una pestaña después de una lección, una tanda o un ejercicio).
-// Nunca interrumpe una práctica.
+// Se llama al volver a una pestaña. Si mientras tanto terminaste algo, cuenta; y si se cumplen
+// todas las reglas de arriba, aparece un anuncio.
 async function maybeShowAd() {
+  const tick = getActivityTick();
+  if (tick !== ads.tick) {
+    ads.tick = tick;
+    ads.done++;
+  }
   if (!NATIVE || hasPremium() || !ads.loaded) return;
   const now = Date.now();
-  if (now - startedAt < FIRST_AD_AFTER_MS || now - ads.lastAt < AD_EVERY_MS)
+  const created = getState().profile.createdAt || now;
+  if (
+    ads.done < ACTIVITIES_PER_AD ||
+    now - created < GRACE_MS ||
+    now - ads.lastAt < AD_GAP_MS ||
+    adsToday() >= ADS_PER_DAY
+  )
     return;
   try {
     ads.loaded = false;
     ads.lastAt = now;
+    ads.done = 0;
+    countAd();
     await AdMob.showInterstitial();
   } catch {
     /* si no se pudo mostrar, no pasa nada */
   }
   setTimeout(loadInterstitial, 1500);
+}
+
+// Anuncio con premio, que la persona elige mirar. Devuelve true si se ganó el premio.
+// Si no hay anuncio para mostrar (sin conexión, sin anuncios disponibles), el premio se da igual.
+async function watchAdForReward() {
+  if (!APP_MODE || hasPremium()) return true;
+  if (!NATIVE) return true; // web simulando Android: no hay anuncios de verdad
+  if (!ads.rewardLoaded) {
+    await loadRewarded();
+    if (!ads.rewardLoaded) return true;
+  }
+  ads.rewardLoaded = false;
+  const handles = [];
+  const result = await new Promise((resolve) => {
+    let earned = false;
+    let settled = false;
+    const end = (v) => {
+      if (settled) return;
+      settled = true;
+      resolve(v);
+    };
+    Promise.all([
+      AdMob.addListener(RewardAdPluginEvents.Rewarded, () => {
+        earned = true;
+      }),
+      // Al cerrarlo se espera un instante: el aviso del premio puede llegar justo después.
+      AdMob.addListener(RewardAdPluginEvents.Dismissed, () =>
+        setTimeout(() => end(earned), 400),
+      ),
+      AdMob.addListener(RewardAdPluginEvents.FailedToShow, () => end(true)),
+    ])
+      .then((hs) => {
+        handles.push(...hs);
+        return AdMob.showRewardVideoAd();
+      })
+      .then(() => {
+        earned = true;
+      })
+      .catch(() => end(true));
+  });
+  for (const h of handles) h.remove();
+  setTimeout(loadRewarded, 1500);
+  return result;
+}
+
+// Mirar un anuncio para usar las funciones Premium durante 1 hora.
+async function earnPremiumPass() {
+  const ok = await watchAdForReward();
+  if (ok) setSettings({ premiumPass: Date.now() + PASS_MS });
+  return ok;
 }
 
 // Botón de "Privacidad de los anuncios" (obligatorio donde se pide consentimiento).
@@ -102,9 +225,11 @@ async function showAdPrivacy() {
 }
 
 // ---- Compra de Premium (Google Play Billing, con cordova-plugin-purchase) ----
+// Tres opciones: mensual, anual (con 7 días gratis para quien nunca la tuvo) y para siempre.
 const shop = {
   ready: false,
-  price: null,
+  plans: {}, // monthly, yearly, lifetime: { price, micros, currency, offerId, trialDays }
+  kind: null, // "sub" o "lifetime": lo que tenés
   error: null,
   busy: false,
   listeners: new Set(),
@@ -117,6 +242,53 @@ function onShop(fn) {
   return () => shop.listeners.delete(fn);
 }
 
+// "P1W" → 7, "P3D" → 3, "P1M" → 30.
+function periodDays(p) {
+  const m = /^P(\d+)([DWMY])$/.exec(p || "");
+  if (!m) return 0;
+  return Number(m[1]) * { D: 1, W: 7, M: 30, Y: 365 }[m[2]];
+}
+function readPlans(C) {
+  const { store, Platform } = C;
+  const plans = {};
+  const sub = store.get(SUB_ID, Platform.GOOGLE_PLAY);
+  for (const o of (sub && sub.offers) || []) {
+    const base = o.id.split("@")[1];
+    const phases = o.pricingPhases || [];
+    const paid = phases.find((p) => p.priceMicros > 0) || phases[0];
+    if (!paid) continue;
+    const key =
+      base === PLAN_MONTHLY
+        ? "monthly"
+        : base === PLAN_YEARLY
+          ? "yearly"
+          : null;
+    if (!key) continue;
+    const trial = phases.find((p) => p.paymentMode === "FreeTrial");
+    const plan = {
+      price: paid.price,
+      micros: paid.priceMicros,
+      currency: paid.currency,
+      offerId: o.id,
+      trialDays: trial ? periodDays(trial.billingPeriod) || 7 : 0,
+    };
+    // Google solo manda la oferta con prueba gratis a quien puede usarla; si está, gana.
+    if (!plans[key] || (plan.trialDays && !plans[key].trialDays))
+      plans[key] = plan;
+  }
+  const life = store.get(LIFETIME_ID, Platform.GOOGLE_PLAY);
+  if (life && life.pricing)
+    plans.lifetime = {
+      price: life.pricing.price,
+      micros: life.pricing.priceMicros,
+      currency: life.pricing.currency,
+      offerId: null,
+      trialDays: 0,
+    };
+  return plans;
+}
+
+let shopInitialized = false;
 async function initShop() {
   if (!NATIVE) return;
   // El plugin se carga con la app nativa; puede tardar un instante en aparecer.
@@ -127,18 +299,26 @@ async function initShop() {
   const { store, ProductType, Platform } = C;
   store.register([
     {
-      id: PREMIUM_ID,
+      id: SUB_ID,
+      type: ProductType.PAID_SUBSCRIPTION,
+      platform: Platform.GOOGLE_PLAY,
+    },
+    {
+      id: LIFETIME_ID,
       type: ProductType.NON_CONSUMABLE,
       platform: Platform.GOOGLE_PLAY,
     },
   ]);
   const sync = () => {
-    const owned = store.owned(PREMIUM_ID);
-    if (owned !== !!getState().settings.premium)
+    const life = store.owned(LIFETIME_ID);
+    const sub = store.owned(SUB_ID);
+    const owned = life || sub;
+    shop.kind = life ? "lifetime" : sub ? "sub" : null;
+    // Antes de que la tienda termine de cargar no se saca Premium (las compras llegan después).
+    if (owned !== !!getState().settings.premium && (owned || shopInitialized))
       setSettings({ premium: owned });
-    const p = store.get(PREMIUM_ID, Platform.GOOGLE_PLAY);
-    shop.price = p && p.pricing ? p.pricing.price : shop.price;
-    shop.ready = !!p;
+    shop.plans = readPlans(C);
+    shop.ready = Object.keys(shop.plans).length > 0;
     emitShop();
   };
   store
@@ -158,18 +338,27 @@ async function initShop() {
     emitShop();
   });
   await store.initialize([Platform.GOOGLE_PLAY]);
+  shopInitialized = true;
   sync();
 }
 
-async function buyPremium() {
+// plan: "monthly", "yearly" o "lifetime".
+async function buyPremium(plan = "yearly") {
   const C = window.CdvPurchase;
   if (!C) {
     shop.error = "La tienda no está disponible.";
     emitShop();
     return;
   }
-  const p = C.store.get(PREMIUM_ID, C.Platform.GOOGLE_PLAY);
-  const offer = p && p.getOffer();
+  let offer = null;
+  if (plan === "lifetime") {
+    const p = C.store.get(LIFETIME_ID, C.Platform.GOOGLE_PLAY);
+    offer = p && p.getOffer();
+  } else {
+    const info = shop.plans[plan];
+    const p = C.store.get(SUB_ID, C.Platform.GOOGLE_PLAY);
+    offer = info && p ? p.getOffer(info.offerId) : null;
+  }
   if (!offer) {
     shop.error = "No pudimos cargar el precio. Revisá la conexión.";
     emitShop();
@@ -195,6 +384,12 @@ async function restorePremium() {
   await C.store.restorePurchases();
   shop.busy = false;
   emitShop();
+}
+
+// Abre la pantalla de Google Play para cambiar de plan o cancelar.
+function manageSubscription() {
+  const C = window.CdvPurchase;
+  if (C) C.store.manageSubscriptions(C.Platform.GOOGLE_PLAY);
 }
 
 // Pedido de reseña de Google Play, en un buen momento (al ganar un logro): solo después de 3 días
@@ -224,8 +419,10 @@ export {
   APP_MODE,
   NATIVE,
   buyPremium,
+  earnPremiumPass,
   hasPremium,
   initPlatform,
+  manageSubscription,
   maybeAskReview,
   maybeShowAd,
   needsPremium,
@@ -233,4 +430,6 @@ export {
   restorePremium,
   shop,
   showAdPrivacy,
+  unlocked,
+  watchAdForReward,
 };

@@ -396,7 +396,13 @@ function activityStreak(a) {
   }
   return s;
 }
+// Cuántas veces se registró actividad en esta sesión (lo usan los anuncios para saber si terminaste algo).
+let activityTick = 0;
+function getActivityTick() {
+  return activityTick;
+}
 function markActive(a) {
+  activityTick++;
   let e = dayKey();
   return a.activity[e] ? a : { ...a, activity: { ...a.activity, [e]: true } };
 }
@@ -785,6 +791,7 @@ export {
   getState,
   importBackup,
   levelFor,
+  getActivityTick,
   markActive,
   markPathDone,
   nextLevel,

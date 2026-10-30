@@ -1,13 +1,15 @@
-// Edge 21 Premium: un solo pago, sin anuncios y con todo lo avanzado.
+// Edge 21 Premium: por mes, por año (con prueba gratis) o para siempre. Sin anuncios y con todo lo avanzado.
 import { useEffect, useState } from "react";
 import { useStore } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
-import { Button } from "../ui/components.jsx";
+import { Button, cx } from "../ui/components.jsx";
 import { TopBar } from "../ui/common.jsx";
 import {
   NATIVE,
   buyPremium,
+  earnPremiumPass,
   hasPremium,
+  manageSubscription,
   onShop,
   restorePremium,
   shop,
@@ -49,13 +51,98 @@ const PERKS = [
     sub: "Anotá lo que jugás de verdad y mirá tu resultado por hora.",
   },
 ];
+// Precios de muestra para ver la pantalla en la compu (en el celular vienen de Google Play,
+// en la moneda de cada país).
+const SAMPLE = {
+  monthly: { micros: 2990000, currency: "USD", trialDays: 0 },
+  yearly: { micros: 19990000, currency: "USD", trialDays: 7 },
+  lifetime: { micros: 39990000, currency: "USD", trialDays: 0 },
+};
+function money(micros, currency) {
+  try {
+    return new Intl.NumberFormat("es-UY", {
+      style: "currency",
+      currency: currency || "USD",
+    }).format(micros / 1e6);
+  } catch {
+    return (micros / 1e6).toFixed(2);
+  }
+}
 
-function Premium({ feature }) {
+function Premium({ feature, then }) {
   const st = useStore();
   const nav = useNav();
   const [, setTick] = useState(0);
+  const [plan, setPlan] = useState("yearly");
+  const [passBusy, setPassBusy] = useState(false);
   useEffect(() => onShop(() => setTick((x) => x + 1)), []);
   const owned = hasPremium(st);
+  const plans = NATIVE
+    ? shop.plans
+    : Object.fromEntries(
+        Object.entries(SAMPLE).map(([k, p]) => [
+          k,
+          { ...p, price: money(p.micros, p.currency) },
+        ]),
+      );
+  const m = plans.monthly;
+  const y = plans.yearly;
+  const save =
+    m && y && m.currency === y.currency
+      ? Math.round((1 - y.micros / (12 * m.micros)) * 100)
+      : 0;
+  const options = [
+    y && {
+      id: "yearly",
+      name: "Anual",
+      price: `${y.price} al año`,
+      note: `${money(y.micros / 12, y.currency)} por mes`,
+      badge: y.trialDays
+        ? `${y.trialDays} días gratis`
+        : save > 0
+          ? `Ahorrás ${save} %`
+          : null,
+      extra: y.trialDays && save > 0 ? `Ahorrás ${save} %` : null,
+    },
+    m && {
+      id: "monthly",
+      name: "Mensual",
+      price: `${m.price} al mes`,
+      note: "Cancelás cuando quieras",
+    },
+    plans.lifetime && {
+      id: "lifetime",
+      name: "Para siempre",
+      price: plans.lifetime.price,
+      note: "Un solo pago, sin suscripción",
+    },
+  ].filter(Boolean);
+  const pick = options.find((o) => o.id === plan)
+    ? plan
+    : options[0] && options[0].id;
+  const info = pick ? plans[pick] : null;
+  const cta = !info
+    ? "Cargando precios…"
+    : pick === "lifetime"
+      ? `Comprar · ${info.price}`
+      : info.trialDays
+        ? `Probar ${info.trialDays} días gratis`
+        : `Suscribirme · ${info.price} ${pick === "yearly" ? "al año" : "al mes"}`;
+  const terms = !info
+    ? null
+    : pick === "lifetime"
+      ? "Pagás una vez y Premium es tuyo para siempre en esta cuenta de Google."
+      : info.trialDays
+        ? `Gratis por ${info.trialDays} días; después, ${info.price} por año. Se renueva solo y lo cancelás cuando quieras en Google Play. Si cancelás antes de que termine la prueba, no se te cobra nada.`
+        : `${info.price} por ${pick === "yearly" ? "año" : "mes"}. Se renueva solo y lo cancelás cuando quieras en Google Play.`;
+
+  async function tryWithAd() {
+    setPassBusy(true);
+    const ok = await earnPremiumPass();
+    setPassBusy(false);
+    if (ok && feature) nav.replace(feature, then || {});
+  }
+
   return (
     <div className="premium fade-up">
       <TopBar onClose={() => nav.pop()} closeIcon="back" title="Premium" />
@@ -66,10 +153,12 @@ function Premium({ feature }) {
         <h1 className="prem-title">Edge 21 Premium</h1>
         <p className="muted">
           {owned
-            ? "¡Ya sos Premium! Gracias por apoyar la app."
+            ? shop.kind === "lifetime"
+              ? "Tenés Premium para siempre. ¡Gracias por apoyar la app!"
+              : "¡Ya sos Premium! Gracias por apoyar la app."
             : feature && FEATURES[feature]
-              ? `${FEATURES[feature]} es parte de Premium. Un solo pago y es tuyo para siempre.`
-              : "Un solo pago y es tuyo para siempre. Sin suscripciones."}
+              ? `${FEATURES[feature]} es parte de Premium.`
+              : "Todo lo avanzado y sin anuncios."}
         </p>
       </div>
       <div className="card prem-perks">
@@ -87,43 +176,86 @@ function Premium({ feature }) {
           </div>
         ))}
       </div>
-      <p className="muted small" style={{ marginTop: 12 }}>
-        Las lecciones, la ruta de conteo, Entrenar, los ejercicios y el
-        simulador siguen siendo gratis.
-      </p>
+      {!owned && options.length ? (
+        <div className="prem-plans" role="radiogroup" aria-label="Planes">
+          {options.map((o) => (
+            <button
+              type="button"
+              role="radio"
+              aria-checked={pick === o.id}
+              className={cx("prem-plan", pick === o.id && "on")}
+              onClick={() => setPlan(o.id)}
+              key={o.id}
+            >
+              <span className="prem-radio" aria-hidden="true" />
+              <span className="prem-plan-main">
+                <b>{o.name}</b>
+                <span className="muted small">{o.note}</span>
+              </span>
+              <span className="prem-plan-price">
+                {o.badge ? <span className="prem-badge">{o.badge}</span> : null}
+                <b className="num">{o.price}</b>
+                {o.extra ? <span className="small good">{o.extra}</span> : null}
+              </span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {!owned && terms ? (
+        <p className="muted small prem-terms">{terms}</p>
+      ) : null}
       {shop.error ? (
         <p className="small bad" style={{ marginTop: 10, fontWeight: 600 }}>
           {shop.error}
         </p>
       ) : null}
+      <p className="muted small" style={{ marginTop: 12 }}>
+        Las lecciones, la ruta de conteo, Entrenar, los ejercicios y el
+        simulador siguen siendo gratis.
+      </p>
+      {!owned ? (
+        <div className="btns prem-more">
+          {feature ? (
+            <Button kind="outline" onClick={tryWithAd} disabled={passBusy}>
+              {passBusy ? "Cargando…" : "Probarlo 1 hora con un anuncio"}
+            </Button>
+          ) : null}
+          <Button
+            kind="ghost"
+            onClick={restorePremium}
+            disabled={shop.busy || !NATIVE}
+          >
+            Ya lo compré: restaurar
+          </Button>
+          {NATIVE ? (
+            <button
+              type="button"
+              className="link small prem-privacy"
+              onClick={showAdPrivacy}
+            >
+              Privacidad de los anuncios
+            </button>
+          ) : null}
+        </div>
+      ) : null}
       <div className="bottom-actions">
         {owned ? (
-          <Button onClick={() => nav.pop()}>Seguir</Button>
-        ) : (
           <div className="btns">
-            <Button onClick={buyPremium} disabled={shop.busy || !NATIVE}>
-              {shop.busy
-                ? "Procesando…"
-                : `Comprar Premium${shop.price ? ` · ${shop.price}` : ""}`}
-            </Button>
-            <Button
-              kind="ghost"
-              onClick={restorePremium}
-              disabled={shop.busy || !NATIVE}
-            >
-              Ya lo compré: restaurar
-            </Button>
+            <Button onClick={() => nav.pop()}>Seguir</Button>
+            {NATIVE && shop.kind === "sub" ? (
+              <Button kind="ghost" onClick={manageSubscription}>
+                Cambiar de plan o cancelar
+              </Button>
+            ) : null}
           </div>
-        )}
-        {NATIVE && !owned ? (
-          <button
-            type="button"
-            className="link small prem-privacy"
-            onClick={showAdPrivacy}
+        ) : (
+          <Button
+            onClick={() => buyPremium(pick)}
+            disabled={shop.busy || !NATIVE || !info}
           >
-            Privacidad de los anuncios
-          </button>
-        ) : null}
+            {shop.busy ? "Procesando…" : cta}
+          </Button>
+        )}
       </div>
     </div>
   );

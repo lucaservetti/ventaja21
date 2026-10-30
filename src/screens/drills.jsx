@@ -21,6 +21,7 @@ import {
   weightedIndex,
 } from "../engine/cards.js";
 import { sfx, vibrate } from "../sound.js";
+import { APP_MODE, hasPremium, watchAdForReward } from "../platform.js";
 import {
   Button,
   IconButton,
@@ -523,7 +524,16 @@ function DrillRunning({
     const seq = daily
       ? shuffle(
           buildDecks(1),
-          seededRandom(hashString("v21-daily-" + today)),
+          // La segunda oportunidad trae otras cartas (las primeras ya las viste en el repaso).
+          seededRandom(
+            hashString(
+              "v21-daily-" +
+                today +
+                (st.daily.results[today] && st.daily.results[today].retry
+                  ? "-2"
+                  : ""),
+            ),
+          ),
         ).slice(0, cfg.n)
       : shuffle(buildDecks(2)).slice(0, cfg.n);
     setCards(seq);
@@ -604,12 +614,15 @@ function DrillRunning({
     if (daily) {
       setState((s) => {
         const d = s.daily;
-        if (d.results[today]) return s;
+        const first = d.results[today];
+        // Solo cuenta el primer intento, salvo que se haya ganado la segunda oportunidad.
+        if (first && !first.retry) return s;
+        const base = first ? first.prevStreak || 0 : d.streak;
         const y = new Date();
         y.setDate(y.getDate() - 1);
         const streak = ok
           ? d.last === dayKey(y) || d.last === today
-            ? d.streak + 1
+            ? base + 1
             : 1
           : 0;
         return markActive({
@@ -625,6 +638,8 @@ function DrillRunning({
                 ok,
                 err: res.err,
                 score: dailyScore(res.err, res.answerMs || 9000),
+                prevStreak: base,
+                second: !!first,
               },
             },
           },
@@ -702,7 +717,14 @@ function DrillRunning({
               Para aprobar: {level.goal}
             </p>
           ) : null}
-          {doneToday ? (
+          {doneToday && doneToday.retry && !doneToday.second ? (
+            <p
+              className="small good"
+              style={{ marginTop: 10, fontWeight: 700 }}
+            >
+              Segunda oportunidad: este intento cuenta, con otras cartas.
+            </p>
+          ) : doneToday ? (
             <p
               className={cx("small", doneToday.ok ? "good" : "bad")}
               style={{ marginTop: 10, fontWeight: 700 }}
@@ -713,6 +735,26 @@ function DrillRunning({
                 : `le erraste por ${Math.abs(doneToday.err)}`}
               . Podés practicarlo igual.
             </p>
+          ) : null}
+          {doneToday &&
+          !doneToday.ok &&
+          !doneToday.second &&
+          !doneToday.retry ? (
+            <SecondChance
+              streak={doneToday.prevStreak || 0}
+              onGo={() =>
+                setState((s) => ({
+                  ...s,
+                  daily: {
+                    ...s.daily,
+                    results: {
+                      ...s.daily.results,
+                      [today]: { ...s.daily.results[today], retry: true },
+                    },
+                  },
+                }))
+              }
+            />
           ) : null}
         </div>
         {level && practice ? (
@@ -975,6 +1017,27 @@ function DrillRunning({
             />
           </div>
         ) : null}
+        {daily &&
+        st.daily.results[today] &&
+        !st.daily.results[today].ok &&
+        !st.daily.results[today].second ? (
+          <SecondChance
+            streak={st.daily.results[today].prevStreak || 0}
+            onGo={() => {
+              setState((s) => ({
+                ...s,
+                daily: {
+                  ...s.daily,
+                  results: {
+                    ...s.daily.results,
+                    [today]: { ...s.daily.results[today], retry: true },
+                  },
+                },
+              }));
+              setPhase("ready");
+            }}
+          />
+        ) : null}
       </div>
       {level ? (
         <LevelOutcome level={level} passed={result.ok} practice={practice} />
@@ -1017,6 +1080,38 @@ function DrillRunning({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+// Segunda oportunidad del desafío diario: un intento más que cuenta (con otras cartas),
+// a cambio de mirar un anuncio en la app gratis. Con Premium o en la web, sin anuncio.
+function SecondChance({ streak, onGo }) {
+  const [busy, setBusy] = useState(false);
+  const withAd = APP_MODE && !hasPremium();
+  return (
+    <div className="second-chance">
+      <p className="small">
+        {streak > 0
+          ? `Ibas ${streak} ${streak === 1 ? "día" : "días"} seguidos. Salvá tu racha con otro intento que cuenta.`
+          : "Tenés un intento más que cuenta para el puntaje de hoy."}
+      </p>
+      <Button
+        kind="outline"
+        disabled={busy}
+        onClick={async () => {
+          setBusy(true);
+          const ok = await watchAdForReward();
+          setBusy(false);
+          if (ok) onGo();
+        }}
+      >
+        <Icon name={withAd ? "play" : "refresh"} size={18} />{" "}
+        {busy
+          ? "Cargando…"
+          : withAd
+            ? "Segunda oportunidad (ver un anuncio)"
+            : "Segunda oportunidad"}
+      </Button>
     </div>
   );
 }
