@@ -83,7 +83,7 @@ Después completá el panel **"Configura tu app"**. Lo que va en cada formulario
 
 | Formulario | Qué responder |
 | --- | --- |
-| Política de privacidad | `https://edge21.app/privacidad.html`. Antes, cambiá `CORREO_DE_CONTACTO` en `privacidad.html` por tu mail (o pedímelo). |
+| Política de privacidad | `https://edge21.app/privacidad.html` (el contacto es `hola@edge21.app`). |
 | Acceso a la app | Toda la funcionalidad está disponible sin acceso especial (no hay inicio de sesión). |
 | Anuncios | **Sí, contiene anuncios.** |
 | Clasificación del contenido | Completá el cuestionario. Respondé **Sí a "juegos de azar simulados"** y **No a apuestas con dinero real**. Va a salir una clasificación para adolescentes o mayores. |
