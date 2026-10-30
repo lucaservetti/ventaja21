@@ -210,6 +210,12 @@ const ICON_PATHS = {
       <path d="M3.5 10h17M8 3v4M16 3v4" />
     </>
   ),
+  share: (
+    <>
+      <path d="M12 3.5v11M7.5 8 12 3.5 16.5 8" />
+      <path d="M8 11.5H6.5a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2H16" />
+    </>
+  ),
   copy: (
     <>
       <rect x="8.5" y="8.5" width="12" height="12" rx="2.5" />

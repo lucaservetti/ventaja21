@@ -116,6 +116,7 @@ class Table {
       maxBet: 0,
       decisionTime: 0,
       heat: false,
+      spots: 1,
       ...(this.opts || {}),
       ...options,
     };
@@ -457,6 +458,10 @@ class Table {
       this.toast("No te alcanzan las fichas.", "warn");
       return;
     }
+    if (this.opts.spots === 2 && this.bet * 2 > this.bankroll) {
+      this.toast("No te alcanzan las fichas para dos manos.", "warn");
+      return;
+    }
     if (this.bet < this.minBet) {
       this.toast(
         `La apuesta mínima de esta mesa es ${this.fmt(this.minBet)}.`,
@@ -540,13 +545,15 @@ class Table {
     s.betLow = s.betLow ? Math.min(s.betLow, this.bet) : this.bet;
     s.betHigh = Math.max(s.betHigh, this.bet);
     this.lastBet = this.bet;
-    this.bankroll -= this.bet;
+    // Con dos lugares se juegan dos manos con la misma apuesta cada una.
+    this.spots = this.opts.spots === 2 ? 2 : 1;
+    this.bankroll -= this.bet * this.spots;
     this.phase = "deal";
     this.result = null;
     this.feedback = null;
     this.insuranceBet = 0;
     this.dealer = { cards: [], hidden: true };
-    this.hands = [newHand(this.bet)];
+    this.hands = Array.from({ length: this.spots }, () => newHand(this.bet));
     this.active = 0;
     for (const seat of this.botSeats) seat.hands = [newHand(this.opts.unit)];
     this.chipStack = [];
@@ -561,7 +568,7 @@ class Table {
     }
 
     // Dos cartas para cada uno; la segunda del crupier, tapada.
-    const firstHands = [...this.botSeats.map((s) => s.hands[0]), this.hands[0]];
+    const firstHands = [...this.botSeats.map((s) => s.hands[0]), ...this.hands];
     for (const hand of firstHands) await this.dealTo(hand);
     await this.dealDealer(true);
     for (const hand of firstHands) await this.dealTo(hand);
@@ -569,7 +576,7 @@ class Table {
 
     const up = this.dealer.cards[0];
     const upKey = rankKey(up.r);
-    const playerBJ = isBlackjack(this.hands[0].cards);
+    const playerBJ = this.hands.every((h) => isBlackjack(h.cards));
 
     if (upKey === "A") {
       this.phase = "insurance";
@@ -602,7 +609,7 @@ class Table {
         };
       }
       if (took) {
-        const cost = this.hands[0].bet / 2;
+        const cost = this.hands.reduce((n, h) => n + h.bet, 0) / 2;
         if (cost > this.bankroll)
           this.toast("No te alcanzan las fichas para el seguro.", "warn");
         else {
@@ -630,7 +637,7 @@ class Table {
       await this.settle(true);
       return;
     }
-    if (playerBJ) this.hands[0].done = true;
+    for (const h of this.hands) if (isBlackjack(h.cards)) h.done = true;
 
     for (const seat of this.botSeats) {
       this.phase = "bots";
@@ -784,7 +791,8 @@ class Table {
     if (!hand || this.phase !== "player")
       return { H: false, S: false, D: false, P: false, R: false };
     const allowed = allowedActions(hand, this.rules, {
-      maxHandsReached: this.hands.length >= this.rules.maxHands,
+      maxHandsReached:
+        this.hands.length >= this.rules.maxHands * (this.spots || 1),
     });
     if (hand.cards.length === 2 && allowed.D && hand.bet > this.bankroll)
       allowed.D = false;

@@ -247,6 +247,16 @@ function App() {
     window.__v21Idle = idle;
     if (idle) window.dispatchEvent(new Event("v21-idle"));
   }, [idle]);
+  // Tema (oscuro o claro) y tamaño de letra.
+  const theme = a.settings.theme || "dark";
+  const bigText = !!a.settings.bigText;
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.theme = theme;
+    root.dataset.text = bigText ? "large" : "normal";
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = theme === "light" ? "#f4efe4" : "#06110c";
+  }, [theme, bigText]);
   // Al volver a una pestaña después de terminar algo, a veces un anuncio (solo en Android, sin Premium).
   const depth = useRef(0);
   useEffect(() => {

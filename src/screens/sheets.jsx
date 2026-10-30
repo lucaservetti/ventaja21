@@ -167,6 +167,23 @@ function SettingsSheet({ open: a, onClose: e }) {
           onChange={(m) => m !== LANG && setLang(m)}
         />
       </div>
+      <div className="field">
+        <span>Tema</span>
+        <Pills
+          options={[
+            { value: "dark", label: "Oscuro" },
+            { value: "light", label: "Claro" },
+          ]}
+          value={n.theme || "dark"}
+          onChange={(m) => setSettings({ theme: m })}
+        />
+      </div>
+      <Toggle
+        id="s-big"
+        label="Letra más grande"
+        checked={!!n.bigText}
+        onChange={(m) => setSettings({ bigText: m })}
+      />
       <Toggle
         id="s-sound"
         label="Sonido"

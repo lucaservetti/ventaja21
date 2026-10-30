@@ -187,6 +187,8 @@ const DEFAULT_STATE = {
     system: "hilo",
     sound: true,
     ambience: false,
+    theme: "dark",
+    bigText: false,
     haptics: true,
     rules: { ...DEFAULT_RULES },
     unlockAll: false,
@@ -197,6 +199,7 @@ const DEFAULT_STATE = {
     startBankroll: 1000,
     unit: 10,
     bots: 0,
+    spots: 1,
     speed: "normal",
     coach: true,
     betCoach: true,
@@ -218,8 +221,9 @@ const DEFAULT_STATE = {
     totalOk: 0,
     // Manos que fallaste, tal cual te tocaron: { key, cards, up, chosen, best, src, t, misses, streak }.
     mistakes: [],
-    blitz: { best: 0, plays: 0 },
+    blitz: { best: 0, plays: 0, last: [] },
   },
+  weekly: { done: {} },
   drills: {
     values: { sessions: [], ranks: {}, bestStreak: 0 },
     running: { sessions: [], bestPerfectTime: null },

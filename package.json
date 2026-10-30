@@ -1,6 +1,6 @@
 {
   "name": "ventaja21",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "private": true,
   "description": "Edge 21: aprendé a contar cartas en blackjack (PWA en español).",
   "type": "module",
@@ -15,7 +15,9 @@
     "@capacitor/android": "8.5.3",
     "@capacitor/app": "8.1.2",
     "@capacitor/core": "8.5.3",
+    "@capacitor/filesystem": "^8.1.5",
     "@capacitor/haptics": "^8.0.2",
+    "@capacitor/share": "^8.0.3",
     "cordova-plugin-purchase": "13.20.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"

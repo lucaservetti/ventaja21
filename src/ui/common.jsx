@@ -179,6 +179,8 @@ function pct(a) {
   return `${Math.round(a * 100)} %`;
 }
 export {
+  LOGO_21,
+  LOGO_SPADE,
   BrandBar,
   PageHeader,
   InfoDot,
