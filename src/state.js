@@ -220,8 +220,9 @@ const DEFAULT_STATE = {
     totalOk: 0,
     // Manos que fallaste, tal cual te tocaron: { key, cards, up, chosen, best, src, t, misses, streak }.
     mistakes: [],
-    blitz: { best: 0, plays: 0 },
+    blitz: { best: 0, plays: 0, last: [] },
   },
+  weekly: { done: {} },
   drills: {
     values: { sessions: [], ranks: {}, bestStreak: 0 },
     running: { sessions: [], bestPerfectTime: null },

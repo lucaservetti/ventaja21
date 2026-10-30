@@ -34,6 +34,7 @@ import { PremiumTag } from "./Premium.jsx";
 import { BackupNudge } from "./Backup.jsx";
 import { useNav } from "../nav.js";
 import { ShareIconButton } from "../ui/ShareButton.jsx";
+import { WeeklyCard } from "./weekly.jsx";
 import { GoalBadge, bestGoalStreak } from "./goal.jsx";
 import { NextSteps, ProfileCard } from "./profile.jsx";
 
@@ -173,6 +174,9 @@ function ProgressOverview({ st: a, nav: e }) {
   return (
     <>
       <NextSteps st={a} />
+      <div style={{ marginTop: 14 }}>
+        <WeeklyCard st={a} />
+      </div>
       <button
         type="button"
         className="card goal-card"
@@ -203,7 +207,10 @@ function ProgressOverview({ st: a, nav: e }) {
           <div className="row between">
             <div>
               <div className="eyebrow">Tu rango</div>
-              <div className="rank-name" style={{ fontSize: 28 }}>
+              <div
+                className="rank-name"
+                style={{ fontSize: 24, whiteSpace: "nowrap" }}
+              >
                 <span className="rank-chip" style={{ "--chip": t.chip }} />
                 {t.name}
               </div>

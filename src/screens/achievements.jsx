@@ -86,6 +86,22 @@ const GROUPS = [
         value: (st) => bestGoalStreak(st),
       },
       {
+        id: "weekly-1",
+        icon: "trophy",
+        title: "Insignia semanal",
+        desc: "Completá un desafío semanal.",
+        goal: 1,
+        value: (st) => Object.keys((st.weekly && st.weekly.done) || {}).length,
+      },
+      {
+        id: "weekly-4",
+        icon: "trophy",
+        title: "Cuatro insignias",
+        desc: "Completá 4 desafíos semanales.",
+        goal: 4,
+        value: (st) => Object.keys((st.weekly && st.weekly.done) || {}).length,
+      },
+      {
         id: "streak-7",
         icon: "calendar",
         title: "Una semana entera",

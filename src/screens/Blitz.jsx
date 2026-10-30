@@ -83,6 +83,10 @@ function Blitz() {
         blitz: {
           best: Math.max(prev, score),
           plays: ((s.train.blitz && s.train.blitz.plays) || 0) + 1,
+          last: [
+            ...((s.train.blitz && s.train.blitz.last) || []),
+            { t: Date.now(), score },
+          ].slice(-30),
         },
       },
     }));

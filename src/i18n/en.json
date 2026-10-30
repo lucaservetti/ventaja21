@@ -2838,5 +2838,22 @@
 "{0} días seguidos": "{0} days in a row",
 "Mi rango en Edge 21: {0} ({1} puntos) 🃏": "My rank on Edge 21: {0} ({1} points) 🃏",
 "Mi rango": "My rank",
-"{0} manos entrenadas": "{0} hands trained"
+"{0} manos entrenadas": "{0} hands trained",
+"Desafío semanal": "Weekly challenge",
+"Cinco desafíos diarios": "Five daily challenges",
+"Hacé el desafío diario 5 días de esta semana.": "Do the daily challenge on 5 days this week.",
+"200 manos": "200 hands",
+"Jugá 200 manos en las tandas de Entrenar esta semana.": "Play 200 hands in Train rounds this week.",
+"Veinte contra reloj": "Twenty against the clock",
+"Acertá 20 manos en un contrarreloj esta semana.": "Get 20 hands right in a Beat the clock run this week.",
+"Cumplí tu meta diaria 5 días de esta semana.": "Hit your daily goal on 5 days this week.",
+"Tres perfectas": "Three perfect rounds",
+"Hacé 3 tandas de Entrenar sin un solo error esta semana.": "Do 3 Train rounds without a single mistake this week.",
+"¡Completado! Ganaste la insignia de esta semana.": "Done! You earned this week's badge.",
+"Termina hoy": "Ends today",
+"Termina en {0} días": "Ends in {0} days",
+"Insignia semanal": "Weekly badge",
+"Completá un desafío semanal.": "Complete a weekly challenge.",
+"Cuatro insignias": "Four badges",
+"Completá 4 desafíos semanales.": "Complete 4 weekly challenges."
 }
