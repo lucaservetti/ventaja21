@@ -50,7 +50,7 @@ Juegos → Cartas  (o Educación, si preferís que no aparezca entre los juegos 
 Blackjack, Cartas, Educación
 
 ## Correo de contacto
-hola@edge21.app
+soporte@edge21.app
 
 ## Política de privacidad
 https://edge21.app/privacidad.html
