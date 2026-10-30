@@ -42,7 +42,13 @@ import { DevLevel } from "./screens/DevPath.jsx";
 import { Backup } from "./screens/Backup.jsx";
 import { SpeedDrill } from "./screens/SpeedDrill.jsx";
 import { Premium } from "./screens/Premium.jsx";
-import { NATIVE, initPlatform, maybeShowAd, needsPremium } from "./platform.js";
+import {
+  NATIVE,
+  initPlatform,
+  maybeAskReview,
+  maybeShowAd,
+  needsPremium,
+} from "./platform.js";
 import {
   GoalSheet,
   PRACTICE_SCREENS,
@@ -266,6 +272,7 @@ function App() {
       msg: `Logro: ${ach.title}`,
       kind: "good",
     });
+    maybeAskReview();
     setTimeout(() => setAchToast(null), 3800);
   });
   if (!a.profile.onboarded)

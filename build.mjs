@@ -3,6 +3,23 @@
 import * as esbuild from "esbuild";
 import fs from "node:fs";
 import crypto from "node:crypto";
+import { transform } from "./scripts/i18n-core.mjs";
+
+// Textos en inglés: la compilación envuelve en __t()/__tf() los textos que están en el diccionario,
+// y cambia el formato de números y fechas según el idioma (ver src/i18n/).
+const EN = JSON.parse(fs.readFileSync("src/i18n/en.json", "utf8"));
+const i18nPlugin = {
+  name: "i18n",
+  setup(build) {
+    build.onLoad({ filter: /[\\/]src[\\/].*\.jsx?$/ }, (args) => {
+      if (/[\\/]i18n[\\/]/.test(args.path) || args.path.endsWith("sw.js")) return undefined;
+      let code = fs.readFileSync(args.path, "utf8");
+      code = transform(code, EN) ?? code;
+      code = code.replaceAll('"es-UY"', "__LOCALE").replaceAll('.replace(".", ",")', ".replace(\".\", __DEC)");
+      return { contents: code, loader: "jsx" };
+    });
+  },
+};
 
 const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const version = pkg.version;
@@ -16,6 +33,8 @@ const js = await esbuild.build({
   jsx: "automatic",
   target: "es2020",
   legalComments: "none",
+  plugins: [i18nPlugin],
+  inject: ["src/i18n/inject.js"],
   charset: "utf8",
   define: {
     "process.env.NODE_ENV": '"production"',

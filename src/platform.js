@@ -3,6 +3,7 @@
 // Para probar en la compu cómo se ve en Android: localStorage.setItem("v21.sim", "1") y recargar.
 import { Capacitor } from "@capacitor/core";
 import { AdMob, AdmobConsentStatus } from "@capacitor-community/admob";
+import { InAppReview } from "@capacitor-community/in-app-review";
 import { getState, setSettings } from "./state.js";
 
 function simulated() {
@@ -196,6 +197,23 @@ async function restorePremium() {
   emitShop();
 }
 
+// Pedido de reseña de Google Play, en un buen momento (al ganar un logro): solo después de 3 días
+// de uso y como mucho una vez cada 90 días. Google decide si muestra la ventanita o no.
+const REVIEW_KEY = "edge21.review";
+function maybeAskReview() {
+  if (!NATIVE) return;
+  try {
+    const created = getState().profile.createdAt || Date.now();
+    const last = Number(localStorage.getItem(REVIEW_KEY) || 0);
+    const day = 24 * 60 * 60 * 1000;
+    if (Date.now() - created < 3 * day || Date.now() - last < 90 * day) return;
+    localStorage.setItem(REVIEW_KEY, String(Date.now()));
+    setTimeout(() => InAppReview.requestReview().catch(() => {}), 1500);
+  } catch {
+    // Sin almacenamiento no se pide.
+  }
+}
+
 function initPlatform() {
   if (!NATIVE) return;
   initShop().catch(() => {});
@@ -208,6 +226,7 @@ export {
   buyPremium,
   hasPremium,
   initPlatform,
+  maybeAskReview,
   maybeShowAd,
   needsPremium,
   onShop,

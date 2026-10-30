@@ -201,8 +201,11 @@ function ProgressOverview({ st: a, nav: e }) {
         <div className="card" style={{ marginTop: 14 }}>
           <div className="row between">
             <div>
-              <div className="eyebrow">Tu nivel</div>
-              <div style={{ fontSize: 28, fontWeight: 700 }}>{t.name}</div>
+              <div className="eyebrow">Tu rango</div>
+              <div className="rank-name" style={{ fontSize: 28 }}>
+                <span className="rank-chip" style={{ "--chip": t.chip }} />
+                {t.name}
+              </div>
             </div>
             <div className="mid-num" style={{ fontSize: 44 }}>
               {a.rating.value}
@@ -226,7 +229,7 @@ function ProgressOverview({ st: a, nav: e }) {
           }
         >
           <span className="li-text">
-            <span className="eyebrow">Tu nivel</span>
+            <span className="eyebrow">Tu rango</span>
             <span
               className="li-title"
               style={{ display: "block", fontSize: 22 }}

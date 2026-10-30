@@ -165,7 +165,7 @@ function CountTab() {
                   )}
                   key={k}
                 >
-                  {["D", "L", "M", "M", "J", "V", "S"][d.getDay()]}
+                  {"DLMMJVS"[d.getDay()]}
                 </i>
               );
             })}

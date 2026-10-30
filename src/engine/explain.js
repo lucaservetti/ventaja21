@@ -11,7 +11,7 @@ function bustPct(a, e) {
   return Math.round(bustCache[t][s] * 100);
 }
 const upName = (a) => (a === "A" ? "As" : a);
-const vsText = (a) => `contra ${a === "A" ? "un As" : "un " + a}`;
+const vsText = (a) => (a === "A" ? "contra un As" : a === "8" ? "contra un 8" : `contra un ${a}`);
 function softName(a) {
   return `${a} blando (A,${a - 11})`;
 }

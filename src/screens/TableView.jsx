@@ -43,7 +43,7 @@ const PHASE_LABELS = {
   shuffle: "Mezclando el zapato…",
   insurance: "",
 };
-const ACTION_ICONS = { H: "hand", S: "stand", P: "split", R: "surrender" };
+const ACT_CLS = { H: "hit", S: "stand", D: "dbl", P: "split", R: "surr" };
 
 function useTable(table) {
   const subscribe = useMemo(() => (fn) => table.subscribe(fn), [table]);
@@ -800,11 +800,7 @@ function SimAction({ action, allowed, table }) {
         table.act(action);
       }}
     >
-      {action === "D" ? (
-        <span className="act-2x">2X</span>
-      ) : (
-        <Icon name={ACTION_ICONS[action]} size={22} />
-      )}
+      <span className={cx("act-letter", `c-${ACT_CLS[action]}`)}>{action}</span>
       <span className="act-label">{ACTION_NAMES[action].toUpperCase()}</span>
       <span className="act-en">{ACTION_EN[action]}</span>
     </button>

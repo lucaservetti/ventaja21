@@ -19,7 +19,7 @@ import { useNav } from "../nav.js";
 import { NextSteps } from "./profile.jsx";
 
 const GOAL_OPTIONS = [5, 10, 15, 20];
-const WEEKDAYS = ["D", "L", "M", "M", "J", "V", "S"];
+const WEEKDAYS = "DLMMJVS";
 
 // Pantallas donde el tiempo cuenta como práctica.
 const PRACTICE_SCREENS = new Set([

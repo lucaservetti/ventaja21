@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { addDays, dayKey } from "../state.js";
 import { cx } from "../ui/components.jsx";
 
-const DAY_LETTERS = ["D", "L", "M", "M", "J", "V", "S"];
+const DAY_LETTERS = "DLMMJVS";
 
 function weekStats(st, offset) {
   const today = dayKey();

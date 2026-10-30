@@ -348,7 +348,7 @@ function ChallengeResult({ result, exam, level, practice = false }) {
         {exam
           ? passed
             ? "Jugaste un zapato entero como un contador: estrategia, conteo y apuestas. Lo que sigue es práctica para sostenerlo con presión de casino."
-            : "Repasá lo que falló y volvé a intentarlo. En Jugar podés practicar con el conteo oculto y el coach prendido."
+            : "Repasá lo que falló y volvé a intentarlo. En Jugar podés practicar con el conteo oculto y el mentor prendido."
           : passed
             ? "Llevaste el conteo de un zapato completo mientras jugabas. Eso es contar cartas."
             : "Cuando un chequeo falla, el error suele venir de una mano con muchas cartas. Contá cada carta apenas cae."}

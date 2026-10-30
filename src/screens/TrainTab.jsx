@@ -73,8 +73,9 @@ function TrainTab() {
         <div className="card level-card">
           <div className="row between">
             <div>
-              <div className="eyebrow">Tu nivel</div>
-              <div style={{ fontSize: 26, fontWeight: 700, marginTop: 2 }}>
+              <div className="eyebrow">Tu rango</div>
+              <div className="rank-name" style={{ fontSize: 26 }}>
+                <span className="rank-chip" style={{ "--chip": o.chip }} />
                 {o.name}
               </div>
               <div className="muted small">{o.note}</div>
@@ -83,7 +84,7 @@ function TrainTab() {
               <div className="mid-num" style={{ fontSize: 40 }}>
                 {a.rating.value}
               </div>
-              <div className="muted tiny">puntaje</div>
+              <div className="muted tiny">puntos</div>
             </div>
           </div>
           {c ? (

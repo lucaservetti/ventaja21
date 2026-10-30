@@ -3,6 +3,7 @@
 import globals from "globals";
 
 export default [
+  { ignores: ["android/**", "www/**"] },
   {
     files: ["src/**/*.js", "src/**/*.jsx", "tests/**/*.mjs"],
     languageOptions: {

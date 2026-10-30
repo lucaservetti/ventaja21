@@ -17,13 +17,13 @@ const LOGO_21 =
 function Logo({ size: a = 40 }) {
   return (
     <svg width={a} height={a} viewBox="50 50 412 412" aria-hidden="true">
-      <circle cx="256" cy="256" r="206" fill="#e4e773" />
+      <circle cx="256" cy="256" r="206" fill="#e9b949" />
       <circle
         cx="256"
         cy="256"
         r="184"
         fill="none"
-        stroke="#15160a"
+        stroke="#1d1405"
         strokeWidth="44"
         pathLength="360"
         strokeDasharray="27 62.99999999999999"
@@ -34,7 +34,7 @@ function Logo({ size: a = 40 }) {
         cy="256"
         r="184"
         fill="none"
-        stroke="#15160a"
+        stroke="#1d1405"
         strokeWidth="44"
         pathLength="360"
         strokeDasharray="10.799999999999999 79.2"
@@ -45,15 +45,15 @@ function Logo({ size: a = 40 }) {
         cy="256"
         r="142"
         fill="none"
-        stroke="#15160a"
+        stroke="#1d1405"
         strokeWidth="5"
       />
       <path
         transform="translate(256 256) scale(1.75)"
-        fill="#15160a"
+        fill="#1d1405"
         d={LOGO_SPADE}
       />
-      <path fill="#e4e773" d={LOGO_21} />
+      <path fill="#e9b949" d={LOGO_21} />
     </svg>
   );
 }

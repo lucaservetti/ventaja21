@@ -132,7 +132,7 @@ function TrainSummary({ summary: a, results: e, mode: t, focus: s }) {
         )}
       </div>
       <div className="card coach-card">
-        <h3>Lo que dice tu coach</h3>
+        <h3>La lectura de tu tanda</h3>
         {v.map((S, D) => (
           <p key={D}>{S}</p>
         ))}

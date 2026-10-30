@@ -584,7 +584,7 @@ function TableSheet({ open, onClose, table }) {
       <h3 className="sheet-sub">Ayudas</h3>
       <Toggle
         id="t-coach"
-        label="Coach de jugadas"
+        label="Mentor de jugadas"
         sub="Te avisa si una jugada no era la correcta"
         checked={t.coach}
         onChange={(coach) => setTable({ coach })}
@@ -592,13 +592,13 @@ function TableSheet({ open, onClose, table }) {
       <Toggle
         id="t-dev"
         label="Jugar con desviaciones"
-        sub="El coach usa el Illustrious 18 y el Fab 4 (Hi-Lo)"
+        sub="El mentor usa el Illustrious 18 y el Fab 4 (Hi-Lo)"
         checked={t.deviations}
         onChange={(deviations) => setTable({ deviations })}
       />
       <Toggle
         id="t-bet"
-        label="Coach de apuestas"
+        label="Mentor de apuestas"
         sub="Sugiere la apuesta según el conteo real (Hi-Lo)"
         checked={t.betCoach}
         onChange={(betCoach) => setTable({ betCoach })}

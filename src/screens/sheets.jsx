@@ -22,7 +22,8 @@ import { SYSTEMS, SYSTEM_IDS } from "../engine/systems.js";
 import { HiLoValues } from "../lessons/visuals.jsx";
 import { SystemValues } from "./CountTab.jsx";
 import { useNav } from "../nav.js";
-import { APP_MODE } from "../platform.js";
+import { APP_MODE, NATIVE } from "../platform.js";
+import { LANG, setLang } from "../i18n/index.js";
 
 const VERSION = __APP_VERSION__;
 function isStandalone() {
@@ -155,6 +156,17 @@ function SettingsSheet({ open: a, onClose: e }) {
         ))}
       </div>
       <h3 className="sheet-sub">Preferencias</h3>
+      <div className="field">
+        <span>Idioma · Language</span>
+        <Pills
+          options={[
+            { value: "es", label: "Español" },
+            { value: "en", label: "English" },
+          ]}
+          value={LANG}
+          onChange={(m) => m !== LANG && setLang(m)}
+        />
+      </div>
       <Toggle
         id="s-sound"
         label="Sonido"
@@ -244,7 +256,7 @@ function SettingsSheet({ open: a, onClose: e }) {
           </Button>
         )}
       </div>
-      {isStandalone() ? null : (
+      {isStandalone() || NATIVE ? null : (
         <>
           <h3 className="sheet-sub">Instalar en el celular</h3>
           <div className="note-box">
@@ -266,15 +278,15 @@ function SettingsSheet({ open: a, onClose: e }) {
       )}
       <h3 className="sheet-sub">Juego responsable</h3>
       <p className="muted small">
-        Edge 21 es para aprender. Contar cartas mentalmente es legal, pero
-        los casinos pueden pedirte que no juegues, y usar el celular en la mesa
-        está prohibido. Jugá solo plata que no necesitás. Si el juego deja de
-        ser entretenimiento, frená y pedí ayuda.
+        Edge 21 es para aprender. Contar cartas mentalmente es legal, pero los
+        casinos pueden pedirte que no juegues, y usar el celular en la mesa está
+        prohibido. Jugá solo plata que no necesitás. Si el juego deja de ser
+        entretenimiento, frená y pedí ayuda.
       </p>
       <p className="small" style={{ marginTop: 18 }}>
         <a
           className="link"
-          href="https://lucaservetti.github.io/ventaja21/privacidad.html"
+          href={`https://lucaservetti.github.io/ventaja21/privacidad.html${LANG === "en" ? "#en" : ""}`}
           target="_blank"
           rel="noreferrer"
         >
@@ -340,7 +352,7 @@ function SystemSheet({ open: a, onClose: e }) {
       {s !== "hilo" ? (
         <p className="note-box" style={{ marginTop: 12 }}>
           {
-            "Las desviaciones, el coach de apuestas y las lecciones usan Hi-Lo, que es el estándar. Con "
+            "Las desviaciones, el mentor de apuestas y las lecciones usan Hi-Lo, que es el estándar. Con "
           }
           {n.short || n.name}
           {
