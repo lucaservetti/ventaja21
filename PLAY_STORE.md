@@ -104,6 +104,8 @@ La app también está en inglés (sale en inglés en los celulares que no están
 
 ## Paso 7 · Prueba cerrada (12 personas, 14 días)
 
+En `store/testers.md` están los mensajes listos para mandar (en español y en inglés), cómo armar el grupo de Google y una tabla para llevar la cuenta.
+
 1. **Pruebas → Prueba cerrada → Crear pista**, subí el mismo `.aab` y agregá a los 12 testers (por mail o con un Grupo de Google).
 2. Mandales el enlace de participación. Tienen que **instalarla y quedarse en la prueba los 14 días**, y conviene que la abran de vez en cuando.
 3. Pasados los 14 días, Play Console habilita **"Solicitar acceso a producción"**. Respondé el cuestionario sobre cómo fue la prueba.
