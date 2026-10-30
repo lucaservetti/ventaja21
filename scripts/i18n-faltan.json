@@ -1,0 +1,642 @@
+[
+ {
+  "k": "Blackjack",
+  "f": "engine/cards.js",
+  "kind": "str"
+ },
+ {
+  "k": "S S S S S H H H Rh H",
+  "f": "engine/strategy.js",
+  "kind": "str"
+ },
+ {
+  "k": "S S S S S H H Rh Rh Rh",
+  "f": "engine/strategy.js",
+  "kind": "str"
+ },
+ {
+  "k": "S Ds Ds Ds Ds S S H H H",
+  "f": "engine/strategy.js",
+  "kind": "str"
+ },
+ {
+  "k": "S S S S S H H H Rh Rh",
+  "f": "engine/strategy.js",
+  "kind": "str"
+ },
+ {
+  "k": "S S S S S S S S S Rs",
+  "f": "engine/strategy.js",
+  "kind": "str"
+ },
+ {
+  "k": "Ds Ds Ds Ds Ds S S H H H",
+  "f": "engine/strategy.js",
+  "kind": "str"
+ },
+ {
+  "k": "S S S S Ds S S S S S",
+  "f": "engine/strategy.js",
+  "kind": "str"
+ },
+ {
+  "k": "P P P P P P P P P Rp",
+  "f": "engine/strategy.js",
+  "kind": "str"
+ },
+ {
+  "k": "no insurance",
+  "f": "engine/strategy.js",
+  "kind": "str"
+ },
+ {
+  "k": "KO (Knock-Out)",
+  "f": "engine/systems.js",
+  "kind": "str"
+ },
+ {
+  "k": "Hi-Opt I",
+  "f": "engine/systems.js",
+  "kind": "str"
+ },
+ {
+  "k": "Hi-Opt II",
+  "f": "engine/systems.js",
+  "kind": "str"
+ },
+ {
+  "k": "Zen Count",
+  "f": "engine/systems.js",
+  "kind": "str"
+ },
+ {
+  "k": "Zen",
+  "f": "engine/systems.js",
+  "kind": "str"
+ },
+ {
+  "k": "Omega II",
+  "f": "engine/systems.js",
+  "kind": "str"
+ },
+ {
+  "k": "Wong Halves",
+  "f": "engine/systems.js",
+  "kind": "str"
+ },
+ {
+  "k": "Halves",
+  "f": "engine/systems.js",
+  "kind": "str"
+ },
+ {
+  "k": "Normal",
+  "f": "engine/table.js",
+  "kind": "str"
+ },
+ {
+  "k": "Pro",
+  "f": "engine/table.js",
+  "kind": "str"
+ },
+ {
+  "k": "Ana",
+  "f": "engine/table.js",
+  "kind": "str"
+ },
+ {
+  "k": "Bruno",
+  "f": "engine/table.js",
+  "kind": "str"
+ },
+ {
+  "k": "Caro",
+  "f": "engine/table.js",
+  "kind": "str"
+ },
+ {
+  "k": "Diego",
+  "f": "engine/table.js",
+  "kind": "str"
+ },
+ {
+  "k": "{0} vs {1}",
+  "f": "engine/table.js",
+  "kind": "tpl"
+ },
+ {
+  "k": "res-icon big",
+  "f": "lessons/JumpTest.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "0 auto",
+  "f": "lessons/JumpTest.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "10px 0 20px",
+  "f": "lessons/JumpTest.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "feedback fade-up",
+  "f": "lessons/Lesson.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "center tag-fb",
+  "f": "lessons/Lesson.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "slot-tag num",
+  "f": "lessons/Lesson.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "40px 0",
+  "f": "lessons/Lesson.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "option big",
+  "f": "lessons/Lesson.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "tiny num",
+  "f": "lessons/Lesson.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "dealer-total num",
+  "f": "lessons/Lesson.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "chip-tag num",
+  "f": "lessons/Lesson.jsx",
+  "kind": "str"
+ },
+ {
+  "k": " min",
+  "f": "lessons/Lesson.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "Kh",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Kd",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Qs",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Ah",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Ac",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Ad",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Ks",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Qd",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Jc",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Kc",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Qh?",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Qh",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Jh",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Ts",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Th",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "No",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Kc?",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Kd?",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Js",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Ad?",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "Ks?",
+  "f": "lessons/content.js",
+  "kind": "str"
+ },
+ {
+  "k": "card-row overlap scn-row",
+  "f": "lessons/scene.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "scn-tag num",
+  "f": "lessons/scene.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "scn-total num",
+  "f": "lessons/scene.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "meter-dot num",
+  "f": "lessons/scene.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "on bad",
+  "f": "lessons/scene.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "bb-v num",
+  "f": "lessons/scene.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "oc-net num",
+  "f": "lessons/scene.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "mini-chip num",
+  "f": "lessons/scene.jsx",
+  "kind": "str"
+ },
+ {
+  "k": " Coach",
+  "f": "lessons/scene.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "ask-fb fade-up",
+  "f": "lessons/scene.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "vis tiles",
+  "f": "lessons/visuals.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "vis mini-chart",
+  "f": "lessons/visuals.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "dev-idx num",
+  "f": "lessons/visuals.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "layer with-tabbar",
+  "f": "main.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "Luca",
+  "f": "main.jsx",
+  "kind": "jsx"
+ },
+ {
+  "k": "layer full",
+  "f": "main.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "12px 0 18px",
+  "f": "screens/Backup.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "tile-v num",
+  "f": "screens/Bankroll.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "card exam-card",
+  "f": "screens/Casino.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "10px 0 16px",
+  "f": "screens/Casino.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "0 auto 12px",
+  "f": "screens/Casino.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "Edge 21",
+  "f": "screens/Casino.jsx",
+  "kind": "jsx"
+ },
+ {
+  "k": "num casino-net",
+  "f": "screens/Casino.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "kv-v num",
+  "f": "screens/Casino.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "12px 0 16px",
+  "f": "screens/CountTab.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "running count",
+  "f": "screens/CountTab.jsx",
+  "kind": "jsx"
+ },
+ {
+  "k": "22px 0 12px",
+  "f": "screens/CountTab.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "22px 0 8px",
+  "f": "screens/CountTab.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "Illustrious 18",
+  "f": "screens/Guide.jsx",
+  "kind": "jsx"
+ },
+ {
+  "k": "Online",
+  "f": "screens/Guide.jsx",
+  "kind": "jsx"
+ },
+ {
+  "k": "Wonging",
+  "f": "screens/Guide.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "Casino",
+  "f": "screens/Journal.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "card section-card",
+  "f": "screens/LearnTab.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "{0} min",
+  "f": "screens/LearnTab.jsx",
+  "kind": "tpl"
+ },
+ {
+  "k": "num end-label",
+  "f": "screens/LearnTab.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "cell big",
+  "f": "screens/MyChart.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "demo-tag num",
+  "f": "screens/Onboarding.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "16px 0",
+  "f": "screens/Onboarding.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "onb-q fade-up",
+  "f": "screens/Onboarding.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "row num",
+  "f": "screens/Onboarding.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "20px 0 8px",
+  "f": "screens/PlayTab.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "Premium",
+  "f": "screens/Premium.jsx",
+  "kind": "attr"
+ },
+ {
+  "k": "Edge 21 Premium",
+  "f": "screens/Premium.jsx",
+  "kind": "jsx"
+ },
+ {
+  "k": "18px 10px",
+  "f": "screens/ProgressTab.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "18px 0",
+  "f": "screens/ShoeChallenge.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "sim-msg coach-line",
+  "f": "screens/TableView.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "total-badge num",
+  "f": "screens/TableView.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "card-row overlap",
+  "f": "screens/TableView.jsx",
+  "kind": "str"
+ },
+ {
+  "k": " · running count",
+  "f": "screens/TableView.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "li-chev th-chev",
+  "f": "screens/TrainHistory.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "Hi-Lo · ",
+  "f": "screens/TrainSession.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "res-delta num",
+  "f": "screens/TrainSession.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "card level-outcome",
+  "f": "screens/countPath.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "card-tag num",
+  "f": "screens/countPath.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "6px 0",
+  "f": "screens/countPath.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "translate({0}px, {1}px) rotate({2}deg)",
+  "f": "screens/drills.jsx",
+  "kind": "tpl"
+ },
+ {
+  "k": "res-move num",
+  "f": "screens/drills.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "badge goal-badge",
+  "f": "screens/goal.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "card next-up",
+  "f": "screens/profile.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "pf-skill-v num",
+  "f": "screens/profile.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "Idioma · Language",
+  "f": "screens/sheets.jsx",
+  "kind": "jsx"
+ },
+ {
+  "k": "Español",
+  "f": "screens/sheets.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "English",
+  "f": "screens/sheets.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "Android:",
+  "f": "screens/sheets.jsx",
+  "kind": "jsx"
+ },
+ {
+  "k": "{0}: {1} min",
+  "f": "screens/week.jsx",
+  "kind": "tpl"
+ },
+ {
+  "k": "{0} {1} vs {2}",
+  "f": "ui/common.jsx",
+  "kind": "tpl"
+ },
+ {
+  "k": "rotate(-90 {0} {1})",
+  "f": "ui/components.jsx",
+  "kind": "tpl"
+ },
+ {
+  "k": "cell c-{0}",
+  "f": "ui/components.jsx",
+  "kind": "tpl"
+ },
+ {
+  "k": "Pesos",
+  "f": "ui/money.jsx",
+  "kind": "str"
+ },
+ {
+  "k": "Euros",
+  "f": "ui/money.jsx",
+  "kind": "str"
+ }
+]

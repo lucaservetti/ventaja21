@@ -23,6 +23,7 @@ import { HiLoValues } from "../lessons/visuals.jsx";
 import { SystemValues } from "./CountTab.jsx";
 import { useNav } from "../nav.js";
 import { APP_MODE } from "../platform.js";
+import { LANG, setLang } from "../i18n/index.js";
 
 const VERSION = __APP_VERSION__;
 function isStandalone() {
@@ -155,6 +156,17 @@ function SettingsSheet({ open: a, onClose: e }) {
         ))}
       </div>
       <h3 className="sheet-sub">Preferencias</h3>
+      <div className="field">
+        <span>Idioma · Language</span>
+        <Pills
+          options={[
+            { value: "es", label: "Español" },
+            { value: "en", label: "English" },
+          ]}
+          value={LANG}
+          onChange={(m) => m !== LANG && setLang(m)}
+        />
+      </div>
       <Toggle
         id="s-sound"
         label="Sonido"
@@ -266,10 +278,10 @@ function SettingsSheet({ open: a, onClose: e }) {
       )}
       <h3 className="sheet-sub">Juego responsable</h3>
       <p className="muted small">
-        Edge 21 es para aprender. Contar cartas mentalmente es legal, pero
-        los casinos pueden pedirte que no juegues, y usar el celular en la mesa
-        está prohibido. Jugá solo plata que no necesitás. Si el juego deja de
-        ser entretenimiento, frená y pedí ayuda.
+        Edge 21 es para aprender. Contar cartas mentalmente es legal, pero los
+        casinos pueden pedirte que no juegues, y usar el celular en la mesa está
+        prohibido. Jugá solo plata que no necesitás. Si el juego deja de ser
+        entretenimiento, frená y pedí ayuda.
       </p>
       <p className="small" style={{ marginTop: 18 }}>
         <a

@@ -431,12 +431,14 @@ const GLOSSARY = [
 function GuideGlossary() {
   return (
     <div className="card flat">
-      {GLOSSARY.map(([a, e]) => (
-        <div className="g-gl" key={a}>
-          <b>{a}</b>
-          <span className="muted">{e}</span>
-        </div>
-      ))}
+      {[...GLOSSARY]
+        .sort((x, y) => x[0].localeCompare(y[0]))
+        .map(([a, e]) => (
+          <div className="g-gl" key={a}>
+            <b>{a}</b>
+            <span className="muted">{e}</span>
+          </div>
+        ))}
     </div>
   );
 }

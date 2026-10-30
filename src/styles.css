@@ -7470,3 +7470,10 @@ i.en {
   padding: 12px 14px;
   margin-bottom: 8px;
 }
+
+/* En inglés no hace falta repetir el término en inglés debajo de cada botón o leyenda. */
+html[lang="en"] .act-en,
+html[lang="en"] .legend-en,
+html[lang="en"] .en-dup {
+  display: none;
+}

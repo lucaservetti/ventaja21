@@ -297,7 +297,7 @@ function CellDetail({ tab, row, col, rules, st, nav }) {
         </span>
         <span>
           <b>{ACTION_NAMES[action]}</b>{" "}
-          <i className="en">({ACTION_EN[action]})</i>
+          <i className="en en-dup">({ACTION_EN[action]})</i>
           {rowFallbacks([code]).map((n) => (
             <span className="muted small" style={{ display: "block" }} key={n}>
               {n.charAt(0).toUpperCase() + n.slice(1)}.
