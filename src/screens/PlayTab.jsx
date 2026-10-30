@@ -48,6 +48,7 @@ function tableOptions(st) {
     deviations: t.deviations,
     countCheck: t.countCheck,
     pressure: t.pressure,
+    spots: t.spots === 2 ? 2 : 1,
     quietResults: true,
   };
 }
@@ -527,6 +528,14 @@ function TableSheet({ open, onClose, table }) {
           options={[0, 1, 2, 3, 4].map((n) => ({ value: n, label: String(n) }))}
           value={t.bots}
           onChange={(bots) => setTable({ bots })}
+        />
+      </div>
+      <div className="field">
+        <span>Tus manos por ronda</span>
+        <Pills
+          options={[1, 2].map((n) => ({ value: n, label: String(n) }))}
+          value={t.spots === 2 ? 2 : 1}
+          onChange={(spots) => setTable({ spots })}
         />
       </div>
       <div className="field">

@@ -199,6 +199,7 @@ const DEFAULT_STATE = {
     startBankroll: 1000,
     unit: 10,
     bots: 0,
+    spots: 1,
     speed: "normal",
     coach: true,
     betCoach: true,
