@@ -41,6 +41,12 @@ self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
+  // Solo la app pasa por acá. Las otras páginas (la política de privacidad, la página web)
+  // van directo a la red, y nunca se guardan como si fueran la app.
+  const scope = new URL(self.registration.scope).pathname;
+  const isApp = url.pathname === scope || url.pathname === scope + "index.html";
+  if (req.mode === "navigate" && !isApp) return;
+  if (url.pathname.startsWith(scope + "sitio/")) return;
   if (req.mode === "navigate") {
     e.respondWith(
       (async () => {
