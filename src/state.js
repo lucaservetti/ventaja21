@@ -187,6 +187,8 @@ const DEFAULT_STATE = {
     system: "hilo",
     sound: true,
     ambience: false,
+    theme: "dark",
+    bigText: false,
     haptics: true,
     rules: { ...DEFAULT_RULES },
     unlockAll: false,
