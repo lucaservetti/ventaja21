@@ -22,6 +22,7 @@ import {
 } from "../engine/cards.js";
 import { sfx, vibrate } from "../sound.js";
 import { APP_MODE, hasPremium, watchAdForReward } from "../platform.js";
+import { CLOUD } from "../cloud.js";
 import {
   Button,
   IconButton,
@@ -1016,6 +1017,11 @@ function DrillRunning({
               }}
             />
           </div>
+        ) : null}
+        {daily && st.daily.results[today] && CLOUD ? (
+          <Button kind="ghost" onClick={() => nav.push("ranking")}>
+            <Icon name="podium" size={18} /> Ver el ranking de hoy
+          </Button>
         ) : null}
         {daily &&
         st.daily.results[today] &&

@@ -50,6 +50,9 @@ import { Backup } from "./screens/Backup.jsx";
 import { SpeedDrill } from "./screens/SpeedDrill.jsx";
 import { Blitz } from "./screens/Blitz.jsx";
 import { Premium } from "./screens/Premium.jsx";
+import { Account } from "./screens/Account.jsx";
+import { Ranking } from "./screens/Ranking.jsx";
+import { initCloud, reportError } from "./cloud.js";
 import {
   NATIVE,
   initPlatform,
@@ -108,6 +111,8 @@ const SCREENS = {
   speedDrill: SpeedDrill,
   blitz: Blitz,
   premium: Premium,
+  account: Account,
+  ranking: Ranking,
 };
 const SHEETS = {
   settings: SettingsSheet,
@@ -407,6 +412,7 @@ const ErrorBoundary = class extends Component {
   componentDidCatch(e, t) {
     try {
       console.error("Edge 21:", e, t && t.componentStack);
+      reportError(e, t && t.componentStack);
     } catch {}
   }
   render() {
@@ -514,6 +520,7 @@ appRoot.render(
 // Actualizaciones: el iPhone retoma la app suspendida sin recargarla, así que al volver se busca
 // una versión nueva; cuando llega, se recarga en cuanto estés en una pestaña (nunca a mitad de algo).
 initPlatform();
+initCloud();
 if ("serviceWorker" in navigator && !NATIVE) {
   const hadController = !!navigator.serviceWorker.controller;
   let updateReady = false;

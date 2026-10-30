@@ -36,6 +36,21 @@ jobs:
           TODAS: "1"
         run: npm run test:e2e
 
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Cuenta de Google, nube y ranking (con los emuladores de Firebase)
+        env:
+          FIREBASE_API_KEY: prueba
+          FIREBASE_PROJECT_ID: demo-edge21
+          GOOGLE_WEB_CLIENT_ID: prueba
+          FIREBASE_EMULATOR: 127.0.0.1
+        run: |
+          npm run build
+          npx --yes firebase-tools@14 emulators:exec --project demo-edge21 --only auth,firestore "node tests/e2e/nube.mjs"
+
       - name: Capturas de lo que falló
         if: failure()
         uses: actions/upload-artifact@v4

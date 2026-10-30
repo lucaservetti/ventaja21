@@ -8238,3 +8238,138 @@ html[data-theme="light"] .tab.on .tab-ic {
   text-align: center;
   margin-top: -2px;
 }
+
+/* ---------- Cuenta y ranking ---------- */
+.acc-hero {
+  display: grid;
+  gap: 10px;
+  margin-top: 6px;
+}
+.acc-hero h2 {
+  font-size: 22px;
+}
+.acc-ic {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.acc-list {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 4px;
+}
+.acc-signin {
+  margin-top: 16px;
+  display: grid;
+  justify-items: center;
+}
+.gsi-btn {
+  min-height: 44px;
+}
+.acc-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+.acc-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+.account .card + .card {
+  margin-top: 12px;
+}
+.acc-delete {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-top: 6px;
+}
+.acc-choice {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+.acc-choice .card {
+  display: grid;
+  gap: 10px;
+}
+.rank-list ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rank-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--line, #1d4a33);
+}
+.rank-row:last-child {
+  border-bottom: 0;
+}
+.rank-row.me {
+  background: var(--accent-soft);
+  border-radius: 12px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.rank-mine {
+  margin-top: 8px;
+}
+.rank-pos {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  background: var(--surface-2);
+  flex: none;
+}
+.rank-pos.top1 {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.rank-pos.top2 {
+  background: #c9ced6;
+  color: #1b1f24;
+}
+.rank-pos.top3 {
+  background: #c98b4e;
+  color: #23140a;
+}
+.rank-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rank-join {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+.daily-rank {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+.daily-rank-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin: 8px 0 4px;
+}
