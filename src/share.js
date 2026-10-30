@@ -5,7 +5,7 @@ import { Share } from "@capacitor/share";
 import { Directory, Filesystem } from "@capacitor/filesystem";
 import { LOGO_21, LOGO_SPADE } from "./ui/common.jsx";
 
-const SITE = "https://lucaservetti.github.io/ventaja21/sitio/";
+const SITE = "https://edge21.app/";
 const W = 1080;
 const H = 1350;
 const GOLD = "#e9b949";

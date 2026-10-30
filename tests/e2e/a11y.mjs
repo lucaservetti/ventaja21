@@ -21,7 +21,7 @@ const b = await chromium.launch();
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, locale: "es-UY" });
 await ctx.addInitScript(`if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s","1"); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(ONB))}); }`);
 const page = await ctx.newPage();
-await page.goto(base + "/index.html");
+await page.goto(base + "/app/index.html");
 await page.waitForTimeout(1000);
 const pantallas = [
   ["Aprender", null],

@@ -83,7 +83,7 @@ Después completá el panel **"Configura tu app"**. Lo que va en cada formulario
 
 | Formulario | Qué responder |
 | --- | --- |
-| Política de privacidad | `https://lucaservetti.github.io/ventaja21/privacidad.html`. Antes, cambiá `CORREO_DE_CONTACTO` en `privacidad.html` por tu mail (o pedímelo). |
+| Política de privacidad | `https://edge21.app/privacidad.html`. Antes, cambiá `CORREO_DE_CONTACTO` en `privacidad.html` por tu mail (o pedímelo). |
 | Acceso a la app | Toda la funcionalidad está disponible sin acceso especial (no hay inicio de sesión). |
 | Anuncios | **Sí, contiene anuncios.** |
 | Clasificación del contenido | Completá el cuestionario. Respondé **Sí a "juegos de azar simulados"** y **No a apuestas con dinero real**. Va a salir una clasificación para adolescentes o mayores. |
@@ -149,8 +149,8 @@ En `store/testers.md` están los mensajes listos para mandar (en español y en i
 - **Precios y anuncios:** el plan completo, con números y el calendario hasta el lanzamiento, está en `store/monetizacion.md`.
 - **TikTok e Instagram:** cómo crear las cuentas, la bio, la foto y qué publicar están en `store/redes/README.md`.
 
-- **Página web:** ya está en `https://lucaservetti.github.io/ventaja21/sitio/` (carpeta `sitio/`). Ponela como "sitio web" en la ficha de Play. Cuando la app esté publicada, cambiá `PUBLISHED = false` a `true` en `sitio/index.html` y el botón pasa a llevar a Google Play.
-- **app-ads.txt:** AdMob lo recomienda para cobrar el máximo por los anuncios. Tiene que estar en la raíz del dominio del sitio, o sea `https://lucaservetti.github.io/app-ads.txt`, y para eso hace falta un repositorio llamado `lucaservetti.github.io` con ese archivo (y un `index.html` que redirija a `/ventaja21/sitio/`). AdMob te da el texto exacto en *Apps → app-ads.txt*. Pedímelo y lo armo.
+- **Página web:** está en `https://edge21.app` (el archivo `index.html` de la raíz), y la app web en `https://edge21.app/app/`. Ponela como "sitio web" en la ficha de Play. Cuando la app esté publicada, cambiá `PUBLISHED = false` a `true` en `index.html` y el botón pasa a llevar a Google Play.
+- **app-ads.txt:** AdMob lo recomienda para cobrar el máximo por los anuncios. Va en la raíz del dominio: `https://edge21.app/app-ads.txt` (un archivo `app-ads.txt` en la raíz del repositorio). AdMob te da el texto exacto en *Apps → app-ads.txt*. En AdMob y en Play, el sitio web del desarrollador tiene que ser `https://edge21.app`. Pedímelo y lo armo.
 - **La versión web** (GitHub Pages) sigue gratis y sin anuncios. Si querés que la gente use la de Play, podés poner ahí un aviso con el enlace a la tienda.
 - **iPhone (App Store):** el mismo proyecto de Capacitor se puede llevar a iOS más adelante. Hace falta una Mac (o un servicio de compilación en la nube) y la cuenta de Apple, que cuesta US$99 por año.
 

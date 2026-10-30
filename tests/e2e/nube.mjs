@@ -36,7 +36,7 @@ const srv = http.createServer((req, res) => {
   fs.readFile(path.join(ROOT, p), (e, d) => (e ? res.writeHead(404).end() : res.writeHead(200, { "content-type": p.endsWith(".html") ? "text/html; charset=utf-8" : "application/octet-stream" }).end(d)));
 });
 await new Promise((ok) => srv.listen(0, ok));
-const url = `http://localhost:${srv.address().port}/index.html`;
+const url = `http://localhost:${srv.address().port}/app/index.html`;
 const browser = await chromium.launch();
 async function phone(state) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "es-UY" });

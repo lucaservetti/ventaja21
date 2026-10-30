@@ -53,7 +53,7 @@ Blackjack, Cartas, Educación
 (el tuyo; Play lo muestra en la ficha)
 
 ## Política de privacidad
-https://lucaservetti.github.io/ventaja21/privacidad.html
+https://edge21.app/privacidad.html
 
 ## Imágenes
 - Ícono: store/icono-512.png (512×512)

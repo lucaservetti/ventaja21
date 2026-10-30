@@ -45,7 +45,7 @@ const T = {
   },
 }[L];
 const FONT = `@font-face{font-family:DM;src:url(${path.join(__dirname, "DMSans-latin-400-800.woff2")});font-weight:400 800}*{margin:0;box-sizing:border-box}body{font-family:DM;color:#f3efe2}`;
-const CHIP = `<img src="${path.resolve(__dirname, "../../sitio/img/ficha.svg")}">`;
+const CHIP = `<img src="${path.resolve(__dirname, "../../img/ficha.svg")}">`;
 const FELT_V = "radial-gradient(110% 70% at 50% 10%,#17603f 0%,#0a2c1c 55%,#04100a 100%)";
 const FELT_H = "radial-gradient(80% 110% at 30% 30%,#17603f 0%,#0a2c1c 55%,#04100a 100%)";
 

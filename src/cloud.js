@@ -170,12 +170,15 @@ async function renderWebButton(el, onDone) {
     client_id: CFG.webClientId,
     callback: (r) => onDone(finishSignIn(r.credential)),
   });
+  // El botón oficial de Google, blanco y del ancho de la pantalla (hasta 400 px).
   google.accounts.id.renderButton(el, {
-    theme: "filled_black",
+    theme: "outline",
     size: "large",
     shape: "pill",
     text: "continue_with",
-    width: 300,
+    logo_alignment: "left",
+    width: Math.min(400, Math.max(240, el.clientWidth || 320)),
+    locale: document.documentElement.lang === "en" ? "en" : "es-419",
   });
 }
 // En Android: el selector de cuentas de Google del celular.

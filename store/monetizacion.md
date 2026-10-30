@@ -91,5 +91,5 @@ Lo que más mueve estos números son las **descargas**, y ahí entran los videos
 | Día 3 | Abrir la prueba cerrada y mandar el mensaje a los testers (`store/testers.md`) |
 | Día 3 a 17 | 14 días de prueba. Mientras, arrancar TikTok e Instagram con 3 videos por semana |
 | Día 17 | Pedir acceso a producción |
-| Día 20 a 25 | Sale en Play. Cambiar `PUBLISHED = true` en `sitio/index.html`. Vincular AdMob con Play |
+| Día 20 a 25 | Sale en Play. Cambiar `PUBLISHED = true` en `index.html` (la página de presentación). Vincular AdMob con Play |
 | Después | Mirar reseñas y números cada semana. Ajustar precios por país y anuncios si hace falta |

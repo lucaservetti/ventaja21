@@ -364,7 +364,7 @@ const PRUEBAS = {
       page.on("console", (m) => m.type() === "error" && !/Failed to load resource/.test(m.text()) && errors.push(m.text()));
       const t0 = Date.now();
       try {
-        await page.goto(base + "/index.html");
+        await page.goto(base + "/app/index.html");
         await page.waitForTimeout(900);
         await fn(helpers(page, lang, name));
         check(!errors.length, "errores en la consola: " + errors.join(" | "));

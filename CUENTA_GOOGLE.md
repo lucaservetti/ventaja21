@@ -35,7 +35,7 @@ Mientras `firebase.config.json` esté vacío, la cuenta, el ranking y el reporte
 1. Andá a <https://console.cloud.google.com> (mismo proyecto, arriba a la izquierda) → **APIs y servicios → Credenciales**.
 2. Abrí el **cliente web** creado por Firebase (*Web client (auto created by Google Service)*).
 3. En **Orígenes autorizados de JavaScript** agregá:
-   - `https://lucaservetti.github.io`
+   - `https://edge21.app`
    - `http://localhost`
 4. Guardá.
 
@@ -54,7 +54,7 @@ Google necesita la "huella" (SHA-1) de las claves con las que se firma la app. S
 3. **Pantalla de consentimiento** (Google Cloud → APIs y servicios → Pantalla de consentimiento de OAuth):
    - nombre `Edge 21`;
    - tu mail;
-   - política de privacidad `https://lucaservetti.github.io/ventaja21/privacidad.html`.
+   - política de privacidad `https://edge21.app/privacidad.html`.
 
    Con eso alcanza: para pedir solo nombre y mail no hace falta que Google revise la app.
 
