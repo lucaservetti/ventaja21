@@ -10,7 +10,12 @@ on:
 jobs:
   pruebas:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
+    # Español e inglés en paralelo (cada uno recorre todas las lecciones).
+    strategy:
+      fail-fast: false
+      matrix:
+        idioma: [es, en]
     steps:
       - uses: actions/checkout@v4
 
@@ -34,14 +39,17 @@ jobs:
       - name: La app de punta a punta
         env:
           TODAS: "1"
+          IDIOMA: ${{ matrix.idioma }}
         run: npm run test:e2e
 
       - uses: actions/setup-java@v4
+        if: ${{ !cancelled() && matrix.idioma == 'es' }}
         with:
           distribution: temurin
           java-version: 21
 
       - name: Cuenta de Google, nube y ranking (con los emuladores de Firebase)
+        if: ${{ !cancelled() && matrix.idioma == 'es' }}
         env:
           FIREBASE_API_KEY: prueba
           FIREBASE_PROJECT_ID: demo-edge21
@@ -55,6 +63,6 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: fallas
+          name: fallas-${{ matrix.idioma }}
           path: tests/e2e/fallas/
           if-no-files-found: ignore
