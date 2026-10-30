@@ -8263,8 +8263,18 @@ html[data-theme="light"] .tab.on .tab-ic {
   display: grid;
   justify-items: center;
 }
+/* El botón de Google se dibuja en un marco aparte: con el esquema claro, el marco queda
+   transparente en vez de un recuadro blanco sobre el fondo oscuro. */
 .gsi-btn {
   min-height: 44px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  justify-content: center;
+  color-scheme: light;
+}
+.gsi-btn iframe {
+  color-scheme: light;
 }
 .acc-user {
   display: flex;
