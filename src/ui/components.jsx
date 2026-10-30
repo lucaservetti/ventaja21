@@ -636,9 +636,10 @@ function chartHighlight(a) {
   return { tab: "hard", row: t <= 8 ? 8 : t >= 17 ? 17 : t, col: e };
 }
 function Toasts({ items: a }) {
-  return !a || !a.length ? null : (
+  // El contenedor está siempre, así el lector de pantalla anuncia cada aviso nuevo.
+  return (
     <div className="toasts" aria-live="polite">
-      {a.map((e) => (
+      {(a || []).map((e) => (
         <div className={cx("toast", `toast-${e.kind}`)} key={e.id}>
           {e.msg}
         </div>

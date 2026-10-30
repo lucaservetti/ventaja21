@@ -1,3 +1,4 @@
+import { CLOUD } from "../cloud.js";
 import { useState } from "react";
 import { dayKey, useStore } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
@@ -173,6 +174,15 @@ function CountTab() {
         </span>
         <Icon name="chev" className="li-chev" />
       </button>
+      {CLOUD ? (
+        <button
+          type="button"
+          className="link small daily-rank-link"
+          onClick={() => nav.push("ranking")}
+        >
+          <Icon name="podium" size={16} /> Ver el ranking del desafío
+        </button>
+      ) : null}
       <button
         type="button"
         className="card list-item"

@@ -5,7 +5,7 @@
 # Secretos (Settings → Secrets and variables → Actions → Secrets):
 #   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
 # Variables (misma pantalla → Variables):
-#   ADMOB_APP_ID (ca-app-pub-…~…) y ADMOB_INTERSTITIAL_ID (ca-app-pub-…/…).
+#   ADMOB_APP_ID (ca-app-pub-…~…), ADMOB_INTERSTITIAL_ID y ADMOB_REWARDED_ID (ca-app-pub-…/…).
 #   Sin ellas se usan los anuncios de prueba de Google (no generan plata).
 name: Android
 
@@ -43,6 +43,7 @@ jobs:
       - name: Armar la app web
         env:
           ADMOB_INTERSTITIAL_ID: ${{ vars.ADMOB_INTERSTITIAL_ID }}
+          ADMOB_REWARDED_ID: ${{ vars.ADMOB_REWARDED_ID }}
         run: npm run build
 
       - name: Copiar la app al proyecto Android

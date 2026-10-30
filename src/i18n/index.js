@@ -1,6 +1,14 @@
 // Idioma de la app. Los textos se escriben en español en el código y la compilación los envuelve
 // en __t()/__tf() (scripts/i18n-core.mjs); en inglés se buscan en en.json.
-import EN from "./en.json";
+// El diccionario va aparte en el HTML, como JSON: en español ni se lee, así la app arranca antes.
+function loadDict() {
+  try {
+    const el = document.getElementById("i18n-en");
+    return el ? JSON.parse(el.textContent) : {};
+  } catch {
+    return {};
+  }
+}
 
 const KEY = "edge21.lang";
 function detect() {
@@ -19,7 +27,7 @@ function detect() {
 }
 
 export const LANG = detect();
-const DICT = LANG === "en" ? EN : null;
+const DICT = LANG === "en" ? loadDict() : null;
 export const LOCALE = LANG === "en" ? "en-US" : "es-UY";
 export const DEC = LANG === "en" ? "." : ",";
 

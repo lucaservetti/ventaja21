@@ -22,6 +22,15 @@ const i18nPlugin = {
 };
 
 const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+// Firebase (cuenta de Google opcional, ranking y errores). Vacío = apagado. Ver CUENTA_GOOGLE.md.
+const fbFile = JSON.parse(fs.readFileSync("firebase.config.json", "utf8"));
+const firebase = {
+  apiKey: process.env.FIREBASE_API_KEY || fbFile.apiKey || "",
+  projectId: process.env.FIREBASE_PROJECT_ID || fbFile.projectId || "",
+  webClientId: process.env.GOOGLE_WEB_CLIENT_ID || fbFile.webClientId || "",
+  // Solo para pruebas locales con los emuladores de Firebase.
+  ...(process.env.FIREBASE_EMULATOR ? { emulator: process.env.FIREBASE_EMULATOR } : {}),
+};
 const version = pkg.version;
 
 const js = await esbuild.build({
@@ -39,8 +48,10 @@ const js = await esbuild.build({
   define: {
     "process.env.NODE_ENV": '"production"',
     __APP_VERSION__: JSON.stringify(version),
+    __FIREBASE__: JSON.stringify(firebase.apiKey && firebase.projectId ? firebase : null),
     // Anuncio intersticial de AdMob para Android. Sin la variable, se usa el anuncio de prueba de Google.
     __ADMOB_INTERSTITIAL__: JSON.stringify(process.env.ADMOB_INTERSTITIAL_ID || "ca-app-pub-3940256099942544/1033173712"),
+    __ADMOB_REWARDED__: JSON.stringify(process.env.ADMOB_REWARDED_ID || "ca-app-pub-3940256099942544/5224354917"),
   },
 });
 const css = await esbuild.transform(fs.readFileSync("fonts/fonts.css", "utf8") + fs.readFileSync("src/styles.css", "utf8"), { loader: "css", minify: true, target: "safari15" });
@@ -49,7 +60,11 @@ const script = js.outputFiles[0].text.replace(/<\/script/gi, "<\\/script");
 const html = fs
   .readFileSync("src/index.html", "utf8")
   .replace("/*STYLES*/", () => css.code.trim())
-  .replace("/*SCRIPT*/", () => script.trim());
+  .replace("/*SCRIPT*/", () => script.trim())
+  .replace(
+    "<!--I18N-->",
+    () => `<script type="application/json" id="i18n-en">${JSON.stringify(EN).replace(/<\//g, "<\\/")}</script>`,
+  );
 fs.writeFileSync("index.html", html);
 
 const hash = crypto.createHash("sha256").update(html).digest("hex").slice(0, 10);

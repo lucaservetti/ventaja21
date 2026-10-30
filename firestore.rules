@@ -1,0 +1,37 @@
+rules_version = '2';
+// Reglas de seguridad de la base de datos de Edge 21 (Firestore). Se pegan en
+// Firebase → Firestore Database → Reglas → Publicar. Ver CUENTA_GOOGLE.md.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // El progreso de cada persona: solo lo ve y lo cambia su dueño.
+    match /users/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['gz', 'text', 'updatedAt', 'version']);
+    }
+
+    // Ranking del desafío diario (daily/AAAA-MM-DD) y de la semana (weekly/AAAA-MM-DD del lunes).
+    // Lo puede ver cualquiera; cada uno solo escribe su propio puntaje, con límites razonables.
+    match /{kind}/{key}/scores/{uid} {
+      allow read: if kind == 'daily' || kind == 'weekly';
+      allow delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && (kind == 'daily' || kind == 'weekly')
+        && request.resource.data.keys().hasOnly(['name', 'score', 'ok', 't', 'expireAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 20
+        && request.resource.data.score is int
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= (kind == 'daily' ? 120 : 840);
+    }
+
+    // Errores de la app: se pueden mandar, pero nadie los puede leer desde la app.
+    match /errores/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['msg', 'stack', 'where', 'version', 'plataforma', 'idioma', 't', 'expireAt'])
+        && request.resource.data.msg is string && request.resource.data.msg.size() <= 300
+        && request.resource.data.stack is string && request.resource.data.stack.size() <= 1500;
+    }
+  }
+}

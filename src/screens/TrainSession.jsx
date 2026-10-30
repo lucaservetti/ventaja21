@@ -346,7 +346,7 @@ function TrainSession({ mode: a = "mixed", focus: e = null, hands = null }) {
           </div>
         </div>
       ) : (
-        <div className="result-card fade-up">
+        <div className="result-card fade-up" role="status">
           <div className="row">
             <span className={cx("res-icon", d.correct ? "ok" : "bad")}>
               <Icon name={d.correct ? "check" : "x"} size={22} stroke={3} />

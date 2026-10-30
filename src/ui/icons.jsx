@@ -139,6 +139,17 @@ const ICON_PATHS = {
       <path d="M12 7.5V12l3 2" />
     </>
   ),
+  user: (
+    <>
+      <circle cx="12" cy="8.5" r="3.6" />
+      <path d="M5 20c.8-3.8 3.6-5.8 7-5.8s6.2 2 7 5.8" />
+    </>
+  ),
+  podium: (
+    <>
+      <path d="M9 21V9h6v12M3 21v-7h6M15 21v-9h6v9M2 21h20" />
+    </>
+  ),
   users: (
     <>
       <circle cx="9" cy="8.5" r="3.2" />

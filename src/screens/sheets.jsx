@@ -1,3 +1,4 @@
+import { ACCOUNTS, useAccount } from "../cloud.js";
 import { useState } from "react";
 import {
   TABLE_PRESETS,
@@ -37,6 +38,7 @@ function isStandalone() {
   }
 }
 function SettingsSheet({ open: a, onClose: e }) {
+  const { acct } = useAccount();
   let t = useStore(),
     s = useNav(),
     n = t.settings,
@@ -63,7 +65,29 @@ function SettingsSheet({ open: a, onClose: e }) {
             <span className="li-sub" style={{ display: "block" }}>
               {n.premium
                 ? "Gracias por apoyar la app"
-                : "Sin anuncios y con todo lo avanzado, en un solo pago"}
+                : "Sin anuncios y con todo lo avanzado"}
+            </span>
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+      ) : null}
+      {ACCOUNTS ? (
+        <button
+          type="button"
+          className="list-item setting-link"
+          onClick={() => {
+            e();
+            s.push("account");
+          }}
+        >
+          <span className="li-text">
+            <span className="li-title" style={{ fontSize: 17 }}>
+              Tu cuenta
+            </span>
+            <span className="li-sub" style={{ display: "block" }}>
+              {acct
+                ? `Guardando tu progreso en ${acct.email || "tu cuenta de Google"}`
+                : "Guardá tu progreso con Google (opcional)"}
             </span>
           </span>
           <Icon name="chev" className="li-chev" />

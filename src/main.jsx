@@ -1,4 +1,11 @@
-import { Component, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Activity,
+  Component,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { createRoot } from "react-dom/client";
 import { jsx as _jsx } from "react/jsx-runtime";
 import { getState, resetAll, setState, useStore } from "./state.js";
@@ -43,6 +50,11 @@ import { Backup } from "./screens/Backup.jsx";
 import { SpeedDrill } from "./screens/SpeedDrill.jsx";
 import { Blitz } from "./screens/Blitz.jsx";
 import { Premium } from "./screens/Premium.jsx";
+import { Account } from "./screens/Account.jsx";
+import { Ranking } from "./screens/Ranking.jsx";
+import { initCloud, reportError } from "./cloud.js";
+import { Challenge } from "./screens/Challenge.jsx";
+import { pendingChallenge, takeChallengeFromUrl } from "./challenge.js";
 import {
   NATIVE,
   initPlatform,
@@ -101,6 +113,9 @@ const SCREENS = {
   speedDrill: SpeedDrill,
   blitz: Blitz,
   premium: Premium,
+  account: Account,
+  challenge: Challenge,
+  ranking: Ranking,
 };
 const SHEETS = {
   settings: SettingsSheet,
@@ -179,7 +194,7 @@ function App() {
       push(k, v = {}) {
         // En la app de Android, lo de Premium abre la pantalla de Premium.
         if (needsPremium(k, v)) {
-          v = { feature: k };
+          v = { feature: k, then: v };
           k = "premium";
         }
         let m = p();
@@ -187,7 +202,7 @@ function App() {
       },
       replace(k, v = {}) {
         if (needsPremium(k, v)) {
-          v = { feature: k };
+          v = { feature: k, then: v };
           k = "premium";
         }
         i((m) => {
@@ -247,6 +262,39 @@ function App() {
     window.__v21Idle = idle;
     if (idle) window.dispatchEvent(new Event("v21-idle"));
   }, [idle]);
+  // Con la app quieta se preparan las otras pestañas, de a una, para que cambiar sea instantáneo.
+  const pending = a.profile.onboarded ? TABS.find((k) => !s[k.id]) : null;
+  useEffect(() => {
+    if (!pending) return undefined;
+    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 300));
+    const cancel = window.cancelIdleCallback || clearTimeout;
+    let id = 0;
+    const t0 = setTimeout(() => {
+      id = idle(() => n((v) => ({ ...v, [pending.id]: true })), {
+        timeout: 3000,
+      });
+    }, 700);
+    return () => {
+      clearTimeout(t0);
+      cancel(id);
+    };
+  }, [pending]);
+  // Un desafío de un amigo (enlace con #reto=…): se abre apenas termina la bienvenida.
+  const onboardedNow = a.profile.onboarded;
+  useEffect(() => {
+    if (!onboardedNow) return undefined;
+    const open = () => {
+      const c = pendingChallenge();
+      if (c) y.push("challenge", { challenge: c });
+    };
+    open();
+    const onHash = () => {
+      takeChallengeFromUrl();
+      open();
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, [onboardedNow]);
   // Tema (oscuro o claro) y tamaño de letra.
   const theme = a.settings.theme || "dark";
   const bigText = !!a.settings.bigText;
@@ -302,20 +350,30 @@ function App() {
         {TABS.map((k) => {
           if (!s[k.id]) return null;
           let v = TAB_SCREENS[k.id];
-          return (
+          const shown = k.id === e && l.length === 0;
+          const sec = (
             <section
               className={cx("layer with-tabbar", k.layerClass)}
-              hidden={k.id !== e || l.length > 0}
+              hidden={!shown}
               aria-label={k.label}
               key={k.id}
             >
-              {_jsx(v, { active: k.id === e && l.length === 0 })}
+              {_jsx(v, { active: shown })}
               {k.id !== "jugar" ? (
                 <p className="credit">
                   Edge 21 · hecho por <b>Luca</b> ♠
                 </p>
               ) : null}
             </section>
+          );
+          // Las pestañas ocultas no se vuelven a dibujar mientras practicás (React las actualiza
+          // cuando hay tiempo libre). La mesa queda afuera: su ronda sigue andando aunque no se vea.
+          return k.id === "jugar" ? (
+            sec
+          ) : (
+            <Activity mode={shown ? "visible" : "hidden"} key={k.id}>
+              {sec}
+            </Activity>
           );
         })}
         {l.map((k, v) => {
@@ -373,6 +431,7 @@ const ErrorBoundary = class extends Component {
   componentDidCatch(e, t) {
     try {
       console.error("Edge 21:", e, t && t.componentStack);
+      reportError(e, t && t.componentStack);
     } catch {}
   }
   render() {
@@ -479,7 +538,9 @@ appRoot.render(
 );
 // Actualizaciones: el iPhone retoma la app suspendida sin recargarla, así que al volver se busca
 // una versión nueva; cuando llega, se recarga en cuanto estés en una pestaña (nunca a mitad de algo).
+takeChallengeFromUrl();
 initPlatform();
+initCloud();
 if ("serviceWorker" in navigator && !NATIVE) {
   const hadController = !!navigator.serviceWorker.controller;
   let updateReady = false;

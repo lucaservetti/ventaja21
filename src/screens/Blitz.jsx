@@ -17,52 +17,70 @@ import { sfx, vibrate } from "../sound.js";
 import { useNav } from "../nav.js";
 import { ActionButton } from "./TrainSession.jsx";
 import { ShareButton } from "../ui/ShareButton.jsx";
+import { ChallengeButton, ChallengeOutcome } from "../ui/ChallengeShare.jsx";
+import { randomSeed } from "../challenge.js";
+import { seededRandom } from "../engine/cards.js";
 
 const TOTAL_MS = 60000;
 const PENALTY_MS = 3000;
 
-function newSpots(rules) {
+// Con semilla (para desafiar a alguien), las manos salen siempre iguales y no dependen de tus
+// estadísticas; cada tanda de 30 usa la semilla más su número.
+function newSpots(rules, seed = null, batch = 0) {
+  const rnd = seed ? seededRandom(seed + batch * 7919) : undefined;
   return buildSession({
     mode: "mixed",
     rules,
-    stats: getState().train.cells,
+    stats: seed ? {} : getState().train.cells,
     size: 30,
-  }).map((k) => makeSpot(k, { nCards: cardsForSpot(k) }));
+    rnd,
+  }).map((k) => makeSpot(k, { nCards: cardsForSpot(k, rnd), rnd }));
 }
 
-function Blitz() {
+function Blitz({ challenge = null }) {
   const st = useStore();
   const nav = useNav();
   const rules = useRules();
   const best = (st.train.blitz && st.train.blitz.best) || 0;
   const [phase, setPhase] = useState("ready");
+  const seed = useRef(0);
+  const batch = useRef(0);
   const [spots, setSpots] = useState(() => newSpots(rules));
   const [idx, setIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [misses, setMisses] = useState(0);
   const [flash, setFlash] = useState(null); // { ok, text }
   const [left, setLeft] = useState(TOTAL_MS);
+  // La barra baja sola con una animación de CSS (60 cuadros por segundo sin redibujar la pantalla);
+  // solo se reinicia al empezar y con cada penalización.
+  const [bar, setBar] = useState({ k: 0, ms: TOTAL_MS });
   const endAt = useRef(0);
   const result = useRef(null);
 
   useEffect(() => {
     if (phase !== "play") return undefined;
+    // El número cambia una vez por segundo: no hace falta volver a dibujar más seguido.
     const id = setInterval(() => {
       const ms = Math.max(0, endAt.current - Date.now());
-      setLeft(ms);
+      setLeft((prev) =>
+        Math.ceil(prev / 1000) === Math.ceil(ms / 1000) ? prev : ms,
+      );
       if (ms <= 0) finish();
     }, 100);
     return () => clearInterval(id);
   }, [phase]);
 
   function start() {
-    setSpots(newSpots(rules));
+    seed.current = challenge ? challenge.s : randomSeed();
+    batch.current = 0;
+    setSpots(newSpots(rules, seed.current, 0));
     setIdx(0);
     setScore(0);
     setMisses(0);
     setFlash(null);
     endAt.current = Date.now() + TOTAL_MS;
     setLeft(TOTAL_MS);
+    setBar((b) => ({ k: b.k + 1, ms: TOTAL_MS }));
     setPhase("play");
   }
   function finish() {
@@ -105,11 +123,18 @@ function Blitz() {
     } else {
       setMisses((x) => x + 1);
       endAt.current -= PENALTY_MS;
+      const ms = Math.max(0, endAt.current - Date.now());
+      setLeft(ms);
+      setBar((b) => ({ k: b.k + 1, ms }));
       sfx.bad();
       vibrate([20, 40, 20]);
       setFlash({ ok: false, key: idx, text: ACTION_NAMES[g.best] });
     }
-    if (idx + 3 >= spots.length) setSpots((s) => [...s, ...newSpots(rules)]);
+    if (idx + 3 >= spots.length) {
+      batch.current += 1;
+      const more = newSpots(rules, seed.current, batch.current);
+      setSpots((s) => [...s, ...more]);
+    }
     setIdx((i) => i + 1);
   }
 
@@ -125,12 +150,20 @@ function Blitz() {
           <span className="blitz-clock">
             <Icon name="clock" size={40} />
           </span>
-          <h1>¿Cuántas manos acertás en 60 segundos?</h1>
+          <h1>
+            {challenge
+              ? `El desafío de ${challenge.nm || "tu amigo"}`
+              : "¿Cuántas manos acertás en 60 segundos?"}
+          </h1>
           <p className="muted">
             Elegí la jugada de la tabla lo más rápido que puedas. Cada acierto
             suma 1; cada error te saca 3 segundos.
           </p>
-          {best ? (
+          {challenge ? (
+            <p className="blitz-best">
+              {`Acertó ${challenge.sc} manos con estas mismas cartas. ¿Le ganás?`}
+            </p>
+          ) : best ? (
             <p className="blitz-best">
               Tu récord: <b className="num">{best}</b>
             </p>
@@ -166,6 +199,21 @@ function Blitz() {
               : "No llegaste a contestar ninguna mano."}
           </p>
         </div>
+        {challenge ? (
+          <ChallengeOutcome
+            challenge={challenge}
+            score={score}
+            data={{ k: "b", s: seed.current, sc: score }}
+            text={`Acerté ${score} manos en 60 segundos en Edge 21. ¿Me ganás con las mismas manos? 🃏`}
+          />
+        ) : (
+          <div className="chal-cta">
+            <ChallengeButton
+              data={{ k: "b", s: seed.current, sc: score }}
+              text={`Acerté ${score} manos en 60 segundos en Edge 21. ¿Me ganás con las mismas manos? 🃏`}
+            />
+          </div>
+        )}
         <div className="bottom-actions">
           <div className="btns">
             <Button onClick={start}>Otra vez</Button>
@@ -200,11 +248,13 @@ function Blitz() {
     { cards: spot.cards, fromSplit: false },
     rules,
   );
-  const frac = left / TOTAL_MS;
   return (
     <div className="blitz">
       <div className="blitz-top">
-        <span className={cx("blitz-time num", left < 10000 && "low")}>
+        <span
+          className={cx("blitz-time num", left <= 10000 && "low")}
+          key={left <= 10000 ? Math.ceil(left / 1000) : "t"}
+        >
           {Math.ceil(left / 1000)}
         </span>
         <span className="blitz-pts num">
@@ -212,7 +262,13 @@ function Blitz() {
         </span>
       </div>
       <div className="blitz-bar">
-        <i style={{ transform: `scaleX(${frac})` }} />
+        <i
+          key={bar.k}
+          style={{
+            "--from": bar.ms / TOTAL_MS,
+            animationDuration: `${bar.ms}ms`,
+          }}
+        />
       </div>
       <div className="card deal-card blitz-deal" key={idx}>
         <div className="deal-grid">

@@ -1,0 +1,68 @@
+# Corre todas las pruebas en cada cambio: estrategia, simulador y la app de punta a punta
+# (en español y en inglés, incluidas todas las lecciones). Si algo se rompe, sale en rojo.
+name: Pruebas
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # Español e inglés en paralelo (cada uno recorre todas las lecciones).
+    strategy:
+      fail-fast: false
+      matrix:
+        idioma: [es, en]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Instalar Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Armar la app
+        run: npm run build
+
+      - name: Estrategia, simulador y estilo
+        run: npm test
+
+      - name: La app de punta a punta
+        env:
+          TODAS: "1"
+          IDIOMA: ${{ matrix.idioma }}
+        run: npm run test:e2e
+
+      - uses: actions/setup-java@v4
+        if: ${{ !cancelled() && matrix.idioma == 'es' }}
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Cuenta de Google, nube y ranking (con los emuladores de Firebase)
+        if: ${{ !cancelled() && matrix.idioma == 'es' }}
+        env:
+          FIREBASE_API_KEY: prueba
+          FIREBASE_PROJECT_ID: demo-edge21
+          GOOGLE_WEB_CLIENT_ID: prueba
+          FIREBASE_EMULATOR: 127.0.0.1
+        run: |
+          npm run build
+          npx --yes firebase-tools@14 emulators:exec --project demo-edge21 --only auth,firestore "node tests/e2e/nube.mjs"
+
+      - name: Capturas de lo que falló
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fallas-${{ matrix.idioma }}
+          path: tests/e2e/fallas/
+          if-no-files-found: ignore
