@@ -56,7 +56,7 @@ const PERKS = [
 // en la moneda de cada país).
 const SAMPLE = {
   monthly: { micros: 2990000, currency: "USD", trialDays: 0 },
-  yearly: { micros: 19990000, currency: "USD", trialDays: 7 },
+  yearly: { micros: 19990000, currency: "USD", trialDays: 5 },
   lifetime: { micros: 49990000, currency: "USD", trialDays: 0 },
 };
 function money(micros, currency) {

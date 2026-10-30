@@ -110,9 +110,9 @@ La app también está en inglés (sale en inglés en los celulares que no están
        - ID **`mensual`**, período mensual, US$2,99;
        - ID **`anual`**, período anual, US$19,99.
      - En el plan `anual`, **Agregar oferta**:
-       - ID **`prueba-7-dias`**;
+       - ID **`prueba-5-dias`**;
        - elegibilidad: *adquisición de clientes nuevos*, "nunca tuvo esta suscripción";
-       - una fase: **prueba gratuita de 7 días**.
+       - una fase: **prueba gratuita de 5 días**.
      - **Activá** los dos planes y la oferta.
    - **Pago único.** Andá a **Monetizar → Productos → Productos integrados en la aplicación → Crear producto**.
      - ID del producto: **`premium`**.

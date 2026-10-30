@@ -29,7 +29,7 @@ A CASINO IN YOUR POCKET
 • Blackjack simulator with other players, count checks and a play and betting mentor.
 • Configurable rules: decks, shoe penetration, 3:2 or 6:5, H17 or S17, surrender and more.
 
-PREMIUM (MONTHLY, YEARLY WITH A 7-DAY FREE TRIAL, OR ONE-TIME)
+PREMIUM (MONTHLY, YEARLY WITH A 5-DAY FREE TRIAL, OR ONE-TIME)
 • No ads.
 • Real casino mode: your money (dollars, pesos or euros), table limits, a decision timer, casino surveillance, tourist mode and an exam with a certificate.
 • The full deviations path: the Illustrious 18 and the Fab 4, up to working out the true count yourself.
