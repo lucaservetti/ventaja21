@@ -499,7 +499,7 @@ strong {
   border-radius: 40px;
   padding: 12px 14px 12px 12px;
   text-align: left;
-  box-shadow: 0 -8px 30px #000000b3;
+  box-shadow: 0 -8px 30px #06110cb3;
 }
 .cta-bar .cta-play {
   width: 54px;
@@ -530,7 +530,7 @@ strong {
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: #0000001a;
+  background: #06110c1a;
   display: grid;
   place-items: center;
 }
@@ -553,7 +553,7 @@ strong {
   pointer-events: auto;
   display: flex;
   height: var(--tabbar-h);
-  background: #1c1c21eb;
+  background: #102d1feb;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid #1a4932;
@@ -626,7 +626,7 @@ strong {
   border-radius: calc(var(--w) * 0.14);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  box-shadow: 0 2px 8px #00000059;
+  box-shadow: 0 2px 8px #06110c59;
 }
 .pc-face {
   background: var(--card-face);
@@ -700,7 +700,7 @@ strong {
   background: #113021;
   border: 3px solid var(--good);
   color: var(--good);
-  box-shadow: 0 4px 12px #00000080;
+  box-shadow: 0 4px 12px #06110c80;
   animation: pop 0.3s ease both;
 }
 .pc-mark.bad {
@@ -761,8 +761,8 @@ strong {
     var(--c) 38deg 60deg
   );
   box-shadow:
-    0 3px #00000073,
-    inset 0 0 0 2px #0000002e;
+    0 3px #06110c73,
+    inset 0 0 0 2px #06110c2e;
   flex-shrink: 0;
   transition: transform 0.1s ease;
 }
@@ -777,7 +777,7 @@ button.chip:active:not(:disabled) {
   background: var(--c);
   box-shadow:
     0 0 0 2px #ffffff8c inset,
-    0 0 0 1px #0000001f;
+    0 0 0 1px #06110c1f;
 }
 .chip-v {
   position: relative;
@@ -1007,7 +1007,7 @@ button.chip:active:not(:disabled) {
   display: flex;
   flex-direction: column;
   animation: sheetUp 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  box-shadow: 0 -10px 40px #00000080;
+  box-shadow: 0 -10px 40px #06110c80;
 }
 .sheet.tall {
   height: calc(100% - var(--safe-t) - 24px);
@@ -1083,7 +1083,7 @@ button.chip:active:not(:disabled) {
 .modal-backdrop {
   position: absolute;
   inset: 0;
-  background: #000000b8;
+  background: #06110cb8;
   animation: fadeIn 0.2s ease both;
 }
 .modal {
@@ -2650,7 +2650,7 @@ button.chip:active:not(:disabled) {
 }
 .node-cur .node-top:before,
 .node-done .node-top:before {
-  border-color: #14140a59;
+  border-color: #08160f59;
 }
 .node-cur {
   filter: drop-shadow(0 10px 30px rgba(234, 197, 112, 0.35));
@@ -3368,7 +3368,7 @@ button.chip:active:not(:disabled) {
 }
 .p-hand.active {
   border-color: var(--accent);
-  background: #e4e7730f;
+  background: #eac5700f;
 }
 .p-bet {
   display: flex;
@@ -4297,7 +4297,7 @@ button.chip:active:not(:disabled) {
   font-weight: 800;
   font-size: 16px;
   transition: left 0.4s cubic-bezier(0.3, 0.8, 0.3, 1);
-  box-shadow: 0 2px 8px #00000080;
+  box-shadow: 0 2px 8px #06110c80;
 }
 .meter-dot.bad {
   background: var(--bad);
@@ -4693,11 +4693,22 @@ i.bc-cell {
 .act-mini.go {
   background: var(--accent);
   color: var(--accent-ink);
-  animation: goPulse 1.6s ease-in-out infinite;
+  position: relative;
+}
+/* El brillo del botón a tocar late animando solo la opacidad (no repinta la sombra en cada cuadro). */
+.act-mini.go::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 6px rgba(233, 185, 73, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  animation: goGlow 1.6s ease-in-out infinite;
 }
 @keyframes goPulse {
   50% {
-    box-shadow: 0 0 0 6px #e4e7732e;
+    box-shadow: 0 0 0 6px #eac5702e;
   }
 }
 .act-mini .act-2x {
@@ -5930,7 +5941,7 @@ i.en {
   right: 0;
   top: -28px;
   bottom: -10px;
-  background: linear-gradient(to bottom, #00000000, var(--bg) 45%);
+  background: linear-gradient(to bottom, #06110c00, var(--bg) 45%);
   pointer-events: none;
   z-index: -1;
 }
@@ -6022,7 +6033,7 @@ i.en {
   height: 7px;
   border-radius: 50%;
   background: var(--text-3);
-  box-shadow: 0 0 0 1.5px #000000aa;
+  box-shadow: 0 0 0 1.5px #06110caa;
 }
 .cell .mc-dot {
   position: absolute;
@@ -6256,7 +6267,7 @@ i.en {
   border: 0;
   background: var(--accent);
   color: var(--accent-ink);
-  box-shadow: 0 0 0 6px #e4e7731f;
+  box-shadow: 0 0 0 6px #eac5701f;
 }
 .end-label {
   font-weight: 700;
@@ -6409,7 +6420,7 @@ i.en {
   margin: 2px 0 14px;
   padding: 12px 14px;
   border-radius: 16px;
-  background: #00000040;
+  background: #06110c40;
   border: 1px dashed var(--accent-line);
   color: var(--text-2);
   font-size: 15px;
@@ -6714,6 +6725,7 @@ i.en {
 .decide-timer i {
   display: block;
   height: 100%;
+  transform-origin: left center;
   border-radius: 2px;
   background: var(--accent);
   animation:
@@ -6721,8 +6733,11 @@ i.en {
     timerColor linear forwards;
 }
 @keyframes timerDrain {
+  from {
+    transform: scaleX(1);
+  }
   to {
-    width: 0;
+    transform: scaleX(0);
   }
 }
 @keyframes timerColor {
@@ -7841,4 +7856,33 @@ button:disabled .act-letter {
 .act-letter.c-hit {
   background: #f3efe2;
   color: #1d1405;
+}
+
+/* ---------- Fluidez ---------- */
+@keyframes goGlow {
+  50% {
+    opacity: 1;
+  }
+}
+/* Cambiar de pestaña: un fundido corto (solo opacidad, para no mover los elementos fijos). */
+@keyframes tabIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.layer.with-tabbar:not([hidden]) {
+  animation: tabIn 0.2s ease;
+}
+/* Las secciones de Aprender que están fuera de la pantalla no se dibujan hasta que llegás. */
+.learn .section-block + .section-block {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}
+/* Las cartas de Aprender se dan vuelta en su propia capa de la GPU. */
+.lcard-face,
+.lcard-back {
+  will-change: transform;
 }
