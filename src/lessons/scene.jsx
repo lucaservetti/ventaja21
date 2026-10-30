@@ -631,7 +631,7 @@ const PLAY_NAMES = {
   P: "Separar",
   R: "Rendirse",
 };
-const PLAY_ICONS = { H: "hand", S: "stand", P: "split", R: "surrender" };
+const ACT_CLS = { H: "hit", S: "stand", D: "dbl", P: "split", R: "surr" };
 function Scene({ step: a, picked: e, onPick: t }) {
   // En pantallas bajas, que el texto del coach siempre quede a la vista.
   const sayRef = useRef(null);
@@ -696,7 +696,7 @@ function Scene({ step: a, picked: e, onPick: t }) {
       <div className="scene-say" key={"say" + a.beat} ref={sayRef}>
         <div className="coach-tag">
           <Logo size={18} />
-          {" Coach"}
+          {" Mentor"}
         </div>
         <p className="say-text">{rich(r)}</p>
         {l && a.say ? <p className="say-text say-q">{rich(l.q)}</p> : null}
@@ -746,11 +746,7 @@ function SceneActions({ act: a, opts: e, onAct: t, surrender: s }) {
           onClick={() => t(i)}
           key={i}
         >
-          {i === "D" ? (
-            <span className="act-2x">2X</span>
-          ) : (
-            <Icon name={PLAY_ICONS[i]} size={22} />
-          )}
+          <span className={cx("act-letter", `c-${ACT_CLS[i]}`)}>{i}</span>
           <span>{PLAY_NAMES[i]}</span>
           <span className="act-en">{ACTION_EN[i]}</span>
         </button>

@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useStore } from "../state.js";
 import { Icon, SuitIcon } from "../ui/icons.jsx";
-import { IconButton, Toasts, cx, useWidth } from "../ui/components.jsx";
+import { IconButton, Toasts, cx } from "../ui/components.jsx";
 import { PageHeader } from "../ui/common.jsx";
 import {
   LESSONS,
@@ -203,16 +203,10 @@ function LearnTab() {
     </div>
   );
 }
-function SectionIcon({ icon: a, on: e }) {
-  return a.length > 1 ? (
-    <Icon name={a} size={28} className={e ? "acc" : "dim"} />
-  ) : (
-    <SuitIcon s={a} size={30} className={e ? "acc" : "dim"} />
-  );
-}
+// Cada sección es un cartel de mesa y sus lecciones son cartas repartidas sobre el borde de la mesa:
+// boca abajo las bloqueadas, boca arriba las abiertas y con el palo de la sección las terminadas.
 function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
-  let [l, i] = useWidth(),
-    o = a.lessons,
+  const o = a.lessons,
     c = o.filter((k) => t(k.id)).length,
     r = o.some((k) => k.id === s),
     u = e.settings.unlockAll,
@@ -220,39 +214,11 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
     p = s ? d(s) : LESSONS.length,
     nav = useNav(),
     locked = !u && a.id > 1 && d(o[0].id) > p,
-    f = 84,
-    y = useMemo(() => {
-      let k = Math.max(300, i || 340),
-        v = 12 + f / 2,
-        m = [],
-        b = 70;
-      o.forEach((D, _) => {
-        let M = _ === 0 ? "center" : _ % 2 === 1 ? "left" : "right",
-          R = M === "center" ? k / 2 : M === "left" ? v : k - v;
-        m.push({ x: R, y: b, kind: M });
-        b += M === "center" ? 200 : 150;
-      });
-      let S = b - 40;
-      return { W: k, pts: m, endY: S, H: S + 110 };
-    }, [i, o.length]),
-    C = useMemo(() => {
-      let { pts: k, endY: v, W: m } = y,
-        b = "",
-        S = [...k, { x: m / 2, y: v }];
-      for (let D = 0; D < S.length - 1; D++) {
-        let _ = S[D],
-          M = S[D + 1],
-          R = (_.y + M.y) / 2;
-        b += `M${_.x},${_.y} C${_.x},${R} ${M.x},${R} ${M.x},${M.y} `;
-      }
-      return b;
-    }, [y]);
+    full = c === o.length;
   return (
     <div className="section-block">
-      <div className={cx("card section-card", r && "current")}>
-        <span className="sec-icon">
-          <SectionIcon icon={a.icon} on={r || c === o.length} />
-        </span>
+      <div className={cx("placard", r && "current", full && "full")}>
+        <span className="placard-chip num">{a.id}</span>
         <div className="grow">
           <div className="sec-top">
             <div className={cx("eyebrow", r && "acc")}>Sección {a.id}</div>
@@ -264,6 +230,9 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
           <p className="muted" style={{ marginTop: 6 }}>
             {a.desc}
           </p>
+          <div className="placard-bar">
+            <i style={{ width: `${(c / o.length) * 100}%` }} />
+          </div>
           {locked ? (
             <button
               type="button"
@@ -278,82 +247,81 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
           ) : null}
         </div>
       </div>
-      <div className="path" ref={l} style={{ height: y.H }}>
-        <svg className="path-svg" width={y.W} height={y.H} aria-hidden="true">
-          <path
-            d={C}
-            fill="none"
-            stroke="#3a3a42"
-            strokeWidth="6"
-            strokeLinecap="round"
-            strokeDasharray="0.1 16"
-          />
-        </svg>
+      <ol className="rail">
         {o.map((k, v) => {
-          let m = y.pts[v],
-            b = t(k.id),
+          const b = t(k.id),
             S = k.id === s,
             D = d(k.id),
             _ = u || b || D <= p,
             M = e.lessons[k.id] && e.lessons[k.id].viaTest,
             R = S ? "cur" : b ? "done" : _ ? "open" : "locked";
           return (
-            <div
-              className={cx("node-wrap", `nk-${m.kind}`)}
-              style={{ left: m.x, top: m.y }}
+            <li
+              className={cx(
+                "rail-row",
+                `rr-${R}`,
+                (a.icon === "h" || a.icon === "d") && "rr-red",
+              )}
+              style={{ "--i": v }}
               key={k.id}
             >
-              {S ? (
-                <span className="node-bubble">
-                  {e.lessons[k.id] ? "REPETIR" : "EMPEZAR"}
-                </span>
-              ) : null}
               <button
                 type="button"
-                className={cx("node", `node-${R}`)}
+                className="rail-btn"
                 onClick={() => n(k, _)}
                 aria-label={`Lección ${D + 1}: ${k.title}${b ? ", completa" : _ ? "" : ", bloqueada"}`}
               >
-                <span className="node-side" />
-                <span className="node-top">
-                  {S ? (
-                    <Icon name="play" size={34} stroke={2.4} />
-                  ) : b ? (
-                    <Icon name="check" size={32} stroke={3} />
-                  ) : k.exam ? (
-                    <Icon name="trophy" size={30} />
-                  ) : (
-                    <span className="node-num num">{D + 1}</span>
-                  )}
+                <span className="lcard" aria-hidden="true">
+                  <span className="lcard-face">
+                    {S ? (
+                      <Icon name="play" size={22} stroke={2.4} />
+                    ) : b ? (
+                      a.icon.length === 1 ? (
+                        <SuitIcon s={a.icon} size={22} />
+                      ) : (
+                        <Icon name={a.icon} size={20} />
+                      )
+                    ) : k.exam ? (
+                      <Icon name="trophy" size={20} />
+                    ) : (
+                      <span className="num">{D + 1}</span>
+                    )}
+                    {b ? (
+                      <span className="lcard-check">
+                        <Icon name="check" size={11} stroke={3.2} />
+                      </span>
+                    ) : null}
+                  </span>
+                  <span className="lcard-back" />
                 </span>
+                <span className="rail-text">
+                  <b>{k.title}</b>
+                  <span className="muted small">
+                    {M ? "Superada en el test" : `${lessonMinutes(k)} min`}
+                    {b && e.lessons[k.id].best !== undefined && !M
+                      ? ` · ${Math.round(e.lessons[k.id].best * 100)} %`
+                      : ""}
+                  </span>
+                </span>
+                {S ? (
+                  <span className="rail-go">
+                    {e.lessons[k.id] ? "Repetir" : "Empezar"}
+                  </span>
+                ) : R === "locked" ? (
+                  <Icon name="lock" size={16} className="dim" />
+                ) : null}
               </button>
-              <div
-                className={cx("node-label", `nl-${m.kind}`)}
-                onClick={() => n(k, _)}
-              >
-                <b className={cx(R === "locked" && "dim2")}>{k.title}</b>
-                <span className="muted">
-                  {M ? "Superada en el test" : `${lessonMinutes(k)} min`}
-                  {b && e.lessons[k.id].best !== undefined && !M
-                    ? ` · ${Math.round(e.lessons[k.id].best * 100)} %`
-                    : ""}
-                </span>
-              </div>
-            </div>
+            </li>
           );
         })}
-        <div className="path-end" style={{ top: y.endY }}>
-          <span className={cx("end-slot", c === o.length && "full")}>
-            <Icon name="trophy" size={28} />
-          </span>
-          <span
-            className={cx("num end-label", c === o.length ? "acc" : "muted")}
-          >
-            {c === o.length
-              ? `Sección ${a.id} completa`
-              : `${c} de ${o.length} lecciones`}
-          </span>
-        </div>
+      </ol>
+      <div className={cx("rail-end", full && "full")}>
+        <span className="rail-end-icon">
+          <Icon name="trophy" size={20} />
+        </span>
+        <span className={cx("num end-label", full ? "acc" : "muted")}>
+          {full ? `Sección ${a.id} completa` : `${c} de ${o.length} lecciones`}
+        </span>
       </div>
     </div>
   );

@@ -129,11 +129,36 @@ function eloDelta(a, e, t, s = 40) {
   return i === 0 ? (t ? 1 : -1) : i;
 }
 const LEVELS = [
-  { min: 0, name: "Aprendiz", note: "Estás aprendiendo las bases." },
-  { min: 950, name: "Jugador", note: "Ya jugás la mayoría de las manos bien." },
-  { min: 1100, name: "Estratega", note: "Dominás la estrategia básica." },
-  { min: 1250, name: "Experto", note: "Casi no cometés errores." },
-  { min: 1400, name: "Maestro", note: "Nivel de jugador profesional." },
+  {
+    min: 0,
+    name: "Ficha blanca",
+    chip: "#ece6d6",
+    note: "Estás aprendiendo las bases.",
+  },
+  {
+    min: 950,
+    name: "Ficha roja",
+    chip: "#d23b3b",
+    note: "Ya jugás la mayoría de las manos bien.",
+  },
+  {
+    min: 1100,
+    name: "Ficha verde",
+    chip: "#2f9e5b",
+    note: "Dominás la estrategia básica.",
+  },
+  {
+    min: 1250,
+    name: "Ficha negra",
+    chip: "#1b1b1b",
+    note: "Casi no cometés errores.",
+  },
+  {
+    min: 1400,
+    name: "Ficha dorada",
+    chip: "#e9b949",
+    note: "Nivel de jugador profesional.",
+  },
 ];
 function levelFor(a) {
   let e = LEVELS[0];
@@ -359,7 +384,7 @@ function activityStreak(a) {
   if (!t) return 0;
   let s = 0,
     n = t;
-  for (; a[n];) {
+  for (; a[n]; ) {
     s++;
     n = addDays(n, -1);
   }

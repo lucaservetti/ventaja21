@@ -10,7 +10,7 @@ Learn blackjack basic strategy and card counting, step by step.
 Edge 21 teaches you to play blackjack like a pro: basic strategy first, then card counting and, finally, using the count at a casino table without getting caught.
 
 LEARN STEP BY STEP
-• 30+ short lessons with a narrated table: you play every hand while the coach explains why.
+• 30+ short lessons with a narrated table: you play every hand while the mentor explains why.
 • Your strategy chart lights up as you learn, with the reason behind every play.
 • Already know the basics? Take a test and skip straight to your level.
 
@@ -26,7 +26,7 @@ TRAIN WHERE YOU MISS
 • Chart flashcards with spaced repetition to know it by heart.
 
 A CASINO IN YOUR POCKET
-• Blackjack simulator with other players, count checks and a play and betting coach.
+• Blackjack simulator with other players, count checks and a play and betting mentor.
 • Configurable rules: decks, shoe penetration, 3:2 or 6:5, H17 or S17, surrender and more.
 
 PREMIUM (ONE-TIME PURCHASE, NO SUBSCRIPTION)

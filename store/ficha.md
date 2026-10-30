@@ -26,7 +26,7 @@ ENTRENÁ DONDE FALLÁS
 • Tarjetas de la tabla con repaso espaciado para saberla de memoria.
 
 UN CASINO EN TU MANO
-• Simulador de blackjack con otros jugadores, chequeos de conteo y coach de jugadas y apuestas.
+• Simulador de blackjack con otros jugadores, chequeos de conteo y mentor de jugadas y apuestas.
 • Reglas configurables: mazos, corte del zapato, 3:2 o 6:5, H17 o S17, rendición y más.
 
 PREMIUM (UN SOLO PAGO, SIN SUSCRIPCIÓN)

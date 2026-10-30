@@ -352,7 +352,7 @@ function SystemSheet({ open: a, onClose: e }) {
       {s !== "hilo" ? (
         <p className="note-box" style={{ marginTop: 12 }}>
           {
-            "Las desviaciones, el coach de apuestas y las lecciones usan Hi-Lo, que es el estándar. Con "
+            "Las desviaciones, el mentor de apuestas y las lecciones usan Hi-Lo, que es el estándar. Con "
           }
           {n.short || n.name}
           {

@@ -2,7 +2,7 @@
   "appId": "com.lucaservetti.ventaja21",
   "appName": "Edge 21",
   "webDir": "www",
-  "backgroundColor": "#000000",
+  "backgroundColor": "#06110c",
   "android": {
     "allowMixedContent": false
   },

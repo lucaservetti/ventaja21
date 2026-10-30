@@ -425,13 +425,7 @@ const PRAISE = [
 function praise(a) {
   return PRAISE[a % PRAISE.length];
 }
-const ACTION_ICONS = {
-  H: "hand",
-  S: "stand",
-  D: null,
-  P: "split",
-  R: "surrender",
-};
+const ACT_CLS = { H: "hit", S: "stand", D: "dbl", P: "split", R: "surr" };
 const ACTION_NOTES = {
   D: "solo con 2 cartas",
   P: "solo pares",
@@ -454,11 +448,7 @@ function ActionButton({
       disabled={!o}
       onClick={() => t(a)}
     >
-      {a === "D" ? (
-        <span className="act-2x">2X</span>
-      ) : (
-        <Icon name={ACTION_ICONS[a]} size={n ? 24 : 30} />
-      )}
+      <span className={cx("act-letter", `c-${ACT_CLS[a]}`)}>{a}</span>
       <span className="act-label">{ACTION_NAMES[a].toUpperCase()}</span>
       {!o && i && !n ? (
         <span className="act-note">{i}</span>
