@@ -87,6 +87,8 @@ Después completá el panel **"Configura tu app"**. Lo que va en cada formulario
 - el gráfico destacado: `store/grafico-destacado.png`;
 - las capturas de teléfono: `store/capturas/01.png` a `07.png`.
 
+**Video (opcional, pero suma descargas):** Play pide un enlace de YouTube. Subí `store/video/edge21-video-es.mp4` a tu canal de YouTube (puede ser "No listado"), copiá el enlace y pegalo en **Ficha de Play Store → Video de YouTube**. Para la ficha en inglés usá `store/video/edge21-video-en.mp4`. Los mismos videos sirven para Instagram o TikTok.
+
 La app también está en inglés (sale en inglés en los celulares que no están en español). Para que la ficha también aparezca en inglés: **Ficha de Play Store → Administrar traducciones → Agregar traducciones → Inglés (Estados Unidos)** y pegá los textos de `store/ficha-en.md`, y subí `store/grafico-destacado-en.png` y las capturas de `store/capturas-en/`.
 
 ## Paso 6 · Prueba interna y el producto Premium
