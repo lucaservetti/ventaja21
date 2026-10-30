@@ -87,7 +87,7 @@ Después completá el panel **"Configura tu app"**. Lo que va en cada formulario
 - el gráfico destacado: `store/grafico-destacado.png`;
 - las capturas de teléfono: `store/capturas/01.png` a `07.png`.
 
-La app también está en inglés (sale en inglés en los celulares que no están en español). Para que la ficha también aparezca en inglés: **Ficha de Play Store → Administrar traducciones → Agregar traducciones → Inglés (Estados Unidos)** y pegá los textos de `store/ficha-en.md`.
+La app también está en inglés (sale en inglés en los celulares que no están en español). Para que la ficha también aparezca en inglés: **Ficha de Play Store → Administrar traducciones → Agregar traducciones → Inglés (Estados Unidos)** y pegá los textos de `store/ficha-en.md`, y subí `store/grafico-destacado-en.png` y las capturas de `store/capturas-en/`.
 
 ## Paso 6 · Prueba interna y el producto Premium
 
