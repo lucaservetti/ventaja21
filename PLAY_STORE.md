@@ -120,7 +120,8 @@ La app también está en inglés (sale en inglés en los celulares que no están
 
 ## Recomendado (no obligatorio)
 
-- **app-ads.txt:** AdMob lo recomienda para cobrar el máximo por los anuncios. Va en la raíz de tu sitio web, por ejemplo `https://lucaservetti.github.io/app-ads.txt`, lo que requiere un repositorio llamado `lucaservetti.github.io`. Ese sitio va como "sitio web" en la ficha de Play. AdMob te da el texto exacto en *Apps → app-ads.txt*.
+- **Página web:** ya está en `https://lucaservetti.github.io/ventaja21/sitio/` (carpeta `sitio/`). Ponela como "sitio web" en la ficha de Play. Cuando la app esté publicada, cambiá `PUBLISHED = false` a `true` en `sitio/index.html` y el botón pasa a llevar a Google Play.
+- **app-ads.txt:** AdMob lo recomienda para cobrar el máximo por los anuncios. Tiene que estar en la raíz del dominio del sitio, o sea `https://lucaservetti.github.io/app-ads.txt`, y para eso hace falta un repositorio llamado `lucaservetti.github.io` con ese archivo (y un `index.html` que redirija a `/ventaja21/sitio/`). AdMob te da el texto exacto en *Apps → app-ads.txt*. Pedímelo y lo armo.
 - **La versión web** (GitHub Pages) sigue gratis y sin anuncios. Si querés que la gente use la de Play, podés poner ahí un aviso con el enlace a la tienda.
 - **iPhone (App Store):** el mismo proyecto de Capacitor se puede llevar a iOS más adelante. Hace falta una Mac (o un servicio de compilación en la nube) y la cuenta de Apple, que cuesta US$99 por año.
 
