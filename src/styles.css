@@ -1,14 +1,14 @@
 :root {
   color-scheme: dark;
   --bg: #06110c;
-  --surface: #0f2219;
-  --surface-2: #163024;
-  --surface-3: #1e3d2e;
-  --surface-hi: #264a38;
-  --line: #1c3628;
+  --surface: #112a1f;
+  --surface-2: #19372a;
+  --surface-3: #224536;
+  --surface-hi: #2b5442;
+  --line: #2f5442;
   --text: #f3efe2;
-  --text-2: #a3b5a9;
-  --text-3: #6b8275;
+  --text-2: #b4c5ba;
+  --text-3: #8aa093;
   --accent: #e9b949;
   --accent-2: #f5d27e;
   --accent-ink: #1d1405;
@@ -7985,4 +7985,15 @@ button:disabled .act-letter {
 }
 .blitz-flash .bf.bad {
   color: var(--bad);
+}
+
+/* ---------- Contraste ---------- */
+/* Las tarjetas tienen un borde fino para separarse del fondo. */
+.card {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.045);
+}
+/* Las divisiones entre filas de una lista se ven. */
+.list-item + .list-item:before {
+  background: var(--line);
+  height: 1px;
 }
