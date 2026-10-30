@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useStore } from "../state.js";
+import { setSettings, useStore } from "../state.js";
 import { Icon, SuitIcon } from "../ui/icons.jsx";
 import { IconButton, Toasts, cx } from "../ui/components.jsx";
 import { PageHeader } from "../ui/common.jsx";
@@ -12,6 +12,52 @@ import {
 import { useNav } from "../nav.js";
 import { GoalBadge } from "./goal.jsx";
 import { reviewCount } from "../lessons/Review.jsx";
+import { hasPremium } from "../platform.js";
+
+// Para que se sepa que existe Premium, sin insistir: aparece desde el segundo día y con 3 lecciones
+// hechas, y si la cerrás no vuelve por 2 semanas.
+const PREM_CARD_PAUSE = 14 * 24 * 60 * 60 * 1000;
+function PremiumCard({ st, lessonsDone }) {
+  const nav = useNav();
+  const now = Date.now();
+  const created = st.profile.createdAt || now;
+  if (
+    hasPremium(st) ||
+    lessonsDone < 3 ||
+    now - created < 24 * 60 * 60 * 1000 ||
+    (st.settings.premCardHidden || 0) > now
+  )
+    return null;
+  return (
+    <div className="card prem-card">
+      <button
+        type="button"
+        className="prem-card-main"
+        onClick={() => nav.push("premium")}
+      >
+        <span className="li-icon">
+          <Icon name="crown" />
+        </span>
+        <span className="li-text">
+          <span className="eyebrow acc">Edge 21 Premium</span>
+          <span className="li-title" style={{ display: "block", marginTop: 2 }}>
+            Modo casino real, las 10 desviaciones y sin anuncios
+          </span>
+          <span className="li-sub" style={{ display: "block" }}>
+            Probá cada función gratis 30 minutos
+          </span>
+        </span>
+        <Icon name="chev" className="li-chev" />
+      </button>
+      <IconButton
+        icon="close"
+        label="Ocultar por ahora"
+        className="prem-card-x"
+        onClick={() => setSettings({ premCardHidden: now + PREM_CARD_PAUSE })}
+      />
+    </div>
+  );
+}
 
 // Después de las lecciones (o cuando hay preguntas falladas): repaso, práctica de casino y examen final.
 function NextStepsCard({ st, done }) {
@@ -174,6 +220,7 @@ function LearnTab() {
         }
       />
       <NextStepsCard st={a} done={t} />
+      <PremiumCard st={a} lessonsDone={l} />
       <div className="learn-progress">
         {SECTIONS.map((r) => {
           let u = r.lessons.filter((d) => t(d.id)).length;

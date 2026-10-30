@@ -46,6 +46,14 @@ Por qué estos números:
   - *Probar una función Premium 30 minutos:* al tocar algo de Premium (modo casino, ruta de desviaciones, simulador de banca, diario), podés mirar un anuncio y usarlo media hora. **Una sola vez por función**: después, para volver a usarla, hay que pasarse a Premium. Es la mejor publicidad de Premium, porque la persona lo prueba y ve qué se pierde. "Sin anuncios" no se puede probar así.
   - Si no hay anuncio disponible (sin conexión, por ejemplo), el premio se da igual. Nunca castigamos a nadie porque no cargó un anuncio.
 - **Con Premium o en la prueba gratis:** ningún anuncio.
+
+### Cómo se entera la gente de que existe Premium (sin insistir)
+
+- **Etiqueta "Premium"** en cada cosa bloqueada: modo casino, simulador de banca, diario, niveles 3 a 10 de desviaciones y las herramientas al final de las lecciones.
+- **Tarjeta en Aprender:** aparece desde el segundo día y con 3 lecciones hechas. Si la cerrás, no vuelve por 2 semanas.
+- **En la pantalla de Premium**, cada función tiene su botón **Probar** (30 minutos, una vez). Después dice **Probada**.
+- **Durante la prueba:** al entrar avisa cuántos minutos quedan, y al terminar avisa sin sacarte de lo que estás haciendo.
+- **Después del 2.º y el 5.º anuncio del día:** un aviso corto de que con Premium no hay anuncios. Nunca más que eso.
 - **Nunca:** banners pegados abajo, anuncios en medio de una lección o una práctica, anuncios al abrir la app, ni botones de cerrar escondidos.
 
 ### En números

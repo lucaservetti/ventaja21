@@ -5,6 +5,7 @@ import { Capacitor, registerPlugin } from "@capacitor/core";
 import {
   AdMob,
   AdmobConsentStatus,
+  InterstitialAdPluginEvents,
   RewardAdPluginEvents,
 } from "@capacitor-community/admob";
 import { InAppReview } from "@capacitor-community/in-app-review";
@@ -159,14 +160,14 @@ async function initAds() {
 }
 
 // Se llama al volver a una pestaña. Si mientras tanto terminaste algo, cuenta; y si se cumplen
-// todas las reglas de arriba, aparece un anuncio.
+// todas las reglas de arriba, aparece un anuncio. Devuelve cuántos van hoy si mostró uno (si no, 0).
 async function maybeShowAd() {
   const tick = getActivityTick();
   if (tick !== ads.tick) {
     ads.tick = tick;
     ads.done++;
   }
-  if (!NATIVE || hasPremium() || !ads.loaded) return;
+  if (!NATIVE || hasPremium() || !ads.loaded) return 0;
   const now = Date.now();
   const created = getState().profile.createdAt || now;
   if (
@@ -175,17 +176,35 @@ async function maybeShowAd() {
     now - ads.lastAt < AD_GAP_MS ||
     adsToday() >= ADS_PER_DAY
   )
-    return;
+    return 0;
+  let shown = 0;
   try {
     ads.loaded = false;
     ads.lastAt = now;
     ads.done = 0;
     countAd();
-    await AdMob.showInterstitial();
+    // Se espera a que lo cierren, así lo que venga después no queda tapado por el anuncio.
+    let closeAd;
+    const closed = new Promise((resolve) => {
+      closeAd = resolve;
+      setTimeout(resolve, 60000);
+    });
+    const handle = await AdMob.addListener(
+      InterstitialAdPluginEvents.Dismissed,
+      () => closeAd(),
+    );
+    try {
+      await AdMob.showInterstitial();
+      await closed;
+    } finally {
+      handle.remove();
+    }
+    shown = adsToday();
   } catch {
     /* si no se pudo mostrar, no pasa nada */
   }
   setTimeout(loadInterstitial, 1500);
+  return shown;
 }
 
 // Anuncio con premio, que la persona elige mirar. Devuelve true si se ganó el premio.

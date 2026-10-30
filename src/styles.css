@@ -7473,6 +7473,67 @@ i.en {
   background: var(--accent-soft);
   flex-shrink: 0;
 }
+.prem-perk-text {
+  flex: 1;
+  min-width: 0;
+}
+.prem-try {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+  border: 1.5px solid var(--accent-line);
+  background: transparent;
+}
+.prem-try.on {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.prem-try.used {
+  border-color: var(--line);
+  color: var(--muted);
+  font-weight: 700;
+}
+.prem-try:disabled {
+  opacity: 0.6;
+}
+.prem-try-note {
+  margin: 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.prem-card {
+  position: relative;
+  margin-bottom: 16px;
+  padding: 0;
+  border: 1.5px solid var(--accent-line);
+  background: linear-gradient(135deg, var(--accent-soft), transparent 70%),
+    var(--card);
+}
+.prem-card-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 44px 14px 14px;
+  text-align: left;
+}
+.prem-card-main .li-icon {
+  color: var(--accent);
+  background: var(--accent-soft);
+  flex-shrink: 0;
+}
+.prem-card-main .li-chev {
+  margin-left: auto;
+}
+.prem-card-x {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
 .prem-privacy {
   display: block;
   width: 100%;
