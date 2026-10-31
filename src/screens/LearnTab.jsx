@@ -12,7 +12,7 @@ import {
 import { useNav } from "../nav.js";
 import { GoalBadge } from "./goal.jsx";
 import { reviewCount } from "../lessons/Review.jsx";
-import { hasPremium } from "../platform.js";
+import { APP_MODE, NATIVE, hasPremium, shop } from "../platform.js";
 
 // Para que se sepa que existe Premium, sin insistir: aparece desde el segundo día y con 3 lecciones
 // hechas, y si la cerrás no vuelve por 2 semanas.
@@ -28,6 +28,13 @@ function PremiumCard({ st, lessonsDone }) {
     (st.settings.premCardHidden || 0) > now
   )
     return null;
+  // La prueba gratis la da Google Play una sola vez por cuenta: si ya la usaste, no se ofrece.
+  const yearly = shop.plans.yearly;
+  const trialDays = !APP_MODE
+    ? 0
+    : NATIVE
+      ? (yearly && yearly.trialDays) || 0
+      : 5;
   return (
     <div className="card prem-card">
       <button
@@ -44,7 +51,9 @@ function PremiumCard({ st, lessonsDone }) {
             Modo casino real, las 10 desviaciones y sin anuncios
           </span>
           <span className="li-sub" style={{ display: "block" }}>
-            Probá cada función gratis 30 minutos
+            {trialDays
+              ? `Probalo ${trialDays} días gratis con el plan anual`
+              : "Mirá todo lo que incluye"}
           </span>
         </span>
         <Icon name="chev" className="li-chev" />

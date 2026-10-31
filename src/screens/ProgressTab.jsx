@@ -31,6 +31,7 @@ import { shortDate } from "./TrainTab.jsx";
 import { AchievementsCard } from "./achievements.jsx";
 import { WeekCard } from "./week.jsx";
 import { PremiumTag } from "./Premium.jsx";
+import { ACCOUNTS } from "../cloud.js";
 import { BackupNudge } from "./Backup.jsx";
 import { useNav } from "../nav.js";
 import { ShareIconButton } from "../ui/ShareButton.jsx";
@@ -352,10 +353,29 @@ function ProgressOverview({ st: a, nav: e }) {
       <div style={{ marginTop: 14 }}>
         <ProfileCard st={a} />
       </div>
+      {ACCOUNTS ? (
+        <button
+          type="button"
+          className="card list-item pz-entry"
+          style={{ marginTop: 14 }}
+          onClick={() => e.push("premios")}
+        >
+          <span className="li-icon">
+            <Icon name="sparkle" />
+          </span>
+          <span className="li-text">
+            <span className="li-title">Premios</span>
+            <span className="li-sub" style={{ display: "block" }}>
+              Ganá días de Premium jugando el desafío diario
+            </span>
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+      ) : null}
       <button
         type="button"
         className="card list-item"
-        style={{ marginTop: 14 }}
+        style={{ marginTop: ACCOUNTS ? 10 : 14 }}
         onClick={() => e.push("mistakes")}
       >
         <span className="li-icon">

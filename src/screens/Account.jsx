@@ -78,6 +78,7 @@ function Account() {
               <li>No lo perdés si cambiás de celular o borrás la app.</li>
               <li>Lo seguís en otro celular o en la web.</li>
               <li>Aparecés en el ranking del desafío diario.</li>
+              <li>Ganás días de Premium de regalo (en Progreso → Premios).</li>
             </ul>
             <p className="muted small">
               Es opcional: sin cuenta la app funciona igual. Solo guardamos tu

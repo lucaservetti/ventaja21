@@ -1,0 +1,14 @@
+# Servidor de Edge 21 en Cloudflare Workers (plan gratis). Se publica solo desde GitHub
+# (.github/workflows/servidor.yml). Ver servidor/README.md.
+name = "edge21-api"
+main = "index.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+# api.edge21.app apunta a este servidor (Cloudflare crea el registro DNS solo).
+routes = [{ pattern = "api.edge21.app", custom_domain = true }]
+
+[vars]
+PROJECT_ID = "edge21-fb71e"
+
+# Secreto (no va acá): FIREBASE_SA = la clave JSON de la cuenta de servicio de Firebase.

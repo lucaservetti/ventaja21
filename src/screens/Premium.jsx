@@ -8,17 +8,16 @@ import {
   APP_MODE,
   NATIVE,
   buyPremium,
-  earnFeatureTrial,
   hasPremium,
   manageSubscription,
   onShop,
   restorePremium,
   shop,
   showAdPrivacy,
-  trialFor,
 } from "../platform.js";
 import { useNav } from "../nav.js";
 import { ACCOUNTS, useAccount } from "../cloud.js";
+import { LOCALE } from "../i18n/index.js";
 
 const FEATURES = {
   casino: "El modo casino real",
@@ -30,9 +29,6 @@ const FEATURES = {
   mistakes: "El análisis de tus errores",
   systems: "Usar sistemas de conteo avanzados",
 };
-// Funciones que no son una pantalla sino una hoja (se abren desde el menú).
-const SHEET_FEATURES = { systems: "system" };
-// Cada función (menos "sin anuncios") se puede probar 30 minutos una vez, mirando un anuncio.
 const PERKS = [
   {
     icon: "close",
@@ -41,43 +37,36 @@ const PERKS = [
   },
   {
     icon: "crown",
-    feature: "casino",
     title: "Modo casino real",
     sub: "Tu plata, límites de mesa, tiempo para decidir, vigilancia, modo turista y el examen con certificado.",
   },
   {
     icon: "target",
-    feature: "devLevel",
     title: "Ruta de desviaciones completa",
     sub: "Los 10 niveles: los Illustrious 18, el Fab 4 y calcular el conteo real.",
   },
   {
     icon: "stats",
-    feature: "bankroll",
     title: "Simulador de banca",
     sub: "Cuánta plata necesitás y tu riesgo de quebrar, en tu moneda.",
   },
   {
     icon: "eye",
-    feature: "mistakes",
     title: "Análisis de tus errores",
     sub: "Tu tabla pintada según dónde fallás, las jugadas que más te cuestan y cómo vas mejorando.",
   },
   {
     icon: "sparkle",
-    feature: "looks",
     title: "Paños y mazos",
     sub: "El color de la mesa, el dorso de las cartas y el mazo de 4 colores.",
   },
   {
     icon: "layers",
-    feature: "systems",
     title: "Sistemas de conteo avanzados",
     sub: "Hi-Opt II, Zen, Omega II y Wong Halves. Hi-Lo, KO y Hi-Opt I siguen gratis.",
   },
   {
     icon: "book",
-    feature: "journal",
     title: "Diario de casino real",
     sub: "Anotá lo que jugás de verdad y mirá tu resultado por hora.",
   },
@@ -100,18 +89,23 @@ function money(micros, currency) {
   }
 }
 
-function Premium({ feature, then }) {
+function Premium({ feature }) {
   const st = useStore();
   const nav = useNav();
   const [, setTick] = useState(0);
   const [plan, setPlan] = useState("yearly");
-  const [passBusy, setPassBusy] = useState(false);
   useEffect(() => onShop(() => setTick((x) => x + 1)), []);
-  const owned = hasPremium(st);
+  // Premium regalado (días ganados en Premios) vence: igual se muestran los planes.
+  const gift =
+    !st.settings.premium &&
+    typeof st.settings.cloudPremium === "number" &&
+    st.settings.cloudPremium > Date.now()
+      ? st.settings.cloudPremium
+      : 0;
+  const owned = hasPremium(st) && !gift;
   const { acct } = useAccount();
   // En la web (no en Android) todavía no se puede pagar: Premium llega por la cuenta.
   const web = !APP_MODE;
-  const trial = trialFor(feature, st);
   const plans = NATIVE
     ? shop.plans
     : Object.fromEntries(
@@ -171,19 +165,6 @@ function Premium({ feature, then }) {
         ? `Gratis por ${info.trialDays} días; después, ${info.price} por año. Se renueva solo y lo cancelás cuando quieras en Google Play. Si cancelás antes de que termine la prueba, no se te cobra nada.`
         : `${info.price} por ${pick === "yearly" ? "año" : "mes"}. Se renueva solo y lo cancelás cuando quieras en Google Play.`;
 
-  async function tryWithAd(f = feature, params = then) {
-    setPassBusy(f);
-    const ok = await earnFeatureTrial(f);
-    setPassBusy(false);
-    if (ok && f) openFeature(f, params);
-  }
-  function openFeature(f, params) {
-    if (SHEET_FEATURES[f]) {
-      nav.pop();
-      nav.openSheet(SHEET_FEATURES[f]);
-    } else nav.replace(f, params || {});
-  }
-
   return (
     <div className="premium fade-up">
       <TopBar onClose={() => nav.pop()} closeIcon="back" title="Premium" />
@@ -197,58 +178,27 @@ function Premium({ feature, then }) {
             ? shop.kind === "lifetime"
               ? "Tenés Premium para siempre. ¡Gracias por apoyar la app!"
               : "¡Ya sos Premium! Gracias por apoyar la app."
-            : feature && FEATURES[feature]
-              ? trial.used
+            : gift
+              ? `Tenés Premium de regalo hasta el ${new Date(gift).toLocaleDateString(LOCALE, { day: "numeric", month: "long" })}.`
+              : feature && FEATURES[feature]
                 ? `${FEATURES[feature]} es parte de Premium.`
-                : `${FEATURES[feature]} es parte de Premium. Podés probarlo gratis 30 minutos.`
-              : "Todo lo avanzado y sin anuncios."}
+                : "Todo lo avanzado y sin anuncios."}
         </p>
       </div>
       <div className="card prem-perks">
-        {PERKS.map((p) => {
-          const tr = p.feature ? trialFor(p.feature, st) : null;
-          return (
-            <div className="prem-perk" key={p.title}>
-              <span className="li-icon">
-                <Icon name={p.icon} />
+        {PERKS.map((p) => (
+          <div className="prem-perk" key={p.title}>
+            <span className="li-icon">
+              <Icon name={p.icon} />
+            </span>
+            <span className="prem-perk-text">
+              <b>{p.title}</b>
+              <span className="muted small" style={{ display: "block" }}>
+                {p.sub}
               </span>
-              <span className="prem-perk-text">
-                <b>{p.title}</b>
-                <span className="muted small" style={{ display: "block" }}>
-                  {p.sub}
-                </span>
-              </span>
-              {owned || !tr ? null : tr.active ? (
-                <button
-                  type="button"
-                  className="prem-try on"
-                  onClick={() => openFeature(p.feature, {})}
-                >
-                  Abrir
-                </button>
-              ) : !tr.used ? (
-                <button
-                  type="button"
-                  className="prem-try"
-                  onClick={() => tryWithAd(p.feature, {})}
-                  disabled={!!passBusy}
-                  aria-label={`Probar ${p.title} 30 minutos gratis`}
-                >
-                  {passBusy === p.feature ? "…" : "Probar"}
-                </button>
-              ) : (
-                <span className="prem-try used">Probada</span>
-              )}
-            </div>
-          );
-        })}
-        {!owned ? (
-          <p className="muted small prem-try-note">
-            {web
-              ? "Cada función la podés probar gratis 30 minutos, una sola vez."
-              : "Cada función la podés probar 30 minutos mirando un anuncio, una sola vez."}
-          </p>
-        ) : null}
+            </span>
+          </div>
+        ))}
       </div>
       {!owned && options.length ? (
         <div className="prem-plans" role="radiogroup" aria-label="Planes">
@@ -294,31 +244,26 @@ function Premium({ feature, then }) {
         Las lecciones, la ruta de conteo, Entrenar, los ejercicios y el
         simulador siguen siendo gratis.
       </p>
+      {ACCOUNTS && !owned ? (
+        <button
+          type="button"
+          className="card list-item prem-gift-link"
+          onClick={() => nav.push("premios")}
+        >
+          <span className="li-icon">
+            <Icon name="sparkle" />
+          </span>
+          <span className="li-text">
+            <span className="li-title">También lo podés ganar</span>
+            <span className="li-sub" style={{ display: "block" }}>
+              Días de Premium de regalo por jugar seguido o quedar en el podio
+            </span>
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+      ) : null}
       {!owned ? (
         <div className="btns prem-more">
-          {feature && FEATURES[feature] && !trial.used ? (
-            <>
-              <Button
-                kind="outline"
-                onClick={() => tryWithAd()}
-                disabled={!!passBusy}
-              >
-                {passBusy
-                  ? "Cargando…"
-                  : web
-                    ? "Probarlo 30 minutos gratis"
-                    : "Probarlo 30 minutos con un anuncio"}
-              </Button>
-              <p className="muted small prem-once">
-                Podés probar cada función una sola vez.
-              </p>
-            </>
-          ) : feature && FEATURES[feature] ? (
-            <p className="muted small prem-once">
-              Ya usaste tu prueba de esta función. Para volver a usarla, pasate
-              a Premium.
-            </p>
-          ) : null}
           <Button
             kind="ghost"
             onClick={restorePremium}

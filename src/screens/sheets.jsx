@@ -23,7 +23,7 @@ import { SYSTEMS, SYSTEM_IDS } from "../engine/systems.js";
 import { HiLoValues } from "../lessons/visuals.jsx";
 import { SystemValues } from "./CountTab.jsx";
 import { useNav } from "../nav.js";
-import { NATIVE, PREMIUM_SYSTEMS, canUse, hasPremium } from "../platform.js";
+import { NATIVE, PREMIUM_SYSTEMS, hasPremium } from "../platform.js";
 import { PremiumTag } from "./Premium.jsx";
 import { LANG, setLang } from "../i18n/index.js";
 
@@ -383,7 +383,7 @@ function SystemSheet({ open: a, onClose: e }) {
               type="button"
               className={cx("sys-item", o && "on")}
               onClick={() => {
-                if (PREMIUM_SYSTEMS.includes(l) && !canUse("systems", st)) {
+                if (PREMIUM_SYSTEMS.includes(l) && !hasPremium(st)) {
                   e();
                   nav.push("premium", { feature: "systems" });
                   return;

@@ -1,5 +1,5 @@
 // Paños y mazos (Premium): el color de la mesa, el dorso de las cartas y el mazo de 4 colores.
-// Se aplican en <html> (data-felt, data-back, data-deck) solo con Premium o durante la prueba.
+// Se aplican en <html> (data-felt, data-back, data-deck) solo con Premium.
 import { setSettings, useStore } from "../state.js";
 import { PlayingCard, Toggle, cx } from "../ui/components.jsx";
 import { TopBar } from "../ui/common.jsx";
