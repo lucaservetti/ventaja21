@@ -8,7 +8,8 @@ La idea: que lo gratis alcance para aprender de verdad, y que Premium sea para q
 | --- | --- | --- |
 | **Gratis** | Lecciones, ruta de conteo, Entrenar, ejercicios, desafíos, simulador y los sistemas Hi-Lo, KO y Hi-Opt I | Siempre |
 | **Anuncio de pantalla completa** | Al volver al menú después de terminar 2 cosas | Como mucho 1 cada 5 min y 6 por día. Ninguno el primer día |
-| **Anuncio con premio** (opcional) | Segunda oportunidad del desafío diario. Probar cada función Premium 30 minutos, una sola vez | Cuando la persona lo elige |
+| **Anuncio con premio** (opcional) | Segunda oportunidad del desafío diario | Cuando la persona lo elige |
+| **Premios** | Días de Premium de regalo por racha, podio semanal y terminar las lecciones (con cuenta de Google) | Tope de 14 días cada 30 días |
 | **Premium mensual** | US$2,99 por mes | Cancelás cuando quieras |
 | **Premium anual** | US$19,99 por año (US$1,67 por mes), **5 días gratis** | El plan que la app muestra primero |
 | **Premium para siempre** | US$49,99, un solo pago | Para quien no quiere suscripciones |
@@ -43,16 +44,16 @@ Por qué estos números:
 - **Pantalla completa (intersticial):** solo al volver al menú, y solo si terminaste 2 cosas desde el último (lecciones, tandas, ejercicios, partidas). Como mucho uno cada 5 minutos y 6 por día. **Ninguno el primer día**: la primera impresión es la que decide si la gente se queda y qué reseña deja.
 - **Con premio (bonificado), siempre opcional:**
   - *Segunda oportunidad:* si fallaste el desafío diario, mirás un anuncio y tenés otro intento que cuenta, con otras cartas. Si ibas con racha, la salvás.
-  - *Probar una función Premium 30 minutos:* al tocar algo de Premium (modo casino, ruta de desviaciones, simulador de banca, diario, análisis de errores, paños y mazos, sistemas de conteo avanzados), podés mirar un anuncio y usarlo media hora. **Una sola vez por función**: después, para volver a usarla, hay que pasarse a Premium. Es la mejor publicidad de Premium, porque la persona lo prueba y ve qué se pierde. "Sin anuncios" no se puede probar así.
   - Si no hay anuncio disponible (sin conexión, por ejemplo), el premio se da igual. Nunca castigamos a nadie porque no cargó un anuncio.
-- **Con Premium o en la prueba gratis:** ningún anuncio.
+- **Con Premium (comprado, de prueba o de regalo):** ningún anuncio.
+- **Sin banners:** pagan entre 10 y 50 veces menos que los de pantalla completa, tapan la mesa y hacen que la app se vea barata. Además, con banners es fácil tocar sin querer, y AdMob suspende cuentas por clics accidentales.
+- **Ya no hay prueba de 30 minutos por función.** En la web se podía repetir borrando los datos del navegador. La única prueba es la de 5 días del plan anual, una vez por cuenta de Google (la controla Google Play).
 
 ### Cómo se entera la gente de que existe Premium (sin insistir)
 
 - **Etiqueta "Premium"** en cada cosa bloqueada: modo casino, simulador de banca, diario, niveles 3 a 10 de desviaciones y las herramientas al final de las lecciones.
 - **Tarjeta en Aprender:** aparece desde el segundo día y con 3 lecciones hechas. Si la cerrás, no vuelve por 2 semanas.
-- **En la pantalla de Premium**, cada función tiene su botón **Probar** (30 minutos, una vez). Después dice **Probada**.
-- **Durante la prueba:** al entrar avisa cuántos minutos quedan, y al terminar avisa sin sacarte de lo que estás haciendo.
+- **En la pantalla de Premium**, debajo de los planes: "También lo podés ganar", que lleva a Premios.
 - **Después del 2.º y el 5.º anuncio del día:** un aviso corto de que con Premium no hay anuncios. Nunca más que eso.
 - **Nunca:** banners pegados abajo, anuncios en medio de una lección o una práctica, anuncios al abrir la app, ni botones de cerrar escondidos.
 
@@ -101,3 +102,27 @@ Lo que más mueve estos números son las **descargas**, y ahí entran los videos
 | Día 17 | Pedir acceso a producción |
 | Día 20 a 25 | Sale en Play. Cambiar `PUBLISHED = true` en `index.html` (la página de presentación). Vincular AdMob con Play |
 | Después | Mirar reseñas y números cada semana. Ajustar precios por país y anuncios si hace falta |
+
+## Premios: Premium de regalo
+
+Días de Premium gratis para quien juega seguido. Así:
+
+- la gente vuelve todos los días;
+- prueba Premium sin pagar;
+- si le gusta, después lo compra.
+
+Los da un servidor (`servidor/`, en Cloudflare, gratis), nunca la app, para que nadie se los pueda dar solo.
+
+| Premio | Días | Cada cuánto |
+| --- | --- | --- |
+| Racha de 7 días en el desafío diario | 2 | Una vez |
+| Racha de 30 días | 7 | Una vez |
+| Podio de la semana (con 10 jugadores o más) | 2 | Cada semana |
+| Terminar las 36 lecciones | 3 | Una vez |
+
+- **Tope:** 14 días cada 30 días por cuenta. Lo que se pase espera a que se libere lugar.
+- **Hace falta entrar con Google.** La racha se cuenta con los puntajes del ranking, y un puntaje solo vale si se guardó ese mismo día. Así no sirve inventar días pasados.
+- **Dónde se ven:** en *Progreso → Premios*, y cuando se gana algo nuevo sale un aviso.
+- **Para publicarlo:** ver `servidor/README.md` (3 secretos en GitHub, 10 minutos).
+
+Si se quiere sumar uno nuevo, se agrega en `src/premios.js` (los números) y en `servidor/index.js` (cómo se comprueba).

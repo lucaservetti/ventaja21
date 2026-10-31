@@ -28,6 +28,8 @@ const firebase = {
   apiKey: process.env.FIREBASE_API_KEY || fbFile.apiKey || "",
   projectId: process.env.FIREBASE_PROJECT_ID || fbFile.projectId || "",
   webClientId: process.env.GOOGLE_WEB_CLIENT_ID || fbFile.webClientId || "",
+  // Servidor de premios (servidor/): da los días de Premium de regalo.
+  api: process.env.PREMIOS_API || fbFile.api || "https://api.edge21.app",
   // Solo para pruebas locales con los emuladores de Firebase.
   ...(process.env.FIREBASE_EMULATOR ? { emulator: process.env.FIREBASE_EMULATOR } : {}),
 };

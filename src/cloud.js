@@ -13,6 +13,7 @@ import {
   setSettings,
   subscribe,
 } from "./state.js";
+import { PREMIOS } from "./premios.js";
 
 const CFG = __FIREBASE__;
 const CLOUD = !!(CFG && CFG.apiKey && CFG.projectId);
@@ -225,6 +226,7 @@ async function finishSignIn(googleIdToken) {
   });
   const result = await firstSync();
   await checkPremium();
+  checkPremios(true);
   // El puntaje de hoy entra al ranking apenas entrás.
   postScores().catch(() => {});
   return result;
@@ -247,6 +249,13 @@ async function token() {
 }
 function signOut() {
   if (getState().settings.cloudPremium) setSettings({ cloudPremium: null });
+  premiosData = null;
+  try {
+    localStorage.removeItem(PREMIOS_KEY);
+  } catch {
+    // nada que borrar
+  }
+  premiosEmit({ data: null });
   saveAcct(null);
   setSync({ status: "off", at: 0, conflict: null });
 }
@@ -267,6 +276,81 @@ async function checkPremium() {
   } catch {
     // Sin conexión: queda lo último que se supo.
   }
+}
+
+// ---- Premios: días de Premium de regalo (los da el servidor, ver servidor/README.md) ----
+const PREMIOS_KEY = "edge21.premios";
+const PREMIOS_GAP = 6 * 60 * 60 * 1000; // solo, como mucho cada 6 horas
+let premiosData = (() => {
+  try {
+    return JSON.parse(localStorage.getItem(PREMIOS_KEY) || "null");
+  } catch {
+    return null;
+  }
+})();
+let premiosBusy = null;
+const premiosListeners = new Set();
+let premiosSnap = { data: premiosData, busy: false, error: false };
+function premiosEmit(patch) {
+  premiosSnap = { ...premiosSnap, ...patch };
+  for (const fn of premiosListeners) fn();
+}
+function usePremios() {
+  return useSyncExternalStore(
+    (fn) => {
+      premiosListeners.add(fn);
+      return () => premiosListeners.delete(fn);
+    },
+    () => premiosSnap,
+  );
+}
+// Cuando se gana algo nuevo, la app muestra un aviso.
+const premioHandlers = new Set();
+function onPremio(fn) {
+  premioHandlers.add(fn);
+  return () => premioHandlers.delete(fn);
+}
+// Pregunta al servidor qué premios ganaste. Sin `force`, no pregunta si ya lo hizo hace poco.
+function checkPremios(force = false) {
+  if (!acct || !CFG.api) return Promise.resolve(null);
+  const fresh =
+    premiosData &&
+    premiosData.uid === acct.uid &&
+    Date.now() - premiosData.at < PREMIOS_GAP;
+  if (!force && fresh) return Promise.resolve(premiosData);
+  if (premiosBusy) return premiosBusy;
+  premiosEmit({ busy: true, error: false });
+  premiosBusy = (async () => {
+    try {
+      const res = await fetch(`${CFG.api}/premios`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${await token()}` },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      premiosData = { ...data, uid: acct.uid, at: Date.now() };
+      try {
+        localStorage.setItem(PREMIOS_KEY, JSON.stringify(premiosData));
+      } catch {
+        // Sin almacenamiento se vuelve a preguntar la próxima vez.
+      }
+      if (data.hasta !== undefined && data.hasta !== null) {
+        const until = data.hasta;
+        if (getState().settings.cloudPremium !== until)
+          setSettings({ cloudPremium: until });
+      }
+      premiosEmit({ data: premiosData, busy: false });
+      if (data.nuevos && data.nuevos.length)
+        for (const fn of premioHandlers) fn(data);
+      return premiosData;
+    } catch {
+      premiosEmit({ busy: false, error: true });
+      return null;
+    } finally {
+      premiosBusy = null;
+    }
+  })();
+  return premiosBusy;
 }
 
 // ---- Progreso en la nube (users/{uid}) ----
@@ -447,6 +531,9 @@ async function postScores() {
   });
   const posted = [...new Set([...(acct.posted || []), ...paths])].slice(-40);
   saveAcct({ ...acct, posted });
+  // Con el puntaje de hoy guardado, puede haber un premio de racha nuevo (una vez por día).
+  if (!premiosData || dayKey(new Date(premiosData.at)) !== today)
+    checkPremios(true);
 }
 async function topScores(
   kind = "daily",
@@ -537,6 +624,12 @@ async function deleteAccount() {
   for (const p of acct.posted || [])
     await http(`${FS}/${p}`, { method: "DELETE", token: t }).catch(() => {});
   await http(userDoc(), { method: "DELETE", token: t }).catch(() => {});
+  // Los premios los guarda el servidor: se le pide que los borre.
+  if (CFG.api)
+    await fetch(`${CFG.api}/borrar`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${t}` },
+    }).catch(() => {});
   await http(`${AUTH}/v1/accounts:delete`, {
     method: "POST",
     body: { idToken: t },
@@ -577,6 +670,7 @@ function initCloud() {
   if (!CLOUD) return;
   if (EMU)
     window.__cloudTest = {
+      checkPremios,
       checkPremium,
       finishSignIn,
       topScores,
@@ -610,13 +704,30 @@ function initCloud() {
       syncNow();
     } else if (!document.hidden && acct) checkRemote();
   });
-  if (acct) checkRemote();
+  if (acct) {
+    checkRemote();
+    checkPremios();
+  }
+  // Al terminar la última lección, el premio de graduación (después de subir el progreso).
+  const GRAD = PREMIOS.find((p) => p.id === "graduacion").meta;
+  let wasGrad = lessonsDone() >= GRAD;
+  subscribe(() => {
+    const grad = lessonsDone() >= GRAD;
+    if (grad && !wasGrad && acct)
+      setTimeout(() => syncNow().finally(() => checkPremios(true)), 1500);
+    wasGrad = grad;
+  });
+}
+function lessonsDone() {
+  return Object.values(getState().lessons || {}).filter((l) => l && l.done)
+    .length;
 }
 
 export {
   ACCOUNTS,
   CLOUD,
   NATIVE as CLOUD_NATIVE,
+  checkPremios,
   deleteAccount,
   initCloud,
   renderWebButton,
@@ -626,6 +737,8 @@ export {
   signInNative,
   signOut,
   syncNow,
+  onPremio,
   topScores,
   useAccount,
+  usePremios,
 };

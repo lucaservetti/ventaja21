@@ -35,7 +35,6 @@ const SUB_ID = "edge21_premium"; // suscripción con dos planes: "mensual" y "an
 const PLAN_MONTHLY = "mensual";
 const PLAN_YEARLY = "anual";
 const LIFETIME_ID = "premium"; // pago único, para siempre
-const TRIAL_MS = 30 * 60 * 1000; // probar una función Premium 30 minutos mirando un anuncio, una sola vez
 
 // Premium: comprado en Google Play (en Android) o marcado en tu cuenta (premium/{uid} en Firebase,
 // vale también en la web). La web ya no es Premium para todos.
@@ -48,28 +47,8 @@ function hasPremium(st = getState()) {
   );
 }
 
-// Cada función Premium se puede probar una vez. El modo casino tiene dos pantallas.
-const TRIAL_GROUP = {
-  casino: "casino",
-  casinoPlay: "casino",
-  bankroll: "bankroll",
-  journal: "journal",
-  devLevel: "devLevel",
-  looks: "looks",
-  mistakes: "mistakes",
-  systems: "systems",
-};
 // Sistemas de conteo de Premium. Hi-Lo, KO y Hi-Opt I son gratis.
 const PREMIUM_SYSTEMS = ["hiopt2", "zen", "omega2", "halves"];
-// Si se puede usar una función de Premium: con Premium o durante su prueba de 30 minutos.
-function canUse(name, st = getState()) {
-  return hasPremium(st) || trialFor(name, st).active;
-}
-function trialFor(name, st = getState()) {
-  const g = TRIAL_GROUP[name];
-  const until = g && st.settings.premiumTrials && st.settings.premiumTrials[g];
-  return { used: !!until, active: !!until && until > Date.now(), until };
-}
 
 // Pantallas que son de Premium. La ruta de desviaciones es gratis hasta el nivel 2.
 function needsPremium(name, params = {}, st = getState()) {
@@ -88,7 +67,7 @@ function needsPremium(name, params = {}, st = getState()) {
       Object.keys((st.devPath && st.devPath.passed) || {}).length + 1;
     locked = n >= 3;
   }
-  return locked && !trialFor(name, st).active;
+  return locked;
 }
 
 // ---- Anuncios ----
@@ -264,23 +243,6 @@ async function watchAdForReward() {
   for (const h of handles) h.remove();
   setTimeout(loadRewarded, 1500);
   return result;
-}
-
-// Mirar un anuncio para probar una función Premium 30 minutos. Una sola vez por función.
-async function earnFeatureTrial(name) {
-  const g = TRIAL_GROUP[name];
-  if (!g || trialFor(name).used) return false;
-  const ok = await watchAdForReward();
-  if (ok) {
-    const st = getState();
-    setSettings({
-      premiumTrials: {
-        ...(st.settings.premiumTrials || {}),
-        [g]: Date.now() + TRIAL_MS,
-      },
-    });
-  }
-  return ok;
 }
 
 // Botón de "Privacidad de los anuncios" (obligatorio donde se pide consentimiento).
@@ -549,8 +511,6 @@ export {
   NATIVE,
   PREMIUM_SYSTEMS,
   buyPremium,
-  canUse,
-  earnFeatureTrial,
   hasPremium,
   initPlatform,
   manageSubscription,
@@ -561,6 +521,5 @@ export {
   restorePremium,
   shop,
   showAdPrivacy,
-  trialFor,
   watchAdForReward,
 };

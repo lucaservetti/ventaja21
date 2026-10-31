@@ -55,9 +55,14 @@ jobs:
           FIREBASE_PROJECT_ID: demo-edge21
           GOOGLE_WEB_CLIENT_ID: prueba
           FIREBASE_EMULATOR: 127.0.0.1
+          PREMIOS_API: http://127.0.0.1:8787
         run: |
           npm run build
           npx --yes firebase-tools@14 emulators:exec --project demo-edge21 --only auth,firestore "node tests/e2e/nube.mjs"
+
+      - name: Servidor de premios (con los emuladores de Firebase)
+        if: ${{ !cancelled() && matrix.idioma == 'es' }}
+        run: npx --yes firebase-tools@14 emulators:exec --project demo-edge21 --only auth,firestore "node tests/servidor.mjs"
 
       - name: Capturas de lo que falló
         if: failure()

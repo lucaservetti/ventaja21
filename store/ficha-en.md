@@ -38,11 +38,11 @@ PREMIUM (MONTHLY, YEARLY WITH A 5-DAY FREE TRIAL, OR ONE-TIME)
 • Mistake analysis: your chart colored by where you miss and how you're improving.
 • Tables and decks: felt color, card backs and a 4-color deck.
 • Advanced counting systems.
-• Try each feature free for 30 minutes before you decide.
+• Or earn it: free days of Premium for streaks, the weekly podium and finishing the lessons.
 
 YOUR PROGRESS, YOURS
 • Daily goal, streak, achievements and a player profile with your strengths and weak spots.
-• Everything is saved on your phone. No accounts. Backup included to move it to a new phone.
+• Everything is saved on your phone, no sign-up needed. If you want, sign in with Google to save it in the cloud, join the leaderboard and earn rewards.
 
 IMPORTANT
 Edge 21 is for learning. There's no real-money gambling and you can't win real money. Counting cards in your head is legal, but casinos can ask you to stop playing, and using your phone at the table is prohibited. Only play with money you don't need.

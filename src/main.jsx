@@ -58,21 +58,20 @@ import { Blitz } from "./screens/Blitz.jsx";
 import { Premium } from "./screens/Premium.jsx";
 import { Account } from "./screens/Account.jsx";
 import { Ranking } from "./screens/Ranking.jsx";
-import { initCloud, reportError } from "./cloud.js";
+import { initCloud, onPremio, reportError } from "./cloud.js";
 import { Challenge } from "./screens/Challenge.jsx";
 import { Looks } from "./screens/Looks.jsx";
+import { Premios } from "./screens/Premios.jsx";
 import { Mistakes } from "./screens/Mistakes.jsx";
 import { pendingChallenge, takeChallengeFromUrl } from "./challenge.js";
 import {
   NATIVE,
   PREMIUM_SYSTEMS,
-  canUse,
   hasPremium,
   initPlatform,
   maybeAskReview,
   maybeShowAd,
   needsPremium,
-  trialFor,
 } from "./platform.js";
 import {
   GoalSheet,
@@ -126,6 +125,7 @@ const SCREENS = {
   blitz: Blitz,
   premium: Premium,
   looks: Looks,
+  premios: Premios,
   mistakes: Mistakes,
   account: Account,
   challenge: Challenge,
@@ -319,8 +319,8 @@ function App() {
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.content = theme === "light" ? "#f4efe4" : "#06110c";
   }, [theme, bigText]);
-  // Paños y mazos (Premium): se ven con Premium o durante la prueba; si no, la mesa de siempre.
-  const looksOn = canUse("looks", a);
+  // Paños y mazos (Premium): se ven con Premium; si no (o si se venció), la mesa de siempre.
+  const looksOn = hasPremium(a);
   const look = looksOn
     ? {
         felt: a.settings.felt || "",
@@ -335,9 +335,9 @@ function App() {
       else delete root.dataset[k];
     }
   }, [look.felt, look.back, look.deck]);
-  // Un sistema de conteo de Premium sin Premium (se terminó la prueba): vuelve a Hi-Lo.
+  // Un sistema de conteo de Premium sin Premium (por ejemplo, se venció un regalo): vuelve a Hi-Lo.
   const sysLocked =
-    PREMIUM_SYSTEMS.includes(a.settings.system) && !canUse("systems", a);
+    PREMIUM_SYSTEMS.includes(a.settings.system) && !hasPremium(a);
   useEffect(() => {
     if (sysLocked) setSettings({ system: "hilo" });
   }, [sysLocked]);
@@ -361,34 +361,22 @@ function App() {
   }, [l.length]);
   // Meta diaria: el reloj corre en pantallas de práctica y jugando en el simulador.
   const top = l.length ? l[l.length - 1].name : null;
-  // Prueba de 30 minutos de una función Premium: avisa cuánto queda al entrar y cuando se termina.
-  // No te saca de la pantalla: lo que estabas haciendo lo terminás igual.
-  const trialUntil =
-    top && !hasPremium(a) && trialFor(top, a).active
-      ? trialFor(top, a).until
-      : 0;
-  useEffect(() => {
-    if (!trialUntil) return undefined;
-    const left = Math.max(1, Math.round((trialUntil - Date.now()) / 60000));
-    showPremToast(
-      left === 1
-        ? "Prueba de Premium: te queda 1 minuto."
-        : `Prueba de Premium: te quedan ${left} minutos.`,
-      2800,
-    );
-    const end = setTimeout(
-      () =>
-        showPremToast(
-          "Se terminó tu prueba de Premium. Terminá lo que estás haciendo; para volver a entrar, pasate a Premium.",
-          6000,
-        ),
-      trialUntil - Date.now(),
-    );
-    return () => clearTimeout(end);
-  }, [top, trialUntil]);
   const practicing =
     a.profile.onboarded && (top ? PRACTICE_SCREENS.has(top) : e === "jugar");
   usePracticeClock(practicing);
+  // Premios: cuando el servidor da días de Premium nuevos, un aviso.
+  useEffect(
+    () =>
+      onPremio((r) =>
+        showPremToast(
+          r.dias === 1
+            ? "¡Ganaste 1 día de Premium! Mirá tus premios en Progreso."
+            : `¡Ganaste ${r.dias} días de Premium! Mirá tus premios en Progreso.`,
+          5000,
+        ),
+      ),
+    [],
+  );
   const [goalToast, setGoalToast] = useState(null);
   useGoalCelebration((streak) => {
     const msg =

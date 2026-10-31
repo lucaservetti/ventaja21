@@ -329,15 +329,19 @@ const PRUEBAS = {
 
   // En la web (sin Android simulado) Premium también está bloqueado y explica cómo tenerlo.
   async webPremium(h) {
+    const { page } = h;
     await h.tab("Jugar", "Play");
     await h.css("section:not([hidden]) button", 700);
     await h.see("Edge 21 Premium", "Edge 21 Premium");
     await h.see("Por ahora Premium se compra en la app de Android", "For now Premium is bought in the Android app");
-    await h.click("Probarlo 30 minutos gratis", "Try it free for 30 minutes", { wait: 800 });
-    await h.see("Modo casino real", "Real casino mode");
+    // Ya no hay prueba de 30 minutos: sin Premium, el modo casino no se abre.
+    check(!(await page.getByText(h.T("Probarlo 30 minutos", "Try it for 30 minutes")).count()), "todavía aparece la prueba de 30 minutos");
+    await page.locator(".layer.full button").filter({ visible: true }).first().click();
+    await page.waitForTimeout(500);
+    check(!(await page.getByText(h.T("Tu plata", "Your money")).filter({ visible: true }).count()), "el modo casino se abrió sin Premium");
   },
 
-  // Con 3 lecciones hechas aparece la tarjeta de Premium en Aprender; desde ahí se prueba cada función.
+  // Con 3 lecciones hechas aparece la tarjeta de Premium en Aprender y lleva a la pantalla de Premium.
   async tarjetaPremium(h) {
     const { page } = h;
     await page.evaluate(() => {
@@ -352,10 +356,9 @@ const PRUEBAS = {
     await h.see("Modo casino real, las 10 desviaciones y sin anuncios", "Real casino mode, all 10 deviation levels and no ads");
     await h.foto("tarjeta");
     await h.css(".prem-card-main", 700);
-    await h.see("Cada función la podés probar gratis 30 minutos", "You can try each feature free for 30 minutes");
-    await h.foto("probar");
-    await h.css(".prem-try", 900);
-    await h.see("Tu plata", "Your money");
+    await h.see("Todo lo avanzado y sin anuncios", "Everything advanced, and no ads");
+    await h.see("Análisis de tus errores", "Mistake analysis");
+    await h.foto("premium");
   },
 
   // Funciones nuevas de Premium: análisis de errores, paños y mazos, sistemas avanzados bloqueados sin Premium.
@@ -400,7 +403,7 @@ const PRUEBAS = {
     check(felt === "azul", `el paño no cambió (${felt})`);
   },
 
-  // Premium en modo app (simulado): planes, condiciones y la prueba de 30 minutos una sola vez.
+  // Premium en modo app (simulado): planes, condiciones, sin prueba de 30 minutos; y Premium regalado con fecha.
   async premium(h) {
     const { page } = h;
     await page.evaluate(() => localStorage.setItem("v21.sim", "1"));
@@ -412,10 +415,20 @@ const PRUEBAS = {
     await h.see("5 días gratis", "5 days free");
     await h.see("Para siempre", "Lifetime");
     await h.foto("planes");
-    await h.click("Probarlo 30 minutos con un anuncio", "Try it for 30 minutes with an ad", { wait: 800 });
-    await h.see("Modo casino real", "Real casino mode");
-    const st = await h.state();
-    check(st.settings.premiumTrials && st.settings.premiumTrials.casino > Date.now(), "la prueba no quedó activa");
+    check(!(await page.getByText(h.T("Probarlo 30 minutos", "Try it for 30 minutes")).count()), "todavía aparece la prueba de 30 minutos");
+    // Premium regalado: entra al modo casino y la pantalla de Premium dice hasta cuándo, con los planes.
+    await page.evaluate(() => {
+      const k = "ventaja21.state.v1";
+      const s = JSON.parse(localStorage.getItem(k));
+      s.settings = { ...(s.settings || {}), cloudPremium: Date.now() + 2 * 864e5 };
+      localStorage.setItem(k, JSON.stringify(s));
+      Storage.prototype.setItem = () => {};
+    });
+    await page.reload();
+    await page.waitForTimeout(1200);
+    await h.tab("Jugar", "Play");
+    await h.css("section:not([hidden]) button", 700);
+    await h.see("Tu plata", "Your money");
   },
 };
 

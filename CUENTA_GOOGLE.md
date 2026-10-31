@@ -69,6 +69,30 @@ En Google Cloud → **Firestore → Time-to-live (TTL) → Crear política**. Cr
 
 Mandame el **apiKey**, el **projectId** y el **ID de cliente web**. Los pongo en `firebase.config.json`, armo la app y la publico. También se pueden cargar como variables en GitHub (`FIREBASE_API_KEY`, `FIREBASE_PROJECT_ID` y `GOOGLE_WEB_CLIENT_ID`).
 
+## Premios (días de Premium de regalo)
+
+Los da un servidor chico en Cloudflare, gratis. Para activarlo, ver `servidor/README.md`: son 3 secretos en GitHub y unos 10 minutos. Mientras no esté publicado, la pantalla de Premios dice que no se pudo revisar y el resto de la app funciona igual.
+
+Lo que guarda en Firestore:
+
+- `premios/{uid}`: qué premios ganó cada uno y cuándo;
+- `premium/{uid}`: `activo` y `hasta`, igual que cuando lo marcás vos a mano.
+
+Las reglas no cambian: desde la app nadie puede leer ni escribir esas colecciones (solo leer su propio `premium`).
+
+## Borrar una cuenta que te piden por mail
+
+La página `https://edge21.app/borrar-cuenta.html` dice que se puede pedir por mail a soporte@ y que se borra en menos de 7 días. Cuando llegue un pedido:
+
+1. **Comprobá que el mail venga de la misma cuenta.** Firebase → **Authentication → Usuarios**: buscá ese mail y copiá el **UID**.
+2. **Firestore Database → Datos.** Borrá estos documentos con ese UID, si existen:
+   - `users/{UID}`;
+   - `premios/{UID}`;
+   - `premium/{UID}`, **solo si tiene `hasta`**. Si es Premium para siempre, preguntale si lo quiere conservar.
+3. **Los puntajes del ranking** (`daily/…/scores/{UID}` y `weekly/…/scores/{UID}`) se borran solos a los 60 días. Si los quiere borrar ya, buscalos por el UID en las fechas recientes.
+4. **Authentication → Usuarios:** ⋮ al lado de ese usuario → **Borrar cuenta**.
+5. Contestale que está hecho.
+
 ## Ver los errores que llegan
 
 Firebase → **Firestore Database → Datos → errores**. Cada documento tiene:
