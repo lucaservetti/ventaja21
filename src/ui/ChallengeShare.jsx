@@ -39,7 +39,7 @@ function ChallengeButton({
             type="text"
             value={name}
             maxLength={20}
-            placeholder="Ej.: Luca"
+            placeholder="Ej.: Martina"
             onChange={(e) => setName(e.target.value)}
           />
         </label>

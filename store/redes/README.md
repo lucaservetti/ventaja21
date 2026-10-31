@@ -1,5 +1,7 @@
 # TikTok e Instagram de Edge 21
 
+**Para publicar ya:** la primera semana completa (7 publicaciones, con imágenes, portadas y todos los textos) está en [`semana-1/PLAN.md`](semana-1/PLAN.md).
+
 Las cuentas las tenés que crear vos desde el celular, porque piden tu mail o tu número y un código de verificación. Acá está todo lo demás listo para copiar y pegar.
 
 ## Lo mismo en las dos

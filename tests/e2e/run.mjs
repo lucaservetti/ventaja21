@@ -238,7 +238,7 @@ const PRUEBAS = {
     for (let i = 0; i < 40; i++) {
       await page.waitForTimeout(400);
       const s = page.locator("section:not([hidden]) .sim-act.act-S:not([disabled])");
-      const ins = page.getByText(h.T("No, gracias", "No thanks"), { exact: false }).filter({ visible: true });
+      const ins = page.getByRole("button", { name: /^No,? (gracias|thanks)$/i }).filter({ visible: true });
       if (await ins.first().isVisible().catch(() => false)) await ins.first().click();
       else if (await s.first().isVisible().catch(() => false)) await s.first().click();
       const st = await h.state();
