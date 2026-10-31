@@ -754,8 +754,26 @@ function readBackup(a) {
     throw new Error("El respaldo no tiene un formato válido.");
   return migrate(deepMerge(clone(DEFAULT_STATE), s));
 }
+// Premium que confirmó el servidor en esta sesión. En la web es el único que vale: lo guardado en
+// el navegador se puede tocar a mano (ver hasPremium en platform.js).
+let sessionCloud;
+function setSessionCloud(a) {
+  sessionCloud = a;
+}
+function getSessionCloud() {
+  return sessionCloud;
+}
 function importBackup(a) {
+  // Un respaldo trae el progreso, no Premium: eso queda como está en este celular o navegador.
+  const keep = {
+    premium: currentState.settings.premium,
+    cloudPremium: currentState.settings.cloudPremium,
+  };
   currentState = readBackup(a);
+  currentState = {
+    ...currentState,
+    settings: { ...currentState.settings, ...keep },
+  };
   saveNow();
   for (let n of listeners) {
     n();
@@ -802,6 +820,8 @@ export {
   resetAll,
   rulesKey,
   setRules,
+  getSessionCloud,
+  setSessionCloud,
   setSettings,
   setState,
   setTable,

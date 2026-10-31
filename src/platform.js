@@ -13,6 +13,7 @@ import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import {
   exportBackup,
   getActivityTick,
+  getSessionCloud,
   getState,
   importBackup,
   setSettings,
@@ -38,13 +39,28 @@ const LIFETIME_ID = "premium"; // pago único, para siempre
 
 // Premium: comprado en Google Play (en Android) o marcado en tu cuenta (premium/{uid} en Firebase,
 // vale también en la web). La web ya no es Premium para todos.
+// En la web no se puede comprar Premium: solo vale el de la cuenta, y solo si el servidor lo
+// confirmó en esta sesión. Lo guardado en el navegador no alcanza, porque se puede tocar a mano. En
+// Android manda la compra de Google Play. En localhost sí se confía, para las pruebas y las capturas.
+const LOCAL =
+  !NATIVE &&
+  typeof location !== "undefined" &&
+  /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+function cloudPremiumOf(st) {
+  return NATIVE || LOCAL ? st.settings.cloudPremium : getSessionCloud();
+}
 function hasPremium(st = getState()) {
-  const c = st.settings.cloudPremium;
+  const c = cloudPremiumOf(st);
   return (
-    !!st.settings.premium ||
+    ((NATIVE || LOCAL) && !!st.settings.premium) ||
     c === true ||
     (typeof c === "number" && c > Date.now())
   );
+}
+// Hasta cuándo dura el Premium de regalo (0 si no hay).
+function giftUntil(st = getState()) {
+  const c = cloudPremiumOf(st);
+  return typeof c === "number" && c > Date.now() ? c : 0;
 }
 
 // Sistemas de conteo de Premium. Hi-Lo, KO y Hi-Opt I son gratis.
@@ -525,6 +541,7 @@ export {
   NATIVE,
   PREMIUM_SYSTEMS,
   buyPremium,
+  giftUntil,
   hasPremium,
   initPlatform,
   manageSubscription,

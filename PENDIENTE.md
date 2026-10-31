@@ -8,6 +8,6 @@
    - `src/screens/Account.jsx`: "Entrá y te regalamos 3 días de Premium".
    - Web: pregunta frecuente "¿Puedo tener Premium gratis?".
    - Riesgo aceptado: crear muchas cuentas de Google para sumar 3 días cada una.
-2. **Revisión de clavos sueltos de la web** (`index.html` y `app/`): links, textos que todavía hablan de Google Play, cómo se ve en el celular.
+2. **Revisión de clavos sueltos de la web:** Premium ya está cerrado en la web: solo vale el que confirma el servidor, y no se puede activar a mano ni con un respaldo. Falta revisar links, textos que todavía hablan de Google Play y cómo se ve en el celular.
 3. **Plan para crecer en redes:** `store/redes/CRECER.md`.
 4. **Mail:** "Enviar como soporte@edge21.app" desde Gmail (pasos C y D). Google no dejó crear la contraseña de aplicación; probar en unos días desde el celular.
