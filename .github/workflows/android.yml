@@ -19,6 +19,10 @@ on:
       - "capacitor.config.json"
       - ".github/workflows/android.yml"
 
+# Para publicar la APK de prueba como descarga directa (ver el último paso).
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -89,3 +93,16 @@ jobs:
           name: edge21-apk-${{ github.run_number }}
           path: android/app/build/outputs/apk/*/*.apk
           retention-days: 30
+
+      # Link fijo para bajar la APK desde el celular, sin zip:
+      # https://github.com/lucaservetti/ventaja21/releases/download/apk-prueba/edge21-prueba.apk
+      - name: Publicar la APK de prueba (descarga directa)
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/*/*.apk edge21-prueba.apk
+          gh release delete apk-prueba --yes --cleanup-tag || true
+          gh release create apk-prueba edge21-prueba.apk --prerelease --target "${{ github.sha }}" \
+            --title "Edge 21 · APK de prueba" \
+            --notes "Versión de prueba para instalar a mano en Android (compilación ${{ github.run_number }}). Los pagos y la cuenta de Google andan recién en la versión de Google Play."
