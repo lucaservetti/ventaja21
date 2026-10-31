@@ -133,48 +133,50 @@ function PlayTab({ active }) {
 
   const net = table.session.net;
   const top = (
-    <div className="sim-top">
-      <IconButton
-        icon="crown"
-        label="Modo casino real"
-        onClick={() => nav.push("casino")}
-        className="sq small-ib casino-ib"
-        size={20}
-      />
-      <div className="sim-stat">
-        <span className="eyebrow">Fichas</span>
-        <b className="num">${money(table.bankroll)}</b>
+    <div className="sim-top-wrap">
+      <div className="sim-top">
+        <IconButton
+          icon="crown"
+          label="Modo casino real"
+          onClick={() => nav.push("casino")}
+          className="sq small-ib casino-ib"
+          size={20}
+        />
+        <div className="sim-stat">
+          <span className="eyebrow">Fichas</span>
+          <b className="num">${money(table.bankroll)}</b>
+        </div>
+        <div className="sim-stat sim-session">
+          <span className="eyebrow">Sesión</span>
+          <b className={cx("num", net > 0 ? "good" : net < 0 ? "bad" : "")}>
+            {net > 0 ? "+" : net < 0 ? "−" : ""}${money(Math.abs(net))}
+          </b>
+        </div>
+        <span className="grow" />
+        <IconButton
+          icon="grid"
+          label="Tabla de estrategia"
+          onClick={() => setSheet("chart")}
+          className="sq small-ib"
+          size={20}
+        />
+        <IconButton
+          icon="stats"
+          label="Estadísticas de la sesión"
+          onClick={() => setSheet("stats")}
+          className="sq small-ib"
+          size={20}
+        />
+        <button
+          type="button"
+          className="table-btn"
+          onClick={() => setSheet("table")}
+          aria-label="Mesa y ayudas"
+        >
+          <Icon name="gear" size={18} />
+          <span className="table-btn-text">Mesa</span>
+        </button>
       </div>
-      <div className="sim-stat">
-        <span className="eyebrow">Sesión</span>
-        <b className={cx("num", net > 0 ? "good" : net < 0 ? "bad" : "")}>
-          {net > 0 ? "+" : net < 0 ? "−" : ""}${money(Math.abs(net))}
-        </b>
-      </div>
-      <span className="grow" />
-      <IconButton
-        icon="grid"
-        label="Tabla de estrategia"
-        onClick={() => setSheet("chart")}
-        className="sq small-ib"
-        size={20}
-      />
-      <IconButton
-        icon="stats"
-        label="Estadísticas de la sesión"
-        onClick={() => setSheet("stats")}
-        className="sq small-ib"
-        size={20}
-      />
-      <button
-        type="button"
-        className="table-btn"
-        onClick={() => setSheet("table")}
-        aria-label="Mesa y ayudas"
-      >
-        <Icon name="gear" size={18} />
-        <span className="table-btn-text">Mesa</span>
-      </button>
     </div>
   );
 

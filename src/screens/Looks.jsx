@@ -57,6 +57,9 @@ function Looks() {
       />
       <div
         className="felt look-preview"
+        tabIndex={0}
+        role="img"
+        aria-label="Vista previa del paño y las cartas"
         data-felt={felt || undefined}
         data-back={back || undefined}
         data-deck={four ? "4" : undefined}

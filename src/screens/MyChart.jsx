@@ -144,15 +144,13 @@ function MyChart({ tab: initialTab = "hard" }) {
       />
       <div
         className="chart-grid mc-grid"
-        role="table"
+        role="grid"
         aria-label="Tu tabla de estrategia"
       >
         <div className="chart-row chart-headrow" role="row">
-          <span
-            className="chart-rowlabel"
-            role="columnheader"
-            aria-label="Tu mano"
-          />
+          <span className="chart-rowlabel" role="columnheader">
+            <span className="sr-only">Tu mano</span>
+          </span>
           {CHART_COLS.map((c) => (
             <span className="chart-col" role="columnheader" key={c}>
               {c}
@@ -181,7 +179,7 @@ function MyChart({ tab: initialTab = "hard" }) {
                 return (
                   <button
                     type="button"
-                    role="cell"
+                    role="gridcell"
                     className={cx("cell", `c-${CHART_CLASS[code]}`, on && "hl")}
                     onClick={() => pick(r.key, col)}
                     aria-label={`${r.label} contra ${c}: ${ACTION_NAMES[code[0]]}`}

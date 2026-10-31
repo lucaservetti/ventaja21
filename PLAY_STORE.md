@@ -70,12 +70,24 @@ Después, en GitHub: **Settings → Secrets and variables → Actions → New re
 
 Cada vez que corre se usa un número de versión nuevo (el número de ejecución), así Play no lo rechaza por repetido.
 
+## Antes de los 18: probar la app en tu celular (APK)
+
+Cada vez que corre **Actions → Android**, además del `.aab` sale `edge21-apk-N`: una APK para instalar a mano.
+
+1. Bajá `edge21-apk-N` desde **Artifacts** en el celular (o pasala de la compu) y descomprimila.
+2. Abrí el `.apk`. Android pregunta si dejás instalar apps de esa fuente: **Permitir** (solo para esa app, por ejemplo Archivos o Chrome).
+3. Probala como cualquier persona: lecciones, la mesa, el botón "atrás", girar la pantalla, la letra grande del celular, sin internet.
+
+Lo que todavía no anda en la APK, y es normal: los pagos (hace falta Play), la cuenta de Google (hace falta registrar la app en Firebase) y los anuncios de verdad (salen los de prueba de Google).
+
+Cuando la instales desde Play más adelante, primero **desinstalá la APK**: Play firma la app con otra clave y no deja instalar encima.
+
 ## Paso 5 · Crear la app en Play Console
 
 **Crear app**:
 - Nombre: *Edge 21: blackjack y conteo*.
 - Idioma: Español (Latinoamérica).
-- Tipo: Juego (o App, si preferís la categoría Educación).
+- Tipo: **App**, categoría **Educación** (recomendado: ahí la encuentra quien busca aprender; en Juegos → Cartas compite con cientos de casinos de fichas).
 - Gratis.
 - Aceptá las declaraciones.
 
@@ -94,7 +106,7 @@ Después completá el panel **"Configura tu app"**. Lo que va en cada formulario
 **Ficha de Play Store**: copiá los textos de `store/ficha.md` y subí:
 - el ícono: `store/icono-512.png`;
 - el gráfico destacado: `store/grafico-destacado.png`;
-- las capturas de teléfono: `store/capturas/01.png` a `07.png`.
+- las capturas de teléfono: `store/capturas/01.png` a `08.png`, en ese orden.
 
 **Video (opcional, pero suma descargas):** Play pide un enlace de YouTube. Subí `store/video/edge21-video-es.mp4` a tu canal de YouTube (puede ser "No listado"), copiá el enlace y pegalo en **Ficha de Play Store → Video de YouTube**. Para la ficha en inglés usá `store/video/edge21-video-en.mp4`. Los mismos videos sirven para Instagram o TikTok.
 

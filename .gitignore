@@ -6,3 +6,6 @@ tests/e2e/fotos/
 tests/e2e/fallas/
 *-debug.log
 servidor/.wrangler/
+tools/.tienda-*/
+tools/.capturas-*/
+tools/tmp/

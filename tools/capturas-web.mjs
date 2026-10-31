@@ -23,7 +23,12 @@ const azar = `(() => { let s = 7; const r = () => { s = (s * 1103515245 + 12345)
 // Cada pantalla: cómo llegar desde la app recién abierta.
 const W = (L, es, en) => (L === "es" ? es : en);
 const PANTALLAS = {
-  aprender: async (p, L) => { await tab(p, W(L, "Aprender", "Learn")); },
+  aprender: async (p, L) => {
+    await tab(p, W(L, "Aprender", "Learn"));
+    // Que se vea el camino de fichas de la sección que sigue.
+    await p.evaluate(() => { const c = document.querySelector("section:not([hidden]) .placard.current"); if (c) c.scrollIntoView({ block: "start" }); });
+    await p.waitForTimeout(600);
+  },
   conteo: async (p, L) => { await tab(p, W(L, "Conteo", "Count")); },
   progreso: async (p, L) => { await tab(p, W(L, "Progreso", "Progress")); },
   mano: async (p, L) => {

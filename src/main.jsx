@@ -72,6 +72,7 @@ import {
   maybeAskReview,
   maybeShowAd,
   needsPremium,
+  onAndroidBack,
 } from "./platform.js";
 import {
   GoalSheet,
@@ -192,6 +193,20 @@ function App() {
     window.addEventListener("popstate", k);
     return () => window.removeEventListener("popstate", k);
   }, []);
+  // Android: "atrás" cierra lo que esté abierto; en otra pestaña vuelve a Aprender, y recién en
+  // Aprender sale de la app.
+  let tabRef = useRef(e);
+  tabRef.current = e;
+  useEffect(
+    () =>
+      onAndroidBack((canGoBack) => {
+        if (canGoBack) history.back();
+        else if (tabRef.current !== "aprender") y.setTab("aprender");
+        else return false;
+        return true;
+      }),
+    [],
+  );
   let y = useMemo(
     () => ({
       get tab() {
