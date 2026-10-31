@@ -8,6 +8,7 @@ import {
   APP_MODE,
   NATIVE,
   buyPremium,
+  giftUntil,
   hasPremium,
   manageSubscription,
   onShop,
@@ -96,12 +97,7 @@ function Premium({ feature }) {
   const [plan, setPlan] = useState("yearly");
   useEffect(() => onShop(() => setTick((x) => x + 1)), []);
   // Premium regalado (días ganados en Premios) vence: igual se muestran los planes.
-  const gift =
-    !st.settings.premium &&
-    typeof st.settings.cloudPremium === "number" &&
-    st.settings.cloudPremium > Date.now()
-      ? st.settings.cloudPremium
-      : 0;
+  const gift = !st.settings.premium ? giftUntil(st) : 0;
   const owned = hasPremium(st) && !gift;
   const { acct } = useAccount();
   // En la web (no en Android) todavía no se puede pagar: Premium llega por la cuenta.

@@ -9,6 +9,7 @@ import { useNav } from "../nav.js";
 import { checkPremios, useAccount, usePremios } from "../cloud.js";
 import { PREMIOS, TOPE_DIAS } from "../premios.js";
 import { LOCALE } from "../i18n/index.js";
+import { giftUntil } from "../platform.js";
 
 const INFO = {
   racha7: {
@@ -49,11 +50,7 @@ function Premios() {
     if (acct) checkPremios();
   }, [acct && acct.uid]);
   const mine = data && acct && data.uid === acct.uid ? data : null;
-  const gift =
-    typeof st.settings.cloudPremium === "number" &&
-    st.settings.cloudPremium > Date.now()
-      ? st.settings.cloudPremium
-      : 0;
+  const gift = giftUntil(st);
   return (
     <div className="premios fade-up">
       <TopBar onClose={() => nav.pop()} closeIcon="back" title="Premios" />

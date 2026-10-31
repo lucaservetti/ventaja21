@@ -10,7 +10,10 @@ import {
   getState,
   importBackup,
   readBackup,
+  getSessionCloud,
+  setSessionCloud,
   setSettings,
+  setState,
   subscribe,
 } from "./state.js";
 import { PREMIOS } from "./premios.js";
@@ -143,10 +146,9 @@ function socialLogin() {
       google: { webClientId: CFG.webClientId, mode: "online" },
     });
   return socialReady.then(() =>
-    SocialLogin.login({
-      provider: "google",
-      options: { scopes: ["email", "profile"] },
-    }),
+    // Sin "scopes": Google ya da el mail y el nombre (openid, profile y email) por defecto. Pedirlos
+    // a mano obliga a cambiar MainActivity y si no, el complemento falla.
+    SocialLogin.login({ provider: "google", options: {} }),
   );
 }
 // En la web: el botón oficial de Google (Google Identity Services) dibujado en `el`.
@@ -247,7 +249,16 @@ async function token() {
   });
   return acct.token;
 }
+// Lo que dijo el servidor sobre el Premium de la cuenta: se guarda y vale para esta sesión.
+function applyCloudPremium(until) {
+  const changed = getSessionCloud() !== until;
+  setSessionCloud(until);
+  if (getState().settings.cloudPremium !== until)
+    setSettings({ cloudPremium: until });
+  else if (changed) setState((e) => ({ ...e }));
+}
 function signOut() {
+  setSessionCloud(null);
   if (getState().settings.cloudPremium) setSettings({ cloudPremium: null });
   premiosData = null;
   try {
@@ -270,9 +281,7 @@ async function checkPremium() {
       token: await token(),
     });
     const f = doc ? fromFields(doc) : {};
-    const until = f.activo ? f.hasta || true : null;
-    if (getState().settings.cloudPremium !== until)
-      setSettings({ cloudPremium: until });
+    applyCloudPremium(f.activo ? f.hasta || true : null);
   } catch {
     // Sin conexión: queda lo último que se supo.
   }
@@ -335,9 +344,7 @@ function checkPremios(force = false) {
         // Sin almacenamiento se vuelve a preguntar la próxima vez.
       }
       if (data.hasta !== undefined && data.hasta !== null) {
-        const until = data.hasta;
-        if (getState().settings.cloudPremium !== until)
-          setSettings({ cloudPremium: until });
+        applyCloudPremium(data.hasta);
       }
       premiosEmit({ data: premiosData, busy: false });
       if (data.nuevos && data.nuevos.length)
