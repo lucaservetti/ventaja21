@@ -4,6 +4,9 @@ const { chromium } = require("playwright");
 const fs = require("fs");
 const path = require("path");
 const L = process.argv[2] || "es";
+// Mientras la app no esté en Google Play, los videos para redes mandan a la web. Cuando salga,
+// cambiá esto a true y rehacé los verticales (fondos.cjs + armar.cjs vertical).
+const EN_PLAY = false;
 const OUT = path.join(__dirname, "salida", `piezas-${L}`);
 const FPS = 60;
 const T = {
@@ -12,6 +15,7 @@ const T = {
       quiz: ["¿Sabés jugar <em>esta mano</em>?", "Pensala antes de que termine la cuenta"],
       count: ["Así se <em>cuentan cartas</em>", "Bajas +1 · del 7 al 9, 0 · altas −1"],
       table: ["Un casino <em>en tu bolsillo</em>", "Practicá contar y apostar sin arriesgar nada"],
+      learn: ["Blackjack, <em>paso a paso</em>", "36 lecciones cortas, de cero a contar cartas"],
     },
     h: {
       learn: ["Aprendé <em>paso a paso</em>", "Lecciones cortas con una mesa narrada"],
@@ -21,6 +25,7 @@ const T = {
       progress: ["Mirá cómo <em>mejorás</em>", "Tu rango, tu semana y tus logros"],
     },
     cta: "Edge 21 · gratis en Google Play",
+    ctaWeb: "Edge 21 · probala gratis en edge21.app",
     end: "Gratis en Google Play",
     think: "Elegí tu jugada",
     time: "¡Tiempo!",
@@ -30,6 +35,7 @@ const T = {
       quiz: ["Can you play <em>this hand</em>?", "Decide before the countdown ends"],
       count: ["How to <em>count cards</em>", "Low +1 · 7 to 9, 0 · high −1"],
       table: ["A casino <em>in your pocket</em>", "Practice counting and betting risk-free"],
+      learn: ["Blackjack, <em>step by step</em>", "36 short lessons, from zero to counting cards"],
     },
     h: {
       learn: ["Learn <em>step by step</em>", "Short lessons at a narrated table"],
@@ -39,6 +45,7 @@ const T = {
       progress: ["Watch yourself <em>improve</em>", "Your rank, your week and achievements"],
     },
     cta: "Edge 21 · free on Google Play",
+    ctaWeb: "Edge 21 · try it free at edge21.app",
     end: "Free on Google Play",
     think: "Pick your play",
     time: "Time!",
@@ -65,7 +72,7 @@ const FELT_H = "radial-gradient(80% 110% at 30% 30%,#17603f 0%,#0a2c1c 55%,#0410
 
   // ---- Vertical (1080x1920) ----
   await shot(1080, 1920, `<style>body{background:${FELT_V}!important}body:before{content:"";position:absolute;inset:24px;border:3px dashed rgba(233,185,73,.25);border-radius:44px}
-.cta{position:absolute;left:0;right:0;bottom:70px;display:flex;justify-content:center;align-items:center;gap:18px;font-size:44px;font-weight:800}.cta img{width:72px;height:72px}</style><div class="cta">${CHIP}${T.cta}</div>`, "v-fondo.png");
+.cta{position:absolute;left:0;right:0;bottom:70px;display:flex;justify-content:center;align-items:center;gap:18px;font-size:44px;font-weight:800}.cta img{width:72px;height:72px}</style><div class="cta">${CHIP}${EN_PLAY ? T.cta : T.ctaWeb}</div>`, "v-fondo.png");
   for (const [k, [h, s]] of Object.entries(T.v))
     await shot(1080, 300, `<style>.t{position:absolute;left:70px;right:70px;top:0;text-align:center}h1{font-size:84px;line-height:1.04;font-weight:800;letter-spacing:-2px}h1 em{font-style:normal;color:#e9b949}p{font-size:40px;color:#b7c9bd;margin-top:20px}</style><div class="t"><h1>${h}</h1><p>${s}</p></div>`, `v-titulo-${k}.png`, true);
   // El marco dorado del celular, con sombra (margen de 80 px alrededor).

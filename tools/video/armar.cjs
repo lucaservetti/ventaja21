@@ -87,5 +87,6 @@ if (que === "todo" || que === "vertical") {
   vertical("quiz", { cuenta: 1.3 });
   vertical("count");
   vertical("table");
+  vertical("learn");
 }
 if (que === "todo" || que === "tienda") tienda();
