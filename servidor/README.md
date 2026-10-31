@@ -19,6 +19,15 @@ Un servidor chico en Cloudflare Workers, gratis. Es el único que puede dar día
 - **Premium para siempre:** si alguien ya lo tiene (puesto a mano), no se toca.
 - **Las reglas viven en dos archivos:** la lógica, en `servidor/index.js`; los números, en `src/premios.js` (la app los usa para mostrar los premios).
 
+## Limpieza diaria
+
+Todos los días a las 7:23 (hora UTC), el servidor borra:
+
+- los puntajes del ranking de hace más de 60 días;
+- los reportes de errores vencidos (90 días).
+
+Es lo que promete la política de privacidad. Lo hace el servidor porque el TTL de Firestore pide activar la facturación. El horario está en `wrangler.toml` (`crons`).
+
 ## Publicarlo (una sola vez, 10 minutos)
 
 Hacen falta 3 secretos en GitHub. Después se publica solo cada vez que cambia algo en `servidor/`.

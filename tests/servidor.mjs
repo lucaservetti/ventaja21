@@ -1,6 +1,6 @@
 // Prueba del servidor de premios (servidor/index.js) contra los emuladores de Firebase.
 // Uso: npx firebase-tools emulators:exec --project demo-edge21 --only auth,firestore "node tests/servidor.mjs"
-import worker, { premios, serviceToken, verifyIdToken } from "../servidor/index.js";
+import worker, { limpiar, premios, serviceToken, verifyIdToken } from "../servidor/index.js";
 import { DAY, dayKeyUTC, diasRecientes, mondayUTC } from "../src/premios.js";
 
 const P = "demo-edge21";
@@ -245,6 +245,26 @@ await paso("cuenta de servicio: arma un pedido firmado para entrar a Firestore",
   } finally {
     globalThis.fetch = realFetch;
   }
+});
+
+await paso("limpieza diaria: borra puntajes de hace más de 60 días y errores vencidos, nada más", async () => {
+  const now = Date.now();
+  const viejo = dayKeyUTC(now - 65 * DAY);
+  const nuevo = dayKeyUTC(now - 30 * DAY);
+  const lunesViejo = mondayUTC(now - 75 * DAY);
+  await put(`daily/${viejo}/scores/a`, { name: "a", score: 50, t: 1 });
+  await put(`daily/${viejo}/scores/b`, { name: "b", score: 60, t: 1 });
+  await put(`daily/${nuevo}/scores/a`, { name: "a", score: 70, t: 1 });
+  await put(`weekly/${lunesViejo}/scores/a`, { name: "a", score: 300, t: 1 });
+  await put(`errores/vencido`, { msg: "x", stack: "", t: 1, expireAt: new Date(now - DAY) });
+  await put(`errores/vigente`, { msg: "y", stack: "", t: 1, expireAt: new Date(now + 30 * DAY) });
+  const n = await limpiar(env, now);
+  check(n >= 4, `borró ${n}`);
+  check(!(await get(`daily/${viejo}/scores/a`)) && !(await get(`daily/${viejo}/scores/b`)), "quedó un puntaje viejo");
+  check(!(await get(`weekly/${lunesViejo}/scores/a`)), "quedó un puntaje semanal viejo");
+  check(!(await get("errores/vencido")), "quedó un error vencido");
+  check(await get(`daily/${nuevo}/scores/a`), "borró un puntaje de hace 30 días");
+  check(await get("errores/vigente"), "borró un error que no venció");
 });
 
 console.log(fails.length ? `${fails.length} prueba(s) fallaron` : "todas las pruebas pasaron");

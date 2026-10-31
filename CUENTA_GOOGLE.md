@@ -60,10 +60,9 @@ Google necesita la "huella" (SHA-1) de las claves con las que se firma la app. S
 
 ## Paso 4 · Que los datos viejos se borren solos
 
-En Google Cloud → **Firestore → Time-to-live (TTL) → Crear política**. Creá dos:
+No hace falta hacer nada: lo hace el servidor de premios (`servidor/`), una vez por día. Borra los puntajes del ranking de hace más de 60 días y los reportes de errores de hace más de 90.
 
-- grupo de colecciones `scores`, campo `expireAt`: los puntajes del ranking se borran a los 60 días;
-- grupo de colecciones `errores`, campo `expireAt`: los errores se borran a los 90 días.
+El TTL de Firestore haría lo mismo, pero pide activar la facturación en Google Cloud.
 
 ## Paso 5 · Pasame los 3 datos
 
