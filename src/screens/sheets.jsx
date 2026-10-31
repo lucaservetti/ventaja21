@@ -365,7 +365,7 @@ function SettingsSheet({ open: a, onClose: e }) {
         </a>
       </p>
       <p className="dim tiny" style={{ marginTop: 8 }}>
-        {"Edge 21 by Luca · versión "}
+        {"Edge 21 · versión "}
         {VERSION}
         {window.__v21Fit
           ? ` · pantalla ${window.__v21Fit.screenH} · vista ${window.__v21Fit.viewH} · ajuste ${window.__v21Fit.fix}`

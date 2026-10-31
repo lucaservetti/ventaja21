@@ -157,20 +157,22 @@
   .final .ctas { justify-content: center; }
   footer nav { display: flex; gap: 16px; flex-wrap: wrap; }
 
+  [hidden] { display: none !important; }
+
   /* Mini juego */
   .quiz { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; background: radial-gradient(90% 120% at 70% 30%, #17603f 0%, #0b2f1e 60%, var(--surface) 100%); border: 1px solid var(--line); border-radius: 30px; padding: 34px 40px; }
   .qz-table { background: #0d3b26; border: 2px solid rgba(233, 185, 73, 0.35); border-radius: 26px; padding: 22px; display: grid; gap: 18px; box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.35); }
   .qz-side { display: flex; align-items: center; gap: 14px; }
   .qz-side small { display: block; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(243, 239, 226, 0.7); font-weight: 800; width: 92px; }
   .qz-cards { display: flex; gap: 8px; }
-  .qz-card { position: relative; width: 62px; height: 86px; border-radius: 10px; background: #fbf8ef; color: #15130f; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35); animation: qzIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
-  .qz-card.red { color: #c8281e; }
-  .qz-card svg { display: block; fill: currentColor; }
-  .qz-ix { position: absolute; top: 6px; left: 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; font: 600 19px/1 Oswald, sans-serif; letter-spacing: -0.5px; }
-  .qz-ix svg { width: 11px; height: 11px; }
-  .qz-ix.br { top: auto; left: auto; bottom: 6px; right: 6px; transform: rotate(180deg); }
-  .qz-pip { position: absolute; left: 50%; top: 50%; width: 28px; height: 28px; transform: translate(-50%, -50%); }
-  .qz-card.back { background: repeating-linear-gradient(45deg, #1b5a3c 0 6px, #134a30 6px 12px); border: 3px solid #fbf8ef; }
+  /* Cartas: las mismas que la app (Oswald para el número, el palo abajo, el dorso a rayas). */
+  .qz-card { --w: 64px; position: relative; width: var(--w); height: calc(var(--w) * 1.4); border-radius: calc(var(--w) * 0.14); background: #fafaf6; color: #121214; box-shadow: 0 2px 8px rgba(6, 17, 12, 0.45); flex: none; animation: qzIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+  .qz-card.red { color: #d41f2a; }
+  .qz-rank { position: absolute; top: calc(var(--w) * 0.08); left: calc(var(--w) * 0.12); font: 600 calc(var(--w) * 0.44)/1 Oswald, "Arial Narrow", "DM Sans", sans-serif; letter-spacing: -0.04em; }
+  .qz-rank.r10 { left: calc(var(--w) * 0.07); font-size: calc(var(--w) * 0.4); letter-spacing: -0.09em; }
+  .qz-suit { position: absolute; left: calc(var(--w) * 0.1); bottom: calc(var(--w) * 0.1); width: calc(var(--w) * 0.44); height: calc(var(--w) * 0.44); fill: currentColor; }
+  .qz-card.back { padding: 0; }
+  .qz-card.back:after { content: ""; position: absolute; inset: calc(var(--w) * 0.09); border-radius: calc(var(--w) * 0.06); background: repeating-linear-gradient(135deg, #0d261a 0 calc(var(--w) * 0.035), #fafaf6 calc(var(--w) * 0.035) calc(var(--w) * 0.085)); }
   .qz-total { color: var(--text-2); font-weight: 700; font-size: 15px; }
   @keyframes qzIn { from { transform: translateY(-16px) rotate(-6deg); opacity: 0; } }
   .qz-acts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -187,6 +189,10 @@
   .qz-fb p { margin: 4px 0 0; color: var(--text-2); font-size: 15.5px; }
   .qz-next { margin-top: 12px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
   .qz-score { color: var(--text-2); font-weight: 700; }
+  .qz-left { margin-left: auto; color: var(--text-2); font-size: 14px; font-weight: 700; }
+  .qz-end { margin-top: 14px; padding: 18px 20px; border-radius: 18px; background: rgba(233, 185, 73, 0.1); border: 1px solid rgba(233, 185, 73, 0.4); }
+  .qz-end b { display: block; font-size: 18px; margin-bottom: 4px; }
+  .qz-end p { margin: 0 0 14px; color: var(--text-2); font-size: 15px; }
 
   /* Botón fijo en el celular */
   .dock { display: none; }
@@ -198,9 +204,7 @@
     .dock .btn { padding: 11px 18px; font-size: 15px; white-space: nowrap; }
     footer { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
     .quiz { grid-template-columns: 1fr; padding: 24px 18px; gap: 18px; }
-    .qz-card { width: 54px; height: 76px; }
-    .qz-ix { font-size: 17px; }
-    .qz-pip { width: 24px; height: 24px; }
+    .qz-card { --w: 56px; }
     .qz-side small { width: 74px; }
   }
   .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -292,6 +296,12 @@
         <div class="qz-next" id="qz-next" hidden>
           <button type="button" class="btn ghost" id="qz-again" data-t="qz-again"></button>
           <span class="qz-score" id="qz-score"></span>
+          <span class="qz-left" id="qz-left"></span>
+        </div>
+        <div class="qz-end" id="qz-end" hidden>
+          <b data-t="qz-end-t"></b>
+          <p data-t="qz-end-p"></p>
+          <a class="btn gold" href="app/" data-t="qz-end-btn"></a>
         </div>
       </div>
     </div>
@@ -435,7 +445,9 @@
       "qz-title": "¿Sabés jugar esta mano?", "qz-sub": "Probá acá mismo: elegí la jugada correcta según la estrategia básica.",
       "qz-dealer": "Crupier", "qz-you": "Tu mano", "qz-h": "Pedir", "qz-s": "Plantarse", "qz-d": "Doblar",
       "qz-again": "Otra mano", "qz-ok": "¡Correcto!", "qz-bad": "No era esa: la jugada es {0}.", "qz-score": "{0} de {1} bien",
-      "qz-more": "¿Te gustó? En la app hay miles de manos, la tabla completa y el conteo de cartas.", dock: "Aprendé blackjack gratis",
+      "qz-more": "¿Te gustó? En la app hay miles de manos, la tabla completa y el conteo de cartas.",
+      "qz-left": "Te quedan {0} de prueba", "qz-left1": "Te queda 1 de prueba", "qz-end-t": "¡Jugaste tus 4 manos de prueba!",
+      "qz-end-p": "En la app seguís con miles de manos, la tabla completa, lecciones y el conteo de cartas. Gratis y sin plata real.", "qz-end-btn": "Seguir jugando gratis", dock: "Aprendé blackjack gratis",
       n1: "Funciones", n2: "Premium", n3: "Preguntas", go: "Jugar ahora",
       t1: "36 lecciones", t2: "10 niveles de conteo", t3: "Español e inglés", t4: "Sin plata real",
       "v-title": "Mirala en acción", "v-sub": "Así se ve por dentro: cada mano, cada carta y cada apuesta.",
@@ -475,13 +487,15 @@
       q2: "¿Se juega con plata real?", a2: "No. Edge 21 es para aprender: no se apuesta ni se gana plata real.",
       q3: "¿En qué idiomas está?", a3: "En español y en inglés. Sale en el idioma de tu celular y lo podés cambiar en Ajustes.",
       q4: "¿Funciona sin internet?", a4: "Sí. Una vez instalada, la app funciona sin conexión.",
-      foot: "Edge 21 · hecho por Luca ♠ · Es para aprender: jugá solo plata que no necesitás.", privacy: "Política de privacidad", terms: "Términos de uso", delacc: "Borrar la cuenta",
+      foot: "Edge 21 ♠ · Es para aprender: jugá solo plata que no necesitás.", privacy: "Política de privacidad", terms: "Términos de uso", delacc: "Borrar la cuenta",
     },
     en: {
       "qz-title": "Can you play this hand?", "qz-sub": "Try it right here: pick the correct play by basic strategy.",
       "qz-dealer": "Dealer", "qz-you": "Your hand", "qz-h": "Hit", "qz-s": "Stand", "qz-d": "Double",
       "qz-again": "Another hand", "qz-ok": "Correct!", "qz-bad": "Not quite: the play is {0}.", "qz-score": "{0} of {1} right",
-      "qz-more": "Liked it? The app has thousands of hands, the full chart and card counting.", dock: "Learn blackjack for free",
+      "qz-more": "Liked it? The app has thousands of hands, the full chart and card counting.",
+      "qz-left": "{0} practice hands left", "qz-left1": "1 practice hand left", "qz-end-t": "You played your 4 practice hands!",
+      "qz-end-p": "Keep going in the app: thousands of hands, the full chart, lessons and card counting. Free, no real money.", "qz-end-btn": "Keep playing for free", dock: "Learn blackjack for free",
       n1: "Features", n2: "Premium", n3: "FAQ", go: "Play now",
       t1: "36 lessons", t2: "10 counting levels", t3: "Spanish and English", t4: "No real money",
       "v-title": "See it in action", "v-sub": "This is what it looks like inside: every hand, every card and every bet.",
@@ -521,7 +535,7 @@
       q2: "Is there real-money gambling?", a2: "No. Edge 21 is for learning: you don't bet or win real money.",
       q3: "What languages is it in?", a3: "Spanish and English. It uses your phone's language and you can change it in Settings.",
       q4: "Does it work offline?", a4: "Yes. Once installed, the app works without a connection.",
-      foot: "Edge 21 · made by Luca ♠ · It's for learning: only play with money you don't need.", privacy: "Privacy policy", terms: "Terms of use", delacc: "Delete account",
+      foot: "Edge 21 ♠ · It's for learning: only play with money you don't need.", privacy: "Privacy policy", terms: "Terms of use", delacc: "Delete account",
     },
   };
   function setLang(lang) {
@@ -576,20 +590,40 @@
     { d: "7", p: ["9", "6"], a: "H", es: "15 contra un 7: el crupier tiene buena carta, así que pedís aunque te puedas pasar.", en: "15 against a 7: the dealer has a good card, so you hit even though you might bust." },
   ];
   const SUITS = ["s", "h", "d", "c"];
-  // Palos dibujados (las fuentes del sistema dibujan ♠♥♦♣ cada una a su manera y quedaban torcidos).
+  // Los palos de la app (mismos dibujos que src/ui/icons.jsx).
   const PIP = {
-    s: "M12 2s-8.5 6.2-8.5 11.2c0 2.8 2.1 4.6 4.5 4.6 1.4 0 2.6-.6 3.2-1.5-.3 2.2-1.2 3.9-2.7 5.2h7c-1.5-1.3-2.4-3-2.7-5.2.6.9 1.8 1.5 3.2 1.5 2.4 0 4.5-1.8 4.5-4.6C20.5 8.2 12 2 12 2z",
-    h: "M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.7 1.2 5.3 3.2 1.6-2 3.1-3.2 5.3-3.2 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z",
-    d: "M12 2l8 10-8 10-8-10z",
-    c: "M12 2.5a4.2 4.2 0 0 0-3.9 5.8 4.2 4.2 0 1 0 2.5 7.7c-.3 2-1.2 3.6-2.6 4.9h8c-1.4-1.3-2.3-2.9-2.6-4.9a4.2 4.2 0 1 0 2.5-7.7A4.2 4.2 0 0 0 12 2.5z",
+    s: "M12 2.2c-2.6 3.9-8.3 7-8.3 11.4 0 2.6 2 4.5 4.4 4.5 1.5 0 2.7-.7 3.4-1.7-.3 2-1.2 3.6-2.6 5.1h6.2c-1.4-1.5-2.3-3.1-2.6-5.1.7 1 1.9 1.7 3.4 1.7 2.4 0 4.4-1.9 4.4-4.5 0-4.4-5.7-7.5-8.3-11.4z",
+    h: "M12 21.3S2.7 15.5 2.7 9.1C2.7 6 5 3.6 7.9 3.6c1.8 0 3.3.9 4.1 2.3.8-1.4 2.3-2.3 4.1-2.3 2.9 0 5.2 2.4 5.2 5.5 0 6.4-9.3 12.2-9.3 12.2z",
+    d: "M12 1.8c2.6 3.7 5.3 6.9 8.3 10.2-3 3.3-5.7 6.5-8.3 10.2-2.6-3.7-5.3-6.9-8.3-10.2 3-3.3 5.7-6.5 8.3-10.2z",
+    c: "M12 2.4a4.4 4.4 0 0 0-4.1 6A4.4 4.4 0 1 0 10.9 15c-.3 2.4-1.3 4.4-2.9 6.6h8c-1.6-2.2-2.6-4.2-2.9-6.6a4.4 4.4 0 1 0 3-6.6 4.4 4.4 0 0 0-4.1-6z",
   };
-  const pip = (s) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${PIP[s]}"/></svg>`;
   const VAL = (r) => (r === "A" ? 11 : Number(r));
   let qOrder = HANDS.map((_, i) => i).sort(() => Math.random() - 0.5);
   let qi = 0, qOk = 0, qN = 0, qDone = false;
-  const cardEl = (r, k) => { const s = SUITS[(k + r.length + qi) % 4]; const ix = `${r}${pip(s)}`; return `<div class="qz-card${s === "h" || s === "d" ? " red" : ""}" style="animation-delay:${k * 0.08}s" role="img" aria-label="${r}"><span class="qz-ix">${ix}</span><span class="qz-pip">${pip(s)}</span><span class="qz-ix br">${ix}</span></div>`; };
+  // Manos de prueba en la web: 4 (por día), después se invita a seguir en la app.
+  const QZ_MAX = 4;
+  const QZ_KEY = "edge21.qz";
+  const qzUsed = () => { try { const v = JSON.parse(localStorage.getItem(QZ_KEY) || "{}"); return v.day === new Date().toDateString() ? v.n || 0 : 0; } catch { return 0; } };
+  const qzUse = () => { try { localStorage.setItem(QZ_KEY, JSON.stringify({ day: new Date().toDateString(), n: qzUsed() + 1 })); } catch {} };
+  const cardEl = (r, k) => { const s = SUITS[(k + r.length + qi) % 4]; return `<div class="qz-card${s === "h" || s === "d" ? " red" : ""}" style="animation-delay:${k * 0.08}s" role="img" aria-label="${r}"><span class="qz-rank${r === "10" ? " r10" : ""}">${r}</span><svg class="qz-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="${PIP[s]}"/></svg></div>`; };
   function total(p) { let t = p.reduce((a, r) => a + VAL(r), 0); const soft = p.includes("A") && t <= 21; if (t > 21 && p.includes("A")) t -= 10; return (soft ? (lang === "en" ? "Soft " : "Blando ") : "") + t; }
+  function qzEnd() {
+    document.getElementById("qz-next").hidden = true;
+    document.getElementById("qz-end").hidden = false;
+  }
   function deal() {
+    if (qzUsed() >= QZ_MAX) {
+      // Ya jugó las de hoy: se ve una mano de ejemplo, pero la mesa invita a seguir en la app.
+      qDone = true;
+      const h0 = HANDS[qOrder[0]];
+      document.getElementById("qz-dealer").innerHTML = cardEl(h0.d, 0) + '<div class="qz-card back"></div>';
+      document.getElementById("qz-you").innerHTML = h0.p.map((r, k) => cardEl(r, k + 1)).join("");
+      document.getElementById("qz-total").textContent = total(h0.p);
+      document.getElementById("qz-fb").innerHTML = "";
+      document.querySelectorAll(".qz-acts button").forEach((b) => { b.disabled = true; b.className = ""; });
+      qzEnd();
+      return;
+    }
     const h = HANDS[qOrder[qi % qOrder.length]];
     qDone = false;
     document.getElementById("qz-dealer").innerHTML = cardEl(h.d, 0) + '<div class="qz-card back"></div>';
@@ -608,9 +642,13 @@
     qN++; if (ok) qOk++;
     document.querySelectorAll(".qz-acts button").forEach((b) => { b.disabled = true; if (b.dataset.a === h.a) b.className = "ok"; else if (b.dataset.a === a) b.className = "bad"; });
     const name = t["qz-" + h.a.toLowerCase()];
-    document.getElementById("qz-fb").innerHTML = `<b class="${ok ? "ok" : "bad"}">${ok ? t["qz-ok"] : t["qz-bad"].replace("{0}", name.toLowerCase())}</b><p>${h[lang]}</p>${qN >= 3 ? `<p><a href="app/">${t["qz-more"]}</a></p>` : ""}`;
+    document.getElementById("qz-fb").innerHTML = `<b class="${ok ? "ok" : "bad"}">${ok ? t["qz-ok"] : t["qz-bad"].replace("{0}", name.toLowerCase())}</b><p>${h[lang]}</p>`;
     document.getElementById("qz-score").textContent = t["qz-score"].replace("{0}", qOk).replace("{1}", qN);
+    qzUse();
+    const left = QZ_MAX - qzUsed();
+    document.getElementById("qz-left").textContent = left > 1 ? t["qz-left"].replace("{0}", left) : left === 1 ? t["qz-left1"] : "";
     document.getElementById("qz-next").hidden = false;
+    if (left <= 0) { document.getElementById("qz-again").hidden = true; setTimeout(qzEnd, 1800); }
   }
   document.querySelectorAll(".qz-acts button").forEach((b) => b.addEventListener("click", () => answer(b.dataset.a)));
   document.getElementById("qz-again").addEventListener("click", () => { qi++; deal(); });

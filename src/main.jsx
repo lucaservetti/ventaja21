@@ -436,9 +436,7 @@ function App() {
             >
               {_jsx(v, { active: shown })}
               {k.id !== "jugar" ? (
-                <p className="credit">
-                  Edge 21 · hecho por <b>Luca</b> ♠
-                </p>
+                <p className="credit">Edge 21 ♠ · para aprender, sin plata real</p>
               ) : null}
             </section>
           );
