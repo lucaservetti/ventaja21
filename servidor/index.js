@@ -4,7 +4,8 @@
 // Lo que la app guarda se puede tocar; por eso los días los da el servidor, con estos controles:
 // - la sesión se verifica con las claves públicas de Google;
 // - la racha se cuenta con los puntajes del ranking, y cada uno tiene que haberse guardado ese día;
-// - el podio solo vale en semanas con 10 jugadores o más;
+// - el podio solo vale en semanas con 10 jugadores o más, y con un puntaje semanal que cuadre con
+//   los puntajes diarios de esa semana;
 // - cada premio se da una vez (el podio, una por semana) y hay un tope de 14 días cada 30 días.
 // Configuración: wrangler.toml (PROJECT_ID) y el secreto FIREBASE_SA (clave de cuenta de servicio).
 import {
@@ -14,6 +15,7 @@ import {
   TOPE_DIAS,
   dayKeyUTC,
   diasRecientes,
+  keyTime,
   longestRun,
   mondayUTC,
   savedOnTime,
@@ -299,9 +301,19 @@ async function premios(uid, env, now = Date.now(), opts = {}) {
     const mine = (top || []).find(
       (r) => r.document && r.document.name.endsWith(`/scores/${uid}`),
     );
+    // El puntaje de la semana lo escribe la app: solo vale si no pasa de la suma de sus puntajes
+    // diarios de esa semana guardados a tiempo (así no sirve escribir 840 a mano).
+    let diarios = 0;
+    for (let i = 0; i < 7; i++) {
+      const k = dayKeyUTC(keyTime(monday) + i * DAY);
+      const doc = docs[`daily/${k}/scores/${uid}`];
+      if (doc && onTime(k, doc.createTime))
+        diarios += Number(field(doc, "score")) || 0;
+    }
     if (
       mine &&
       field(mine.document, "score") > 0 &&
+      field(mine.document, "score") <= diarios &&
       onTime(monday, mine.document.createTime, 7) &&
       (await d.count(parent)) >= PODIO_MIN
     )

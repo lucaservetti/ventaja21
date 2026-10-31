@@ -31,14 +31,26 @@ service cloud.firestore {
         && request.resource.data.name.size() <= 20
         && request.resource.data.score is int
         && request.resource.data.score >= 0
-        && request.resource.data.score <= (kind == 'daily' ? 120 : 840);
+        && request.resource.data.score <= (kind == 'daily' ? 120 : 840)
+        && (!('ok' in request.resource.data) || request.resource.data.ok is bool)
+        && (!('t' in request.resource.data) || request.resource.data.t is int)
+        && (!('expireAt' in request.resource.data)
+            || (request.resource.data.expireAt is timestamp
+                && request.resource.data.expireAt < request.time + duration.value(120, 'd')));
     }
 
     // Errores de la app: se pueden mandar, pero nadie los puede leer desde la app.
     match /errores/{id} {
       allow create: if request.resource.data.keys().hasOnly(['msg', 'stack', 'where', 'version', 'plataforma', 'idioma', 't', 'expireAt'])
         && request.resource.data.msg is string && request.resource.data.msg.size() <= 300
-        && request.resource.data.stack is string && request.resource.data.stack.size() <= 1500;
+        && request.resource.data.stack is string && request.resource.data.stack.size() <= 1500
+        && request.resource.data.where is string && request.resource.data.where.size() <= 200
+        && request.resource.data.version is string && request.resource.data.version.size() <= 20
+        && request.resource.data.plataforma in ['android', 'web']
+        && request.resource.data.idioma is string && request.resource.data.idioma.size() <= 10
+        && request.resource.data.t is int
+        && request.resource.data.expireAt is timestamp
+        && request.resource.data.expireAt < request.time + duration.value(120, 'd');
     }
   }
 }

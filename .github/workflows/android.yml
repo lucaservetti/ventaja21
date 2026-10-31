@@ -1,4 +1,4 @@
-# Arma la app de Android para Play Store (archivo .aab) en la nube.
+# Arma la app de Android para Play Store (archivo .aab) en la nube, y una APK para probarla a mano.
 # - Se corre a mano desde la pestaña Actions ("Run workflow") o solo cuando cambia algo de la app.
 # - Si están cargados los secretos de firma, el .aab sale firmado y listo para subir a Play Console.
 #   Sin ellos, sale sin firmar (sirve para comprobar que compila).
@@ -71,11 +71,21 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon bundleRelease
+          # Además del .aab, una APK para instalar a mano en el celular y probar: firmada con tu
+          # clave si está cargada, si no con una clave de prueba.
+          if [ -n "$ANDROID_KEYSTORE_FILE" ]; then APK=assembleRelease; else APK=assembleDebug; fi
+          ./gradlew --no-daemon bundleRelease $APK
 
       - name: Guardar el .aab
         uses: actions/upload-artifact@v4
         with:
           name: ventaja21-${{ github.run_number }}
           path: android/app/build/outputs/bundle/release/*.aab
+          retention-days: 30
+
+      - name: Guardar la APK (para probar en el celular)
+        uses: actions/upload-artifact@v4
+        with:
+          name: edge21-apk-${{ github.run_number }}
+          path: android/app/build/outputs/apk/*/*.apk
           retention-days: 30

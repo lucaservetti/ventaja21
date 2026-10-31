@@ -498,6 +498,20 @@ async function followSystemFont() {
   }
 }
 
+// Botón "atrás" de Android. fn(canGoBack) devuelve false si no hay nada que hacer: ahí se cierra
+// la app. Sin esto Capacitor ya vuelve atrás en el historial, pero cierra la app en cualquier
+// pestaña.
+const AppPlugin = NATIVE ? registerPlugin("App") : null;
+function onAndroidBack(fn) {
+  if (!AppPlugin) return undefined;
+  const h = AppPlugin.addListener("backButton", ({ canGoBack }) => {
+    if (!fn(canGoBack)) AppPlugin.exitApp();
+  });
+  return () => {
+    Promise.resolve(h).then((x) => x && x.remove());
+  };
+}
+
 function initPlatform() {
   if (!NATIVE) return;
   followSystemFont();
@@ -517,6 +531,7 @@ export {
   maybeAskReview,
   maybeShowAd,
   needsPremium,
+  onAndroidBack,
   onShop,
   restorePremium,
   shop,

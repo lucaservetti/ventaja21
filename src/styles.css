@@ -14,6 +14,8 @@
   --accent-ink: #1d1405;
   --accent-soft: #2a2210;
   --accent-line: #8a6d2a;
+  /* Dorado para texto: en el tema claro es más oscuro, para que se lea sobre blanco. */
+  --accent-text: var(--accent);
   --good: #34c27f;
   --good-ink: #062615;
   --good-soft: #0f2a1d;
@@ -47,6 +49,30 @@
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
+/* Lo que se ve mientras carga la app la primera vez (antes de que arranque React). */
+.boot {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  animation: boot-in 0.4s 0.25s both;
+}
+.boot img {
+  border-radius: 18px;
+  animation: boot-pulse 1.4s ease-in-out infinite alternate;
+}
+@keyframes boot-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes boot-pulse {
+  to {
+    transform: scale(0.94);
+    opacity: 0.75;
+  }
+}
+
 html,
 body {
   height: 100%;
@@ -255,7 +281,7 @@ strong {
 }
 .icon-btn.active {
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .icon-btn:disabled {
   opacity: 0.35;
@@ -302,7 +328,7 @@ strong {
   color: var(--text-2);
 }
 .eyebrow.acc {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .muted {
   color: var(--text-2);
@@ -323,7 +349,7 @@ strong {
   color: var(--bad);
 }
 .acc {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .row {
   display: flex;
@@ -386,7 +412,7 @@ strong {
 }
 .chip-tag.acc {
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .chip-tag.good {
   background: var(--good-soft);
@@ -471,7 +497,7 @@ strong {
   margin-top: 12px;
 }
 .link {
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 700;
 }
 .float-cta {
@@ -506,7 +532,7 @@ strong {
   height: 54px;
   border-radius: 50%;
   background: #07120d;
-  color: var(--accent);
+  color: var(--accent-text);
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -576,7 +602,7 @@ strong {
 }
 .tab.on {
   background: #050d09;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .tab svg {
   flex-shrink: 0;
@@ -665,7 +691,8 @@ strong {
   background: repeating-linear-gradient(
     135deg,
     var(--back-ink, #0d261a) 0 calc(var(--w) * 0.035),
-    var(--back-bg, var(--card-face)) calc(var(--w) * 0.035) calc(var(--w) * 0.085)
+    var(--back-bg, var(--card-face)) calc(var(--w) * 0.035)
+      calc(var(--w) * 0.085)
   );
 }
 .pc-dim {
@@ -858,7 +885,7 @@ button.chip:active:not(:disabled) {
   padding: 0 16px;
   border-radius: 999px;
   background: var(--surface);
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 700;
   font-size: 15px;
   border: 2px solid transparent;
@@ -1333,7 +1360,7 @@ button.chip:active:not(:disabled) {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .mini-cards {
   width: 64px;
@@ -1398,7 +1425,7 @@ button.chip:active:not(:disabled) {
 }
 .kv-v {
   font-weight: 700;
-  color: var(--accent);
+  color: var(--accent-text);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
@@ -1563,7 +1590,7 @@ button.chip:active:not(:disabled) {
   border-radius: 50%;
 }
 .acc-icon {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .hero-set {
   border-radius: var(--r-l);
@@ -1645,7 +1672,7 @@ button.chip:active:not(:disabled) {
   color: var(--good);
 }
 .score-pill.mid b {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .score-pill.bad b {
   color: var(--bad);
@@ -1694,11 +1721,11 @@ button.chip:active:not(:disabled) {
   margin-bottom: 16px;
 }
 .tc-banner .eyebrow {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .tc-banner b {
   font-size: 26px;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .deal-grid {
   display: flex;
@@ -2290,7 +2317,7 @@ button.chip:active:not(:disabled) {
   font-size: 15px;
 }
 .val-box.acc b {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .hilo {
   display: grid;
@@ -2406,7 +2433,7 @@ button.chip:active:not(:disabled) {
   border: 1.5px solid var(--accent-line);
 }
 .tcf-box.acc b {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .tcf-op {
   font-size: 30px;
@@ -2526,7 +2553,7 @@ button.chip:active:not(:disabled) {
   height: 64px;
   border-radius: 50%;
   background: var(--surface);
-  color: var(--accent);
+  color: var(--accent-text);
   justify-content: center;
   font-size: 11.5px;
   font-weight: 700;
@@ -2568,7 +2595,7 @@ button.chip:active:not(:disabled) {
   margin-top: 6px;
 }
 .sec-icon .acc {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .sec-icon .dim {
   color: #4d9973;
@@ -2935,7 +2962,7 @@ button.chip:active:not(:disabled) {
   font-size: 15px;
 }
 .phase-steps .on {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .phase-steps .past {
   color: var(--text-2);
@@ -3070,7 +3097,7 @@ button.chip:active:not(:disabled) {
   font-style: normal;
   font-size: 12px;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .sim {
   display: flex;
@@ -3157,7 +3184,7 @@ button.chip:active:not(:disabled) {
   border-radius: 999px;
   padding: 8px 16px;
   font-weight: 800;
-  color: var(--accent);
+  color: var(--accent-text);
   font-size: 16px;
   white-space: nowrap;
   display: inline-flex;
@@ -3240,7 +3267,7 @@ button.chip:active:not(:disabled) {
   position: absolute;
   top: 40px;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--accent-text);
   animation: fadeIn 0.3s;
 }
 .seat {
@@ -3405,7 +3432,7 @@ button.chip:active:not(:disabled) {
   right: 12px;
   bottom: 12px;
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
   border-radius: 999px;
   padding: 4px 10px;
   font-weight: 700;
@@ -3541,13 +3568,40 @@ button.chip:active:not(:disabled) {
   padding-left: 14px;
   padding-right: 14px;
 }
+@media (max-width: 359px) {
+  .bet-row {
+    gap: 6px;
+  }
+  .bet-row .btn {
+    min-width: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+@media (max-width: 359px) {
+  html[data-text="large"] .bet-row .btn {
+    font-size: 14px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+@media (max-width: 413px) {
+  html[data-text="large"] .bet-row {
+    gap: 6px;
+  }
+  html[data-text="large"] .bet-row .btn {
+    min-width: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
 .bet-hint {
   text-align: center;
   color: var(--text-2);
   margin-bottom: 8px;
 }
 .bet-hint b {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .chip-rack {
   display: flex;
@@ -3899,7 +3953,7 @@ button.chip:active:not(:disabled) {
 .demo-pick .act-btn {
   outline: 3px solid var(--accent);
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .demo-best {
   align-self: center;
@@ -4168,7 +4222,7 @@ button.chip:active:not(:disabled) {
   color: #ff7a70;
 }
 .stamp-acc {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .stamp-mute {
   color: var(--text-2);
@@ -4338,7 +4392,7 @@ button.chip:active:not(:disabled) {
 }
 .bb-v {
   font-weight: 700;
-  color: var(--accent);
+  color: var(--accent-text);
   visibility: hidden;
 }
 .bb-v.show {
@@ -4363,7 +4417,7 @@ button.chip:active:not(:disabled) {
   color: var(--text-2);
 }
 .bb-up.on {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .bb-groups {
   display: grid;
@@ -4382,7 +4436,7 @@ button.chip:active:not(:disabled) {
   padding-top: 8px;
 }
 .bb-groups .on {
-  color: var(--accent);
+  color: var(--accent-text);
   border-color: var(--accent);
 }
 .bust-mini {
@@ -4417,7 +4471,7 @@ button.chip:active:not(:disabled) {
   color: var(--text-3);
 }
 .bm-ups .on {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .bm-cap {
   font-size: 11px;
@@ -4425,7 +4479,7 @@ button.chip:active:not(:disabled) {
 }
 .bm-num b {
   font-size: 30px;
-  color: var(--accent);
+  color: var(--accent-text);
   margin-right: 4px;
 }
 .bm-num span {
@@ -4964,6 +5018,9 @@ i.bc-cell {
 .chip-rack .chip {
   --s: clamp(44px, calc((100vw - 72px) / 5.3), 54px) !important;
 }
+html[data-text="large"] .chip-rack .chip {
+  --s: clamp(40px, calc((100vw / 1.12 - 72px) / 5.3), 54px) !important;
+}
 @media (max-width: 379px) {
   .sim-top .sim-sound {
     display: none;
@@ -5157,7 +5214,7 @@ i.bc-cell {
   color: var(--good);
 }
 .skill-grade.t-mid {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .skill-grade.t-bad {
   color: var(--bad);
@@ -5317,7 +5374,13 @@ i.en {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: radial-gradient(circle, #fff 0 22%, #1d8a4f 23% 60%, #fff 61% 66%, #1d8a4f 67%);
+  background: radial-gradient(
+    circle,
+    #fff 0 22%,
+    #1d8a4f 23% 60%,
+    #fff 61% 66%,
+    #1d8a4f 67%
+  );
   box-shadow: 0 4px 10px #0008;
   animation: chipSlide 0.6s ease both;
 }
@@ -5376,7 +5439,7 @@ i.en {
   background: var(--accent-soft);
 }
 .unit-bet.on b {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .unit-bet:disabled {
   opacity: 0.35;
@@ -5444,7 +5507,7 @@ i.en {
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .cpath-done p {
   color: var(--text-2);
@@ -5533,7 +5596,7 @@ i.en {
   padding: 12px 14px;
   border-radius: 14px;
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .level-goal span {
   color: var(--text);
@@ -5748,7 +5811,7 @@ i.en {
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 /* Aprender: repaso y lo que sigue después de las lecciones. */
 .review-card {
@@ -5840,7 +5903,7 @@ i.en {
   background: var(--accent-soft);
 }
 .scn-board-tile.acc b {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .scn-board-tile.muted b {
   color: var(--text-3);
@@ -5911,7 +5974,7 @@ i.en {
 }
 .tab.on {
   background: none;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .tab.on .tab-ic {
   background: #2c2413;
@@ -5957,13 +6020,17 @@ i.en {
 }
 .ph-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 6px 10px;
   min-height: 44px;
 }
+/* Si el título y los botones no entran en una línea (pantalla angosta o letra grande), los botones
+   bajan a la línea de abajo en vez de taparlo. */
 .ph-title {
-  flex: 1;
-  min-width: 0;
+  flex: 1 0 auto;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   font-size: 32px;
   line-height: 1.1;
   font-weight: 700;
@@ -5973,6 +6040,7 @@ i.en {
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 .ph-actions .icon-btn {
   width: 42px;
@@ -5989,17 +6057,18 @@ i.en {
 }
 @media (max-width: 359px) {
   .ph-title {
-    font-size: 28px;
+    font-size: 26px;
   }
   .ph-actions {
-    gap: 6px;
+    gap: 5px;
   }
   .ph-actions .icon-btn {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
   }
   .ph-actions .badge {
-    height: 38px;
+    height: 36px;
+    padding: 0 9px;
   }
 }
 .section-title .sys-pill {
@@ -6121,7 +6190,7 @@ i.en {
 }
 .mc-rule b {
   font-size: 15px;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 @media (max-width: 359px) {
   .mc-grid .chart-row {
@@ -6181,7 +6250,7 @@ i.en {
   text-align: left;
 }
 .lr-chart .li-icon.acc {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 /* ---- Saltar hasta acá ---- */
 .jump-btn {
@@ -6194,7 +6263,7 @@ i.en {
   border-radius: 19px;
   background: var(--accent-soft);
   border: 1px solid var(--accent-line);
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 700;
   font-size: 15px;
 }
@@ -6291,7 +6360,7 @@ i.en {
   align-items: flex-start;
 }
 .level-tips li svg {
-  color: var(--accent);
+  color: var(--accent-text);
   flex-shrink: 0;
   margin-top: 3px;
 }
@@ -6304,14 +6373,14 @@ i.en {
   box-shadow: inset 0 0 0 1.5px var(--accent-line);
 }
 .level-practice .li-icon {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .level-outcome.practice {
   border-color: var(--accent-line);
 }
 .level-outcome.practice .res-icon {
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .tagged-card {
   display: inline-flex;
@@ -6352,7 +6421,7 @@ i.en {
 .live-count b {
   font-size: 32px;
   line-height: 1.1;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .live-count.hidden b {
   color: var(--text-3);
@@ -6379,7 +6448,7 @@ i.en {
   padding: 0 14px;
   border-radius: 18px;
   background: var(--surface);
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 700;
   font-size: 15px;
 }
@@ -6389,7 +6458,7 @@ i.en {
   color: var(--text-2);
 }
 .hint-line b {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .level-help {
   display: flex;
@@ -6402,7 +6471,7 @@ i.en {
   font-size: 15px;
 }
 .level-help svg {
-  color: var(--accent);
+  color: var(--accent-text);
   flex-shrink: 0;
   margin-top: 3px;
 }
@@ -6428,7 +6497,7 @@ i.en {
 }
 .cpath-first svg {
   flex-shrink: 0;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .cpath-first b {
   color: var(--text);
@@ -6455,7 +6524,7 @@ i.en {
   border-top: 0;
 }
 .next-up-item .li-icon {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .goal-plan {
   margin: 4px 0 14px;
@@ -6503,7 +6572,7 @@ i.en {
   color: var(--good);
 }
 .pf-skill-v.t-mid {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .pf-skill-v.t-bad {
   color: var(--bad);
@@ -6750,7 +6819,7 @@ i.en {
   }
 }
 .casino-ib {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .casino-entry {
   margin-bottom: 16px;
@@ -6758,7 +6827,7 @@ i.en {
 }
 .casino-entry .li-icon,
 .casino-hero-ic {
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-soft);
 }
 .casino-hero {
@@ -6895,7 +6964,12 @@ i.en {
   border: 2px solid var(--line);
 }
 .medal.got {
-  background: radial-gradient(circle at 35% 30%, #ffe5a8, var(--accent) 55%, #9f7c29);
+  background: radial-gradient(
+    circle at 35% 30%,
+    #ffe5a8,
+    var(--accent) 55%,
+    #9f7c29
+  );
   color: var(--accent-ink);
   border-color: #fff1d0;
   box-shadow: 0 4px 14px rgba(233, 200, 125, 0.18);
@@ -7003,14 +7077,13 @@ i.en {
   margin-top: 8px;
 }
 
-
 /* Lecciones: herramienta para practicar */
 .lr-tool {
   margin-top: 14px;
   border: 1px solid var(--accent-line);
 }
 .lr-tool .li-icon {
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-soft);
 }
 
@@ -7168,12 +7241,17 @@ i.en {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-soft);
 }
 .exam-card.passed .exam-seal {
   color: var(--accent-ink);
-  background: radial-gradient(circle at 35% 30%, #ffe5a8, var(--accent) 55%, #9f7c29);
+  background: radial-gradient(
+    circle at 35% 30%,
+    #ffe5a8,
+    var(--accent) 55%,
+    #9f7c29
+  );
 }
 .cert {
   margin-top: 22px;
@@ -7181,7 +7259,11 @@ i.en {
   border-radius: 24px;
   text-align: center;
   background:
-    radial-gradient(120% 80% at 50% 0%, rgba(233, 200, 125, 0.16), transparent 60%),
+    radial-gradient(
+      120% 80% at 50% 0%,
+      rgba(233, 200, 125, 0.16),
+      transparent 60%
+    ),
     var(--surface);
   border: 1px solid var(--accent-line);
   display: flex;
@@ -7197,7 +7279,12 @@ i.en {
   place-items: center;
   margin-bottom: 8px;
   color: var(--accent-ink);
-  background: radial-gradient(circle at 35% 30%, #ffe5a8, var(--accent) 55%, #9f7c29);
+  background: radial-gradient(
+    circle at 35% 30%,
+    #ffe5a8,
+    var(--accent) 55%,
+    #9f7c29
+  );
   box-shadow: 0 0 0 6px rgba(233, 200, 125, 0.12);
 }
 .cert-title {
@@ -7311,7 +7398,7 @@ i.en {
 }
 .dev-how > svg {
   flex-shrink: 0;
-  color: var(--accent);
+  color: var(--accent-text);
   margin-top: 2px;
 }
 .ins-choices {
@@ -7334,7 +7421,7 @@ i.en {
   border: 1px solid var(--accent-line);
 }
 .bk-nudge .li-icon {
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-soft);
 }
 
@@ -7347,7 +7434,7 @@ i.en {
   color: var(--text-3);
 }
 .credit b {
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 700;
 }
 .camo-live {
@@ -7356,7 +7443,7 @@ i.en {
   color: var(--text-2);
 }
 .camo-live b {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 /* Desafío diario: los últimos 7 días */
@@ -7389,7 +7476,7 @@ i.en {
   box-shadow: 0 0 0 2px var(--text-2);
 }
 .daily-score b {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 /* Velocidad de conteo */
@@ -7469,7 +7556,7 @@ i.en {
   align-items: center;
 }
 .prem-perk .li-icon {
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-soft);
   flex-shrink: 0;
 }
@@ -7482,8 +7569,8 @@ i.en {
   margin-bottom: 16px;
   padding: 0;
   border: 1.5px solid var(--accent-line);
-  background: linear-gradient(135deg, var(--accent-soft), transparent 70%),
-    var(--card);
+  background:
+    linear-gradient(135deg, var(--accent-soft), transparent 70%), var(--card);
 }
 .prem-card-main {
   display: flex;
@@ -7494,7 +7581,7 @@ i.en {
   text-align: left;
 }
 .prem-card-main .li-icon {
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-soft);
   flex-shrink: 0;
 }
@@ -7620,6 +7707,7 @@ html[lang="en"] .en-dup {
   margin: 0;
   padding: 0;
 }
+
 .rail-row {
   height: 88px;
 }
@@ -7675,7 +7763,9 @@ html[lang="en"] .en-dup {
   display: grid;
   place-items: center;
   background: var(--chip);
-  box-shadow: inset 0 0 0 2px var(--chip), inset 0 0 0 4px var(--spot);
+  box-shadow:
+    inset 0 0 0 2px var(--chip),
+    inset 0 0 0 4px var(--spot);
   font-family: var(--font-card);
   font-size: 19px;
   font-weight: 600;
@@ -7993,7 +8083,7 @@ button:disabled .act-letter {
   height: 84px;
   border-radius: 50%;
   background: var(--surface-2);
-  color: var(--accent);
+  color: var(--accent-text);
   animation: pop 0.5s ease backwards;
 }
 .blitz-clock.gold {
@@ -8009,7 +8099,7 @@ button:disabled .act-letter {
   font-weight: 800;
   line-height: 1;
   margin-top: 14px;
-  color: var(--accent);
+  color: var(--accent-text);
   animation: pop 0.5s ease backwards;
 }
 .blitz-top {
@@ -8036,7 +8126,7 @@ button:disabled .act-letter {
 .blitz-pts {
   font-size: 30px;
   font-weight: 800;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .blitz-pts small {
   font-size: 14px;
@@ -8100,6 +8190,43 @@ button:disabled .act-letter {
 html[data-text="large"] .app {
   zoom: 1.12;
 }
+/* La barra de arriba de Jugar se ajusta al ancho que tiene de verdad (con letra grande es menos
+   que el de la pantalla): primero se achica, y si no entra se esconde "Sesión" (está en Estadísticas). */
+.sim-top-wrap {
+  container: simtop / inline-size;
+}
+@container simtop (max-width: 340px) {
+  .sim-top {
+    gap: 4px;
+  }
+  .sim-top .small-ib {
+    width: 32px;
+    height: 32px;
+  }
+  .sim-stat {
+    padding: 4px 8px;
+  }
+  .sim-stat b {
+    font-size: 14px;
+  }
+  .sim-top .sim-sound {
+    display: none;
+  }
+  .table-btn {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    justify-content: center;
+  }
+  .table-btn .table-btn-text {
+    display: none;
+  }
+}
+@container simtop (max-width: 270px) {
+  .sim-stat.sim-session {
+    display: none;
+  }
+}
 
 /* ---------- Tema claro ---------- */
 html[data-theme="light"] {
@@ -8112,8 +8239,9 @@ html[data-theme="light"] {
   --line: #d6ccb8;
   --text: #1d1a16;
   --text-2: #554e45;
-  --text-3: #7a7164;
+  --text-3: #6b6256;
   --accent: #e2ad3c;
+  --accent-text: #8a5d08;
   --accent-2: #c48d1c;
   --accent-ink: #1d1405;
   --accent-soft: #f7ebcf;
@@ -8132,7 +8260,22 @@ html[data-theme="light"] .card {
 }
 /* Zonas que siguen oscuras en el tema claro (el paño de la mesa, avisos): ahí el texto va claro. */
 html[data-theme="light"]
-  :is(.felt, .tray-box, .total-badge, .scn-tag, .scn-sign, .stamp, .hero-preview, .mini-cards, .code-box, .drill-hero .seg, .pc-mark, .toast, .sim-msg, .cta-play) {
+  :is(
+    .felt,
+    .tray-box,
+    .total-badge,
+    .scn-tag,
+    .scn-sign,
+    .stamp,
+    .hero-preview,
+    .mini-cards,
+    .code-box,
+    .drill-hero .seg,
+    .pc-mark,
+    .toast,
+    .sim-msg,
+    .cta-play
+  ) {
   --bg: #06110c;
   --surface: #112a1f;
   --surface-2: #19372a;
@@ -8141,6 +8284,7 @@ html[data-theme="light"]
   --text: #f3efe2;
   --text-2: #b4c5ba;
   --text-3: #8aa093;
+  --accent-text: #e9b949;
   color: var(--text);
 }
 html[data-theme="light"] :is(.sheet, .modal) {
@@ -8202,7 +8346,7 @@ html[data-theme="light"] .tab.on .tab-ic {
   display: grid;
   place-items: center;
   background: var(--surface-2);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .weekly-card.won .weekly-badge {
   background: var(--accent);
@@ -8329,7 +8473,7 @@ html[data-theme="light"] .tab.on .tab-ic {
   font-size: 22px;
 }
 .acc-ic {
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-soft);
 }
 .acc-list {
@@ -8477,7 +8621,7 @@ html[data-theme="light"] .tab.on .tab-ic {
   font-size: 18px;
 }
 .chal-score b {
-  color: var(--accent);
+  color: var(--accent-text);
   font-size: 24px;
 }
 .chal-out {
@@ -8606,7 +8750,7 @@ html[data-theme="light"] .tab.on .tab-ic {
   border: 4px solid;
 }
 .look-sw.on {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .look-sw.on .look-felt,
 .look-sw.on .look-back {
@@ -8629,7 +8773,7 @@ html[data-theme="light"] .tab.on .tab-ic {
 }
 .ma-stats b {
   font-size: 22px;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .ma-stats .small {
   font-size: 11.5px;
@@ -8752,7 +8896,7 @@ html[data-theme="light"] .tab.on .tab-ic {
   padding: 10px 14px;
   border-radius: var(--r-m);
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
   font-size: 14.5px;
 }
 .pz-list {
@@ -8770,7 +8914,7 @@ html[data-theme="light"] .tab.on .tab-ic {
 }
 .pz-item .li-icon {
   flex: none;
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-soft);
 }
 .pz-item.done .li-icon {
@@ -8850,11 +8994,36 @@ html[data-theme="light"] .tab.on .tab-ic {
   margin-top: 14px;
 }
 .prem-gift-link .li-icon {
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-soft);
 }
 .legal-links {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 18px;
+}
+
+/* Camino angosto (pantalla chica o letra grande): texto más chico y "Empezar" al lado de los
+   minutos, para que cada parada entre en su alto y no se pise con la de abajo. */
+.trail {
+  container: trail / inline-size;
+}
+@container trail (max-width: 330px) {
+  .rail-text {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 8px;
+  }
+  .rail-text b,
+  .rr-cur .rail-text b {
+    width: 100%;
+    font-size: 14.5px;
+    line-height: 1.2;
+  }
+  .rail-go {
+    margin-top: 2px;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
 }

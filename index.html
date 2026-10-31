@@ -298,9 +298,9 @@
   </section>
 
   <section class="reveal" id="video">
-    <h2 data-t="v-title"></h2>
+    <h2 id="v-title" data-t="v-title"></h2>
     <p class="sub" data-t="v-sub"></p>
-    <div class="vids">
+    <div class="vids" tabindex="0" role="region" aria-labelledby="v-title">
       <figure class="vid"><video data-vid="quiz" muted loop playsinline preload="none"></video><figcaption data-t="v1"></figcaption></figure>
       <figure class="vid"><video data-vid="count" muted loop playsinline preload="none"></video><figcaption data-t="v2"></figcaption></figure>
       <figure class="vid"><video data-vid="table" muted loop playsinline preload="none"></video><figcaption data-t="v3"></figcaption></figure>

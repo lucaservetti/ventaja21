@@ -117,11 +117,11 @@ await paso("racha de 30, graduación y podio suman, con tope de 14 días por mes
   // Podio de la semana pasada, con 12 jugadores.
   const monday = mondayUTC(Date.now() - 7 * DAY);
   for (let i = 0; i < 11; i++) await put(`weekly/${monday}/scores/otro${i}`, { name: `o${i}`, score: 100 + i, t: 1 });
-  await put(`weekly/${monday}/scores/${u.uid}`, { name: "yo", score: 800, t: 1 });
+  await put(`weekly/${monday}/scores/${u.uid}`, { name: "yo", score: 700, t: 1 });
   // Y otro podio, dos semanas atrás: ese ya no entra en el tope.
   const monday2 = mondayUTC(Date.now() - 14 * DAY);
   for (let i = 0; i < 11; i++) await put(`weekly/${monday2}/scores/otro${i}`, { name: `o${i}`, score: 100 + i, t: 1 });
-  await put(`weekly/${monday2}/scores/${u.uid}`, { name: "yo", score: 800, t: 1 });
+  await put(`weekly/${monday2}/scores/${u.uid}`, { name: "yo", score: 700, t: 1 });
   const d = await premios(u.uid, env, Date.now(), { onTime: always });
   // 2 + 7 + 3 + 2 = 14 (el tope); el segundo podio espera.
   check(d.dias === 14, `dio ${d.dias} días: ${JSON.stringify(d.nuevos)}`);
@@ -136,9 +136,21 @@ await paso("racha de 30, graduación y podio suman, con tope de 14 días por mes
 await paso("podio en una semana con pocos jugadores: no cuenta", async () => {
   const u = await user();
   const monday = mondayUTC(Date.now() - 21 * DAY);
+  for (let i = 0; i < 7; i++) await put(`daily/${dayKeyUTC(Date.parse(monday) + i * DAY)}/scores/${u.uid}`, { name: "solo", score: 120, ok: true, t: 1 });
   await put(`weekly/${monday}/scores/${u.uid}`, { name: "solo", score: 840, t: 1 });
   const d = await premios(u.uid, env, Date.now(), { onTime: always });
   check(estado(d, "podio") === "progreso", "dio podio con un solo jugador");
+});
+
+await paso("puntaje semanal inventado (más que la suma de los diarios): no da podio", async () => {
+  const u = await user();
+  const monday = mondayUTC(Date.now() - 21 * DAY);
+  for (let i = 0; i < 11; i++) await put(`weekly/${monday}/scores/rival${i}`, { name: `r${i}`, score: 100 + i, t: 1 });
+  // Jugó dos días (200 puntos) pero escribió 840.
+  for (let i = 0; i < 2; i++) await put(`daily/${dayKeyUTC(Date.parse(monday) + i * DAY)}/scores/${u.uid}`, { name: "tramposo", score: 100, ok: true, t: 1 });
+  await put(`weekly/${monday}/scores/${u.uid}`, { name: "tramposo", score: 840, t: 1 });
+  const d = await premios(u.uid, env, Date.now(), { onTime: always });
+  check(estado(d, "podio") === "progreso", "dio podio con un puntaje semanal inventado");
 });
 
 await paso("Premium para siempre (puesto a mano): no se toca", async () => {

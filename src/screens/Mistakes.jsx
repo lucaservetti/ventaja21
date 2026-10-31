@@ -73,15 +73,13 @@ function Heatmap({ st, rules }) {
       />
       <div
         className="chart-grid"
-        role="table"
+        role="grid"
         aria-label="Tu tabla, según tus errores"
       >
         <div className="chart-row chart-headrow" role="row">
-          <span
-            className="chart-rowlabel"
-            role="columnheader"
-            aria-label="Tu mano"
-          />
+          <span className="chart-rowlabel" role="columnheader">
+            <span className="sr-only">Tu mano</span>
+          </span>
           {CHART_COLS.map((c) => (
             <span className="chart-col" role="columnheader" key={c}>
               {c}
@@ -102,7 +100,7 @@ function Heatmap({ st, rules }) {
               return (
                 <button
                   type="button"
-                  role="cell"
+                  role="gridcell"
                   className={cx("cell", `hm-${m}`, on && "hl")}
                   onClick={() => setSel({ row: r.key, col })}
                   aria-label={`${r.label} contra ${c}: ${

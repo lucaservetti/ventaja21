@@ -12,7 +12,7 @@ Un servidor chico en Cloudflare Workers, gratis. Es el único que puede dar día
 | --- | --- | --- |
 | Racha de 7 días | 2 | 7 días seguidos con puntaje del desafío diario en el ranking. Cada puntaje tiene que haberse guardado ese mismo día |
 | Racha de 30 días | 7 | Lo mismo, 30 días |
-| Podio semanal | 2 por semana | Entre los 3 primeros de una semana con 10 jugadores o más. Se pueden reclamar las últimas 4 semanas |
+| Podio semanal | 2 por semana | Entre los 3 primeros de una semana con 10 jugadores o más, y con un puntaje semanal que no pase de la suma de sus puntajes diarios de esa semana (así no sirve inventarlo). Se pueden reclamar las últimas 4 semanas |
 | Terminar las lecciones | 3 | Las 36 lecciones terminadas en el progreso guardado en la cuenta |
 
 - **Tope:** como mucho 14 días de regalo cada 30 días por cuenta. Lo que se pasa del tope queda esperando.
