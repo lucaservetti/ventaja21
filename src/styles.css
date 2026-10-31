@@ -8853,3 +8853,8 @@ html[data-theme="light"] .tab.on .tab-ic {
   color: var(--accent);
   background: var(--accent-soft);
 }
+.legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+}

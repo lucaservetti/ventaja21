@@ -38,11 +38,11 @@ PREMIUM (MENSUAL, ANUAL CON 5 DÍAS GRATIS, O UN SOLO PAGO)
 • Análisis de tus errores: tu tabla pintada según dónde fallás y cómo vas mejorando.
 • Paños y mazos: el color de la mesa, el dorso de las cartas y el mazo de 4 colores.
 • Sistemas de conteo avanzados.
-• Probá cada función gratis 30 minutos antes de decidir.
+• O ganalo: días de Premium de regalo por racha, podio semanal y terminar las lecciones.
 
 TU PROGRESO, TUYO
 • Meta diaria, racha, logros y tu perfil de jugador con puntos fuertes y débiles.
-• Todo se guarda en tu teléfono. Sin cuentas. Con respaldo para pasarlo a otro celular.
+• Todo se guarda en tu teléfono, sin crear cuentas. Si querés, entrás con Google para guardarlo en la nube, aparecer en el ranking y ganar premios.
 
 IMPORTANTE
 Edge 21 es para aprender. No se apuesta ni se gana plata real. Contar cartas mentalmente es legal, pero los casinos pueden pedirte que dejes de jugar, y usar el celular en la mesa está prohibido. Jugá solo plata que no necesitás.

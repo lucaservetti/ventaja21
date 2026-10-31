@@ -59,7 +59,7 @@ Después, en GitHub: **Settings → Secrets and variables → Actions → New re
 - un anuncio de pantalla completa solo al volver al menú después de terminar 2 cosas;
 - como mucho uno cada 5 minutos y 6 por día;
 - ninguno el primer día ni en medio de una práctica;
-- los anuncios con premio son siempre opcionales: segunda oportunidad del desafío diario, o probar cada función Premium 30 minutos (una sola vez);
+- el anuncio con premio es siempre opcional: segunda oportunidad del desafío diario;
 - con Premium o durante la prueba gratis, ninguno.
 
 ## Paso 4 · Armar el archivo de la app (.aab)
@@ -83,12 +83,12 @@ Después completá el panel **"Configura tu app"**. Lo que va en cada formulario
 
 | Formulario | Qué responder |
 | --- | --- |
-| Política de privacidad | `https://edge21.app/privacidad.html` (el contacto es `soporte@edge21.app`). |
-| Acceso a la app | Toda la funcionalidad está disponible sin acceso especial (no hay inicio de sesión). |
+| Política de privacidad | `https://edge21.app/privacidad.html` (el contacto es `soporte@edge21.app`). Los términos de uso están en `https://edge21.app/terminos.html`. |
+| Acceso a la app | Toda la funcionalidad está disponible sin acceso especial. El inicio de sesión con Google es opcional (solo para guardar en la nube, el ranking y los premios). |
 | Anuncios | **Sí, contiene anuncios.** |
 | Clasificación del contenido | Completá el cuestionario. Respondé **Sí a "juegos de azar simulados"** y **No a apuestas con dinero real**. Va a salir una clasificación para adolescentes o mayores. |
 | Público objetivo | **18 años o más.** Evita las reglas para apps de chicos, que no aplican acá. |
-| Seguridad de los datos | Recopila: **Identificadores del dispositivo u otros** (ID de publicidad), **Actividad en la app** (interacción con anuncios) y **Diagnóstico**. Todos los recopila y comparte el SDK de AdMob, para **publicidad y análisis**. Los datos están encriptados en tránsito: **Sí**. Recopilación opcional: **No**. Pedido de eliminación: no aplica para lo de AdMob. **Si activaste la cuenta de Google** (ver `CUENTA_GOOGLE.md`), sumá: **Información personal → Nombre, Dirección de correo electrónico e ID de usuario**, para *funcionalidad de la app* y *administración de la cuenta*, recopilados por vos (no compartidos), **opcionales**; **Actividad en la app → Otro contenido generado por el usuario** (el progreso y el apodo del ranking), para *funcionalidad de la app*; y **Diagnóstico → Registros de fallas**, para *análisis*. En **Eliminación de datos**: los usuarios pueden pedirla desde la app (*Ajustes → Tu cuenta → Borrar mi cuenta*) y por mail, y el enlace web es la política de privacidad. |
+| Seguridad de los datos | Recopila: **Identificadores del dispositivo u otros** (ID de publicidad), **Actividad en la app** (interacción con anuncios) y **Diagnóstico**. Todos los recopila y comparte el SDK de AdMob, para **publicidad y análisis**. Los datos están encriptados en tránsito: **Sí**. Recopilación opcional: **No**. Pedido de eliminación: no aplica para lo de AdMob. **Si activaste la cuenta de Google** (ver `CUENTA_GOOGLE.md`), sumá: **Información personal → Nombre, Dirección de correo electrónico e ID de usuario**, para *funcionalidad de la app* y *administración de la cuenta*, recopilados por vos (no compartidos), **opcionales**; **Actividad en la app → Otro contenido generado por el usuario** (el progreso y el apodo del ranking), para *funcionalidad de la app*; y **Diagnóstico → Registros de fallas**, para *análisis*. En **Eliminación de datos**: los usuarios pueden pedirla desde la app (*Ajustes → Tu cuenta → Borrar mi cuenta*) y por mail, y el enlace web es `https://edge21.app/borrar-cuenta.html`. Si están los premios, sumá en **Actividad en la app → Otras acciones** (premios ganados), para *funcionalidad de la app*. |
 | Apps gubernamentales, financieras y de salud | No. |
 
 **Ficha de Play Store**: copiá los textos de `store/ficha.md` y subí:
@@ -111,7 +111,7 @@ La app también está en inglés (sale en inglés en los celulares que no están
        - ID **`anual`**, período anual, US$19,99.
      - En el plan `anual`, **Agregar oferta**:
        - ID **`prueba-5-dias`**;
-       - elegibilidad: *adquisición de clientes nuevos*, "nunca tuvo esta suscripción";
+       - elegibilidad: *adquisición de clientes nuevos*, **"nunca tuvo ninguna suscripción en esta app"**. Así Google da la prueba **una sola vez por cuenta de Google**: si alguien ya la usó o ya pagó, no se la vuelve a ofrecer, y la app tampoco muestra "5 días gratis" (lo lee de Google Play);
        - una fase: **prueba gratuita de 5 días**.
      - **Activá** los dos planes y la oferta.
    - **Pago único.** Andá a **Monetizar → Productos → Productos integrados en la aplicación → Crear producto**.

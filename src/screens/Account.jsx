@@ -199,8 +199,10 @@ function Account() {
       <Modal open={confirm} onClose={() => setConfirm(false)}>
         <h2 style={{ fontSize: 22 }}>¿Borrar tu cuenta?</h2>
         <p className="muted" style={{ marginTop: 6 }}>
-          Se borran tu cuenta de Edge 21, tu progreso guardado en la nube y tus
-          puntajes del ranking. El progreso de este celular queda.
+          Se borran tu cuenta de Edge 21, tu progreso guardado en la nube, tus
+          puntajes del ranking y tus premios (también los días de Premium de
+          regalo). El progreso de este celular queda. Si tenés una suscripción
+          de Google Play, se cancela aparte, en Google Play.
         </p>
         <div className="btns" style={{ marginTop: 16 }}>
           <Button

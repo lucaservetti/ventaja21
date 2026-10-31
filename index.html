@@ -376,6 +376,8 @@
         <li data-t="p3"></li>
         <li data-t="p4"></li>
         <li data-t="p5"></li>
+        <li data-t="p6"></li>
+        <li data-t="p7"></li>
       </ul>
     </div>
     <div class="plans">
@@ -392,6 +394,7 @@
     <details><summary data-t="q2"></summary><p data-t="a2"></p></details>
     <details><summary data-t="q5"></summary><p data-t="a5"></p></details>
     <details><summary data-t="q6"></summary><p data-t="a6"></p></details>
+    <details><summary data-t="q8"></summary><p data-t="a8"></p></details>
     <details><summary data-t="q7"></summary><p data-t="a7"></p></details>
     <details><summary data-t="q3"></summary><p data-t="a3"></p></details>
     <details><summary data-t="q4"></summary><p data-t="a4"></p></details>
@@ -410,6 +413,8 @@
     <span data-t="foot"></span>
     <nav>
       <a id="privacy" href="privacidad.html" data-t="privacy"></a>
+      <a id="terms" href="terminos.html" data-t="terms"></a>
+      <a id="delacc" href="borrar-cuenta.html" data-t="delacc"></a>
       <a href="mailto:soporte@edge21.app">soporte@edge21.app</a>
       <a href="app/" data-t="go"></a>
     </nav>
@@ -445,9 +450,10 @@
       h3t: "Contá", h3p: "Una ruta de 10 niveles hasta llevar el conteo real de un zapato entero, con la mesa llena.",
       "r-title": "Competí con tus amigos", "r-sub": "Desafiá a un amigo con las mismas cartas y mirá quién cuenta mejor. Entrá con tu cuenta de Google, si querés, y aparecé en el ranking del desafío diario.", "r-cta": "Jugar el desafío de hoy", "r-eyebrow": "Ranking de hoy", "r-you": "Vos",
       pm: "Mensual", "pm-d": "Cancelás cuando quieras", pa: "Anual", "pa-tag": "5 días gratis", "pa-d": "US$1,67 por mes · ahorrás 44 %", pl: "Para siempre", "pl-d": "Un solo pago, sin suscripción",
-      "p-note": "Precios en dólares; Google Play los muestra en tu moneda.",
+      "p-note": "Precios en dólares; Google Play los muestra en tu moneda. La prueba gratis es una sola vez por cuenta.",
       q5: "¿Necesito crear una cuenta?", a5: "No. Tu progreso se guarda en tu celular. Si querés, entrás con Google para guardarlo en la nube, pasarlo a otro celular y aparecer en el ranking.",
       q6: "¿Cuánto cuesta?", a6: "Aprender, practicar, la ruta de conteo y el simulador son gratis, con algunos anuncios. Premium suma las funciones avanzadas y saca los anuncios.",
+      q8: "¿Puedo tener Premium gratis?", a8: "Sí, ganándolo: con tu cuenta de Google sumás días de Premium por jugar el desafío diario 7 o 30 días seguidos, por quedar en el podio de la semana o por terminar todas las lecciones.",
       q7: "¿Y en iPhone?", a7: "Por ahora la podés usar desde el navegador del iPhone, entrando a edge21.app/app. Se puede agregar a la pantalla de inicio como una app.",
       "z-title": "Empezá hoy, gratis", "z-sub": "La primera lección dura 4 minutos.",
       h1: "Jugá blackjack como un <em>profesional</em>",
@@ -463,13 +469,13 @@
       "s-title": "Así se ve",
       c1: "Aprender", c2: "La jugada correcta", c3: "La ruta de conteo", c4: "La mesa", c5: "Modo casino real", c6: "Tu progreso",
       "p-title": "Premium, a tu manera", "p-sub": "Por mes, por año con 5 días gratis, o un solo pago para siempre. Lo básico sigue siendo gratis.",
-      p1: "Sin anuncios", p2: "Modo casino real con tu plata, límites, vigilancia y examen con certificado", p3: "La ruta de desviaciones completa: Illustrious 18 y Fab 4", p4: "Simulador de banca y riesgo de quebrar", p5: "Diario para anotar lo que jugás de verdad",
+      p1: "Sin anuncios", p2: "Modo casino real con tu plata, límites, vigilancia y examen con certificado", p3: "La ruta de desviaciones completa: Illustrious 18 y Fab 4", p4: "Simulador de banca y riesgo de quebrar", p5: "Diario para anotar lo que jugás de verdad", p6: "Análisis de tus errores: tu tabla pintada según dónde fallás", p7: "Paños y mazos a elección, y sistemas de conteo avanzados",
       "q-title": "Preguntas",
       q1: "¿Contar cartas es legal?", a1: "Contar con la cabeza es legal. Lo prohibido es usar aparatos en la mesa, y el casino puede pedirte que no juegues al blackjack.",
       q2: "¿Se juega con plata real?", a2: "No. Edge 21 es para aprender: no se apuesta ni se gana plata real.",
       q3: "¿En qué idiomas está?", a3: "En español y en inglés. Sale en el idioma de tu celular y lo podés cambiar en Ajustes.",
       q4: "¿Funciona sin internet?", a4: "Sí. Una vez instalada, la app funciona sin conexión.",
-      foot: "Edge 21 · hecho por Luca ♠ · Es para aprender: jugá solo plata que no necesitás.", privacy: "Política de privacidad",
+      foot: "Edge 21 · hecho por Luca ♠ · Es para aprender: jugá solo plata que no necesitás.", privacy: "Política de privacidad", terms: "Términos de uso", delacc: "Borrar la cuenta",
     },
     en: {
       "qz-title": "Can you play this hand?", "qz-sub": "Try it right here: pick the correct play by basic strategy.",
@@ -490,9 +496,10 @@
       h3t: "Count", h3p: "A 10-level path until you keep the true count of a whole shoe at a full table.",
       "r-title": "Compete with your friends", "r-sub": "Challenge a friend with the same cards and see who counts better. Sign in with Google if you want and show up on the daily challenge leaderboard.", "r-cta": "Play today's challenge", "r-eyebrow": "Today's leaderboard", "r-you": "You",
       pm: "Monthly", "pm-d": "Cancel anytime", pa: "Yearly", "pa-tag": "5 days free", "pa-d": "US$1.67 a month · save 44%", pl: "Lifetime", "pl-d": "One payment, no subscription",
-      "p-note": "Prices in US dollars; Google Play shows them in your currency.",
+      "p-note": "Prices in US dollars; Google Play shows them in your currency. The free trial is once per account.",
       q5: "Do I need an account?", a5: "No. Your progress is saved on your phone. If you want, sign in with Google to save it in the cloud, move it to another phone and show up on the leaderboard.",
       q6: "How much does it cost?", a6: "Learning, practice, the counting path and the simulator are free, with some ads. Premium adds the advanced features and removes ads.",
+      q8: "Can I get Premium for free?", a8: "Yes, by earning it: with your Google account you get days of Premium for playing the daily challenge 7 or 30 days in a row, for making the weekly podium or for finishing all the lessons.",
       q7: "What about iPhone?", a7: "For now you can use it in the iPhone browser at edge21.app/app. You can add it to your home screen like an app.",
       "z-title": "Start today, for free", "z-sub": "The first lesson takes 4 minutes.",
       h1: "Play blackjack like a <em>pro</em>",
@@ -508,13 +515,13 @@
       "s-title": "See it in action",
       c1: "Learn", c2: "The right play", c3: "The counting path", c4: "The table", c5: "Real casino mode", c6: "Your progress",
       "p-title": "Premium, your way", "p-sub": "Monthly, yearly with a 5-day free trial, or pay once and keep it forever. The basics stay free.",
-      p1: "No ads", p2: "Real casino mode with your money, limits, surveillance and an exam with a certificate", p3: "The full deviations path: Illustrious 18 and Fab 4", p4: "Bankroll simulator and risk of ruin", p5: "A journal to log what you play for real",
+      p1: "No ads", p2: "Real casino mode with your money, limits, surveillance and an exam with a certificate", p3: "The full deviations path: Illustrious 18 and Fab 4", p4: "Bankroll simulator and risk of ruin", p5: "A journal to log what you play for real", p6: "Mistake analysis: your chart colored by where you miss", p7: "Felts and decks of your choice, plus advanced counting systems",
       "q-title": "Questions",
       q1: "Is counting cards legal?", a1: "Counting in your head is legal. What's prohibited is using devices at the table, and the casino can ask you not to play blackjack.",
       q2: "Is there real-money gambling?", a2: "No. Edge 21 is for learning: you don't bet or win real money.",
       q3: "What languages is it in?", a3: "Spanish and English. It uses your phone's language and you can change it in Settings.",
       q4: "Does it work offline?", a4: "Yes. Once installed, the app works without a connection.",
-      foot: "Edge 21 · made by Luca ♠ · It's for learning: only play with money you don't need.", privacy: "Privacy policy",
+      foot: "Edge 21 · made by Luca ♠ · It's for learning: only play with money you don't need.", privacy: "Privacy policy", terms: "Terms of use", delacc: "Delete account",
     },
   };
   function setLang(lang) {
@@ -533,7 +540,8 @@
     play.textContent = PUBLISHED ? t.play : t.soon;
     play.className = PUBLISHED ? "btn gold" : "btn soon";
     if (PUBLISHED) play.href = PLAY_URL; else play.removeAttribute("href");
-    document.getElementById("privacy").href = lang === "en" ? "privacidad.html#en" : "privacidad.html";
+    for (const [id, f] of [["privacy", "privacidad"], ["terms", "terminos"], ["delacc", "borrar-cuenta"]])
+      document.getElementById(id).href = `${f}.html${lang === "en" ? "#en" : ""}`;
     try { localStorage.setItem("edge21.lang", lang); } catch {}
     if (typeof deal === "function" && document.getElementById("qz-you").innerHTML) deal();
   }

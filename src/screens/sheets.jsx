@@ -343,7 +343,7 @@ function SettingsSheet({ open: a, onClose: e }) {
         prohibido. Jugá solo plata que no necesitás. Si el juego deja de ser
         entretenimiento, frená y pedí ayuda.
       </p>
-      <p className="small" style={{ marginTop: 18 }}>
+      <p className="small legal-links" style={{ marginTop: 18 }}>
         <a
           className="link"
           href={`https://edge21.app/privacidad.html${LANG === "en" ? "#en" : ""}`}
@@ -351,6 +351,17 @@ function SettingsSheet({ open: a, onClose: e }) {
           rel="noreferrer"
         >
           Política de privacidad
+        </a>
+        <a
+          className="link"
+          href={`https://edge21.app/terminos.html${LANG === "en" ? "#en" : ""}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Términos de uso
+        </a>
+        <a className="link" href="mailto:soporte@edge21.app">
+          soporte@edge21.app
         </a>
       </p>
       <p className="dim tiny" style={{ marginTop: 8 }}>

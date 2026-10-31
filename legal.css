@@ -1,0 +1,47 @@
+/* Páginas legales de Edge 21 (privacidad, términos, borrar la cuenta): mismo estilo que la web. */
+@font-face { font-family: "DM Sans"; font-weight: 400 800; font-display: swap; src: url(app/fonts/DMSans-latin-400-800.woff2) format("woff2"); }
+:root {
+  color-scheme: dark;
+  --bg: #06110c; --surface: #0f2219; --surface-2: #163024; --line: #1c3628;
+  --text: #f3efe2; --text-2: #a3b5a9; --gold: #e9b949; --gold-ink: #1d1405;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16.5px/1.65 "DM Sans", system-ui, sans-serif; }
+a { color: var(--gold); text-underline-offset: 3px; }
+header { position: sticky; top: 0; z-index: 5; background: rgba(6, 17, 12, 0.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.bar { max-width: 760px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; text-decoration: none; color: var(--text); }
+.brand img { width: 28px; height: 28px; }
+.lang { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
+.lang a { color: var(--text-2); font-weight: 700; font-size: 13px; padding: 5px 12px; border-radius: 999px; text-decoration: none; }
+.lang a.on { background: var(--gold); color: var(--gold-ink); }
+main { max-width: 760px; margin: 0 auto; padding: 36px 20px 80px; }
+h1 { font-size: clamp(30px, 6vw, 42px); line-height: 1.1; letter-spacing: -1px; margin: 0 0 8px; }
+h2 { font-size: 21px; margin: 40px 0 10px; scroll-margin-top: 80px; }
+h3 { font-size: 17px; margin: 22px 0 6px; color: var(--gold); }
+p, li { color: var(--text-2); }
+strong, b { color: var(--text); }
+ul, ol { padding-left: 22px; }
+li + li { margin-top: 6px; }
+.date { color: var(--text-2); font-size: 14px; margin: 0 0 24px; }
+.summary { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 18px 22px; margin: 24px 0; }
+.summary p { margin: 6px 0; }
+.summary h2 { margin-top: 0; font-size: 17px; color: var(--gold); }
+.toc { columns: 2; column-gap: 24px; font-size: 15px; padding-left: 20px; }
+.toc li { break-inside: avoid; }
+.table-wrap { overflow-x: auto; margin: 14px 0; border: 1px solid var(--line); border-radius: 16px; }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); color: var(--text-2); }
+th { color: var(--text); background: var(--surface); font-weight: 700; }
+tr:last-child td { border-bottom: 0; }
+.steps { counter-reset: s; list-style: none; padding: 0; }
+.steps li { counter-increment: s; position: relative; padding: 14px 16px 14px 56px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; margin-top: 10px; }
+.steps li::before { content: counter(s); position: absolute; left: 16px; top: 13px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: var(--gold-ink); font-weight: 800; font-size: 14px; }
+.btn { display: inline-block; padding: 13px 20px; border-radius: 999px; background: var(--gold); color: var(--gold-ink); font-weight: 800; text-decoration: none; }
+footer { border-top: 1px solid var(--line); margin-top: 56px; padding-top: 20px; font-size: 14px; color: var(--text-2); display: flex; flex-wrap: wrap; gap: 8px 18px; }
+footer a { color: var(--text-2); }
+[data-lang] { display: none; }
+html[lang="es"] [data-lang="es"], html[lang="en"] [data-lang="en"] { display: block; }
+@media (max-width: 560px) { .toc { columns: 1; } body { font-size: 16px; } }
+@media print { header, .lang, footer { display: none; } body { background: #fff; color: #000; } p, li, td, th { color: #000; } }
