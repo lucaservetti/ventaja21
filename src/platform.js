@@ -9,6 +9,8 @@ import {
   RewardAdPluginEvents,
 } from "@capacitor-community/admob";
 import { InAppReview } from "@capacitor-community/in-app-review";
+import { SECTIONS } from "./lessons/content.js";
+import { COUNT_LEVELS } from "./engine/countPath.js";
 import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import {
   exportBackup,
@@ -50,6 +52,7 @@ function cloudPremiumOf(st) {
   return NATIVE || LOCAL ? st.settings.cloudPremium : getSessionCloud();
 }
 function hasPremium(st = getState()) {
+  if (WEB_DEMO) return false;
   const c = cloudPremiumOf(st);
   return (
     ((NATIVE || LOCAL) && !!st.settings.premium) ||
@@ -61,6 +64,82 @@ function hasPremium(st = getState()) {
 function giftUntil(st = getState()) {
   const c = cloudPremiumOf(st);
   return typeof c === "number" && c > Date.now() ? c : 0;
+}
+
+// ---- La web como prueba ----
+// Mientras la app no está en Google Play, la web es una prueba para que la conozcan y se enganchen:
+// las secciones 1 y 2 de Aprender, los niveles 1 a 3 de Conteo, una tanda de Entrenar y 20 manos de
+// la mesa por día, y el desafío diario. Lo demás invita a la app (pantalla "enApp"). Cuando salga en
+// Play, se decide si se abre más: alcanza con cambiar WEB_DEMO_ON.
+const WEB_DEMO_ON = true;
+function webDemo() {
+  if (!WEB_DEMO_ON || APP_MODE) return false;
+  if (!LOCAL) return true;
+  // En localhost (pruebas y capturas) está apagada, salvo que se pida.
+  try {
+    return localStorage.getItem("v21.demo") === "1";
+  } catch {
+    return false;
+  }
+}
+const WEB_DEMO = webDemo();
+const DEMO_LESSONS = new Set([
+  ...SECTIONS.slice(0, 2).flatMap((s) => s.lessons.map((l) => l.id)),
+  // Las lecciones cortas que acompañan a los niveles de conteo abiertos.
+  ...COUNT_LEVELS.slice(0, 3).map((l) => l.lesson),
+]);
+const DEMO_LEVELS = 3;
+const DEMO_SECTIONS = 2;
+// Cuántas veces por día se puede cada cosa en la web.
+const DEMO_POR_DIA = {
+  entrenar: 1,
+  jugar: 20,
+  contrarreloj: 1,
+  zapato: 1,
+  velocidad: 1,
+};
+const DEMO_KEY = "edge21.demo";
+function demoUso() {
+  try {
+    const v = JSON.parse(localStorage.getItem(DEMO_KEY) || "{}");
+    return v.day === new Date().toDateString() ? v.n || {} : {};
+  } catch {
+    return {};
+  }
+}
+// Usa una vez `que` (si quedan) y dice si se pudo.
+function demoTake(que) {
+  if (!WEB_DEMO) return true;
+  const n = demoUso();
+  if ((n[que] || 0) >= DEMO_POR_DIA[que]) return false;
+  n[que] = (n[que] || 0) + 1;
+  try {
+    localStorage.setItem(
+      DEMO_KEY,
+      JSON.stringify({ day: new Date().toDateString(), n }),
+    );
+  } catch {
+    // Sin almacenamiento no se cuenta.
+  }
+  return true;
+}
+// ¿Esta pantalla queda para la app? Devuelve qué mostrar en "enApp" (o null si se puede).
+function needsApp(name, params = {}) {
+  if (!WEB_DEMO) return null;
+  if (name === "lesson" && !DEMO_LESSONS.has(params.id)) return "aprender";
+  if (name === "jumpTest" && params.section > DEMO_SECTIONS) return "aprender";
+  if (name === "shoeChallenge" && params.mode === "exam") return "aprender";
+  if (name === "countLevel" && params.level > DEMO_LEVELS) return "conteo";
+  if (
+    name === "trainSession" &&
+    !["level", "count", "cards"].includes(params.mode)
+  )
+    return demoTake("entrenar") ? null : "entrenar";
+  if (name === "blitz") return demoTake("contrarreloj") ? null : "entrenar";
+  if (name === "shoeChallenge") return demoTake("zapato") ? null : "conteo";
+  if (name === "speedDrill" || name === "deckCountdown")
+    return demoTake("velocidad") ? null : "conteo";
+  return null;
 }
 
 // Sistemas de conteo de Premium. Hi-Lo, KO y Hi-Opt I son gratis.
@@ -540,6 +619,11 @@ export {
   APP_MODE,
   NATIVE,
   PREMIUM_SYSTEMS,
+  WEB_DEMO,
+  DEMO_LEVELS,
+  DEMO_SECTIONS,
+  demoTake,
+  needsApp,
   buyPremium,
   giftUntil,
   hasPremium,

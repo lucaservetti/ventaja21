@@ -27,6 +27,8 @@ import {
 import { floorTC, fmtSigned } from "../engine/systems.js";
 import { money } from "../engine/table.js";
 import { useStore } from "../state.js";
+import { useNav } from "../nav.js";
+import { demoTake } from "../platform.js";
 import { Tray } from "./drills.jsx";
 
 const RESULT_LABELS = {
@@ -78,6 +80,16 @@ function TableView({
   refillLabel = "Recargar fichas",
 }) {
   useTable(table);
+  const nav = useNav();
+  // Repartir (en la web de prueba hay un límite de manos por día; ver platform.js).
+  const dealOk = (pre) => {
+    if (!demoTake("jugar")) {
+      nav.push("enApp", { feature: "jugar" });
+      return;
+    }
+    if (pre && !pre()) return;
+    table.deal();
+  };
   const [check, setCheck] = useState(null); // { value, result, final }
   const [whyOpen, setWhyOpen] = useState(false);
   const [chatter, setChatter] = useState(null);
@@ -520,7 +532,7 @@ function TableView({
                   small={true}
                   onClick={() => {
                     vibrate(10);
-                    table.deal();
+                    dealOk();
                   }}
                   disabled={!table.bet}
                   className="grow deal-btn"
@@ -541,7 +553,7 @@ function TableView({
             </Button>
             <Button
               small={true}
-              onClick={() => table.rebet(1) && table.deal()}
+              onClick={() => dealOk(() => table.rebet(1))}
               disabled={table.lastBet > table.bankroll}
             >
               Repetir {table.fmt(table.lastBet)}
@@ -549,7 +561,7 @@ function TableView({
             <Button
               kind="secondary"
               small={true}
-              onClick={() => table.rebet(2) && table.deal()}
+              onClick={() => dealOk(() => table.rebet(2))}
               disabled={table.lastBet * 2 > table.bankroll}
             >
               ×2

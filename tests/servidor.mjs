@@ -4,7 +4,7 @@ import worker, { limpiar, premios, serviceToken, verifyIdToken } from "../servid
 import { DAY, dayKeyUTC, diasRecientes, mondayUTC } from "../src/premios.js";
 
 const P = "demo-edge21";
-const env = { PROJECT_ID: P, EMULATOR: "127.0.0.1" };
+const env = { PROJECT_ID: P, EMULATOR: "127.0.0.1", BIENVENIDA: "1" };
 const FS = `http://127.0.0.1:8080/v1/projects/${P}/databases/(default)/documents`;
 const AUTH = "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1";
 const always = () => true;
@@ -83,7 +83,9 @@ await paso("cuenta nueva: todo en progreso y CORS para la web", async () => {
   check(r.status === 200, `respondió ${r.status}`);
   check(r.headers.get("Access-Control-Allow-Origin") === "https://edge21.app", "falta CORS");
   const d = await r.json();
-  check(d.nuevos.length === 0 && d.premios.every((p) => p.estado === "progreso"), JSON.stringify(d));
+  // Lo único que da una cuenta nueva es la bienvenida: 3 días.
+  check(d.nuevos.length === 1 && d.nuevos[0] === "bienvenida" && d.dias === 3, JSON.stringify(d));
+  check(d.premios.filter((p) => p.id !== "bienvenida").every((p) => p.estado === "progreso"), JSON.stringify(d.premios));
 });
 
 await paso("trampa: puntajes de días pasados escritos hoy no cuentan para la racha", async () => {
@@ -91,7 +93,16 @@ await paso("trampa: puntajes de días pasados escritos hoy no cuentan para la ra
   await racha(u.uid, 10);
   const d = await (await call(u.token)).json();
   check(estado(d, "racha7") === "progreso", `racha7 quedó ${estado(d, "racha7")}`);
-  check(!(await hastaDe(u.uid)), "dio Premium igual");
+  // Solo los 3 días de bienvenida, nada por la racha.
+  check(d.dias === 3 && d.nuevos.join() === "bienvenida", `dio ${d.dias} días: ${JSON.stringify(d.nuevos)}`);
+});
+
+await paso("antes de salir en Play, la bienvenida queda en espera", async () => {
+  const u = await user();
+  const d = await premios(u.uid, { ...env, BIENVENIDA: "0" }, Date.now(), { onTime: always });
+  check(d.dias === 0 && estado(d, "bienvenida") === "pronto", JSON.stringify(d));
+  const d2 = await premios(u.uid, env, Date.now(), { onTime: always });
+  check(d2.dias === 3 && estado(d2, "bienvenida") === "nuevo", `al activarla no la dio: ${JSON.stringify(d2)}`);
 });
 
 await paso("racha de 7 días: 2 días de Premium, una sola vez", async () => {
@@ -99,9 +110,10 @@ await paso("racha de 7 días: 2 días de Premium, una sola vez", async () => {
   await racha(u.uid, 7);
   const now = Date.now();
   const d = await premios(u.uid, env, now, { onTime: always });
-  check(estado(d, "racha7") === "nuevo" && d.dias === 2, JSON.stringify(d));
+  // 2 de la racha + 3 de bienvenida.
+  check(estado(d, "racha7") === "nuevo" && d.dias === 5, JSON.stringify(d));
   const h = await hastaDe(u.uid);
-  check(Math.abs(h - (now + 2 * DAY)) < 5000, "la fecha de Premium no es dentro de 2 días");
+  check(Math.abs(h - (now + 5 * DAY)) < 5000, "la fecha de Premium no es dentro de 5 días");
   const d2 = await premios(u.uid, env, Date.now(), { onTime: always });
   check(estado(d2, "racha7") === "ganado" && d2.dias === 0, "lo dio dos veces");
   check((await hastaDe(u.uid)) === h, "cambió la fecha la segunda vez");
@@ -123,8 +135,8 @@ await paso("racha de 30, graduación y podio suman, con tope de 14 días por mes
   for (let i = 0; i < 11; i++) await put(`weekly/${monday2}/scores/otro${i}`, { name: `o${i}`, score: 100 + i, t: 1 });
   await put(`weekly/${monday2}/scores/${u.uid}`, { name: "yo", score: 700, t: 1 });
   const d = await premios(u.uid, env, Date.now(), { onTime: always });
-  // 2 + 7 + 3 + 2 = 14 (el tope); el segundo podio espera.
-  check(d.dias === 14, `dio ${d.dias} días: ${JSON.stringify(d.nuevos)}`);
+  // 2 + 7 + 3 + 2 = 14 (el tope), más los 3 de bienvenida, que no cuentan; el segundo podio espera.
+  check(d.dias === 17, `dio ${d.dias} días: ${JSON.stringify(d.nuevos)}`);
   check(estado(d, "racha30") === "nuevo" && estado(d, "graduacion") === "nuevo", JSON.stringify(d.premios));
   check(estado(d, "podio") === "nuevo", "el podio no se dio");
   const d2 = await premios(u.uid, env, Date.now(), { onTime: always });
@@ -172,8 +184,8 @@ await paso("dos pedidos al mismo tiempo: los días se dan una sola vez", async (
     premios(u.uid, env, now, { onTime: always }),
   ]);
   const total = rs.filter((r) => r.status === "fulfilled").reduce((s, r) => s + r.value.dias, 0);
-  check(total === 2, `dio ${total} días`);
-  check(Math.abs((await hastaDe(u.uid)) - (now + 2 * DAY)) < 5000, "Premium quedó con otra fecha");
+  check(total === 5, `dio ${total} días`);
+  check(Math.abs((await hastaDe(u.uid)) - (now + 5 * DAY)) < 5000, "Premium quedó con otra fecha");
 });
 
 await paso("borrar la cuenta borra los premios y el Premium de regalo", async () => {

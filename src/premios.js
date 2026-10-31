@@ -3,6 +3,8 @@
 
 // Cada premio se gana una sola vez, menos el podio, que es uno por semana.
 const PREMIOS = [
+  // Por entrar con la cuenta de Google: una vez por cuenta, y no cuenta para el tope.
+  { id: "bienvenida", dias: 3, meta: 1 },
   { id: "racha7", dias: 2, meta: 7 },
   { id: "racha30", dias: 7, meta: 30 },
   { id: "podio", dias: 2, meta: 3 },
@@ -53,8 +55,8 @@ function mondayUTC(t) {
 // Días de regalo dados en los últimos 30 días.
 function diasRecientes(ganados, now) {
   let n = 0;
-  for (const g of Object.values(ganados || {}))
-    if (now - g.t < TOPE_VENTANA * DAY) n += g.dias;
+  for (const [id, g] of Object.entries(ganados || {}))
+    if (id !== "bienvenida" && now - g.t < TOPE_VENTANA * DAY) n += g.dias;
   return n;
 }
 

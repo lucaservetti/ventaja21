@@ -12,6 +12,11 @@ import { LOCALE } from "../i18n/index.js";
 import { giftUntil } from "../platform.js";
 
 const INFO = {
+  bienvenida: {
+    icon: "user",
+    title: "Bienvenida",
+    sub: "Por entrar con tu cuenta de Google.",
+  },
   racha7: {
     icon: "bolt",
     title: "Racha de 7 días",
@@ -108,7 +113,7 @@ function Premios() {
                   <span className="pz-days">+{diasText(p.dias)}</span>
                 </div>
                 <p className="muted small">{info.sub}</p>
-                {s && s.meta && !done ? (
+                {s && s.meta && !done && estado !== "pronto" ? (
                   <div className="pz-progress">
                     <span className="pz-bar">
                       <i style={{ width: `${(s.progreso / s.meta) * 100}%` }} />
@@ -119,17 +124,19 @@ function Premios() {
                   </div>
                 ) : null}
                 <p className="small pz-state">
-                  {estado === "nuevo"
-                    ? `¡Ganaste ${diasText(p.dias)} de Premium!`
-                    : estado === "ganado"
-                      ? "Ya lo ganaste."
-                      : estado === "tope"
-                        ? `Lo cumpliste. Llegaste al tope de ${TOPE_DIAS} días de regalo por mes: se suma cuando se libere lugar.`
-                        : p.id === "podio" && s && s.veces
-                          ? s.veces === 1
-                            ? "Lo ganaste 1 vez."
-                            : `Lo ganaste ${s.veces} veces.`
-                          : null}
+                  {estado === "pronto"
+                    ? "Ya lo tenés guardado: se activa cuando la app salga en Google Play."
+                    : estado === "nuevo"
+                      ? `¡Ganaste ${diasText(p.dias)} de Premium!`
+                      : estado === "ganado"
+                        ? "Ya lo ganaste."
+                        : estado === "tope"
+                          ? `Lo cumpliste. Llegaste al tope de ${TOPE_DIAS} días de regalo por mes: se suma cuando se libere lugar.`
+                          : p.id === "podio" && s && s.veces
+                            ? s.veces === 1
+                              ? "Lo ganaste 1 vez."
+                              : `Lo ganaste ${s.veces} veces.`
+                            : null}
                 </p>
               </div>
             </div>

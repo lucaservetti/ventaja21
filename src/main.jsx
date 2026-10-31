@@ -63,6 +63,7 @@ import { Challenge } from "./screens/Challenge.jsx";
 import { Looks } from "./screens/Looks.jsx";
 import { Premios } from "./screens/Premios.jsx";
 import { Mistakes } from "./screens/Mistakes.jsx";
+import { EnApp } from "./screens/EnApp.jsx";
 import { pendingChallenge, takeChallengeFromUrl } from "./challenge.js";
 import {
   NATIVE,
@@ -71,8 +72,10 @@ import {
   initPlatform,
   maybeAskReview,
   maybeShowAd,
+  needsApp,
   needsPremium,
   onAndroidBack,
+  WEB_DEMO,
 } from "./platform.js";
 import {
   GoalSheet,
@@ -128,6 +131,7 @@ const SCREENS = {
   looks: Looks,
   premios: Premios,
   mistakes: Mistakes,
+  enApp: EnApp,
   account: Account,
   challenge: Challenge,
   ranking: Ranking,
@@ -221,8 +225,18 @@ function App() {
         }
       },
       push(k, v = {}) {
-        // Sin Premium (ni prueba activa), lo de Premium abre la pantalla de Premium.
-        if (needsPremium(k, v)) {
+        // En la web de prueba, lo que es de la app abre "Seguí en la app" (Premium incluido).
+        const app =
+          needsApp(k, v) ||
+          (WEB_DEMO && (k === "premium" || needsPremium(k, v))
+            ? "premium"
+            : null);
+        if (app) {
+          v = { feature: app };
+          k = "enApp";
+        }
+        // Sin Premium, lo de Premium abre la pantalla de Premium.
+        else if (needsPremium(k, v)) {
           v = { feature: k, then: v };
           k = "premium";
         }
@@ -230,7 +244,15 @@ function App() {
         i((b) => [...b, { name: k, params: v, key: screenSeq++, hist: m }]);
       },
       replace(k, v = {}) {
-        if (needsPremium(k, v)) {
+        const app =
+          needsApp(k, v) ||
+          (WEB_DEMO && (k === "premium" || needsPremium(k, v))
+            ? "premium"
+            : null);
+        if (app) {
+          v = { feature: app };
+          k = "enApp";
+        } else if (needsPremium(k, v)) {
           v = { feature: k, then: v };
           k = "premium";
         }
@@ -436,7 +458,9 @@ function App() {
             >
               {_jsx(v, { active: shown })}
               {k.id !== "jugar" ? (
-                <p className="credit">Edge 21 ♠ · para aprender, sin plata real</p>
+                <p className="credit">
+                  Edge 21 ♠ · para aprender, sin plata real
+                </p>
               ) : null}
             </section>
           );
