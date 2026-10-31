@@ -8,7 +8,7 @@ Las cuentas las tenés que crear vos desde el celular, porque piden tu mail o tu
 
 | | |
 | --- | --- |
-| **Usuario** | `@edge21app`. Si está tomado: `@edge21.app`, `@edge21blackjack` o `@jugaedge21`. Usá el mismo en las dos redes |
+| **Usuario** | `@edge21.app`, el mismo en las dos redes: https://www.tiktok.com/@edge21.app y https://www.instagram.com/edge21.app/ |
 | **Nombre** | Edge 21 · Blackjack y conteo |
 | **Foto de perfil** | `store/redes/perfil.png` (la ficha dorada sobre el paño; queda bien recortada en círculo) |
 | **Enlace** | `https://edge21.app/` (cuando salga en Play, cambialo por el enlace de la tienda) |
