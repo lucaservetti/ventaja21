@@ -146,10 +146,9 @@ function socialLogin() {
       google: { webClientId: CFG.webClientId, mode: "online" },
     });
   return socialReady.then(() =>
-    SocialLogin.login({
-      provider: "google",
-      options: { scopes: ["email", "profile"] },
-    }),
+    // Sin "scopes": Google ya da el mail y el nombre (openid, profile y email) por defecto. Pedirlos
+    // a mano obliga a cambiar MainActivity y si no, el complemento falla.
+    SocialLogin.login({ provider: "google", options: {} }),
   );
 }
 // En la web: el botón oficial de Google (Google Identity Services) dibujado en `el`.
