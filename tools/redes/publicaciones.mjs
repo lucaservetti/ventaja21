@@ -227,7 +227,7 @@ const PORTADAS = {
 const browser = await chromium.launch();
 async function render(W, H, tiktok, body, file, n = "") {
   pagina = `<!doctype html><meta charset="utf-8"><style>${CSS(W, H, tiktok)}</style>
-    <div class="top">${ficha}<span>@edge21app</span><span class="n">${n}</span></div>${body}`;
+    <div class="top">${ficha}<span>@edge21.app</span><span class="n">${n}</span></div>${body}`;
   const p = await browser.newPage({ viewport: { width: W, height: H } });
   await p.goto(`${base}/slide.html`);
   await p.evaluate(() => document.fonts.ready);

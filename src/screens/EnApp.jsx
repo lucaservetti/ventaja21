@@ -6,8 +6,8 @@ import { TopBar } from "../ui/common.jsx";
 import { useNav } from "../nav.js";
 import { ACCOUNTS, useAccount } from "../cloud.js";
 
-const INSTAGRAM = "https://www.instagram.com/edge21app/";
-const TIKTOK = "https://www.tiktok.com/@edge21app";
+const INSTAGRAM = "https://www.instagram.com/edge21.app/";
+const TIKTOK = "https://www.tiktok.com/@edge21.app";
 const TESTER =
   "mailto:soporte@edge21.app?subject=Quiero%20probar%20Edge%2021%20en%20Android&body=Mi%20mail%20de%20Google%20Play%20es%3A%20";
 

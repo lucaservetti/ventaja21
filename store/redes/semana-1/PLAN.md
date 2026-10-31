@@ -20,7 +20,7 @@ Primero en **Instagram**, y el mismo día, un par de horas después, en **TikTok
 
 ## Perfiles
 
-**Usuario:** `@edge21app`, el mismo en las dos redes. Las imágenes dicen @edge21app. Si tenés que usar otro, avisame y las rehago.
+**Usuario:** `@edge21.app`, el mismo en las dos redes. Las imágenes dicen @edge21.app. Si tenés que usar otro, avisame y las rehago.
 
 **Nombre:** `Edge 21 · Blackjack y conteo`
 
