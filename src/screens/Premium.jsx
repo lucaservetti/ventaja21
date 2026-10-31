@@ -26,7 +26,12 @@ const FEATURES = {
   bankroll: "El simulador de banca",
   journal: "El diario de casino real",
   devLevel: "La ruta de desviaciones completa",
+  looks: "Elegir paños y mazos",
+  mistakes: "El análisis de tus errores",
+  systems: "Usar sistemas de conteo avanzados",
 };
+// Funciones que no son una pantalla sino una hoja (se abren desde el menú).
+const SHEET_FEATURES = { systems: "system" };
 // Cada función (menos "sin anuncios") se puede probar 30 minutos una vez, mirando un anuncio.
 const PERKS = [
   {
@@ -51,6 +56,24 @@ const PERKS = [
     feature: "bankroll",
     title: "Simulador de banca",
     sub: "Cuánta plata necesitás y tu riesgo de quebrar, en tu moneda.",
+  },
+  {
+    icon: "eye",
+    feature: "mistakes",
+    title: "Análisis de tus errores",
+    sub: "Tu tabla pintada según dónde fallás, las jugadas que más te cuestan y cómo vas mejorando.",
+  },
+  {
+    icon: "sparkle",
+    feature: "looks",
+    title: "Paños y mazos",
+    sub: "El color de la mesa, el dorso de las cartas y el mazo de 4 colores.",
+  },
+  {
+    icon: "layers",
+    feature: "systems",
+    title: "Sistemas de conteo avanzados",
+    sub: "Hi-Opt II, Zen, Omega II y Wong Halves. Hi-Lo, KO y Hi-Opt I siguen gratis.",
   },
   {
     icon: "book",
@@ -152,7 +175,13 @@ function Premium({ feature, then }) {
     setPassBusy(f);
     const ok = await earnFeatureTrial(f);
     setPassBusy(false);
-    if (ok && f) nav.replace(f, params || {});
+    if (ok && f) openFeature(f, params);
+  }
+  function openFeature(f, params) {
+    if (SHEET_FEATURES[f]) {
+      nav.pop();
+      nav.openSheet(SHEET_FEATURES[f]);
+    } else nav.replace(f, params || {});
   }
 
   return (
@@ -193,7 +222,7 @@ function Premium({ feature, then }) {
                 <button
                   type="button"
                   className="prem-try on"
-                  onClick={() => nav.replace(p.feature, {})}
+                  onClick={() => openFeature(p.feature, {})}
                 >
                   Abrir
                 </button>

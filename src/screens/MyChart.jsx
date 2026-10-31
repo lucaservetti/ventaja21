@@ -346,4 +346,4 @@ function CellDetail({ tab, row, col, rules, st, nav }) {
   );
 }
 
-export { MyChart };
+export { MyChart, TABS, cellStats, handName, mastery };

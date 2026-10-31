@@ -8,7 +8,13 @@ import {
 } from "react";
 import { createRoot } from "react-dom/client";
 import { jsx as _jsx } from "react/jsx-runtime";
-import { getState, resetAll, setState, useStore } from "./state.js";
+import {
+  getState,
+  resetAll,
+  setSettings,
+  setState,
+  useStore,
+} from "./state.js";
 import { Icon } from "./ui/icons.jsx";
 import { vibrate } from "./sound.js";
 import { Toasts, cx } from "./ui/components.jsx";
@@ -54,9 +60,13 @@ import { Account } from "./screens/Account.jsx";
 import { Ranking } from "./screens/Ranking.jsx";
 import { initCloud, reportError } from "./cloud.js";
 import { Challenge } from "./screens/Challenge.jsx";
+import { Looks } from "./screens/Looks.jsx";
+import { Mistakes } from "./screens/Mistakes.jsx";
 import { pendingChallenge, takeChallengeFromUrl } from "./challenge.js";
 import {
   NATIVE,
+  PREMIUM_SYSTEMS,
+  canUse,
   hasPremium,
   initPlatform,
   maybeAskReview,
@@ -115,6 +125,8 @@ const SCREENS = {
   speedDrill: SpeedDrill,
   blitz: Blitz,
   premium: Premium,
+  looks: Looks,
+  mistakes: Mistakes,
   account: Account,
   challenge: Challenge,
   ranking: Ranking,
@@ -307,6 +319,28 @@ function App() {
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.content = theme === "light" ? "#f4efe4" : "#06110c";
   }, [theme, bigText]);
+  // Paños y mazos (Premium): se ven con Premium o durante la prueba; si no, la mesa de siempre.
+  const looksOn = canUse("looks", a);
+  const look = looksOn
+    ? {
+        felt: a.settings.felt || "",
+        back: a.settings.cardBack || "",
+        deck: a.settings.fourColor ? "4" : "",
+      }
+    : { felt: "", back: "", deck: "" };
+  useEffect(() => {
+    const root = document.documentElement;
+    for (const [k, v] of Object.entries(look)) {
+      if (v) root.dataset[k] = v;
+      else delete root.dataset[k];
+    }
+  }, [look.felt, look.back, look.deck]);
+  // Un sistema de conteo de Premium sin Premium (se terminó la prueba): vuelve a Hi-Lo.
+  const sysLocked =
+    PREMIUM_SYSTEMS.includes(a.settings.system) && !canUse("systems", a);
+  useEffect(() => {
+    if (sysLocked) setSettings({ system: "hilo" });
+  }, [sysLocked]);
   // Al volver a una pestaña después de terminar algo, a veces un anuncio (solo en Android, sin Premium).
   const depth = useRef(0);
   const [premToast, setPremToast] = useState(null);
@@ -330,7 +364,9 @@ function App() {
   // Prueba de 30 minutos de una función Premium: avisa cuánto queda al entrar y cuando se termina.
   // No te saca de la pantalla: lo que estabas haciendo lo terminás igual.
   const trialUntil =
-    top && !hasPremium(a) && trialFor(top, a).active ? trialFor(top, a).until : 0;
+    top && !hasPremium(a) && trialFor(top, a).active
+      ? trialFor(top, a).until
+      : 0;
   useEffect(() => {
     if (!trialUntil) return undefined;
     const left = Math.max(1, Math.round((trialUntil - Date.now()) / 60000));

@@ -358,6 +358,48 @@ const PRUEBAS = {
     await h.see("Tu plata", "Your money");
   },
 
+  // Funciones nuevas de Premium: análisis de errores, paños y mazos, sistemas avanzados bloqueados sin Premium.
+  async premiumNuevo(h) {
+    const { page } = h;
+    // Sin Premium: un sistema avanzado abre la pantalla de Premium.
+    await h.tab("Progreso", "Progress");
+    await h.css('section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    await h.click("Sistema de conteo", "Counting system", { wait: 600 });
+    await h.click("Zen Count", "Zen Count", { wait: 700 });
+    await h.see("Usar sistemas de conteo avanzados es parte de Premium", "Using advanced counting systems is part of Premium");
+    // Con Premium (cuenta): todo abierto.
+    await page.evaluate(() => {
+      const k = "ventaja21.state.v1";
+      const s = JSON.parse(localStorage.getItem(k));
+      s.settings = { ...(s.settings || {}), cloudPremium: true };
+      s.train = {
+        ...(s.train || {}),
+        totalHands: 40,
+        totalOk: 31,
+        cells: { "H16|T": { n: 6, ok: 2, recent: [0, 1, 0, 0, 1, 0] }, "H12|4": { n: 5, ok: 5, recent: [1, 1, 1, 1, 1] } },
+        sessions: [{ t: Date.now() - 9 * 864e5, ok: 6, n: 10 }, { t: Date.now(), ok: 9, n: 10 }],
+        mistakes: [{ key: "H16|T", cards: ["10", "6"], up: "T", chosen: "S", best: "R", t: Date.now(), misses: 3, streak: 0 }],
+      };
+      localStorage.setItem(k, JSON.stringify(s));
+      Storage.prototype.setItem = () => {};
+    });
+    await page.reload();
+    await page.waitForTimeout(1200);
+    await h.tab("Progreso", "Progress");
+    await h.click("Análisis de tus errores", "Mistake analysis", { wait: 700 });
+    await h.see("Tus errores más caros", "Your most expensive mistakes");
+    await h.see("10, 6", "10, 6");
+    await h.foto("analisis");
+    await page.locator(".layer.full button").filter({ visible: true }).first().click();
+    await page.waitForTimeout(500);
+    await h.css('section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    await h.click("Paños y mazos", "Tables and decks", { wait: 700 });
+    await h.css('.look-sw[aria-label="Azul"], .look-sw[aria-label="Blue"]', 300);
+    await h.foto("panos");
+    const felt = await page.evaluate(() => document.documentElement.dataset.felt);
+    check(felt === "azul", `el paño no cambió (${felt})`);
+  },
+
   // Premium en modo app (simulado): planes, condiciones y la prueba de 30 minutos una sola vez.
   async premium(h) {
     const { page } = h;

@@ -18,7 +18,7 @@ COUNT CARDS FOR REAL
 • A 10-level counting path: from card values to counting a whole shoe.
 • Guided practice before every level, for when you're just starting.
 • A daily challenge with a different format every day, plus a counting speed drill: can you keep up with casino speed?
-• Hi-Lo, KO, Zen, Omega II, Wong Halves and more.
+• Hi-Lo, KO and Hi-Opt I free; Zen, Omega II, Wong Halves and more with Premium.
 
 TRAIN WHERE YOU MISS
 • Rounds of hands aimed at your weak spots.
@@ -35,6 +35,10 @@ PREMIUM (MONTHLY, YEARLY WITH A 5-DAY FREE TRIAL, OR ONE-TIME)
 • The full deviations path: the Illustrious 18 and the Fab 4, up to working out the true count yourself.
 • Bankroll simulator: how much money you need and your risk of ruin.
 • A real casino journal to log what you actually play.
+• Mistake analysis: your chart colored by where you miss and how you're improving.
+• Tables and decks: felt color, card backs and a 4-color deck.
+• Advanced counting systems.
+• Try each feature free for 30 minutes before you decide.
 
 YOUR PROGRESS, YOURS
 • Daily goal, streak, achievements and a player profile with your strengths and weak spots.

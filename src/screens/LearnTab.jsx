@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { setSettings, useStore } from "../state.js";
-import { Icon, SuitIcon } from "../ui/icons.jsx";
+import { Icon } from "../ui/icons.jsx";
 import { IconButton, Toasts, cx } from "../ui/components.jsx";
 import { PageHeader } from "../ui/common.jsx";
 import {
@@ -250,8 +250,26 @@ function LearnTab() {
     </div>
   );
 }
-// Cada sección es un cartel de mesa y sus lecciones son cartas repartidas sobre el borde de la mesa:
-// boca abajo las bloqueadas, boca arriba las abiertas y con el palo de la sección las terminadas.
+// Cada sección es un cartel de mesa y sus lecciones, fichas de casino sobre un camino que serpentea:
+// doradas las terminadas, grande y brillando la que sigue, apagadas las bloqueadas. Las secciones
+// terminadas se achican a una fila (se pueden volver a abrir).
+const ROW = 88; // alto de cada parada del camino
+const TRAIL_W = 132; // ancho de la franja del camino (el texto va a la derecha)
+function trailX(i, sec) {
+  return 64 + 30 * Math.sin(i * 1.2 + sec * 0.9);
+}
+function trailPath(xs, from = 0, to = xs.length - 1) {
+  let d = "";
+  for (let i = from; i <= to; i++) {
+    const y = i * ROW + ROW / 2;
+    if (i === from) d += `M${xs[i].toFixed(1)} ${y}`;
+    else {
+      const py = y - ROW;
+      d += ` C${xs[i - 1].toFixed(1)} ${py + ROW / 2} ${xs[i].toFixed(1)} ${y - ROW / 2} ${xs[i].toFixed(1)} ${y}`;
+    }
+  }
+  return d;
+}
 function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
   const o = a.lessons,
     c = o.filter((k) => t(k.id)).length,
@@ -262,6 +280,37 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
     nav = useNav(),
     locked = !u && a.id > 1 && d(o[0].id) > p,
     full = c === o.length;
+  const [open, setOpen] = useState(false);
+  if (full && !open)
+    return (
+      <div className="section-block">
+        <button
+          type="button"
+          className="sec-done"
+          onClick={() => setOpen(true)}
+          aria-expanded={false}
+        >
+          <span className="node node-done node-s" aria-hidden="true">
+            <span className="node-face">
+              <Icon name="check" size={18} stroke={3} />
+            </span>
+          </span>
+          <span className="grow">
+            <span className="eyebrow acc">Sección {a.id} · completa</span>
+            <b className="sec-done-title">{a.title}</b>
+          </span>
+          <span className="muted small num">
+            {c}/{o.length}
+          </span>
+          <Icon name="chev" className="sec-done-chev" />
+        </button>
+      </div>
+    );
+  // Puntos del camino: una ficha por lección y, al final, el trofeo de la sección.
+  const xs = [...o.map((_, v) => trailX(v, a.id)), trailX(o.length, a.id)];
+  let lead = 0;
+  while (lead < o.length && t(o[lead].id)) lead++;
+  const goldTo = full ? o.length : lead;
   return (
     <div className="section-block">
       <div className={cx("placard", r && "current", full && "full")}>
@@ -292,83 +341,101 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
               Saltar hasta acá
             </button>
           ) : null}
+          {full ? (
+            <button
+              type="button"
+              className="link small sec-fold"
+              onClick={() => setOpen(false)}
+            >
+              Achicar
+            </button>
+          ) : null}
         </div>
       </div>
-      <ol className="rail">
-        {o.map((k, v) => {
-          const b = t(k.id),
-            S = k.id === s,
-            D = d(k.id),
-            _ = u || b || D <= p,
-            M = e.lessons[k.id] && e.lessons[k.id].viaTest,
-            R = S ? "cur" : b ? "done" : _ ? "open" : "locked";
-          return (
-            <li
-              className={cx(
-                "rail-row",
-                `rr-${R}`,
-                (a.icon === "h" || a.icon === "d") && "rr-red",
-              )}
-              style={{ "--i": v }}
-              key={k.id}
-            >
-              <button
-                type="button"
-                className="rail-btn"
-                onClick={() => n(k, _)}
-                aria-label={`Lección ${D + 1}: ${k.title}${b ? ", completa" : _ ? "" : ", bloqueada"}`}
+      <div className="trail" style={{ height: xs.length * ROW }}>
+        <svg
+          className="trail-line"
+          width={TRAIL_W}
+          height={xs.length * ROW}
+          aria-hidden="true"
+        >
+          <path className="trail-rest" d={trailPath(xs)} />
+          {goldTo > 0 ? (
+            <path className="trail-gold" d={trailPath(xs, 0, goldTo)} />
+          ) : null}
+        </svg>
+        <ol className="rail">
+          {o.map((k, v) => {
+            const b = t(k.id),
+              S = k.id === s,
+              D = d(k.id),
+              _ = u || b || D <= p,
+              M = e.lessons[k.id] && e.lessons[k.id].viaTest,
+              R = S ? "cur" : b ? "done" : _ ? "open" : "locked";
+            return (
+              <li
+                className={cx("rail-row", `rr-${R}`)}
+                style={{ "--i": v, "--x": `${xs[v]}px` }}
+                key={k.id}
               >
-                <span className="lcard" aria-hidden="true">
-                  <span className="lcard-face">
-                    {S ? (
-                      <Icon name="play" size={22} stroke={2.4} />
-                    ) : b ? (
-                      a.icon.length === 1 ? (
-                        <SuitIcon s={a.icon} size={22} />
+                <button
+                  type="button"
+                  className="rail-btn"
+                  onClick={() => n(k, _)}
+                  aria-label={`Lección ${D + 1}: ${k.title}${b ? ", completa" : _ ? "" : ", bloqueada"}`}
+                >
+                  <span className={cx("node", `node-${R}`)} aria-hidden="true">
+                    <span className="node-face">
+                      {S ? (
+                        <Icon name="play" size={24} stroke={2.4} />
+                      ) : b ? (
+                        <Icon name="check" size={20} stroke={3} />
+                      ) : k.exam ? (
+                        <Icon name="trophy" size={20} />
                       ) : (
-                        <Icon name={a.icon} size={20} />
-                      )
-                    ) : k.exam ? (
-                      <Icon name="trophy" size={20} />
-                    ) : (
-                      <span className="num">{D + 1}</span>
-                    )}
-                    {b ? (
-                      <span className="lcard-check">
-                        <Icon name="check" size={11} stroke={3.2} />
+                        <span className="num">{D + 1}</span>
+                      )}
+                    </span>
+                  </span>
+                  <span className="rail-text">
+                    <b>{k.title}</b>
+                    <span className="muted small">
+                      {R === "locked" ? (
+                        <Icon name="lock" size={12} className="rail-lock" />
+                      ) : null}
+                      {M ? "Superada en el test" : `${lessonMinutes(k)} min`}
+                      {b && e.lessons[k.id].best !== undefined && !M
+                        ? ` · ${Math.round(e.lessons[k.id].best * 100)} %`
+                        : ""}
+                    </span>
+                    {S ? (
+                      <span className="rail-go">
+                        {e.lessons[k.id] ? "Repetir" : "Empezar"}
                       </span>
                     ) : null}
                   </span>
-                  <span className="lcard-back" />
-                </span>
-                <span className="rail-text">
-                  <b>{k.title}</b>
-                  <span className="muted small">
-                    {M ? "Superada en el test" : `${lessonMinutes(k)} min`}
-                    {b && e.lessons[k.id].best !== undefined && !M
-                      ? ` · ${Math.round(e.lessons[k.id].best * 100)} %`
-                      : ""}
-                  </span>
-                </span>
-                {S ? (
-                  <span className="rail-go">
-                    {e.lessons[k.id] ? "Repetir" : "Empezar"}
-                  </span>
-                ) : R === "locked" ? (
-                  <Icon name="lock" size={16} className="dim" />
-                ) : null}
-              </button>
-            </li>
-          );
-        })}
-      </ol>
-      <div className={cx("rail-end", full && "full")}>
-        <span className="rail-end-icon">
-          <Icon name="trophy" size={20} />
-        </span>
-        <span className={cx("num end-label", full ? "acc" : "muted")}>
-          {full ? `Sección ${a.id} completa` : `${c} de ${o.length} lecciones`}
-        </span>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+        <div
+          className={cx("rail-end", full && "full")}
+          style={{ "--x": `${xs[o.length]}px`, "--i": o.length }}
+        >
+          <span
+            className={cx("node node-s", full ? "node-done" : "node-locked")}
+          >
+            <span className="node-face">
+              <Icon name="trophy" size={18} />
+            </span>
+          </span>
+          <span className={cx("num end-label", full ? "acc" : "muted")}>
+            {full
+              ? `Sección ${a.id} completa`
+              : `${c} de ${o.length} lecciones`}
+          </span>
+        </div>
       </div>
     </div>
   );
