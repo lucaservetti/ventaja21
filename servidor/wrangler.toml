@@ -14,5 +14,7 @@ crons = ["23 7 * * *"]
 
 [vars]
 PROJECT_ID = "edge21-fb71e"
+# Premio de bienvenida (3 días por entrar con Google): "1" cuando la app esté en Google Play.
+BIENVENIDA = "0"
 
 # Secreto (no va acá): FIREBASE_SA = la clave JSON de la cuenta de servicio de Firebase.

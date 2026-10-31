@@ -12,7 +12,7 @@ import {
 import { useNav } from "../nav.js";
 import { GoalBadge } from "./goal.jsx";
 import { reviewCount } from "../lessons/Review.jsx";
-import { APP_MODE, NATIVE, hasPremium, shop } from "../platform.js";
+import { APP_MODE, NATIVE, WEB_DEMO, hasPremium, shop } from "../platform.js";
 
 // Para que se sepa que existe Premium, sin insistir: aparece desde el segundo día y con 3 lecciones
 // hechas, y si la cerrás no vuelve por 2 semanas.
@@ -229,6 +229,20 @@ function LearnTab() {
         }
       />
       <NextStepsCard st={a} done={t} />
+      {WEB_DEMO ? (
+        <button
+          type="button"
+          className="demo-note"
+          onClick={() => e.push("enApp", { feature: "info" })}
+        >
+          <Icon name="sparkle" />
+          <span className="grow">
+            <b>Versión web de prueba.</b> Las secciones 1 y 2 están abiertas; el
+            resto, en la app (pronto en Google Play).
+          </span>
+          <Icon name="chev" />
+        </button>
+      ) : null}
       <PremiumCard st={a} lessonsDone={l} />
       <div className="learn-progress">
         {SECTIONS.map((r) => {

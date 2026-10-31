@@ -9027,3 +9027,55 @@ html[data-theme="light"] .tab.on .tab-ic {
     font-size: 11px;
   }
 }
+
+/* ---------- Seguí en la app (web de prueba) ---------- */
+.enapp .prem-hero .small {
+  margin-top: 6px;
+}
+.ea-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-top: 12px;
+}
+.ea-card > div {
+  flex: 1;
+  min-width: 0;
+}
+.ea-card b {
+  display: block;
+  font-size: 16.5px;
+}
+.ea-card p {
+  margin: 4px 0 12px;
+}
+.ea-card a.btn {
+  text-decoration: none;
+}
+.ea-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.demo-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: 4px 0 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px dashed var(--accent-line);
+  background: var(--accent-soft);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.demo-note .grow {
+  font-size: 14px;
+  line-height: 1.35;
+}
+.demo-note b {
+  color: var(--accent-text);
+}

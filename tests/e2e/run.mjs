@@ -54,7 +54,8 @@ function helpers(page, lang, name) {
       await page.waitForTimeout(wait);
     },
     async see(es, en, timeout = 5000) {
-      await page.getByText(T(es, en)).first().waitFor({ state: "visible", timeout }).catch(() => {
+      // El primero visible (puede haber el mismo texto en una pestaña escondida).
+      await page.getByText(T(es, en)).filter({ visible: true }).first().waitFor({ state: "visible", timeout }).catch(() => {
         throw new Fallo(`no aparece "${T(es, en)}"`);
       });
     },
@@ -248,6 +249,32 @@ const PRUEBAS = {
     const st = await h.state();
     check(st.play && st.play.hands > 0, "la ronda no terminó");
     check(before !== undefined, "no había estado de mesa");
+  },
+
+  // La web de prueba (mientras la app no está en Play): una tanda por día, Premium cerrado y el
+  // aviso en Aprender. En localhost está apagada; se prende con v21.demo.
+  async webPrueba(h) {
+    const { page } = h;
+    await page.evaluate(() => localStorage.setItem("v21.demo", "1"));
+    await page.reload();
+    await page.waitForTimeout(900);
+    await h.tab("Aprender", "Learn");
+    await h.see("Versión web de prueba", "Web trial version");
+    // Contrarreloj: una por día. La primera abre; la segunda manda a la app.
+    await h.tab("Entrenar", "Train");
+    await h.click("Contrarreloj", "Beat the clock", { wait: 600 });
+    await h.see("¿Cuántas manos acertás", "How many hands");
+    await page.goBack();
+    await page.waitForTimeout(500);
+    await h.click("Contrarreloj", "Beat the clock", { wait: 600 });
+    await h.see("Ya jugaste la tanda de hoy", "You played today's round");
+    await page.goBack();
+    await page.waitForTimeout(500);
+    // Premium: en la web no está.
+    await h.tab("Progreso", "Progress");
+    await h.click("Análisis de tus errores", "Mistake analysis", { wait: 600 });
+    await h.see("Premium es de la app", "Premium is in the app");
+    await h.foto("limite");
   },
 
   // Contrarreloj: empezar, contestar y que corra el reloj.

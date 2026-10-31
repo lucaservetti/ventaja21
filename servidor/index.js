@@ -324,6 +324,11 @@ async function premios(uid, env, now = Date.now(), opts = {}) {
 
   // Qué corresponde dar ahora.
   const merece = [];
+  // Bienvenida: tener cuenta ya alcanza (la sesión de Google se verificó arriba). Se da recién
+  // cuando la app está en Google Play (BIENVENIDA = "1" en wrangler.toml): antes, los días se
+  // vencerían sin poder usarlos. Mientras tanto queda "pronto" y se da apenas se active.
+  const bienvenida = env.BIENVENIDA === "1";
+  if (bienvenida) merece.push({ id: "bienvenida", dias: 3, libre: true });
   if (run >= 7) merece.push({ id: "racha7", dias: 2 });
   if (run >= 30) merece.push({ id: "racha30", dias: 7 });
   if (lecciones >= 36) merece.push({ id: "graduacion", dias: 3 });
@@ -333,12 +338,12 @@ async function premios(uid, env, now = Date.now(), opts = {}) {
   let usados = diasRecientes(ganados, now);
   for (const p of merece) {
     if (ganados[p.id]) continue;
-    if (usados + p.dias > TOPE_DIAS) {
+    if (!p.libre && usados + p.dias > TOPE_DIAS) {
       tope.push(p.id);
       continue;
     }
     ganados[p.id] = { dias: p.dias, t: now };
-    usados += p.dias;
+    if (!p.libre) usados += p.dias;
     nuevos.push(p.id);
   }
 
@@ -431,7 +436,16 @@ async function premios(uid, env, now = Date.now(), opts = {}) {
             ? "tope"
             : "progreso",
       };
-    const progreso = p.id.startsWith("racha") ? run : lecciones;
+    if (p.id === "bienvenida" && !bienvenida && !ganados.bienvenida)
+      return {
+        id: p.id,
+        dias: p.dias,
+        meta: p.meta,
+        progreso: 1,
+        estado: "pronto",
+      };
+    const progreso =
+      p.id === "bienvenida" ? 1 : p.id.startsWith("racha") ? run : lecciones;
     return {
       id: p.id,
       dias: p.dias,
