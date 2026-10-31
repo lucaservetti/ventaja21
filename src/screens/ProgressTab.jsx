@@ -356,6 +356,25 @@ function ProgressOverview({ st: a, nav: e }) {
         type="button"
         className="card list-item"
         style={{ marginTop: 14 }}
+        onClick={() => e.push("mistakes")}
+      >
+        <span className="li-icon">
+          <Icon name="eye" />
+        </span>
+        <span className="li-text">
+          <span className="li-title">
+            Análisis de tus errores <PremiumTag st={a} />
+          </span>
+          <span className="li-sub" style={{ display: "block" }}>
+            Tu tabla pintada según dónde fallás y lo que más te cuesta
+          </span>
+        </span>
+        <Icon name="chev" className="li-chev" />
+      </button>
+      <button
+        type="button"
+        className="card list-item"
+        style={{ marginTop: 10 }}
         onClick={() => e.push("bankroll")}
       >
         <span className="li-icon">
@@ -461,6 +480,13 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
             Jugá más manos para encontrar tus puntos débiles.
           </p>
         )}
+        <button
+          type="button"
+          className="link small ma-link"
+          onClick={() => e.push("mistakes")}
+        >
+          Ver el análisis completo <PremiumTag st={a} />
+        </button>
       </div>
       <div className="card" style={{ marginTop: 14 }}>
         <div className="eyebrow">Precisión en el tiempo</div>

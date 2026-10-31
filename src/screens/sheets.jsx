@@ -23,7 +23,8 @@ import { SYSTEMS, SYSTEM_IDS } from "../engine/systems.js";
 import { HiLoValues } from "../lessons/visuals.jsx";
 import { SystemValues } from "./CountTab.jsx";
 import { useNav } from "../nav.js";
-import { NATIVE, hasPremium } from "../platform.js";
+import { NATIVE, PREMIUM_SYSTEMS, canUse, hasPremium } from "../platform.js";
+import { PremiumTag } from "./Premium.jsx";
 import { LANG, setLang } from "../i18n/index.js";
 
 const VERSION = __APP_VERSION__;
@@ -202,6 +203,24 @@ function SettingsSheet({ open: a, onClose: e }) {
           onChange={(m) => setSettings({ theme: m })}
         />
       </div>
+      <button
+        type="button"
+        className="list-item setting-link"
+        onClick={() => {
+          e();
+          s.push("looks");
+        }}
+      >
+        <span className="li-text">
+          <span className="li-title" style={{ fontSize: 17 }}>
+            Paños y mazos <PremiumTag st={t} />
+          </span>
+          <span className="li-sub" style={{ display: "block" }}>
+            El color de la mesa y el dibujo de las cartas
+          </span>
+        </span>
+        <Icon name="chev" className="li-chev" />
+      </button>
       <Toggle
         id="s-big"
         label="Letra más grande"
@@ -345,7 +364,9 @@ function SettingsSheet({ open: a, onClose: e }) {
   );
 }
 function SystemSheet({ open: a, onClose: e }) {
-  let s = useStore().settings.system,
+  const st = useStore();
+  const nav = useNav();
+  let s = st.settings.system,
     n = SYSTEMS[s];
   return (
     <Sheet open={a} onClose={e} title="Sistema de conteo" tall={true}>
@@ -361,15 +382,23 @@ function SystemSheet({ open: a, onClose: e }) {
             <button
               type="button"
               className={cx("sys-item", o && "on")}
-              onClick={() => setSettings({ system: l })}
+              onClick={() => {
+                if (PREMIUM_SYSTEMS.includes(l) && !canUse("systems", st)) {
+                  e();
+                  nav.push("premium", { feature: "systems" });
+                  return;
+                }
+                setSettings({ system: l });
+              }}
               key={l}
             >
               <span className="li-text">
-                <span className="row" style={{ gap: 10 }}>
+                <span className="row" style={{ gap: 10, flexWrap: "wrap" }}>
                   <b style={{ fontSize: 19 }}>{i.name}</b>
                   <span className="eyebrow" style={{ fontSize: 11 }}>
                     {i.level}
                   </span>
+                  {PREMIUM_SYSTEMS.includes(l) ? <PremiumTag st={st} /> : null}
                 </span>
                 <span
                   className="muted small"

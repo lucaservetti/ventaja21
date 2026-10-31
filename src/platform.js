@@ -55,7 +55,16 @@ const TRIAL_GROUP = {
   bankroll: "bankroll",
   journal: "journal",
   devLevel: "devLevel",
+  looks: "looks",
+  mistakes: "mistakes",
+  systems: "systems",
 };
+// Sistemas de conteo de Premium. Hi-Lo, KO y Hi-Opt I son gratis.
+const PREMIUM_SYSTEMS = ["hiopt2", "zen", "omega2", "halves"];
+// Si se puede usar una función de Premium: con Premium o durante su prueba de 30 minutos.
+function canUse(name, st = getState()) {
+  return hasPremium(st) || trialFor(name, st).active;
+}
 function trialFor(name, st = getState()) {
   const g = TRIAL_GROUP[name];
   const until = g && st.settings.premiumTrials && st.settings.premiumTrials[g];
@@ -65,7 +74,14 @@ function trialFor(name, st = getState()) {
 // Pantallas que son de Premium. La ruta de desviaciones es gratis hasta el nivel 2.
 function needsPremium(name, params = {}, st = getState()) {
   if (hasPremium(st)) return false;
-  let locked = ["casino", "casinoPlay", "bankroll", "journal"].includes(name);
+  let locked = [
+    "casino",
+    "casinoPlay",
+    "bankroll",
+    "journal",
+    "looks",
+    "mistakes",
+  ].includes(name);
   if (name === "devLevel") {
     const n =
       params.level ||
@@ -531,7 +547,9 @@ function initPlatform() {
 export {
   APP_MODE,
   NATIVE,
+  PREMIUM_SYSTEMS,
   buyPremium,
+  canUse,
   earnFeatureTrial,
   hasPremium,
   initPlatform,

@@ -43,7 +43,7 @@ function PlayingCard({
       aria-label={u}
     >
       <div className="pc-inner">
-        <div className={cx("pc-face", r && "pc-red")}>
+        <div className={cx("pc-face", r && "pc-red", `pc-s-${a.s}`)}>
           <span className={cx("pc-rank", a.r === "10" && "r10")}>{a.r}</span>
           <SuitIcon s={a.s} className="pc-suit" />
         </div>
@@ -96,7 +96,7 @@ function chipBreakdown(a) {
   let e = [],
     t = Math.round(a);
   for (let s of [10000, 5000, 1000, 500, 100, 25, 5, 1])
-    for (; t >= s && e.length < 7;) {
+    for (; t >= s && e.length < 7; ) {
       e.push(s);
       t -= s;
     }

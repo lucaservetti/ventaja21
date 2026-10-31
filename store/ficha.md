@@ -18,7 +18,7 @@ CONTÁ CARTAS DE VERDAD
 • Ruta de conteo de 10 niveles: de los valores de las cartas a contar un zapato entero.
 • Práctica con ayuda antes de cada nivel, para cuando recién empezás.
 • Desafío diario con un formato distinto cada día y velocidad de conteo: ¿llegás al ritmo del casino?
-• Hi-Lo, KO, Zen, Omega II, Wong Halves y más sistemas.
+• Hi-Lo, KO y Hi-Opt I gratis; Zen, Omega II, Wong Halves y más con Premium.
 
 ENTRENÁ DONDE FALLÁS
 • Tandas de manos apuntadas a tus puntos débiles.
@@ -35,6 +35,10 @@ PREMIUM (MENSUAL, ANUAL CON 5 DÍAS GRATIS, O UN SOLO PAGO)
 • Ruta de desviaciones completa: los Illustrious 18 y el Fab 4, hasta calcular vos el conteo real.
 • Simulador de banca: cuánta plata necesitás y tu riesgo de quebrar.
 • Diario de casino real para anotar lo que jugás de verdad.
+• Análisis de tus errores: tu tabla pintada según dónde fallás y cómo vas mejorando.
+• Paños y mazos: el color de la mesa, el dorso de las cartas y el mazo de 4 colores.
+• Sistemas de conteo avanzados.
+• Probá cada función gratis 30 minutos antes de decidir.
 
 TU PROGRESO, TUYO
 • Meta diaria, racha, logros y tu perfil de jugador con puntos fuertes y débiles.
