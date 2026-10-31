@@ -204,7 +204,9 @@ function db(env) {
       return out;
     },
     query: (parent, structuredQuery) =>
-      call(`${base}/${parent}:runQuery`, { structuredQuery }),
+      call(`${parent ? `${base}/${parent}` : base}:runQuery`, {
+        structuredQuery,
+      }),
     count: async (parent) => {
       const r = await call(`${base}/${parent}:runAggregationQuery`, {
         structuredAggregationQuery: {
@@ -459,7 +461,52 @@ async function borrar(uid, env) {
   await d.commit(writes);
 }
 
+// ---- Limpieza diaria (Cron de Cloudflare) ----
+// Borra los puntajes del ranking de hace más de 60 días y los reportes de errores vencidos. Firebase
+// lo podría hacer solo (TTL), pero pide activar la facturación. Mira una franja de días (no solo
+// ayer) por si algún día no corrió. Los premios miran como mucho 42 días para atrás.
+const GUARDAR_DIAS = 60;
+const FRANJA_DIAS = 14;
+async function limpiar(env, now = Date.now()) {
+  const d = db(env);
+  const padres = new Set();
+  for (let i = GUARDAR_DIAS + 1; i <= GUARDAR_DIAS + FRANJA_DIAS; i++) {
+    padres.add(`daily/${dayKeyUTC(now - i * DAY)}`);
+    padres.add(`weekly/${mondayUTC(now - (i + 7) * DAY)}`);
+  }
+  const nombres = [];
+  const soloNombre = {
+    select: { fields: [{ fieldPath: "__name__" }] },
+    limit: 500,
+  };
+  for (const p of padres) {
+    const r = await d.query(p, {
+      from: [{ collectionId: "scores" }],
+      ...soloNombre,
+    });
+    for (const x of r || []) if (x.document) nombres.push(x.document.name);
+  }
+  const vencidos = await d.query("", {
+    from: [{ collectionId: "errores" }],
+    where: {
+      fieldFilter: {
+        field: { fieldPath: "expireAt" },
+        op: "LESS_THAN",
+        value: { timestampValue: new Date(now).toISOString() },
+      },
+    },
+    ...soloNombre,
+  });
+  for (const x of vencidos || []) if (x.document) nombres.push(x.document.name);
+  for (let i = 0; i < nombres.length; i += 500)
+    await d.commit(nombres.slice(i, i + 500).map((n) => ({ delete: n })));
+  return nombres.length;
+}
+
 export default {
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(limpiar(env));
+  },
   async fetch(req, env) {
     if (req.method === "OPTIONS")
       return new Response(null, { status: 204, headers: cors(req) });
@@ -494,4 +541,4 @@ export default {
   },
 };
 
-export { borrar, premios, serviceToken, verifyIdToken };
+export { borrar, limpiar, premios, serviceToken, verifyIdToken };

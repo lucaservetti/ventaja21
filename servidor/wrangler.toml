@@ -8,6 +8,10 @@ workers_dev = true
 # api.edge21.app apunta a este servidor (Cloudflare crea el registro DNS solo).
 routes = [{ pattern = "api.edge21.app", custom_domain = true }]
 
+# Limpieza diaria de puntajes viejos y errores vencidos (ver limpiar() en index.js).
+[triggers]
+crons = ["23 7 * * *"]
+
 [vars]
 PROJECT_ID = "edge21-fb71e"
 
