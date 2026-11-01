@@ -7,7 +7,10 @@ const L = process.argv[2] || "es";
 // Mientras la app no esté en Google Play, los videos para redes mandan a la web. Cuando salga,
 // cambiá esto a true y rehacé los verticales (fondos.cjs + armar.cjs vertical).
 const EN_PLAY = false;
-const OUT = path.join(__dirname, "salida", `piezas-${L}`);
+// TIKTOK=1: versión para TikTok, que es más estricto con todo lo que parezca apuestas. Títulos de
+// desafío y matemática, sin enlaces al final (va a salida/piezas-<idioma>-tiktok).
+const TIKTOK = process.env.TIKTOK === "1";
+const OUT = path.join(__dirname, "salida", `piezas-${L}${TIKTOK ? "-tiktok" : ""}`);
 const FPS = 60;
 const T = {
   es: {
@@ -51,6 +54,26 @@ const T = {
     time: "Time!",
   },
 }[L];
+if (TIKTOK) {
+  const TT = {
+    es: {
+      v: {
+        quiz: ["¿Qué <em>harías vos</em>?", "Desafío de lógica: elegí antes de que termine la cuenta"],
+        count: ["Desafío <em>de memoria</em>", "Cada carta suma +1, 0 o −1. ¿Llegás al final?"],
+      },
+      ctaWeb: "Edge 21 · contenido educativo",
+    },
+    en: {
+      v: {
+        quiz: ["What <em>would you do</em>?", "Logic challenge: decide before the countdown ends"],
+        count: ["Memory <em>challenge</em>", "Each card adds +1, 0 or −1. Can you keep up?"],
+      },
+      ctaWeb: "Edge 21 · educational content",
+    },
+  }[L];
+  Object.assign(T.v, TT.v);
+  T.ctaWeb = TT.ctaWeb;
+}
 const FONT = `@font-face{font-family:DM;src:url(${path.join(__dirname, "DMSans-latin-400-800.woff2")});font-weight:400 800}*{margin:0;box-sizing:border-box}body{font-family:DM;color:#f3efe2}`;
 const CHIP = `<img src="${path.resolve(__dirname, "../../img/ficha.svg")}">`;
 const FELT_V = "radial-gradient(110% 70% at 50% 10%,#17603f 0%,#0a2c1c 55%,#04100a 100%)";

@@ -191,6 +191,51 @@ const CARRUSELES = {
   ],
 };
 
+// ---- Versiones para TikTok ----
+// TikTok también lee el texto de las imágenes y es muy estricto con todo lo que parezca apuestas: en
+// estas láminas no aparecen "casino", "apostar" ni "plata"; se presenta como matemática y memoria.
+const ctaTT = (frase = "Probala gratis") => `
+  <img class="logo" src="/img/ficha.svg">
+  <h1>${frase}</h1>
+  <p>Edge 21: lecciones cortas, un desafío por día y práctica de memoria. <b>Contenido educativo.</b></p>
+  <div class="cta">edge21.app</div>
+  <p class="chico">Link en el perfil · Seguinos para un desafío por día</p>`;
+const TT = {
+  "1-presentacion": {
+    3: `<div class="main"><div class="lado">${tel("mano-es.webp", 430)}<div>
+      <span class="tag">Entrenar</span>
+      <h2>La jugada <em>correcta</em></h2>
+      <p>Tandas de manos para aprender la mejor decisión en cada caso, y <b>por qué</b>.</p>
+    </div></div></div>`,
+    4: `<div class="main c">${ctaTT()}</div>`,
+  },
+  "3-contar-cartas": {
+    4: `<div class="main">
+      <span class="tag">¿Para qué sirve?</span>
+      <h2>Probabilidad <em>en vivo</em></h2>
+      <p>Un número alto quiere decir que en el mazo <b>quedan más cartas altas</b>. Un número bajo, que quedan más bajas.</p>
+      <p>Es probabilidad pura: con un solo número sabés algo que no se ve.</p>
+      <p class="chico">Y un gran ejercicio de memoria y cálculo mental.</p>
+    </div>`,
+    5: `<div class="main c">${ctaTT("Practicalo gratis")}</div>`,
+  },
+  "5-mitos": {
+    1: `<div class="main">
+      <span class="tag mal">Mito 1</span>
+      <h2>"Es pura <em>suerte</em>"</h2>
+      <div class="caja"><p><b>Falso.</b> Es probabilidad.</p></div>
+      <p>Cada carta que sale <b>cambia lo que queda</b> en el mazo. Llevar la cuenta es saber cómo cambió.</p>
+    </div>`,
+    4: `<div class="main">
+      <span class="tag mal">Mito 4</span>
+      <h2>"Solo pasa <em>en las películas</em>"</h2>
+      <div class="caja"><p><b>Falso.</b> Es matemática real.</p></div>
+      <p>La estudian matemáticos desde los años 60, y se aprende paso a paso, como cualquier otra cosa.</p>
+    </div>`,
+    5: `<div class="main c">${ctaTT("Aprendelo bien, gratis")}</div>`,
+  },
+};
+
 // ---- Portadas de los videos (1080×1920; lo importante queda en el centro, que es lo que se ve en el perfil) ----
 const PORTADAS = {
   "2-quiz": `<div class="main c" style="top:300px;bottom:300px;right:84px">
@@ -242,7 +287,7 @@ for (const [k, slides] of Object.entries(CARRUSELES)) {
     const sw = i < slides.length - 1 ? '<div class="swipe">Deslizá →</div>' : "";
     const nombre = `${String(i + 1).padStart(2, "0")}.png`;
     await render(1080, 1350, false, slides[i] + sw, path.join(OUT, k, "instagram", nombre), n);
-    await render(1080, 1920, true, slides[i] + sw, path.join(OUT, k, "tiktok", nombre), n);
+    await render(1080, 1920, true, ((TT[k] && TT[k][i]) || slides[i]) + sw, path.join(OUT, k, "tiktok", nombre), n);
   }
 }
 for (const [k, body] of Object.entries(PORTADAS)) await render(1080, 1920, false, body, path.join(OUT, k, "portada.png"));
