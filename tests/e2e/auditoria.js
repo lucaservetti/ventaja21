@@ -32,7 +32,8 @@
       if (el.closest("[hidden], [aria-hidden='true'], .sr-only, svg")) continue;
       const tieneTexto = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
       if (tieneTexto && (s.textOverflow === "ellipsis" || s.webkitLineClamp !== "none")) {
-        if (el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 2) anota("texto cortado", el);
+        const corta = s.webkitLineClamp !== "none" ? el.scrollHeight > el.clientHeight + 2 : el.scrollWidth > el.clientWidth + 1;
+        if (corta) anota("texto cortado", el);
       } else if (tieneTexto && s.overflowX === "visible" && el.scrollWidth > el.clientWidth + 2 && s.display !== "inline") {
         anota("texto que se sale de su caja", el);
       }

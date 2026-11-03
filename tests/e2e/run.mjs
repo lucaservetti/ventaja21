@@ -81,6 +81,49 @@ function helpers(page, lang, name) {
 }
 
 const PRUEBAS = {
+  // Solo con AUDITAR: entra a cada botón de cada pestaña (un nivel) con un progreso avanzado,
+  // para que la auditoría visual pase por todas las pantallas.
+  async recorrido(h) {
+    if (!AUDITAR) return;
+    const { page } = h;
+    const estado = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/video/estado.json"), "utf8"));
+    estado.settings = { ...(estado.settings || {}), ...(AJUSTES || {}) };
+    await page.evaluate((e) => localStorage.setItem("ventaja21.state.v1", e), JSON.stringify(estado));
+    await page.reload();
+    await page.waitForTimeout(1200);
+    const PELIGRO = /borrar|reinici|salir|cerrar sesi|entrar con google|eliminar|restaur|import|export|compart|copiar|reset|delete|sign|share|copy|backup|respaldo/i;
+    const arriba = () =>
+      page.evaluate(() => {
+        const l = [...document.querySelectorAll(".layer")].filter((x) => !x.hidden && x.offsetParent !== null).pop();
+        return !!l && l.classList.contains("with-tabbar") && !document.querySelector(".sheet, .modal");
+      });
+    const bajar = () =>
+      page.evaluate(async () => {
+        const els = [...document.querySelectorAll(".layer:not([hidden]), .sheet, .modal, .sheet-body")];
+        for (const el of els) for (let y = 0; y < el.scrollHeight; y += 500) (el.scrollTop = y), await new Promise((r) => setTimeout(r, 120));
+        scrollTo(0, 0);
+      });
+    for (const [es, en] of [["Conteo", "Count"], ["Entrenar", "Train"], ["Jugar", "Play"], ["Aprender", "Learn"], ["Progreso", "Progress"]]) {
+      await h.tab(es, en);
+      await bajar();
+      const sel = ".layer.with-tabbar:not([hidden]) :is(button, [role=button]):visible";
+      const n = Math.min(await page.locator(sel).count(), 30);
+      for (let i = 0; i < n; i++) {
+        const b = page.locator(sel).nth(i);
+        const txt = ((await b.innerText().catch(() => "")) + " " + ((await b.getAttribute("aria-label").catch(() => "")) || "")).trim();
+        if (PELIGRO.test(txt)) continue;
+        await b.click({ timeout: 1500 }).catch(() => {});
+        await page.waitForTimeout(600);
+        await bajar();
+        // Volver a la pestaña: recargar es lo más simple (el progreso queda guardado).
+        if (!(await arriba())) {
+          await page.reload();
+          await page.waitForTimeout(900);
+        }
+        await h.tab(es, en);
+      }
+    }
+  },
   // Desde cero: la bienvenida y las preguntas hasta llegar a las pestañas.
   async onboarding(h) {
     const { page } = h;
