@@ -40,9 +40,10 @@
       if ((r.right > W + 1 || r.left < -1) && s.position !== "fixed" && !recortado(el)) anota("se sale de la pantalla", el);
     }
   }
-  setInterval(() => {
+  window.__revisar = () => {
     try {
       revisar();
     } catch {}
-  }, 350);
+  };
+  setInterval(window.__revisar, 1000);
 })();

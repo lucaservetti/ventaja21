@@ -100,21 +100,26 @@ const PRUEBAS = {
     const bajar = () =>
       page.evaluate(async () => {
         const els = [...document.querySelectorAll(".layer:not([hidden]), .sheet, .modal, .sheet-body")];
-        for (const el of els) for (let y = 0; y < el.scrollHeight; y += 500) (el.scrollTop = y), await new Promise((r) => setTimeout(r, 120));
-        scrollTo(0, 0);
+        for (const el of els) for (let y = 0; y < el.scrollHeight; y += 600) (el.scrollTop = y), await new Promise((r) => setTimeout(r, 60));
+        await new Promise((r) => setTimeout(r, 250));
+        window.__revisar && window.__revisar();
       });
     for (const [es, en] of [["Conteo", "Count"], ["Entrenar", "Train"], ["Jugar", "Play"], ["Aprender", "Learn"], ["Progreso", "Progress"]]) {
       await h.tab(es, en);
       await bajar();
       const sel = ".layer.with-tabbar:not([hidden]) :is(button, [role=button]):visible";
-      const n = Math.min(await page.locator(sel).count(), 30);
+      const n = Math.min(await page.locator(sel).count(), 24);
+      console.log(`  ${es}: ${n} botones`);
       for (let i = 0; i < n; i++) {
         const b = page.locator(sel).nth(i);
         const txt = ((await b.innerText().catch(() => "")) + " " + ((await b.getAttribute("aria-label").catch(() => "")) || "")).trim();
         if (PELIGRO.test(txt)) continue;
-        await b.click({ timeout: 1500 }).catch(() => {});
+        if (!(await b.isVisible().catch(() => false))) continue;
+        await b.click({ timeout: 1000 }).catch(() => {});
         await page.waitForTimeout(600);
         await bajar();
+        const nuevos = (await page.evaluate(() => [...window.__auditoria.keys()])).filter((k) => !hallazgos.has(k));
+        for (const k of nuevos) hallazgos.add(k), console.log(`    [${txt.slice(0, 30)}] ${k}`);
         // Volver a la pestaña: recargar es lo más simple (el progreso queda guardado).
         if (!(await arriba())) {
           await page.reload();
