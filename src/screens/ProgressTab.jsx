@@ -67,7 +67,7 @@ function ProgressTab() {
         value={t}
         onChange={s}
       />
-      <div style={{ marginTop: 16 }} className="fade-up" key={t}>
+      <div style={{ marginTop: 16 }} className="fade-up prog-body" key={t}>
         {t === "overview" ? (
           <ProgressOverview st={a} nav={e} />
         ) : t === "breakdown" ? (

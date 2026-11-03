@@ -22,6 +22,9 @@ import { instalarEscritorio, useEscritorio, usePuedeInstalar } from "./escritori
 import { jsx as _jsx } from "react/jsx-runtime";
 import {
   getState,
+  goalDay,
+  goalStreak,
+  levelFor,
   resetAll,
   setSettings,
   setState,
@@ -588,8 +591,47 @@ function AvisoVersion() {
     </div>
   );
 }
+// En la compu, abajo del menú: tu rango, la racha y la meta de hoy (lleva a Progreso).
+function Resumen({ onTab }) {
+  const st = useStore();
+  const lv = levelFor(st.rating.value);
+  const racha = goalStreak(st);
+  const hoy = goalDay(st);
+  const pct = Math.min(1, hoy.s / Math.max(1, hoy.g));
+  return (
+    <button
+      type="button"
+      className="tab-resumen"
+      onClick={() => onTab("progreso")}
+    >
+      <span className="tr-rank">
+        <span className="rank-chip" style={{ "--chip": lv.chip }} />
+        <span>
+          <b>{lv.name}</b>
+          <span className="tr-sub num">{st.rating.value} puntos</span>
+        </span>
+      </span>
+      <span className="tr-row">
+        <span>Racha</span>
+        <b className="num">
+          {racha} {racha === 1 ? "día" : "días"}
+        </b>
+      </span>
+      <span className="tr-row">
+        <span>Meta de hoy</span>
+        <b className="num">
+          {Math.floor(hoy.s / 60)} de {Math.round(hoy.g / 60)} min
+        </b>
+      </span>
+      <span className="tr-bar">
+        <i style={{ width: `${pct * 100}%` }} />
+      </span>
+    </button>
+  );
+}
 function TabBar({ tab: a, onTab: e }) {
   const instalar = usePuedeInstalar();
+  const desk = useEscritorio();
   return (
     <nav className="tabbar" aria-label="Secciones">
       {/* Solo en la compu (menú al costado): la marca arriba y, si se puede, instalarla. */}
@@ -613,6 +655,7 @@ function TabBar({ tab: a, onTab: e }) {
           </button>
         ))}
       </div>
+      {desk ? <Resumen onTab={e} /> : null}
       {instalar ? (
         <button
           type="button"
