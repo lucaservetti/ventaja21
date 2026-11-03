@@ -305,9 +305,10 @@ async function premios(uid, env, now = Date.now(), opts = {}) {
   const run = longestRun(jugados);
   const lecciones = await lessonsDone(docs[`users/${uid}`]);
 
-  // Podio: las últimas 4 semanas terminadas.
+  // Podio: las últimas 4 semanas terminadas (si está activo: PODIO = "1" en wrangler.toml).
   const podios = [];
-  for (let w = 1; w <= 4; w++) {
+  const podioActivo = env.PODIO !== "0";
+  for (let w = 1; podioActivo && w <= 4; w++) {
     const monday = mondayUTC(now - w * 7 * DAY);
     const parent = `weekly/${monday}`;
     const top = await d.query(parent, {
@@ -443,6 +444,8 @@ async function premios(uid, env, now = Date.now(), opts = {}) {
     k.startsWith("podio-"),
   );
   const lista = PREMIOS.map((p) => {
+    if (p.id === "podio" && !podioActivo && !podiosGanados.length)
+      return { id: "podio", dias: p.dias, veces: 0, estado: "proximamente" };
     if (p.id === "podio")
       return {
         id: "podio",

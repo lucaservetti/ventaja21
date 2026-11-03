@@ -41,7 +41,7 @@ PREMIUM (MONTHLY, YEARLY WITH A FREE TRIAL, OR ONE-TIME)
 • Your table, your way: every rule by hand (decks, penetration, 3:2 or 6:5, H17, surrender and more) and two hands per round.
 • Full guide and progress: deviations, what each rule is worth, and your history with every session.
 • Advanced counting systems and a real casino journal.
-• Or earn it by playing: free days of Premium for streaks, the weekly podium and finishing the lessons.
+• Or earn it by playing: free days of Premium for streaks and for finishing the lessons.
 
 YOUR PROGRESS, YOURS
 • Daily goal, streak, achievements and a player profile with your strengths and weak spots.

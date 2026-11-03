@@ -9541,3 +9541,16 @@ html[data-theme="light"] .cele-card {
 .install-note .icon-btn {
   flex: none;
 }
+
+/* Premios: separación entre el aviso de entrar y la lista, y el podio en pausa. */
+.pz-signin,
+.pz-gift {
+  margin-bottom: 14px;
+}
+.pz-proximamente {
+  opacity: 0.72;
+}
+.pz-proximamente .pz-days {
+  background: var(--surface-3);
+  color: var(--text-2);
+}
