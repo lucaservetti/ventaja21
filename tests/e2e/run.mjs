@@ -10,6 +10,13 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const FOTOS = process.env.FOTOS ? path.join(ROOT, "tests/e2e/fotos") : null;
 const SOLO = process.argv[2] || null;
+// Auditoría visual (AUDITAR=1): anota textos cortados y cosas que se salen de la pantalla.
+// ANCHO=320 prueba un celular chico; TEMA=light el tema claro; LETRA=1 la letra grande.
+const AUDITAR = !!process.env.AUDITAR;
+const ANCHO = +process.env.ANCHO || 390;
+const TEMA = process.env.TEMA === "light" ? "light" : "dark";
+const AJUSTES = process.env.TEMA || process.env.LETRA ? { theme: TEMA, bigText: !!process.env.LETRA } : null;
+const hallazgos = new Set();
 const ONB = { v: 1, profile: { onboarded: true, experience: "rules", goal: "casino", startSection: 1, createdAt: 1760000000000 }, lastTab: "aprender" };
 
 function servidor() {
@@ -468,8 +475,9 @@ const PRUEBAS = {
   for (const lang of langs) {
     for (const [name, fn] of Object.entries(PRUEBAS)) {
       if (SOLO && SOLO !== name) continue;
-      const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, locale: lang === "es" ? "es-UY" : "en-US" });
-      const seed = name === "onboarding" ? null : ONB;
+      const ctx = await browser.newContext({ viewport: { width: ANCHO, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, locale: lang === "es" ? "es-UY" : "en-US", colorScheme: TEMA });
+      const seed = name === "onboarding" ? null : AJUSTES ? { ...ONB, settings: AJUSTES } : ONB;
+      if (AUDITAR) await ctx.addInitScript({ path: path.join(ROOT, "tests/e2e/auditoria.js") });
       await ctx.addInitScript(`if (!sessionStorage.getItem("seeded")) { sessionStorage.setItem("seeded","1"); localStorage.setItem("edge21.lang", ${JSON.stringify(lang)}); ${seed ? `localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(seed))});` : ""} }`);
       const page = await ctx.newPage();
       const errors = [];
@@ -481,6 +489,7 @@ const PRUEBAS = {
         await page.waitForTimeout(900);
         await fn(helpers(page, lang, name));
         check(!errors.length, "errores en la consola: " + errors.join(" | "));
+        if (AUDITAR) for (const [k] of await page.evaluate(() => [...window.__auditoria])) hallazgos.add(k);
         console.log(`✓ ${name} (${lang}) ${((Date.now() - t0) / 1000).toFixed(1)} s`);
       } catch (e) {
         fails++;
@@ -493,6 +502,7 @@ const PRUEBAS = {
   }
   await browser.close();
   srv.close();
+  if (AUDITAR) console.log(`\nAuditoría (${hallazgos.size}):\n` + [...hallazgos].sort().join("\n"));
   console.log(fails ? `${fails} prueba(s) fallaron` : "todas las pruebas pasaron");
   process.exit(fails ? 1 : 0);
 })();

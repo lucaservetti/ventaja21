@@ -7881,13 +7881,21 @@ html[lang="en"] .en-dup {
 .sec-done .grow {
   min-width: 0;
 }
-.sec-done-title {
+.sec-done .eyebrow {
   display: block;
-  margin-top: 2px;
-  font-size: 16px;
+  letter-spacing: 0.08em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.sec-done-title {
+  display: -webkit-box;
+  margin-top: 2px;
+  font-size: 16px;
+  line-height: 1.25;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .sec-done-chev {
   flex: none;
@@ -8311,7 +8319,7 @@ html[data-theme="light"] .res-note p {
 html[data-theme="light"] .cpath {
   background: linear-gradient(180deg, var(--accent-soft), var(--surface) 55%);
 }
-html[data-theme="light"] .placard {
+html[data-theme="light"] :is(.placard, .sec-done) {
   background: linear-gradient(160deg, #e3efe6, var(--surface) 70%);
 }
 html[data-theme="light"] .placard::after {
