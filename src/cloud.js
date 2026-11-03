@@ -753,6 +753,7 @@ function lessonsDone() {
 export {
   ACCOUNTS,
   CLOUD,
+  checkPremium,
   NATIVE as CLOUD_NATIVE,
   checkPremios,
   deleteAccount,

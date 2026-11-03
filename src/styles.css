@@ -9532,3 +9532,12 @@ html[data-theme="light"] .cele-card {
   border-radius: 3px;
   min-height: 6px;
 }
+
+/* Aviso para instalar en iPhone (Aprender, solo en la web). */
+.install-note {
+  cursor: default;
+  padding-right: 6px;
+}
+.install-note .icon-btn {
+  flex: none;
+}

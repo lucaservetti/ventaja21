@@ -34,6 +34,8 @@ const firebase = {
   ...(process.env.FIREBASE_EMULATOR ? { emulator: process.env.FIREBASE_EMULATOR } : {}),
 };
 const version = pkg.version;
+// Pagos de Premium en la web (Paddle). Ver PAGOS_WEB.md.
+const pagos = JSON.parse(fs.readFileSync("pagos.config.json", "utf8"));
 
 const js = await esbuild.build({
   entryPoints: ["src/main.jsx"],
@@ -51,6 +53,7 @@ const js = await esbuild.build({
     "process.env.NODE_ENV": '"production"',
     __APP_VERSION__: JSON.stringify(version),
     __FIREBASE__: JSON.stringify(firebase.apiKey && firebase.projectId ? firebase : null),
+    __PAGOS__: JSON.stringify({ paddle: pagos.paddle, mostrar: pagos.mostrar }),
     // Anuncio intersticial de AdMob para Android. Sin la variable, se usa el anuncio de prueba de Google.
     __ADMOB_INTERSTITIAL__: JSON.stringify(process.env.ADMOB_INTERSTITIAL_ID || "ca-app-pub-3940256099942544/1033173712"),
     __ADMOB_REWARDED__: JSON.stringify(process.env.ADMOB_REWARDED_ID || "ca-app-pub-3940256099942544/5224354917"),
@@ -75,12 +78,12 @@ const huella = crypto.createHash("sha256").update(script.trim()).digest("base64"
 const local = firebase.emulator || /^http:/.test(firebase.api) ? " http://127.0.0.1:* http://localhost:*" : "";
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'sha256-${huella}' https://accounts.google.com/gsi/client`,
+  `script-src 'self' 'sha256-${huella}' https://accounts.google.com/gsi/client https://cdn.paddle.com`,
   "style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  `connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com ${firebase.api} https://accounts.google.com/gsi/${local}`,
-  "frame-src https://accounts.google.com/gsi/",
+  `connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com ${firebase.api} https://accounts.google.com/gsi/ https://*.paddle.com${local}`,
+  "frame-src https://accounts.google.com/gsi/ https://buy.paddle.com https://sandbox-buy.paddle.com",
   "worker-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",

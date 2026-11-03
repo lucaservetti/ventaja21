@@ -27,5 +27,8 @@ simple = { limit = 10, period = 60 }
 PROJECT_ID = "edge21-fb71e"
 # Premio de bienvenida (3 días por entrar con Google): "1" cuando la app esté en Google Play.
 BIENVENIDA = "0"
+# Pagos en la web (Paddle): el código del precio "Para siempre" (pri_…). Ver PAGOS_WEB.md.
+PADDLE_PRECIO_SIEMPRE = ""
 
 # Secreto (no va acá): FIREBASE_SA = la clave JSON de la cuenta de servicio de Firebase.
+# Secreto (opcional): PADDLE_WEBHOOK_SECRET = el secreto de los avisos de Paddle (pdl_ntfset_…).

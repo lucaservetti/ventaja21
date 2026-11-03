@@ -188,6 +188,47 @@ function lessonProgress(a) {
     t = LESSONS.find((s) => !e(s.id));
   return { done: e, currentId: t ? t.id : null };
 }
+// En el iPhone (Safari, sin instalar): después de la primera lección, cómo dejar Edge 21 en la
+// pantalla de inicio. Se puede cerrar y no vuelve.
+function esIphone() {
+  try {
+    const ua = navigator.userAgent || "";
+    return (
+      /iPhone|iPad|iPod/.test(ua) ||
+      (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)
+    );
+  } catch {
+    return false;
+  }
+}
+function instalada() {
+  try {
+    return (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true
+    );
+  } catch {
+    return false;
+  }
+}
+function InstalarIphone({ st, lessonsDone }) {
+  if (APP_MODE || lessonsDone < 1 || st.settings.instalarVisto) return null;
+  if (!esIphone() || instalada()) return null;
+  return (
+    <div className="demo-note install-note" role="note">
+      <Icon name="sparkle" />
+      <span className="grow">
+        <b>Tenela como app en tu iPhone.</b> En Safari, tocá Compartir y
+        después <b>Agregar a inicio</b>.
+      </span>
+      <IconButton
+        icon="close"
+        label="Cerrar"
+        onClick={() => setSettings({ instalarVisto: true })}
+      />
+    </div>
+  );
+}
 function LearnTab() {
   let a = useStore(),
     e = useNav(),
@@ -243,6 +284,7 @@ function LearnTab() {
           <Icon name="chev" />
         </button>
       ) : null}
+      <InstalarIphone st={a} lessonsDone={l} />
       <PremiumCard st={a} lessonsDone={l} />
       <div className="learn-progress">
         {SECTIONS.map((r) => {

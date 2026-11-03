@@ -17,7 +17,8 @@ import {
   showAdPrivacy,
 } from "../platform.js";
 import { useNav } from "../nav.js";
-import { ACCOUNTS, useAccount } from "../cloud.js";
+import { ACCOUNTS, checkPremium, useAccount } from "../cloud.js";
+import { MOSTRAR, PAGOS_WEB, onPagoWeb, pagarWeb } from "../pagos-web.js";
 import { LANG, LOCALE } from "../i18n/index.js";
 
 const FEATURES = {
@@ -86,6 +87,12 @@ const PERKS = [
     sub: "Anotá lo que jugás de verdad y mirá tu resultado por hora.",
   },
 ];
+// Precios de la web (pagos.config.json): más baratos que en Google Play, porque no tienen su comisión.
+const WEB_PRICES = {
+  monthly: { micros: Math.round((MOSTRAR.monthly || 0) * 1e6), currency: MOSTRAR.moneda || "USD", trialDays: 0 },
+  yearly: { micros: Math.round((MOSTRAR.yearly || 0) * 1e6), currency: MOSTRAR.moneda || "USD", trialDays: MOSTRAR.pruebaDias || 0 },
+  lifetime: { micros: Math.round((MOSTRAR.lifetime || 0) * 1e6), currency: MOSTRAR.moneda || "USD", trialDays: 0 },
+};
 // Precios de muestra para ver la pantalla en la compu (en el celular vienen de Google Play,
 // en la moneda de cada país).
 const SAMPLE = {
@@ -110,16 +117,41 @@ function Premium({ feature }) {
   const [, setTick] = useState(0);
   const [plan, setPlan] = useState("yearly");
   useEffect(() => onShop(() => setTick((x) => x + 1)), []);
+  // Pago en la web: "abriendo", "esperando" (pagó; el servidor lo anota en unos segundos), "error".
+  const [pago, setPago] = useState(null);
+  useEffect(
+    () =>
+      onPagoWeb((e) => {
+        if (e === "listo") setPago("esperando");
+        else if (e === "error") setPago("error");
+        else setPago((p) => (p === "abriendo" ? null : p));
+      }),
+    [],
+  );
   // Premium regalado (días ganados en Premios) vence: igual se muestran los planes.
   const gift = !st.settings.premium ? giftUntil(st) : 0;
   const owned = hasPremium(st) && !gift;
   const { acct } = useAccount();
+  // Después de pagar, el servidor anota Premium en unos segundos: se pregunta cada 2,5 s (hasta 30 s).
+  useEffect(() => {
+    if (pago !== "esperando") return;
+    let n = 0;
+    const id = setInterval(() => {
+      n++;
+      checkPremium();
+      if (n >= 12) clearInterval(id);
+    }, 2500);
+    return () => clearInterval(id);
+  }, [pago]);
   // En la web (no en Android) todavía no se puede pagar: Premium llega por la cuenta.
   const web = !APP_MODE;
+  // Precios: en Android, los de Google Play; en la web con pagos, los de la web (más baratos, sin
+  // la comisión de Google); si no, los de muestra.
+  const base = PAGOS_WEB ? WEB_PRICES : SAMPLE;
   const plans = NATIVE
     ? shop.plans
     : Object.fromEntries(
-        Object.entries(SAMPLE).map(([k, p]) => [
+        Object.entries(base).map(([k, p]) => [
           k,
           { ...p, price: money(p.micros, p.currency) },
         ]),
@@ -169,7 +201,13 @@ function Premium({ feature }) {
         : `Suscribirme · ${info.price} ${pick === "yearly" ? "al año" : "al mes"}`;
   const terms = !info
     ? null
-    : pick === "lifetime"
+    : web && PAGOS_WEB
+      ? pick === "lifetime"
+        ? "Pagás una vez y Premium es tuyo para siempre en esta cuenta de Google, en la web y en la app."
+        : info.trialDays
+          ? `Gratis por ${info.trialDays} días; después, ${info.price} por año. Se renueva solo y lo cancelás cuando quieras desde el mail del pago. Si cancelás antes de que termine la prueba, no se te cobra nada.`
+          : `${info.price} por ${pick === "yearly" ? "año" : "mes"}. Se renueva solo y lo cancelás cuando quieras desde el mail del pago.`
+      : pick === "lifetime"
       ? "Pagás una vez y Premium es tuyo para siempre en esta cuenta de Google."
       : info.trialDays
         ? `Gratis por ${info.trialDays} días; después, ${info.price} por año. Se renueva solo y lo cancelás cuando quieras en Google Play. Si cancelás antes de que termine la prueba, no se te cobra nada.`
@@ -212,7 +250,13 @@ function Premium({ feature }) {
       </div>
       {!owned && options.length ? (
         <div className="prem-plans" role="radiogroup" aria-label="Planes">
-          {web ? (
+          {web && PAGOS_WEB ? (
+            <p className="small prem-web">
+              Pagás con tarjeta, Apple Pay, Google Pay o PayPal, en tu moneda.
+              Premium queda en tu cuenta de Google: lo tenés acá, en el iPhone,
+              en la compu y en la app de Android.
+            </p>
+          ) : web ? (
             <p className="small prem-web">
               Por ahora Premium se compra en la app de Android, que sale muy
               pronto en Google Play. Si ya sos Premium, entrá con tu cuenta de
@@ -245,6 +289,15 @@ function Premium({ feature }) {
       {!owned && terms ? (
         <p className="muted small prem-terms">{terms}</p>
       ) : null}
+      {pago === "esperando" ? (
+        <p className="small good" role="status" style={{ marginTop: 10, fontWeight: 600 }}>
+          ¡Pago recibido! Activando tu Premium…
+        </p>
+      ) : pago === "error" ? (
+        <p className="small bad" role="status" style={{ marginTop: 10, fontWeight: 600 }}>
+          No se pudo completar el pago. Probá de nuevo o con otro medio.
+        </p>
+      ) : null}
       {shop.error ? (
         <p className="small bad" style={{ marginTop: 10, fontWeight: 600 }}>
           {shop.error}
@@ -274,13 +327,21 @@ function Premium({ feature }) {
       ) : null}
       {!owned ? (
         <div className="btns prem-more">
-          <Button
-            kind="ghost"
-            onClick={restorePremium}
-            disabled={shop.busy || !NATIVE}
-          >
-            Ya lo compré: restaurar
-          </Button>
+          {web && PAGOS_WEB ? (
+            acct ? (
+              <Button kind="ghost" onClick={() => checkPremium()}>
+                Ya lo compré: revisar
+              </Button>
+            ) : null
+          ) : (
+            <Button
+              kind="ghost"
+              onClick={restorePremium}
+              disabled={shop.busy || !NATIVE}
+            >
+              Ya lo compré: restaurar
+            </Button>
+          )}
           {NATIVE ? (
             <button
               type="button"
@@ -320,6 +381,26 @@ function Premium({ feature }) {
               </Button>
             ) : null}
           </div>
+        ) : web && PAGOS_WEB ? (
+          !acct ? (
+            <Button onClick={() => nav.push("account")}>
+              Entrar con Google para comprar
+            </Button>
+          ) : (
+            <Button
+              onClick={async () => {
+                setPago("abriendo");
+                try {
+                  await pagarWeb(pick, acct);
+                } catch {
+                  setPago("error");
+                }
+              }}
+              disabled={!info || pago === "abriendo" || pago === "esperando"}
+            >
+              {pago === "esperando" ? "Activando…" : cta}
+            </Button>
+          )
         ) : web ? (
           ACCOUNTS && !acct ? (
             <Button onClick={() => nav.push("account")}>

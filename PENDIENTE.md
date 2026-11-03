@@ -8,6 +8,8 @@
      3. Crear en Google Cloud (proyecto edge21-fb71e) un cliente OAuth **Android**, con el paquete `com.lucaservetti.ventaja21` y ese SHA-1.
    - Cuando la app esté en Play, se agrega también el SHA-1 de la firma de Play (Play Console → Integridad de la app).
 2. **Mail:** "Enviar como soporte@edge21.app" desde Gmail (pasos C y D). Google no dejó crear la contraseña de aplicación; probar en unos días desde el celular, después de agregarle un teléfono de recuperación a edge21app@gmail.com.
+3. **Cobrar Premium en la web (desde el 19 de noviembre, con 18 años):** abrir la cuenta de Paddle y seguir `PAGOS_WEB.md`. El código ya está; falta cargar el token, los precios y el secreto.
+4. **Premium de Google Play en la cuenta (cuando exista Play Console):** que el servidor confirme cada compra de Android con Google y la anote en `premium/{uid}`, así sirve también en la web y en el iPhone.
 
 ## Al lanzar en Google Play
 

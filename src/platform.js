@@ -66,21 +66,23 @@ function giftUntil(st = getState()) {
   return typeof c === "number" && c > Date.now() ? c : 0;
 }
 
-// ---- La web como prueba ----
-// Mientras la app no está en Google Play, la web es una prueba para que la conozcan y se enganchen:
-// las secciones 1 y 2 de Aprender, los niveles 1 a 3 de Conteo, una tanda de Entrenar y 20 manos de
-// la mesa por día, y el desafío diario. Lo demás invita a la app (pantalla "enApp"). Cuando salga en
-// Play, se decide si se abre más: alcanza con cambiar WEB_DEMO_ON.
-const WEB_DEMO_ON = true;
+// ---- La web como prueba (apagada) ----
+// La web es la app completa: es como se usa Edge 21 en iPhone y en la computadora. Lo gratis es
+// igual que en Android, y Premium va por la cuenta de Google. Si algún día se quiere volver a una
+// web de prueba (las secciones 1 y 2 de Aprender, los niveles 1 a 3 de Conteo, una tanda de
+// Entrenar y 20 manos por día; lo demás invita a la app), alcanza con poner WEB_DEMO_ON en true.
+const WEB_DEMO_ON = false;
 function webDemo() {
-  if (!WEB_DEMO_ON || APP_MODE) return false;
-  if (!LOCAL) return true;
-  // En localhost (pruebas y capturas) está apagada, salvo que se pida.
-  try {
-    return localStorage.getItem("v21.demo") === "1";
-  } catch {
-    return false;
+  if (APP_MODE) return false;
+  // En localhost (pruebas y capturas) se puede pedir la prueba con v21.demo.
+  if (LOCAL) {
+    try {
+      return localStorage.getItem("v21.demo") === "1";
+    } catch {
+      return false;
+    }
   }
+  return WEB_DEMO_ON;
 }
 const WEB_DEMO = webDemo();
 const DEMO_LESSONS = new Set([

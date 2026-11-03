@@ -362,7 +362,7 @@ function SettingsSheet({ open: a, onClose: e }) {
               <b>Instalar app</b>.
             </p>
             <p style={{ marginTop: 6 }}>
-              Instalada desde tu enlace de GitHub, funciona sin conexión.
+              Instalada, se abre como una app y funciona sin conexión.
             </p>
           </div>
         </>

@@ -416,6 +416,31 @@ const PRUEBAS = {
     await h.foto("limite");
   },
 
+  // La web es la app completa; en el iPhone (Safari), después de la primera lección, aparece cómo
+  // instalarla, y al cerrarlo no vuelve.
+  async instalarIphone(h) {
+    const { page } = h;
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "userAgent", { get: () => "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1" });
+    });
+    await page.evaluate(() => {
+      const k = "ventaja21.state.v1";
+      const s = JSON.parse(localStorage.getItem(k));
+      s.lessons = { l1: { done: true, stars: 3 } };
+      localStorage.setItem(k, JSON.stringify(s));
+      Storage.prototype.setItem = () => {};
+    });
+    await page.reload();
+    await page.waitForTimeout(1200);
+    await h.tab("Aprender", "Learn");
+    await h.see("Tenela como app en tu iPhone.", "Keep it as an app on your iPhone.");
+    check(!(await page.getByText(h.T("Versión web de prueba", "Web trial version")).count()), "la web sigue siendo de prueba");
+    await h.foto("instalar");
+    await h.css('.install-note [aria-label="Cerrar"], .install-note [aria-label="Close"]', 500);
+    check(!(await page.locator(".install-note").count()), "el aviso no se cerró");
+    check((await h.state()).settings.instalarVisto === true, "no se guardó que se cerró");
+  },
+
   // Contrarreloj: empezar, contestar y que corra el reloj.
   async contrarreloj(h) {
     const { page } = h;
