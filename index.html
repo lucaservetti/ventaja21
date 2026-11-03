@@ -78,7 +78,11 @@
   .premium li::before { content: "♠"; position: absolute; left: 4px; color: var(--gold); }
 
   details { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px 20px; margin-bottom: 10px; }
-  summary { cursor: pointer; font-weight: 700; }
+  summary { cursor: pointer; font-weight: 700; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--surface-2); color: var(--gold); font: 600 20px/1 "DM Sans", sans-serif; transition: transform 0.2s; }
+  details[open] summary::after { transform: rotate(45deg); }
+  details[open] { border-color: rgba(233, 185, 73, 0.35); }
   details p { color: var(--text-2); margin: 10px 0 0; }
 
   footer { border-top: 1px solid var(--line); padding: 30px 0 calc(40px + env(safe-area-inset-bottom)); color: var(--text-2); font-size: 14px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; }
@@ -99,7 +103,7 @@
   .vids { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
   .vid { margin: 0; text-align: center; }
   .vid video { width: 100%; aspect-ratio: 9 / 16; border-radius: 26px; border: 3px solid var(--line); background: var(--surface); display: block; object-fit: cover; }
-  .vid figcaption { margin-top: 12px; font-weight: 700; }
+  .vid figcaption { margin-top: 12px; font-weight: 600; color: var(--text-2); text-align: center; font-size: 15px; }
   .vid figcaption span { display: block; font-weight: 400; color: var(--text-2); font-size: 14px; }
 
   /* Cómo funciona: bloques alternados con captura */
@@ -173,7 +177,8 @@
   .qz-suit { position: absolute; left: calc(var(--w) * 0.1); bottom: calc(var(--w) * 0.1); width: calc(var(--w) * 0.44); height: calc(var(--w) * 0.44); fill: currentColor; }
   .qz-card.back { padding: 0; }
   .qz-card.back:after { content: ""; position: absolute; inset: calc(var(--w) * 0.09); border-radius: calc(var(--w) * 0.06); background: repeating-linear-gradient(135deg, #0d261a 0 calc(var(--w) * 0.035), #fafaf6 calc(var(--w) * 0.035) calc(var(--w) * 0.085)); }
-  .qz-total { color: var(--text-2); font-weight: 700; font-size: 15px; }
+  .qz-total { align-self: center; background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; color: var(--text); font-weight: 700; font-size: 14px; white-space: nowrap; }
+  .qz-total:empty { display: none; }
   @keyframes qzIn { from { transform: translateY(-16px) rotate(-6deg); opacity: 0; } }
   .qz-acts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .qz-acts button { border: 0; border-radius: 16px; padding: 14px 8px; font: 800 16px "DM Sans", sans-serif; cursor: pointer; background: #1d5a3d; color: var(--text); box-shadow: 0 4px 0 #0f3524; transition: transform 0.1s, background 0.2s; }
@@ -193,6 +198,29 @@
   .qz-end { margin-top: 14px; padding: 18px 20px; border-radius: 18px; background: rgba(233, 185, 73, 0.1); border: 1px solid rgba(233, 185, 73, 0.4); }
   .qz-end b { display: block; font-size: 18px; margin-bottom: 4px; }
   .qz-end p { margin: 0 0 14px; color: var(--text-2); font-size: 15px; }
+
+  /* Redes */
+  .socials { display: flex; gap: 6px; }
+  .socials a { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; color: var(--text-2); border: 1px solid var(--line); transition: color 0.15s, border-color 0.15s; }
+  .socials a:hover { color: var(--gold); border-color: rgba(233, 185, 73, 0.5); }
+  .socials svg { width: 19px; height: 19px; }
+  .btn svg { width: 20px; height: 20px; flex: none; }
+  a.btn.soon { cursor: pointer; border: 1px solid var(--line); }
+  a.btn.soon:hover { border-color: rgba(233, 185, 73, 0.5); color: var(--text); }
+  .pill { display: inline-block; padding: 5px 12px; border-radius: 999px; background: rgba(233, 185, 73, 0.14); border: 1px solid rgba(233, 185, 73, 0.4); color: var(--gold); font-size: 13px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 14px; }
+
+  /* Lanzamiento: testers y redes */
+  .launch { text-align: center; }
+  .launch .sub { margin: 0 auto 30px; }
+  .launch-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; text-align: left; }
+  .lcard { position: relative; display: flex; flex-direction: column; background: linear-gradient(160deg, #123826, var(--surface) 70%); border: 1px solid var(--line); border-radius: 24px; padding: 26px; }
+  .lcard.main { border-color: rgba(233, 185, 73, 0.55); }
+  .lcard h3 { margin: 0 0 6px; font-size: 21px; }
+  .lcard p { margin: 0 0 20px; color: var(--text-2); font-size: 15.5px; flex: 1; }
+  .lcard ol { margin: 0 0 20px; padding-left: 20px; color: var(--text-2); font-size: 15px; }
+  .lcard ol li { margin: 4px 0; }
+  .lcard .ctas { margin-top: 0; }
+  .lcard .btn { justify-content: center; }
 
   /* Botón fijo en el celular */
   .dock { display: none; }
@@ -220,7 +248,9 @@
     .bar .btn.sm { padding: 8px 13px; font-size: 14px; }
     .vids { grid-template-columns: repeat(3, 72%); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
     .vid { scroll-snap-align: center; }
-    .social, .plans, .feats { grid-template-columns: 1fr; }
+    .social, .plans, .feats, .launch-cards { grid-template-columns: 1fr; }
+    .bar .socials { display: none; }
+    .lcard { padding: 22px; }
     .stats { grid-template-columns: repeat(2, 1fr); }
     .feat { display: grid; grid-template-columns: 46px 1fr; column-gap: 14px; padding: 18px; }
     .feat-ic { grid-row: span 2; margin: 0; }
@@ -249,6 +279,10 @@
       <a href="#premium" data-t="n2"></a>
       <a href="#preguntas" data-t="n3"></a>
     </nav>
+    <div class="socials">
+      <a href="https://www.instagram.com/edge21.app/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor"/></svg></a>
+      <a href="https://www.tiktok.com/@edge21.app" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.2 2.5c.4 2.5 1.9 4.1 4.3 4.4v3.3a7.6 7.6 0 0 1-4.3-1.4v6.6a6 6 0 1 1-6-6h.8v3.4a2.7 2.7 0 1 0 1.9 2.6V2.5z"/></svg></a>
+    </div>
     <div class="lang" role="group" aria-label="Idioma · Language">
       <button type="button" data-lang="es">ES</button>
       <button type="button" data-lang="en">EN</button>
@@ -377,6 +411,7 @@
   <section class="reveal" id="premium">
     <div class="premium">
       <div>
+        <span class="pill" id="p-soon" data-t="p-soon"></span>
         <h2 data-t="p-title"></h2>
         <p class="sub" style="margin:0" data-t="p-sub"></p>
       </div>
@@ -398,10 +433,38 @@
     <p class="note" data-t="p-note"></p>
   </section>
 
+  <section class="reveal" id="lanzamiento">
+    <div class="launch">
+      <span class="pill" data-t="l-pill"></span>
+      <h2 data-t="l-title"></h2>
+      <p class="sub" data-t="l-sub"></p>
+      <div class="launch-cards">
+        <div class="lcard main">
+          <span class="feat-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 18.5h3"/><path d="m9.5 10 2 2 3.5-3.5"/></svg></span>
+          <h3 data-t="l1t"></h3>
+          <p data-t="l1p"></p>
+          <ol><li data-t="l1a"></li><li data-t="l1b"></li><li data-t="l1c"></li></ol>
+          <div class="ctas"><a class="btn gold" id="tester" href="#" data-t="l1btn"></a></div>
+        </div>
+        <div class="lcard">
+          <span class="feat-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6.5 2 6.5H4S6 14 6 9"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></span>
+          <h3 data-t="l2t"></h3>
+          <p data-t="l2p"></p>
+          <div class="ctas">
+            <a class="btn ghost" href="https://www.instagram.com/edge21.app/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor"/></svg>Instagram</a>
+            <a class="btn ghost" href="https://www.tiktok.com/@edge21.app" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.2 2.5c.4 2.5 1.9 4.1 4.3 4.4v3.3a7.6 7.6 0 0 1-4.3-1.4v6.6a6 6 0 1 1-6-6h.8v3.4a2.7 2.7 0 1 0 1.9 2.6V2.5z"/></svg>TikTok</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="reveal" id="preguntas">
     <h2 data-t="q-title"></h2>
     <details><summary data-t="q1"></summary><p data-t="a1"></p></details>
     <details><summary data-t="q2"></summary><p data-t="a2"></p></details>
+    <details class="pre"><summary data-t="q9"></summary><p data-t="a9"></p></details>
+    <details class="pre"><summary data-t="q10"></summary><p data-t="a10"></p></details>
     <details><summary data-t="q5"></summary><p data-t="a5"></p></details>
     <details><summary data-t="q6"></summary><p data-t="a6"></p></details>
     <details><summary data-t="q8"></summary><p data-t="a8"></p></details>
@@ -426,7 +489,8 @@
       <a id="terms" href="terminos.html" data-t="terms"></a>
       <a id="delacc" href="borrar-cuenta.html" data-t="delacc"></a>
       <a href="mailto:soporte@edge21.app">soporte@edge21.app</a>
-      <a href="app/" data-t="go"></a>
+      <a href="https://www.instagram.com/edge21.app/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.tiktok.com/@edge21.app" target="_blank" rel="noopener">TikTok</a>
     </nav>
   </footer>
 </main>
@@ -451,7 +515,14 @@
       n1: "Funciones", n2: "Premium", n3: "Preguntas", go: "Jugar ahora",
       t1: "36 lecciones", t2: "10 niveles de conteo", t3: "Español e inglés", t4: "Sin plata real",
       "v-title": "Mirala en acción", "v-sub": "Así se ve por dentro: cada mano, cada carta y cada apuesta.",
-      v1: "¿Sabés jugar esta mano?<span>La jugada correcta, con el porqué</span>", v2: "Así se cuentan cartas<span>Bajas +1, del 7 al 9 nada, altas −1</span>", v3: "Un casino en tu bolsillo<span>Contá y apostá con el conteo</span>",
+      v1: "La jugada correcta, con el porqué", v2: "Bajas +1, del 7 al 9 nada, altas −1", v3: "Contá y apostá con el conteo",
+      "p-soon": "Llega con la app de Android",
+      "l-pill": "Muy pronto en Google Play", "l-title": "Sé de los primeros", "l-sub": "La app de Android está por salir. Probala antes que nadie o enterate el día que sale.",
+      l1t: "Probala antes que nadie", l1p: "Buscamos personas con Android para probar la app completa antes del lanzamiento, gratis.",
+      l1a: "Escribinos con el mail de tu cuenta de Google Play.", l1b: "Te mandamos la invitación para instalarla.", l1c: "La usás como siempre y nos contás qué mejorarías.", l1btn: "Quiero ser tester",
+      l2t: "Enterate el día que sale", l2p: "Avisamos el lanzamiento en Instagram y TikTok, y subimos un tip de blackjack por día.",
+      q9: "¿Cuándo sale la app?", a9: "La app de Android sale muy pronto en Google Play. Mientras tanto, la podés probar gratis desde la web, y si tenés Android, podés <a href=\"#lanzamiento\">sumarte como tester</a>.",
+      q10: "¿La web es la app completa?", a10: "Por ahora la web es una versión de prueba: las primeras secciones de Aprender, los primeros niveles de conteo y algunas manos por día. Si entrás con Google, tu progreso pasa a la app cuando salga.",
       "h-title": "Cómo funciona", "h-sub": "Tres pasos, a tu ritmo, unos minutos por día.",
       h1a: "Lecciones de 2 a 5 minutos", h1b: "Un mentor te explica cada jugada",
       h2a: "Tandas que apuntan a tus errores", h2b: "Tu rango sube con cada acierto",
@@ -499,7 +570,14 @@
       n1: "Features", n2: "Premium", n3: "FAQ", go: "Play now",
       t1: "36 lessons", t2: "10 counting levels", t3: "Spanish and English", t4: "No real money",
       "v-title": "See it in action", "v-sub": "This is what it looks like inside: every hand, every card and every bet.",
-      v1: "Can you play this hand?<span>The right play, with the why</span>", v2: "How to count cards<span>Low +1, 7 to 9 zero, high −1</span>", v3: "A casino in your pocket<span>Count and bet with the count</span>",
+      v1: "The right play, with the why", v2: "Low +1, 7 to 9 zero, high −1", v3: "Count and bet with the count",
+      "p-soon": "Coming with the Android app",
+      "l-pill": "Coming soon to Google Play", "l-title": "Be one of the first", "l-sub": "The Android app is about to launch. Try it before anyone else or find out the day it's out.",
+      l1t: "Try it before anyone else", l1p: "We're looking for Android users to test the full app before launch, for free.",
+      l1a: "Email us with your Google Play account address.", l1b: "We'll send you the invite to install it.", l1c: "Use it as usual and tell us what you'd improve.", l1btn: "I want to be a tester",
+      l2t: "Find out the day it's out", l2p: "We'll announce the launch on Instagram and TikTok, and post a blackjack tip every day.",
+      q9: "When does the app come out?", a9: "The Android app is coming very soon to Google Play. Meanwhile, you can try it for free on the web, and if you have Android, you can <a href=\"#lanzamiento\">join as a tester</a>.",
+      q10: "Is the web the full app?", a10: "For now the web is a trial version: the first Learn sections, the first counting levels and a few hands a day. If you sign in with Google, your progress moves to the app when it's out.",
       "h-title": "How it works", "h-sub": "Three steps, at your own pace, a few minutes a day.",
       h1a: "2 to 5 minute lessons", h1b: "A mentor explains every play",
       h2a: "Rounds that target your mistakes", h2b: "Your rank climbs with every right play",
@@ -553,7 +631,14 @@
     const play = document.getElementById("play");
     play.textContent = PUBLISHED ? t.play : t.soon;
     play.className = PUBLISHED ? "btn gold" : "btn soon";
-    if (PUBLISHED) play.href = PLAY_URL; else play.removeAttribute("href");
+    play.href = PUBLISHED ? PLAY_URL : "#lanzamiento";
+    // Antes de salir en Play: invitar a ser tester. Después, esa parte y la pregunta "¿cuándo sale?" se van.
+    document.getElementById("lanzamiento").hidden = PUBLISHED;
+    document.getElementById("p-soon").hidden = PUBLISHED;
+    document.querySelectorAll("details.pre").forEach((d) => (d.hidden = PUBLISHED));
+    const sub = lang === "en" ? "I want to try Edge 21 on Android" : "Quiero probar Edge 21 en Android";
+    const body = lang === "en" ? "My Google Play email is: " : "Mi mail de Google Play es: ";
+    document.getElementById("tester").href = `mailto:soporte@edge21.app?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
     for (const [id, f] of [["privacy", "privacidad"], ["terms", "terminos"], ["delacc", "borrar-cuenta"]])
       document.getElementById(id).href = `${f}.html${lang === "en" ? "#en" : ""}`;
     try { localStorage.setItem("edge21.lang", lang); } catch {}
