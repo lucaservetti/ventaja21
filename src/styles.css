@@ -9165,3 +9165,19 @@ html[data-theme="light"] .tab.on .tab-ic {
     font-size: 11.5px;
   }
 }
+.heat-wrap {
+  container-type: inline-size;
+}
+@container (max-width: 300px) {
+  .heat-row {
+    grid-template-columns: 32px repeat(10, minmax(0, 1fr));
+    gap: 3px;
+  }
+  .heat-row .chart-col {
+    font-size: 11px;
+    letter-spacing: -0.07em;
+  }
+  .heat-row .chart-rowlabel {
+    font-size: 11.5px;
+  }
+}

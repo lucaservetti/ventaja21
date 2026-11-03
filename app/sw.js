@@ -1,5 +1,5 @@
-// Edge 21 · service worker 1.13.0 (9d4ae1c2a3)
-const CACHE = "v21-1.13.0-9d4ae1c2a3";
+// Edge 21 · service worker 1.13.0 (20a5868171)
+const CACHE = "v21-1.13.0-20a5868171";
 const CORE = [
   "./",
   "./index.html",

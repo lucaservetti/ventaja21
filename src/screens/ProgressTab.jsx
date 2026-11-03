@@ -510,34 +510,47 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
       </div>
       <div className="card" style={{ marginTop: 14 }}>
         <div className="eyebrow">Precisión en el tiempo</div>
-        <div className="bars" style={{ marginBottom: 34 }}>
-          {Array.from({ length: 7 }, (r, u) => {
-            let d = o[o.length - 7 + u];
-            if (!d)
-              return <span className="b" style={{ height: 14 }} key={u} />;
-            let p = d.ok / d.n,
-              f = d.after - d.before;
-            return (
-              <span
-                className={cx("b", p >= 0.9 ? "on" : p >= 0.7 ? "mid" : "low")}
-                style={{ height: `${Math.max(10, p * 100)}%` }}
-                key={u}
-              >
-                <span className={f >= 0 ? "good" : "bad"}>
-                  {f >= 0 ? "+" : "−"}
-                  {Math.abs(f)}
+        {o.length ? null : (
+          <p className="muted small" style={{ marginTop: 8 }}>
+            Todavía no hiciste ninguna tanda en Entrenar. Cuando hagas la
+            primera, acá ves cómo vas mejorando.
+          </p>
+        )}
+        {o.length ? (
+          <div className="bars" style={{ marginBottom: 34 }}>
+            {Array.from({ length: 7 }, (r, u) => {
+              let d = o[o.length - 7 + u];
+              if (!d)
+                return <span className="b" style={{ height: 14 }} key={u} />;
+              let p = d.ok / d.n,
+                f = d.after - d.before;
+              return (
+                <span
+                  className={cx(
+                    "b",
+                    p >= 0.9 ? "on" : p >= 0.7 ? "mid" : "low",
+                  )}
+                  style={{ height: `${Math.max(10, p * 100)}%` }}
+                  key={u}
+                >
+                  <span className={f >= 0 ? "good" : "bad"}>
+                    {f >= 0 ? "+" : "−"}
+                    {Math.abs(f)}
+                  </span>
                 </span>
-              </span>
-            );
-          })}
-        </div>
-        <div className="row between small muted">
-          <span>Más vieja</span>
-          <span>
-            {"tus últimas "}
-            {o.length} {o.length === 1 ? "tanda" : "tandas"}
-          </span>
-        </div>
+              );
+            })}
+          </div>
+        ) : null}
+        {o.length ? (
+          <div className="row between small muted">
+            <span>Más vieja</span>
+            <span>
+              {"tus últimas "}
+              {o.length} {o.length === 1 ? "tanda" : "tandas"}
+            </span>
+          </div>
+        ) : null}
       </div>
       <div className="card" style={{ marginTop: 14 }}>
         <div className="eyebrow">Por tipo de mano</div>
@@ -617,7 +630,7 @@ function Heatmap({ cells: a }) {
               keys: [`P${n}`],
             }));
   return (
-    <div style={{ marginTop: 12 }}>
+    <div className="heat-wrap" style={{ marginTop: 12 }}>
       <Segmented
         small={true}
         options={[
