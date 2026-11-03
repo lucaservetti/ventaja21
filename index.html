@@ -168,7 +168,7 @@
   .qz-table { background: #0d3b26; border: 2px solid rgba(233, 185, 73, 0.35); border-radius: 26px; padding: 22px; display: grid; gap: 18px; box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.35); }
   .qz-side { display: flex; align-items: center; gap: 14px; }
   .qz-side small { display: block; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(243, 239, 226, 0.7); font-weight: 800; width: 92px; }
-  .qz-cards { display: flex; gap: 8px; }
+  .qz-cards { display: flex; gap: 12px; }
   /* Cartas: las mismas que la app (Oswald para el número, el palo abajo, el dorso a rayas). */
   .qz-card { --w: 64px; position: relative; width: var(--w); height: calc(var(--w) * 1.4); border-radius: calc(var(--w) * 0.14); background: #fafaf6; color: #121214; box-shadow: 0 2px 8px rgba(6, 17, 12, 0.45); flex: none; animation: qzIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
   .qz-card.red { color: #d41f2a; }
@@ -181,9 +181,9 @@
   .qz-total:empty { display: none; }
   .quiz > div { min-width: 0; }
   .qz-table { container-type: inline-size; }
-  @container (max-width: 330px) {
-    .qz-table .qz-side { flex-wrap: wrap; gap: 6px 10px; }
-    .qz-table .qz-side small { width: 100%; }
+  @container (max-width: 380px) {
+    .qz-table .qz-side { display: grid; justify-items: center; gap: 8px; }
+    .qz-table .qz-side small { width: auto; text-align: center; }
   }
   @media (max-width: 400px) { .qz-table { padding: 16px; gap: 14px; } .quiz { padding: 22px 14px; } }
   @keyframes qzIn { from { transform: translateY(-16px) rotate(-6deg); opacity: 0; } }
