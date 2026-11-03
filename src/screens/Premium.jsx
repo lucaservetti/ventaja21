@@ -319,7 +319,7 @@ function Premium({ feature }) {
           <span className="li-text">
             <span className="li-title">También lo podés ganar</span>
             <span className="li-sub" style={{ display: "block" }}>
-              Días de Premium de regalo por jugar seguido o quedar en el podio
+              Días de Premium de regalo por jugar seguido o terminar las lecciones
             </span>
           </span>
           <Icon name="chev" className="li-chev" />

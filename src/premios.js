@@ -15,6 +15,9 @@ const TOPE_DIAS = 14;
 const TOPE_VENTANA = 30;
 // El podio solo cuenta en semanas con al menos esta cantidad de jugadores.
 const PODIO_MIN = 10;
+// El premio del podio está en pausa hasta que haya más gente en el ranking (al principio lo
+// ganarían siempre los mismos). Para activarlo: true acá y PODIO = "1" en servidor/wrangler.toml.
+const PODIO_ACTIVO = false;
 const DAY = 24 * 60 * 60 * 1000;
 
 function dayKeyUTC(t) {
@@ -62,6 +65,7 @@ function diasRecientes(ganados, now) {
 
 export {
   DAY,
+  PODIO_ACTIVO,
   PODIO_MIN,
   PREMIOS,
   TOPE_DIAS,

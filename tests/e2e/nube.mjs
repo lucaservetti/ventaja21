@@ -115,6 +115,25 @@ await paso("en otro celular nuevo, entrar trae el progreso", async () => {
   check(await b.locator("nav.tabbar").isVisible(), "no pasó la bienvenida");
 });
 
+await paso("cerrar sesión guarda en la cuenta y deja el aparato como nuevo; volver a entrar lo trae", async () => {
+  await b.locator('nav.tabbar button:has-text("Conteo")').click();
+  await b.getByRole("button", { name: "Ajustes" }).filter({ visible: true }).first().click();
+  await b.getByText("Tu cuenta", { exact: true }).click();
+  await b.waitForTimeout(400);
+  await b.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+  await b.getByText("¿Cerrar sesión?").waitFor({ timeout: 3000 });
+  await b.getByRole("button", { name: "Sí, cerrar sesión" }).click();
+  await b.waitForTimeout(1200);
+  const st = await state(b);
+  check(!(st.lessons && st.lessons.l1 && st.lessons.l1.done) && !(st.train && st.train.totalHands), "el progreso quedó en el aparato");
+  check(!(await b.evaluate(() => localStorage.getItem("edge21.account"))), "la sesión sigue abierta");
+  const r = await b.evaluate((t) => window.__cloudTest.finishSignIn(t), fakeGoogle("g-ana", "Ana Pérez", "ana@ejemplo.com"));
+  check(r === "restored", `al volver a entrar: ${r}`);
+  await b.waitForTimeout(500);
+  const st2 = await state(b);
+  check(st2.lessons.l1 && st2.lessons.l1.done && st2.train.totalHands === 42, "no volvió el progreso");
+});
+
 const c = await phone(otroProgreso);
 await paso("con progreso en los dos lados pregunta, y elegir el de la cuenta lo trae", async () => {
   // Abrir la pantalla de cuenta desde Ajustes.

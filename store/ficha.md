@@ -41,7 +41,7 @@ PREMIUM (MENSUAL, ANUAL CON PRUEBA GRATIS, O UN SOLO PAGO)
 • La mesa a tu medida: cada regla a mano (mazos, corte, 3:2 o 6:5, H17, rendición y más) y dos manos por ronda.
 • Guía y progreso completos: desviaciones, el valor de cada regla y tu historial con todas tus tandas.
 • Sistemas de conteo avanzados y diario de casino real.
-• O ganalo jugando: días de Premium de regalo por racha, podio semanal y terminar las lecciones.
+• O ganalo jugando: días de Premium de regalo por racha y por terminar las lecciones.
 
 TU PROGRESO, TUYO
 • Meta diaria, racha, logros y tu perfil de jugador con puntos fuertes y débiles.

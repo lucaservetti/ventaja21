@@ -27,6 +27,8 @@ simple = { limit = 10, period = 60 }
 PROJECT_ID = "edge21-fb71e"
 # Premio de bienvenida (3 días por entrar con Google): "1" cuando la app esté en Google Play.
 BIENVENIDA = "0"
+# Premio del podio semanal: "1" cuando haya bastante gente en el ranking (ver src/premios.js).
+PODIO = "0"
 # Pagos en la web (Paddle): el código del precio "Para siempre" (pri_…). Ver PAGOS_WEB.md.
 PADDLE_PRECIO_SIEMPRE = ""
 

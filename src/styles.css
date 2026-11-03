@@ -9541,3 +9541,176 @@ html[data-theme="light"] .cele-card {
 .install-note .icon-btn {
   flex: none;
 }
+
+/* Premios: separación entre el aviso de entrar y la lista, y el podio en pausa. */
+.pz-signin,
+.pz-gift {
+  margin-bottom: 14px;
+}
+.pz-proximamente {
+  opacity: 0.72;
+}
+.pz-proximamente .pz-days {
+  background: var(--surface-3);
+  color: var(--text-2);
+}
+
+/* ---------- La web en la compu (pantalla ancha) ----------
+   El menú pasa al costado y queda siempre a la vista; el contenido se centra en una columna más
+   ancha; las hojas se abren como ventanas en el medio. Ver src/escritorio.js. */
+.tab-brand,
+.tab-install {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .app.escritorio {
+    --side: 248px;
+    --col: 780px;
+    max-width: none;
+  }
+  .app.escritorio .layer {
+    left: var(--side);
+    --gutter-l: max(36px, calc((100vw - var(--side) - var(--col)) / 2));
+    --gutter-r: var(--gutter-l);
+    padding-top: 30px;
+  }
+  .app.escritorio .layer.with-tabbar,
+  .app.escritorio .layer.layer-sim {
+    padding-bottom: 40px;
+  }
+  .app.escritorio .layer-sim > .sim {
+    min-height: 640px;
+  }
+  /* El menú al costado. */
+  .app.escritorio .tabbar {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: var(--side);
+    max-width: none;
+    margin: 0;
+    padding: 26px 14px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    border-top: 0;
+    border-right: 1px solid #133725;
+    background: var(--tabbar-bg);
+    z-index: 60;
+  }
+  .app.escritorio .tab-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+    font-size: 21px;
+    letter-spacing: -0.02em;
+  }
+  .app.escritorio .tabbar-in {
+    flex-direction: column;
+    height: auto;
+    gap: 4px;
+  }
+  .app.escritorio .tab {
+    flex: none;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 14px;
+    font-size: 16px;
+    color: var(--text-2);
+    transition: background 0.15s;
+  }
+  .app.escritorio .tab .tab-ic {
+    width: 40px;
+    height: 36px;
+    border-radius: 11px;
+  }
+  .app.escritorio .tab:hover {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+  .app.escritorio .tab.on {
+    background: var(--surface-2);
+    color: var(--accent-text);
+  }
+  .app.escritorio .tab-install {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--accent-line);
+    color: var(--accent-text);
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .app.escritorio .tab-install:hover {
+    background: var(--accent-soft);
+  }
+  /* Lo que flota sobre la pantalla, corrido al lado del menú. */
+  .app.escritorio .float-cta {
+    left: var(--side);
+    max-width: calc(var(--col) + 72px);
+    bottom: 26px;
+    padding-left: 36px;
+    padding-right: 36px;
+  }
+  .app.escritorio .cta-spacer {
+    height: 70px;
+  }
+  .app.escritorio .update-card {
+    left: var(--side);
+    bottom: 24px;
+  }
+  .app.escritorio .toasts,
+  .app.escritorio .cele {
+    left: var(--side);
+  }
+  /* Hojas (Ajustes, la tabla, la mesa…) como ventana en el medio. */
+  .app.escritorio .sheet-wrap {
+    left: var(--side);
+    align-items: center;
+    padding: 32px;
+  }
+  .app.escritorio .sheet {
+    max-width: 640px;
+    max-height: calc(100vh - 64px);
+    border-radius: 26px;
+    animation: pop 0.22s ease both;
+    box-shadow: 0 24px 60px #000a;
+  }
+  .app.escritorio .sheet.tall {
+    height: min(880px, calc(100vh - 64px));
+  }
+  .app.escritorio .closing .sheet {
+    animation: fadeOut 0.18s ease both;
+  }
+  .app.escritorio .sheet-handle {
+    display: none;
+  }
+  .app.escritorio .modal-wrap {
+    left: var(--side);
+  }
+  /* Con mouse: que se note qué se puede tocar. */
+  .app.escritorio .list-item,
+  .app.escritorio .card[role="button"],
+  .app.escritorio button.card {
+    transition:
+      filter 0.15s,
+      transform 0.15s;
+  }
+  .app.escritorio .list-item:hover,
+  .app.escritorio button.card:hover {
+    filter: brightness(1.1);
+  }
+  .app.escritorio .credit {
+    margin-top: 28px;
+  }
+}
+html[data-theme="light"] .app.escritorio .tabbar {
+  border-right-color: var(--line);
+}

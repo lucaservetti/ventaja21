@@ -7,7 +7,7 @@ import { Button, cx } from "../ui/components.jsx";
 import { TopBar } from "../ui/common.jsx";
 import { useNav } from "../nav.js";
 import { checkPremios, useAccount, usePremios } from "../cloud.js";
-import { PREMIOS, TOPE_DIAS } from "../premios.js";
+import { PODIO_ACTIVO, PREMIOS, TOPE_DIAS } from "../premios.js";
 import { LOCALE } from "../i18n/index.js";
 import { giftUntil } from "../platform.js";
 
@@ -65,8 +65,9 @@ function Premios() {
         </span>
         <h1 className="prem-title">Ganá Premium jugando</h1>
         <p className="muted">
-          Días de Premium de regalo por jugar seguido, quedar en el podio o
-          terminar las lecciones.
+          {PODIO_ACTIVO
+            ? "Días de Premium de regalo por jugar seguido, quedar en el podio o terminar las lecciones."
+            : "Días de Premium de regalo por jugar seguido o terminar las lecciones."}
         </p>
       </div>
       {!acct ? (
@@ -97,7 +98,12 @@ function Premios() {
         {PREMIOS.map((p) => {
           const info = INFO[p.id];
           const s = mine && mine.premios.find((x) => x.id === p.id);
-          const estado = s ? s.estado : "progreso";
+          const estado =
+            p.id === "podio" && !PODIO_ACTIVO && !(s && s.veces)
+              ? "proximamente"
+              : s
+                ? s.estado
+                : "progreso";
           const done = estado === "ganado" || estado === "nuevo";
           return (
             <div
@@ -110,7 +116,11 @@ function Premios() {
               <div className="pz-text">
                 <div className="pz-head">
                   <b>{info.title}</b>
-                  <span className="pz-days">+{diasText(p.dias)}</span>
+                  <span className="pz-days">
+                    {estado === "proximamente"
+                      ? "Próximamente"
+                      : `+${diasText(p.dias)}`}
+                  </span>
                 </div>
                 <p className="muted small">{info.sub}</p>
                 {s && s.meta && !done && estado !== "pronto" ? (
@@ -124,7 +134,9 @@ function Premios() {
                   </div>
                 ) : null}
                 <p className="small pz-state">
-                  {estado === "pronto"
+                  {estado === "proximamente"
+                    ? "Se activa cuando haya más jugadores en el ranking."
+                    : estado === "pronto"
                     ? "Ya lo tenés guardado: se activa cuando la app salga en Google Play."
                     : estado === "nuevo"
                       ? `¡Ganaste ${diasText(p.dias)} de Premium!`

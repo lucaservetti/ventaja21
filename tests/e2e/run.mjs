@@ -448,6 +448,65 @@ const PRUEBAS = {
     check((await h.state()).settings.instalarVisto === true, "no se guardó que se cerró");
   },
 
+  // "Atrás" no saca de la app: abrir una pantalla desde una hoja (Ajustes → Tu cuenta) y volver,
+  // con el botón de la app y con el del navegador, deja en la app (antes llevaba a la página de inicio).
+  async volverAtras(h) {
+    const { page } = h;
+    const ajustes = 'section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]';
+    const enApp = () => page.evaluate(() => /\/app\/(index\.html)?$/.test(location.pathname));
+    await h.tab("Progreso", "Progress");
+    for (let vuelta = 0; vuelta < 2; vuelta++) {
+      await h.css(ajustes, 600);
+      await h.click("Tu cuenta", "Your account", { wait: 700 });
+      // Volver: la primera vez con el botón de la app, la segunda con el del navegador.
+      if (vuelta === 0) await page.locator('.layer.full [aria-label="Volver"], .layer.full [aria-label="Back"]').filter({ visible: true }).first().click();
+      else await page.goBack();
+      await page.waitForTimeout(700);
+      check(await enApp(), `salió de la app (vuelta ${vuelta + 1})`);
+      check(!(await page.locator(".layer.full").filter({ visible: true }).count()), "la pantalla no se cerró");
+    }
+    // Abrir y cerrar Ajustes con la X, varias veces: sigue en la app.
+    for (let i = 0; i < 3; i++) {
+      await h.css(ajustes, 500);
+      await page.locator('.sheet [aria-label="Cerrar"], .sheet [aria-label="Close"]').filter({ visible: true }).first().click();
+      await page.waitForTimeout(500);
+    }
+    check(await enApp(), "cerrar Ajustes sacó de la app");
+    await h.see("Progreso", "Progress");
+  },
+
+  // En la compu: menú al costado (siempre a la vista), Ajustes como ventana en el medio, el menú
+  // cierra una pantalla abierta, y las teclas H/S/D/P/R juegan en Entrenar.
+  async escritorio(h) {
+    const { page } = h;
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.waitForTimeout(400);
+    const menu = await page.locator("nav.tabbar").boundingBox();
+    check(menu && menu.x === 0 && menu.width > 200 && menu.height > 800, `el menú no está al costado: ${JSON.stringify(menu)}`);
+    check(await page.locator(".tab-brand").isVisible(), "no se ve la marca en el menú");
+    await h.foto("menu");
+    // Ajustes: ventana en el medio (no pegada abajo).
+    await h.tab("Progreso", "Progress");
+    await h.css('section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    const hoja = await page.locator(".sheet").boundingBox();
+    check(hoja && hoja.y > 10 && hoja.y + hoja.height < 900 - 10 && hoja.x > 248, `Ajustes no quedó en el medio: ${JSON.stringify(hoja)}`);
+    await h.foto("ajustes");
+    // Abrir una pantalla y usar el menú: se cierra y va a esa pestaña.
+    await h.click("Tu cuenta", "Your account", { wait: 700 });
+    check(await page.locator("nav.tabbar").isVisible(), "con una pantalla abierta el menú desaparece");
+    await h.tab("Aprender", "Learn");
+    await page.waitForTimeout(500);
+    check(!(await page.locator(".layer.full").filter({ visible: true }).count()), "el menú no cerró la pantalla");
+    // Teclado en Entrenar: "S" se planta.
+    await h.tab("Entrenar", "Train");
+    await h.click("Repartir 10 manos", "Deal 10 hands", { wait: 900 });
+    await page.keyboard.press("s");
+    await page.waitForTimeout(500);
+    const txt = await h.screenText();
+    check(/Correcto|No era esa|Correct|Not that one/.test(txt), "la tecla S no jugó");
+    await h.foto("teclado");
+  },
+
   // Contrarreloj: empezar, contestar y que corra el reloj.
   async contrarreloj(h) {
     const { page } = h;

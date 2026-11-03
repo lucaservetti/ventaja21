@@ -156,6 +156,17 @@ await paso("podio en una semana con pocos jugadores: no cuenta", async () => {
   check(estado(d, "podio") === "progreso", "dio podio con un solo jugador");
 });
 
+await paso("podio en pausa (PODIO = 0): no se da aunque gane, y figura como próximamente", async () => {
+  const u = await user();
+  const monday = mondayUTC(Date.now() - 7 * DAY);
+  for (let i = 0; i < 7; i++) await put(`daily/${dayKeyUTC(Date.parse(monday) + i * DAY)}/scores/${u.uid}`, { name: "yo", score: 120, ok: true, t: 1 });
+  for (let i = 0; i < 11; i++) await put(`weekly/${monday}/scores/pausa${i}`, { name: `o${i}`, score: 100 + i, t: 1 });
+  await put(`weekly/${monday}/scores/${u.uid}`, { name: "yo", score: 700, t: 1 });
+  const d = await premios(u.uid, { ...env, PODIO: "0" }, Date.now(), { onTime: always });
+  check(estado(d, "podio") === "proximamente", `estado ${estado(d, "podio")}`);
+  check(!d.nuevos.includes("podio"), "dio el podio estando en pausa");
+});
+
 await paso("puntaje semanal inventado (más que la suma de los diarios): no da podio", async () => {
   const u = await user();
   const monday = mondayUTC(Date.now() - 21 * DAY);

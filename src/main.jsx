@@ -17,6 +17,8 @@ import {
   useState,
 } from "react";
 import { createRoot } from "react-dom/client";
+import { Logo } from "./ui/common.jsx";
+import { instalarEscritorio, useEscritorio, usePuedeInstalar } from "./escritorio.js";
 import { jsx as _jsx } from "react/jsx-runtime";
 import {
   getState,
@@ -166,29 +168,56 @@ function App() {
     u = useRef(o);
   r.current = l;
   u.current = o;
+  // En la compu (pantalla ancha, web): menú al costado siempre visible y contenido más ancho.
+  const desk = useEscritorio();
+  // Historial del navegador: cada pantalla u hoja abierta suma una entrada, así "atrás" la cierra.
+  // `d` cuenta los "atrás" que hizo la app (no la persona) y que todavía no llegaron. Mientras haya
+  // uno en camino, una pantalla nueva espera a que llegue para sumar su entrada: si no, el "atrás"
+  // pendiente se comería la entrada nueva y el próximo "atrás" sacaría de la app (a la página de
+  // inicio). Pasaba al cerrar Ajustes y abrir otra pantalla desde ahí.
   let d = useRef(0),
-    p = () => {
+    porSumar = useRef(0),
+    espera = useRef(0),
+    sumar = () => {
       try {
         history.pushState({ v21: screenSeq }, "");
-        return true;
       } catch {
-        return false;
+        // sin historial: la pantalla igual se abre
+      }
+    },
+    soltar = () => {
+      clearTimeout(espera.current);
+      d.current = 0;
+      for (; porSumar.current > 0; porSumar.current--) sumar();
+    },
+    p = () => {
+      if (d.current > 0) {
+        porSumar.current++;
+        return true;
+      }
+      sumar();
+      return true;
+    },
+    atras = (n) => {
+      d.current++;
+      clearTimeout(espera.current);
+      // Por si el navegador no avisa (no había adónde volver): no dejar nada esperando.
+      espera.current = setTimeout(soltar, 1200);
+      try {
+        if (n > 1) history.go(-n);
+        else history.back();
+      } catch {
+        soltar();
       }
     },
     f = (k) => {
-      if (k && k.hist) {
-        d.current++;
-        try {
-          history.back();
-        } catch {
-          d.current--;
-        }
-      }
+      if (k && k.hist) atras(1);
     };
   useEffect(() => {
     let k = () => {
       if (d.current > 0) {
         d.current--;
+        if (d.current === 0) soltar();
         return;
       }
       if (u.current) {
@@ -288,14 +317,7 @@ function App() {
         let k = r.current;
         i([]);
         let v = k.filter((m) => m.hist).length;
-        if (v) {
-          d.current += 1;
-          try {
-            history.go(-v);
-          } catch {
-            d.current--;
-          }
-        }
+        if (v) atras(v);
       },
       goTab(k) {
         this.popAll();
@@ -461,7 +483,7 @@ function App() {
   let C = o ? SHEETS[o.name] : null;
   return (
     <NavContext.Provider value={y}>
-      <div className="app">
+      <div className={cx("app", desk && "escritorio")}>
         {TABS.map((k) => {
           if (!s[k.id]) return null;
           let v = TAB_SCREENS[k.id];
@@ -508,7 +530,20 @@ function App() {
         {l.length === 0 && !o && a.cele && a.cele.pend && a.cele.pend.length ? (
           <Celebracion item={a.cele.pend[0]} />
         ) : null}
-        {l.length === 0 ? <TabBar tab={e} onTab={(k) => y.setTab(k)} /> : null}
+        {l.length === 0 || desk ? (
+          <TabBar
+            tab={e}
+            onTab={(k) => {
+              if (!r.current.length) return y.setTab(k);
+              // En la compu el menú queda a la vista con una pantalla abierta: si esa pantalla pide
+              // confirmar antes de salir (una lección, la mesa), se le pregunta; si no, se va.
+              const top = r.current[r.current.length - 1];
+              if (top.params && top.params.confirmExit)
+                window.dispatchEvent(new CustomEvent("v21-back"));
+              else y.goTab(k);
+            }}
+          />
+        ) : null}
         {C ? (
           <C open={true} onClose={() => y.closeSheet()} {...o.props} />
         ) : null}
@@ -554,8 +589,14 @@ function AvisoVersion() {
   );
 }
 function TabBar({ tab: a, onTab: e }) {
+  const instalar = usePuedeInstalar();
   return (
     <nav className="tabbar" aria-label="Secciones">
+      {/* Solo en la compu (menú al costado): la marca arriba y, si se puede, instalarla. */}
+      <div className="tab-brand" aria-hidden="true">
+        <Logo size={34} />
+        <b>Edge 21</b>
+      </div>
       <div className="tabbar-in">
         {TABS.map((t) => (
           <button
@@ -572,6 +613,16 @@ function TabBar({ tab: a, onTab: e }) {
           </button>
         ))}
       </div>
+      {instalar ? (
+        <button
+          type="button"
+          className="tab-install"
+          onClick={instalarEscritorio}
+        >
+          <Icon name="download" size={18} />
+          <span>Instalar en la compu</span>
+        </button>
+      ) : null}
     </nav>
   );
 }
