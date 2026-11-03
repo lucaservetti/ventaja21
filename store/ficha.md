@@ -20,7 +20,7 @@ APRENDÉ A CONTAR CARTAS
 • Ruta de conteo de 10 niveles: de los valores de las cartas a contar un zapato entero.
 • Conteo corrido y conteo real, con práctica guiada antes de cada nivel.
 • Desafío diario con un formato distinto cada día, ranking semanal y velocidad de conteo: ¿llegás al ritmo del casino?
-• Hi-Lo, KO y Hi-Opt I gratis; Zen, Omega II, Wong Halves y más con Premium.
+• Hi-Lo y KO gratis; Hi-Opt I y II, Zen, Omega II y Wong Halves con Premium.
 
 ENTRENÁ DONDE FALLÁS
 • Tandas de manos apuntadas a tus puntos débiles: duras, blandas y pares.

@@ -64,7 +64,7 @@ const PERKS = [
   {
     icon: "layers",
     title: "Sistemas de conteo avanzados",
-    sub: "Hi-Opt II, Zen, Omega II y Wong Halves. Hi-Lo, KO y Hi-Opt I siguen gratis.",
+    sub: "Hi-Opt I, Hi-Opt II, Zen, Omega II y Wong Halves. Hi-Lo y KO siguen gratis.",
   },
   {
     icon: "book",

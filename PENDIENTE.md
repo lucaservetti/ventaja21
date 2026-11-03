@@ -8,8 +8,6 @@
      3. Crear en Google Cloud (proyecto edge21-fb71e) un cliente OAuth **Android**, con el paquete `com.lucaservetti.ventaja21` y ese SHA-1.
    - Cuando la app esté en Play, se agrega también el SHA-1 de la firma de Play (Play Console → Integridad de la app).
 2. **Mail:** "Enviar como soporte@edge21.app" desde Gmail (pasos C y D). Google no dejó crear la contraseña de aplicación; probar en unos días desde el celular, después de agregarle un teléfono de recuperación a edge21app@gmail.com.
-3. **Publicar las reglas nuevas de la base de datos** (cuando se publique esta versión): Firebase → Firestore Database → Reglas → pegar `firestore.rules` → Publicar. Ver `CUENTA_GOOGLE.md`.
-4. **Recomendado: limitar la clave de Firebase.** Google Cloud → proyecto edge21-fb71e → **APIs y servicios → Credenciales** → la clave "Browser key" → **Restricciones de API** → elegí solo *Identity Toolkit API*, *Token Service API* y *Cloud Firestore API* → Guardar. La clave es pública por diseño, pero así no sirve para otros servicios de Google.
 
 ## Al lanzar en Google Play
 
@@ -20,6 +18,7 @@
 - Mail de soporte: avisarles a los testers.
 
 ## Hecho
+- Firebase (3 de noviembre): reglas nuevas publicadas y clave "Browser key" limitada a Identity Toolkit, Token Service y Cloud Firestore. Probado: inicio de sesión, ranking y bloqueo del resto de las APIs.
 - Revisión de seguridad (3 de noviembre):
   - sin claves secretas en todo el historial;
   - reglas más estrictas, con 21 intentos de ataque probados (`tests/reglas.mjs`);
