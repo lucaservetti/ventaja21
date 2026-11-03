@@ -215,6 +215,13 @@ const PRUEBAS = {
       stuck = done === last ? stuck + 1 : 0;
       last = done;
       check(stuck < 250, `se trabó después de ${done} lecciones`);
+      // Terminar una sección se festeja (pantalla encima de todo): se cierra con "Seguir".
+      const cele = page.locator(".cele .cele-btns button").filter({ visible: true }).first();
+      if (await cele.count()) {
+        await cele.click({ timeout: 3000 }).catch(() => {});
+        await page.waitForTimeout(200);
+        continue;
+      }
       if (!(await page.locator(".layer.full").filter({ visible: true }).count())) {
         // En la pestaña: abrir la primera lección sin terminar.
         const next = page.locator("section:not([hidden]) .rail li:not(.rr-done)").first();
