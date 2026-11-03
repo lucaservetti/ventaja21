@@ -179,6 +179,13 @@
   .qz-card.back:after { content: ""; position: absolute; inset: calc(var(--w) * 0.09); border-radius: calc(var(--w) * 0.06); background: repeating-linear-gradient(135deg, #0d261a 0 calc(var(--w) * 0.035), #fafaf6 calc(var(--w) * 0.035) calc(var(--w) * 0.085)); }
   .qz-total { align-self: center; background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; color: var(--text); font-weight: 700; font-size: 14px; white-space: nowrap; }
   .qz-total:empty { display: none; }
+  .quiz > div { min-width: 0; }
+  .qz-table { container-type: inline-size; }
+  @container (max-width: 330px) {
+    .qz-table .qz-side { flex-wrap: wrap; gap: 6px 10px; }
+    .qz-table .qz-side small { width: 100%; }
+  }
+  @media (max-width: 400px) { .qz-table { padding: 16px; gap: 14px; } .quiz { padding: 22px 14px; } }
   @keyframes qzIn { from { transform: translateY(-16px) rotate(-6deg); opacity: 0; } }
   .qz-acts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .qz-acts button { border: 0; border-radius: 16px; padding: 14px 8px; font: 800 16px "DM Sans", sans-serif; cursor: pointer; background: #1d5a3d; color: var(--text); box-shadow: 0 4px 0 #0f3524; transition: transform 0.1s, background 0.2s; }
@@ -199,6 +206,42 @@
   .qz-end b { display: block; font-size: 18px; margin-bottom: 4px; }
   .qz-end p { margin: 0 0 14px; color: var(--text-2); font-size: 15px; }
 
+  /* ---------- Fondo con textura de paño, luces y palos ---------- */
+  :root { --suits: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='%23e9b949'%3E%3Cpath transform='translate%2814 14%29 scale%28.75%29' d='M12 2.2c-2.6 3.9-8.3 7-8.3 11.4 0 2.6 2 4.5 4.4 4.5 1.5 0 2.7-.7 3.4-1.7-.3 2-1.2 3.6-2.6 5.1h6.2c-1.4-1.5-2.3-3.1-2.6-5.1.7 1 1.9 1.7 3.4 1.7 2.4 0 4.4-1.9 4.4-4.5 0-4.4-5.7-7.5-8.3-11.4z'/%3E%3Cpath transform='translate%2874 14%29 scale%28.75%29 rotate%2812 12 12%29' d='M12 21.3S2.7 15.5 2.7 9.1C2.7 6 5 3.6 7.9 3.6c1.8 0 3.3.9 4.1 2.3.8-1.4 2.3-2.3 4.1-2.3 2.9 0 5.2 2.4 5.2 5.5 0 6.4-9.3 12.2-9.3 12.2z'/%3E%3Cpath transform='translate%2814 74%29 scale%28.75%29 rotate%28-10 12 12%29' d='M12 1.8c2.6 3.7 5.3 6.9 8.3 10.2-3 3.3-5.7 6.5-8.3 10.2-2.6-3.7-5.3-6.9-8.3-10.2 3-3.3 5.7-6.5 8.3-10.2z'/%3E%3Cpath transform='translate%2874 74%29 scale%28.75%29' d='M12 2.4a4.4 4.4 0 0 0-4.1 6A4.4 4.4 0 1 0 10.9 15c-.3 2.4-1.3 4.4-2.9 6.6h8c-1.6-2.2-2.6-4.2-2.9-6.6a4.4 4.4 0 1 0 3-6.6 4.4 4.4 0 0 0-4.1-6z'/%3E%3C/g%3E%3C/svg%3E"); --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .055 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23n%29'/%3E%3C/svg%3E"); }
+  body::before { content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none; background:
+    radial-gradient(55% 45% at 100% 0%, rgba(233, 185, 73, 0.07), transparent 70%),
+    radial-gradient(60% 50% at 0% 100%, rgba(23, 96, 63, 0.35), transparent 70%),
+    radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.45) 100%); }
+  /* Grano de paño por encima de todo, muy suave (no se nota en el texto, sí en los fondos lisos). */
+  body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-events: none; background-image: var(--noise); opacity: 0.7; }
+  .hero::after { content: ""; position: absolute; inset: -64px calc(50% - 50vw) 0; z-index: -1; pointer-events: none; background-image: var(--suits); background-size: 120px; opacity: 0.045;
+    -webkit-mask-image: radial-gradient(70% 80% at 30% 35%, #000 20%, transparent 75%); mask-image: radial-gradient(70% 80% at 30% 35%, #000 20%, transparent 75%); }
+  .quiz, .final, .lcard.main { position: relative; isolation: isolate; overflow: hidden; }
+  .quiz::before, .final::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background-image: var(--suits); background-size: 110px; opacity: 0.05;
+    -webkit-mask-image: linear-gradient(160deg, #000, transparent 70%); mask-image: linear-gradient(160deg, #000, transparent 70%); }
+  /* El borde de la mesa de blackjack, abajo de la portada */
+  .hero { padding-bottom: 150px; }
+  .rail { position: absolute; left: calc(50% - 50vw); width: 100vw; bottom: -10px; height: 190px; z-index: -1; pointer-events: none; overflow: hidden; }
+  .rail svg { position: absolute; left: 50%; bottom: 0; width: max(1400px, 100vw); height: 190px; translate: -50% 0; }
+  .rail text { font: 700 15px "DM Sans", sans-serif; letter-spacing: 0.32em; fill: rgba(233, 185, 73, 0.55); text-transform: uppercase; }
+  /* Separadores dorados entre secciones */
+  main > section + section { position: relative; }
+  main > section + section::before { content: ""; position: absolute; top: 0; left: 50%; width: min(520px, 70%); height: 1px; translate: -50% 0;
+    background: linear-gradient(90deg, transparent, rgba(233, 185, 73, 0.4) 44%, transparent 47%, transparent 53%, rgba(233, 185, 73, 0.4) 56%, transparent); }
+  main > section + section::after { content: "♠"; position: absolute; top: -11px; left: 50%; translate: -50% 0; color: rgba(233, 185, 73, 0.65); font-size: 15px; line-height: 22px; }
+  @media (max-width: 820px) {
+    .hero { padding-bottom: 90px; }
+    .rail { bottom: -10px; height: 120px; }
+    .rail svg { width: 900px; height: 120px; }
+    .rail text { font-size: 12px; }
+  }
+
+  /* Tarjetas: un poco de luz arriba y se levantan al pasar el mouse */
+  .feat, .plan, .lcard, details { background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 40%); }
+  @media (hover: hover) {
+    .feat, .plan, .lcard { transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+    .feat:hover, .plan:hover, .lcard:hover { transform: translateY(-3px); border-color: rgba(233, 185, 73, 0.45); box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35); }
+  }
   /* Redes */
   .socials { display: flex; gap: 6px; }
   .socials a { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; color: var(--text-2); border: 1px solid var(--line); transition: color 0.15s, border-color 0.15s; }
@@ -234,6 +277,7 @@
     .quiz { grid-template-columns: 1fr; padding: 24px 18px; gap: 18px; }
     .qz-card { --w: 56px; }
     .qz-side small { width: 74px; }
+    .qz-total { white-space: normal; text-align: center; line-height: 1.15; font-size: 13px; padding: 4px 8px; }
   }
   .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
   .reveal.in { opacity: 1; transform: none; }
@@ -303,6 +347,14 @@
       <ul class="trust">
         <li data-t="t1"></li><li data-t="t2"></li><li data-t="t3"></li><li data-t="t4"></li>
       </ul>
+    </div>
+    <div class="rail" aria-hidden="true">
+      <svg viewBox="0 0 1400 190" preserveAspectRatio="xMidYMax slice">
+        <defs><path id="rail-arc" d="M 60 30 Q 700 250 1340 30"/></defs>
+        <path d="M 0 0 Q 700 300 1400 0" fill="none" stroke="rgba(233,185,73,0.28)" stroke-width="2"/>
+        <path d="M 30 14 Q 700 280 1370 14" fill="none" stroke="rgba(233,185,73,0.18)" stroke-width="1" stroke-dasharray="6 8"/>
+        <text><textPath href="#rail-arc" startOffset="50%" text-anchor="middle" data-t="rail"></textPath></text>
+      </svg>
     </div>
     <div class="phones" aria-hidden="true">
       <img class="phone a" data-img="mesa" alt="">
@@ -512,7 +564,7 @@
       "qz-more": "¿Te gustó? En la app hay miles de manos, la tabla completa y el conteo de cartas.",
       "qz-left": "Te quedan {0} de prueba", "qz-left1": "Te queda 1 de prueba", "qz-end-t": "¡Jugaste tus 4 manos de prueba!",
       "qz-end-p": "En la app seguís con miles de manos, la tabla completa, lecciones y el conteo de cartas. Gratis y sin plata real.", "qz-end-btn": "Seguir jugando gratis", dock: "Aprendé blackjack gratis",
-      n1: "Funciones", n2: "Premium", n3: "Preguntas", go: "Jugar ahora",
+      n1: "Funciones", n2: "Premium", n3: "Preguntas", go: "Jugar ahora", rail: "El blackjack paga 3 a 2 · El crupier se planta en 17",
       t1: "36 lecciones", t2: "10 niveles de conteo", t3: "Español e inglés", t4: "Sin plata real",
       "v-title": "Mirala en acción", "v-sub": "Así se ve por dentro: cada mano, cada carta y cada apuesta.",
       v1: "La jugada correcta, con el porqué", v2: "Bajas +1, del 7 al 9 nada, altas −1", v3: "Contá y apostá con el conteo",
@@ -567,7 +619,7 @@
       "qz-more": "Liked it? The app has thousands of hands, the full chart and card counting.",
       "qz-left": "{0} practice hands left", "qz-left1": "1 practice hand left", "qz-end-t": "You played your 4 practice hands!",
       "qz-end-p": "Keep going in the app: thousands of hands, the full chart, lessons and card counting. Free, no real money.", "qz-end-btn": "Keep playing for free", dock: "Learn blackjack for free",
-      n1: "Features", n2: "Premium", n3: "FAQ", go: "Play now",
+      n1: "Features", n2: "Premium", n3: "FAQ", go: "Play now", rail: "Blackjack pays 3 to 2 · Dealer stands on 17",
       t1: "36 lessons", t2: "10 counting levels", t3: "Spanish and English", t4: "No real money",
       "v-title": "See it in action", "v-sub": "This is what it looks like inside: every hand, every card and every bet.",
       v1: "The right play, with the why", v2: "Low +1, 7 to 9 zero, high −1", v3: "Count and bet with the count",
