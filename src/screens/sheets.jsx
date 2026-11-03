@@ -23,7 +23,8 @@ import { SYSTEMS, SYSTEM_IDS } from "../engine/systems.js";
 import { HiLoValues } from "../lessons/visuals.jsx";
 import { SystemValues } from "./CountTab.jsx";
 import { useNav } from "../nav.js";
-import { NATIVE, PREMIUM_SYSTEMS, hasPremium } from "../platform.js";
+import { APP_MODE, NATIVE, PREMIUM_SYSTEMS, hasPremium } from "../platform.js";
+import { resumenRecordatorios } from "../recordatorios-plan.js";
 import { PremiumTag } from "./Premium.jsx";
 import { LANG, setLang } from "../i18n/index.js";
 
@@ -221,6 +222,26 @@ function SettingsSheet({ open: a, onClose: e }) {
         </span>
         <Icon name="chev" className="li-chev" />
       </button>
+      {APP_MODE ? (
+        <button
+          type="button"
+          className="list-item setting-link"
+          onClick={() => {
+            e();
+            s.push("recordatorios");
+          }}
+        >
+          <span className="li-text">
+            <span className="li-title" style={{ fontSize: 17 }}>
+              Recordatorios
+            </span>
+            <span className="li-sub" style={{ display: "block" }}>
+              {resumenRecordatorios(n.recordatorios)}
+            </span>
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+      ) : null}
       <Toggle
         id="s-big"
         label="Letra más grande"

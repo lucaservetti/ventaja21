@@ -1,3 +1,5 @@
+import { initRecordatorios } from "./recordatorios.js";
+import { Recordatorios } from "./screens/Recordatorios.jsx";
 import {
   TIENDA,
   cerrarAviso,
@@ -138,6 +140,7 @@ const SCREENS = {
   premios: Premios,
   mistakes: Mistakes,
   enApp: EnApp,
+  recordatorios: Recordatorios,
   account: Account,
   challenge: Challenge,
   ranking: Ranking,
@@ -352,6 +355,12 @@ function App() {
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, [onboardedNow]);
+  // Tocar un recordatorio (recordatorios.js) abre la pestaña que corresponde.
+  useEffect(() => {
+    const ir = (ev) => TAB_SCREENS[ev.detail] && y.setTab(ev.detail);
+    window.addEventListener("v21-ir", ir);
+    return () => window.removeEventListener("v21-ir", ir);
+  }, []);
   // Tema (oscuro o claro) y tamaño de letra.
   const theme = a.settings.theme || "dark";
   const bigText = !!a.settings.bigText;
@@ -682,6 +691,7 @@ appRoot.render(
 takeChallengeFromUrl();
 initPlatform();
 initCloud();
+initRecordatorios();
 setTimeout(revisarVersion, 2500);
 if ("serviceWorker" in navigator && !NATIVE) {
   const hadController = !!navigator.serviceWorker.controller;

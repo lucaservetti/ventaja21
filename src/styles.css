@@ -9261,3 +9261,75 @@ html[data-theme="light"] .tab.on .tab-ic {
   font-size: 13px;
   line-height: 1.35;
 }
+
+/* ---------- Recordatorios ---------- */
+.rec-card {
+  padding: 4px 16px;
+}
+.rec-opts {
+  transition: opacity 0.2s;
+}
+.rec-opts.off {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.rec-h {
+  margin: 22px 2px 10px;
+  font-size: 15px;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.rec-pills {
+  justify-content: flex-start;
+}
+.rec-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 12px;
+}
+.rec-day {
+  aspect-ratio: 1;
+  max-height: 48px;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text-2);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.rec-day.on {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.rec-time {
+  max-width: 180px;
+  font-size: 20px;
+  font-weight: 700;
+}
+.rec-msg {
+  margin: 14px 2px 0;
+  color: var(--text-2);
+}
+.rec-help {
+  margin-top: 16px;
+}
+.rec-help p {
+  margin: 6px 0 0;
+}
+.rec-suggest {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  border: 1px solid var(--accent-line);
+}
+.rec-suggest p {
+  margin: 4px 0 12px;
+}
+.rec-suggest .btns-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
