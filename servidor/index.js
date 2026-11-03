@@ -482,13 +482,154 @@ async function premios(uid, env, now = Date.now(), opts = {}) {
   };
 }
 
+
+// ---- Pagos en la web (Paddle) ----
+// Premium comprado en la web (iPhone, computadora): Paddle cobra y avisa acá (webhook). Se anota en
+// premium/{uid}, el mismo documento que leen la app y la web, así que vale en todos lados.
+// - Pago único ("para siempre"): activo, sin fecha de vencimiento.
+// - Suscripción: activo hasta el fin del período pagado, más 3 días de margen por si el cobro
+//   siguiente se demora. Cada renovación lo estira. Si se cancela, vence solo al final del período.
+// - Solo se estira, nunca se acorta: un aviso repetido o fuera de orden no hace daño, y los días de
+//   regalo que ya tenía se respetan. Un reembolso se resuelve a mano (ver servidor/README.md).
+// La firma (Paddle-Signature) se verifica con el secreto PADDLE_WEBHOOK_SECRET.
+const MARGEN_PAGO = 3 * DAY;
+const UID_OK = /^[A-Za-z0-9_-]{6,128}$/;
+
+function hexDe(buf) {
+  return [...new Uint8Array(buf)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+async function firmaPaddleOk(raw, cabecera, secreto, now = Date.now()) {
+  if (!secreto || !cabecera) return false;
+  const partes = Object.fromEntries(
+    cabecera.split(";").map((x) => {
+      const i = x.indexOf("=");
+      return [x.slice(0, i).trim(), x.slice(i + 1).trim()];
+    }),
+  );
+  const ts = Number(partes.ts);
+  // Avisos de más de 5 minutos: se rechazan (alguien podría reenviar uno viejo).
+  if (!ts || Math.abs(now / 1000 - ts) > 300 || !partes.h1) return false;
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secreto),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const esperado = hexDe(
+    await crypto.subtle.sign(
+      "HMAC",
+      key,
+      new TextEncoder().encode(`${partes.ts}:${raw}`),
+    ),
+  );
+  // Comparación sin cortar antes (que no se pueda adivinar de a una letra).
+  const h1 = String(partes.h1);
+  let dif = esperado.length ^ h1.length;
+  for (let i = 0; i < esperado.length; i++)
+    dif |= esperado.charCodeAt(i) ^ (h1.charCodeAt(i) || 0);
+  return dif === 0;
+}
+
+// Qué Premium corresponde por un aviso de Paddle: { uid, siempre } o { uid, hasta } (o null).
+function premiumDePago(ev, env) {
+  const d = ev && ev.data;
+  if (!d || !d.custom_data || !UID_OK.test(String(d.custom_data.uid || "")))
+    return null;
+  const uid = String(d.custom_data.uid);
+  const precios = (d.items || []).map((it) => it && it.price && it.price.id);
+  if (ev.event_type === "transaction.completed") {
+    if (env.PADDLE_PRECIO_SIEMPRE && precios.includes(env.PADDLE_PRECIO_SIEMPRE))
+      return { uid, siempre: true, cliente: d.customer_id || "" };
+    const fin = d.billing_period && Date.parse(d.billing_period.ends_at);
+    return fin
+      ? { uid, hasta: fin + MARGEN_PAGO, cliente: d.customer_id || "", sub: d.subscription_id || "" }
+      : null;
+  }
+  if (
+    /^subscription\.(created|activated|updated|resumed)$/.test(ev.event_type) &&
+    (d.status === "active" || d.status === "trialing")
+  ) {
+    const fin =
+      d.current_billing_period && Date.parse(d.current_billing_period.ends_at);
+    return fin
+      ? { uid, hasta: fin + MARGEN_PAGO, cliente: d.customer_id || "", sub: d.id || "" }
+      : null;
+  }
+  return null;
+}
+
+async function anotarPago(p, env, now = Date.now()) {
+  const d = db(env);
+  const doc = await d.get(`premium/${p.uid}`);
+  const activo = field(doc, "activo") === true;
+  const hastaPrev = field(doc, "hasta");
+  const pagoPrev = field(doc, "pago") || {};
+  const forever = activo && !hastaPrev;
+  // Ya es para siempre: solo se anota el pago.
+  const siempre = p.siempre || forever;
+  const hasta = siempre
+    ? null
+    : Math.max(p.hasta, activo && hastaPrev > now ? hastaPrev : 0);
+  const pago = {
+    fuente: { stringValue: "paddle" },
+    tipo: { stringValue: p.siempre ? "siempre" : pagoPrev.tipo === "siempre" ? "siempre" : "suscripcion" },
+    cliente: { stringValue: String(p.cliente || pagoPrev.cliente || "").slice(0, 80) },
+    sub: { stringValue: String(p.sub || pagoPrev.sub || "").slice(0, 80) },
+    t: { integerValue: String(now) },
+  };
+  const fields = { activo: { booleanValue: true }, pago: { mapValue: { fields: pago } } };
+  if (!siempre) fields.hasta = { timestampValue: new Date(hasta).toISOString() };
+  // Sin "hasta" en los campos pero sí en la máscara: Firestore lo borra (queda para siempre).
+  await d.commit([
+    {
+      update: { name: d.name(`premium/${p.uid}`), fields },
+      updateMask: { fieldPaths: ["activo", "hasta", "pago"] },
+    },
+  ]);
+  return { uid: p.uid, hasta: siempre ? true : hasta };
+}
+
+async function avisoPaddle(req, env) {
+  const raw = await req.text();
+  if (raw.length > 200000) return new Response("grande", { status: 413 });
+  if (
+    !(await firmaPaddleOk(
+      raw,
+      req.headers.get("Paddle-Signature"),
+      env.PADDLE_WEBHOOK_SECRET,
+    ))
+  )
+    return new Response("firma", { status: 401 });
+  let ev;
+  try {
+    ev = JSON.parse(raw);
+  } catch {
+    return new Response("json", { status: 400 });
+  }
+  const p = premiumDePago(ev, env);
+  // Avisos que no cambian nada (otros eventos, cancelaciones): se contestan bien igual, para que
+  // Paddle no los reintente.
+  if (!p) return new Response("ok", { status: 200 });
+  try {
+    await anotarPago(p, env);
+    return new Response("ok", { status: 200 });
+  } catch {
+    // Un 500 hace que Paddle lo reintente más tarde.
+    return new Response("error", { status: 500 });
+  }
+}
+
 // Al borrar la cuenta: se borran sus premios y el Premium de regalo. El Premium para siempre
-// (puesto a mano o comprado) queda, por si vuelve a entrar con la misma cuenta.
+// (puesto a mano o comprado) y el pagado en la web quedan, por si vuelve a entrar con la misma
+// cuenta (o para pasarlo a mano a la nueva, ver servidor/README.md).
 async function borrar(uid, env) {
   const d = db(env);
   const premium = await d.get(`premium/${uid}`);
   const writes = [{ delete: d.name(`premios/${uid}`) }];
-  if (premium && field(premium, "hasta"))
+  if (premium && field(premium, "hasta") && !field(premium, "pago"))
     writes.push({ delete: d.name(`premium/${uid}`) });
   await d.commit(writes);
 }
@@ -643,6 +784,9 @@ export default {
       return new Response(null, { status: 204, headers: cors(req) });
     const url = new URL(req.url);
     const route = url.pathname;
+    // Avisos de pago de Paddle (los firma Paddle; no pasan por la sesión ni por CORS).
+    if (route === "/pagos/paddle" && req.method === "POST")
+      return avisoPaddle(req, env);
     if (
       !["/premios", "/borrar", "/errores", "/reportar"].includes(route) ||
       req.method !== "POST"
@@ -690,7 +834,11 @@ export default {
 };
 
 export {
+  anotarPago,
+  avisoPaddle,
   borrar,
+  firmaPaddleOk,
+  premiumDePago,
   dentroDelLimite,
   gunzipConTope,
   limpiar,

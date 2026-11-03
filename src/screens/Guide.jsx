@@ -9,6 +9,9 @@ import { SYSTEMS, SYSTEM_IDS, fmtTag } from "../engine/systems.js";
 import { useRules } from "../ui/common.jsx";
 import { BetRamp, Visual, rich } from "../lessons/visuals.jsx";
 import { useNav } from "../nav.js";
+import { PREMIUM_CHAPTERS } from "../platform.js";
+import { PremiumTag } from "./Premium.jsx";
+import { useStore } from "../state.js";
 
 const GP = ({ children: a }) => (
   <p className="g-p">{typeof a == "string" ? rich(a) : a}</p>
@@ -560,6 +563,7 @@ const GUIDE_CHAPTERS = [
 ];
 function Guide() {
   let a = useNav();
+  const st = useStore();
   return (
     <div className="fade-up">
       <div className="topbar">
@@ -593,6 +597,12 @@ function Guide() {
             <span className="li-text">
               <span className="li-title" style={{ fontSize: 17 }}>
                 {e.title}
+                {PREMIUM_CHAPTERS.includes(e.id) ? (
+                  <>
+                    {" "}
+                    <PremiumTag st={st} />
+                  </>
+                ) : null}
               </span>
               <span className="li-sub" style={{ display: "block" }}>
                 {e.sub}

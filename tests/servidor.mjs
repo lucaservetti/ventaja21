@@ -1,6 +1,6 @@
 // Prueba del servidor de premios (servidor/index.js) contra los emuladores de Firebase.
 // Uso: npx firebase-tools emulators:exec --project demo-edge21 --only auth,firestore "node tests/servidor.mjs"
-import worker, { gunzipConTope, limpiar, premios, serviceToken, verifyIdToken } from "../servidor/index.js";
+import worker, { borrar, gunzipConTope, limpiar, premios, serviceToken, verifyIdToken } from "../servidor/index.js";
 import { DAY, dayKeyUTC, diasRecientes, mondayUTC } from "../src/premios.js";
 
 const P = "demo-edge21";
@@ -330,6 +330,61 @@ await paso("progreso comprimido armado para ocupar gigas: se corta", async () =>
   check(corto, "debería cortar al pasar el tope");
   const chico = await new Response(new Blob(["hola"]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer();
   check((await gunzipConTope(new Uint8Array(chico), 4e6)) === "hola", "uno normal debería andar");
+});
+
+await paso("pagos en la web (Paddle): firma, suscripción, pago único y avisos raros", async () => {
+  const SECRETO = "pdl_ntfset_prueba";
+  const envP = { PROJECT_ID: P, EMULATOR: "127.0.0.1", PADDLE_WEBHOOK_SECRET: SECRETO, PADDLE_PRECIO_SIEMPRE: "pri_siempre" };
+  const firmar = async (raw, ts = Math.floor(Date.now() / 1000), secreto = SECRETO) => {
+    const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secreto), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+    const h = [...new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`${ts}:${raw}`)))].map((b) => b.toString(16).padStart(2, "0")).join("");
+    return `ts=${ts};h1=${h}`;
+  };
+  const avisar = async (ev, firma) => {
+    const raw = JSON.stringify(ev);
+    return worker.fetch(new Request("https://api.edge21.app/pagos/paddle", { method: "POST", headers: { "Content-Type": "application/json", "Paddle-Signature": firma || (await firmar(raw)) }, body: raw }), envP);
+  };
+  const { uid } = await user();
+  const fin = new Date(Date.now() + 30 * DAY).toISOString();
+  const sub = { event_type: "subscription.activated", data: { id: "sub_1", status: "active", customer_id: "ctm_1", custom_data: { uid }, items: [{ price: { id: "pri_mes" } }], current_billing_period: { starts_at: new Date().toISOString(), ends_at: fin } } };
+  // Firma mala, vieja o de otro secreto: no entra y no anota nada.
+  check((await avisar(sub, "ts=1;h1=abc")).status === 401, "firma mala debería dar 401");
+  check((await avisar(sub, await firmar(JSON.stringify(sub), Math.floor(Date.now() / 1000) - 3600))).status === 401, "firma de hace una hora debería dar 401");
+  check((await avisar(sub, await firmar(JSON.stringify(sub), undefined, "otro"))).status === 401, "firma con otro secreto debería dar 401");
+  check(!(await get(`premium/${uid}`)), "no debería haber Premium con una firma mala");
+  // Suscripción: Premium hasta el fin del período + 3 días.
+  check((await avisar(sub)).status === 200, "el aviso firmado debería dar 200");
+  const h1 = await hastaDe(uid);
+  check(Math.abs(h1 - (Date.parse(fin) + 3 * DAY)) < 2000, `vence mal: ${new Date(h1).toISOString()}`);
+  const doc = await get(`premium/${uid}`);
+  check(doc.fields.activo.booleanValue === true && doc.fields.pago.mapValue.fields.fuente.stringValue === "paddle", "no quedó anotado el pago");
+  // Un aviso viejo (período anterior) no acorta.
+  const viejo = structuredClone(sub);
+  viejo.data.current_billing_period.ends_at = new Date(Date.now() + 2 * DAY).toISOString();
+  check((await avisar(viejo)).status === 200, "un aviso viejo igual se contesta bien");
+  check((await hastaDe(uid)) === h1, "un aviso viejo no debería acortar");
+  // Cancelada: se contesta bien y no cambia nada (vence sola).
+  const cancel = structuredClone(sub);
+  cancel.event_type = "subscription.canceled";
+  cancel.data.status = "canceled";
+  check((await avisar(cancel)).status === 200 && (await hastaDe(uid)) === h1, "cancelar no debería tocar la fecha");
+  // Los premios no borran ni pisan el pago; borrar la cuenta tampoco borra lo pagado.
+  await borrar(uid, envP);
+  check((await hastaDe(uid)) === h1, "borrar la cuenta no debería sacar lo pagado");
+  // Pago único: para siempre (sin fecha).
+  const unico = { event_type: "transaction.completed", data: { id: "txn_1", status: "completed", customer_id: "ctm_1", custom_data: { uid }, items: [{ price: { id: "pri_siempre" } }], billing_period: null } };
+  check((await avisar(unico)).status === 200, "el pago único debería dar 200");
+  const d2 = await get(`premium/${uid}`);
+  check(d2.fields.activo.booleanValue === true && !d2.fields.hasta, "el pago único debería quedar para siempre");
+  // Una renovación después no le pone fecha a lo que es para siempre.
+  check((await avisar(sub)).status === 200 && !(await get(`premium/${uid}`)).fields.hasta, "una renovación no debería ponerle fecha al para siempre");
+  // Sin uid o con uno raro: se contesta bien pero no se anota nada.
+  const raro = structuredClone(sub);
+  raro.data.custom_data = { uid: "../users/x" };
+  check((await avisar(raro)).status === 200, "un uid raro igual se contesta (para que no reintente)");
+  const sinUid = structuredClone(sub);
+  sinUid.data.custom_data = null;
+  check((await avisar(sinUid)).status === 200, "sin uid igual se contesta");
 });
 
 console.log(fails.length ? `${fails.length} prueba(s) fallaron` : "todas las pruebas pasaron");

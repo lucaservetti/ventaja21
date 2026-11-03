@@ -1,0 +1,19 @@
+{
+  "_ayuda": "Pagos de Premium en la web (iPhone y computadora) con Paddle. Mientras token esté vacío, la web dice 'Muy pronto'. Ver PAGOS_WEB.md.",
+  "paddle": {
+    "entorno": "sandbox",
+    "token": "",
+    "precios": {
+      "monthly": "",
+      "yearly": "",
+      "lifetime": ""
+    }
+  },
+  "mostrar": {
+    "moneda": "USD",
+    "monthly": 2.49,
+    "yearly": 16.99,
+    "lifetime": 39.99,
+    "pruebaDias": 5
+  }
+}

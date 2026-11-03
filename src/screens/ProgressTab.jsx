@@ -11,6 +11,7 @@ import {
 import {
   Button,
   Flame,
+  Pills,
   Ring,
   Segmented,
   Sheet,
@@ -31,6 +32,7 @@ import { shortDate } from "./TrainTab.jsx";
 import { AchievementsCard } from "./achievements.jsx";
 import { WeekCard } from "./week.jsx";
 import { PremiumTag } from "./Premium.jsx";
+import { hasPremium } from "../platform.js";
 import { ACCOUNTS } from "../cloud.js";
 import { BackupNudge } from "./Backup.jsx";
 import { useNav } from "../nav.js";
@@ -449,11 +451,16 @@ const BREAKDOWN_GROUPS = [
   { id: "easy", name: "Fáciles (5–8 y 17+)" },
 ];
 function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
+  // Cuántas tandas se ven: las últimas 7 gratis; 30 o todas (hasta 120) con Premium.
+  const [rango, setRango] = useState(7);
+  const prem = hasPremium(a);
+  const ver = prem ? rango : 7;
+  const todas = a.train.sessions.filter((r) => r.kind !== "exam");
   let s = useRules(),
     n = a.train.cells,
     l = weakSpots(n),
     i = strongSpots(n),
-    o = a.train.sessions.filter((r) => r.kind !== "exam").slice(-7),
+    o = todas.slice(-ver),
     c = BREAKDOWN_GROUPS.map((r) => {
       let u =
         r.id === "all"
@@ -510,6 +517,22 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
       </div>
       <div className="card" style={{ marginTop: 14 }}>
         <div className="eyebrow">Precisión en el tiempo</div>
+        {todas.length > 7 ? (
+          <Pills
+            className="hist-pills"
+            options={[
+              { value: 7, label: "Últimas 7" },
+              { value: 30, label: "30" },
+              { value: 120, label: "Todas" },
+            ]}
+            value={ver}
+            onChange={(v) =>
+              v === 7 || prem
+                ? setRango(v)
+                : e.push("premium", { feature: "history" })
+            }
+          />
+        ) : null}
         {o.length ? null : (
           <p className="muted small" style={{ marginTop: 8 }}>
             Todavía no hiciste ninguna tanda en Entrenar. Cuando hagas la
@@ -517,9 +540,12 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
           </p>
         )}
         {o.length ? (
-          <div className="bars" style={{ marginBottom: 34 }}>
-            {Array.from({ length: 7 }, (r, u) => {
-              let d = o[o.length - 7 + u];
+          <div
+            className={cx("bars", ver > 7 && "dense")}
+            style={{ marginBottom: ver > 7 ? 12 : 34 }}
+          >
+            {Array.from({ length: ver > 7 ? o.length : 7 }, (r, u) => {
+              let d = ver > 7 ? o[u] : o[o.length - 7 + u];
               if (!d)
                 return <span className="b" style={{ height: 14 }} key={u} />;
               let p = d.ok / d.n,
@@ -533,10 +559,12 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
                   style={{ height: `${Math.max(10, p * 100)}%` }}
                   key={u}
                 >
-                  <span className={f >= 0 ? "good" : "bad"}>
-                    {f >= 0 ? "+" : "−"}
-                    {Math.abs(f)}
-                  </span>
+                  {ver > 7 ? null : (
+                    <span className={f >= 0 ? "good" : "bad"}>
+                      {f >= 0 ? "+" : "−"}
+                      {Math.abs(f)}
+                    </span>
+                  )}
                 </span>
               );
             })}
@@ -550,6 +578,12 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
               {o.length} {o.length === 1 ? "tanda" : "tandas"}
             </span>
           </div>
+        ) : null}
+        {!prem && todas.length > 7 ? (
+          <p className="muted small" style={{ marginTop: 8 }}>
+            Tu historial completo, con todas tus tandas, es parte de Premium.{" "}
+            <PremiumTag st={a} />
+          </p>
         ) : null}
       </div>
       <div className="card" style={{ marginTop: 14 }}>

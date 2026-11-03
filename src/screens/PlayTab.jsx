@@ -32,6 +32,7 @@ import { TABLE_SPEEDS, Table, money } from "../engine/table.js";
 import { TableView } from "./TableView.jsx";
 import { useNav } from "../nav.js";
 import { PremiumTag } from "./Premium.jsx";
+import { hasPremium } from "../platform.js";
 
 let tableInstance = null;
 function tableOptions(st) {
@@ -48,7 +49,8 @@ function tableOptions(st) {
     deviations: t.deviations,
     countCheck: t.countCheck,
     pressure: t.pressure,
-    spots: t.spots === 2 ? 2 : 1,
+    // Dos manos por ronda es de Premium (si se vence, vuelve a una).
+    spots: t.spots === 2 && hasPremium(st) ? 2 : 1,
     quietResults: true,
   };
 }
@@ -417,6 +419,13 @@ function TableSheet({ open, onClose, table }) {
   const preset = TABLE_PRESETS.find((p) =>
     Object.entries(p.rules).every(([k, v]) => rules[k] === v),
   );
+  // Gratis: los tipos de mesa. Premium: ajustar cada regla a mano y jugar dos manos.
+  const prem = hasPremium(st);
+  const aPremium = (feature) => {
+    onClose();
+    nav.push("premium", { feature });
+  };
+  const regla = (cambio) => (prem ? setRules(cambio) : aPremium("rules"));
   return (
     <Sheet open={open} onClose={onClose} title="Mesa" tall={true}>
       <button
@@ -462,13 +471,21 @@ function TableSheet({ open, onClose, table }) {
         <b>≈ {(houseEdge * 100).toFixed(1).replace(".", ",")} %</b>
         {rules.bjPays < 1.5 ? " (el 6:5 solo ya suma 1,4 %)" : ""}
       </div>
-      <h3 className="sheet-sub">Reglas</h3>
+      <h3 className="sheet-sub">
+        Reglas a tu medida <PremiumTag st={st} />
+      </h3>
+      {!prem ? (
+        <p className="muted small" style={{ margin: "-4px 0 10px" }}>
+          Los tipos de mesa de arriba son gratis. Ajustar cada regla a mano es
+          parte de Premium.
+        </p>
+      ) : null}
       <div className="field">
         <span>Mazos</span>
         <Pills
           options={[4, 6, 8].map((n) => ({ value: n, label: String(n) }))}
           value={rules.decks}
-          onChange={(n) => setRules({ decks: n })}
+          onChange={(n) => regla({ decks: n })}
         />
       </div>
       <div className="field">
@@ -482,7 +499,7 @@ function TableSheet({ open, onClose, table }) {
             { value: 0.85, label: "85 %" },
           ]}
           value={rules.pen}
-          onChange={(pen) => setRules({ pen })}
+          onChange={(pen) => regla({ pen })}
         />
       </div>
       <div className="field">
@@ -493,32 +510,32 @@ function TableSheet({ open, onClose, table }) {
             { value: 1.2, label: "6:5" },
           ]}
           value={rules.bjPays}
-          onChange={(bjPays) => setRules({ bjPays })}
+          onChange={(bjPays) => regla({ bjPays })}
         />
       </div>
       <Toggle
         id="r-h17"
         label="El crupier pide con 17 blando (H17)"
         checked={rules.h17}
-        onChange={(h17) => setRules({ h17 })}
+        onChange={(h17) => regla({ h17 })}
       />
       <Toggle
         id="r-das"
         label="Doblar después de separar"
         checked={rules.das}
-        onChange={(das) => setRules({ das })}
+        onChange={(das) => regla({ das })}
       />
       <Toggle
         id="r-ls"
         label="Rendición tardía (surrender)"
         checked={rules.surrender}
-        onChange={(surrender) => setRules({ surrender })}
+        onChange={(surrender) => regla({ surrender })}
       />
       <Toggle
         id="r-rsa"
         label="Volver a separar ases"
         checked={rules.rsa}
-        onChange={(rsa) => setRules({ rsa })}
+        onChange={(rsa) => regla({ rsa })}
       />
       <p className="muted tiny">
         Cambiar las reglas o los mazos mezcla el zapato de nuevo.
@@ -533,11 +550,17 @@ function TableSheet({ open, onClose, table }) {
         />
       </div>
       <div className="field">
-        <span>Tus manos por ronda</span>
+        <span>
+          Tus manos por ronda <PremiumTag st={st} />
+        </span>
         <Pills
           options={[1, 2].map((n) => ({ value: n, label: String(n) }))}
-          value={t.spots === 2 ? 2 : 1}
-          onChange={(spots) => setTable({ spots })}
+          value={t.spots === 2 && prem ? 2 : 1}
+          onChange={(spots) =>
+            spots === 2 && !prem
+              ? aPremium("hands")
+              : setTable({ spots })
+          }
         />
       </div>
       <div className="field">

@@ -416,6 +416,31 @@ const PRUEBAS = {
     await h.foto("limite");
   },
 
+  // La web es la app completa; en el iPhone (Safari), después de la primera lección, aparece cómo
+  // instalarla, y al cerrarlo no vuelve.
+  async instalarIphone(h) {
+    const { page } = h;
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "userAgent", { get: () => "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1" });
+    });
+    await page.evaluate(() => {
+      const k = "ventaja21.state.v1";
+      const s = JSON.parse(localStorage.getItem(k));
+      s.lessons = { l1: { done: true, stars: 3 } };
+      localStorage.setItem(k, JSON.stringify(s));
+      Storage.prototype.setItem = () => {};
+    });
+    await page.reload();
+    await page.waitForTimeout(1200);
+    await h.tab("Aprender", "Learn");
+    await h.see("Tenela como app en tu iPhone.", "Keep it as an app on your iPhone.");
+    check(!(await page.getByText(h.T("Versión web de prueba", "Web trial version")).count()), "la web sigue siendo de prueba");
+    await h.foto("instalar");
+    await h.css('.install-note [aria-label="Cerrar"], .install-note [aria-label="Close"]', 500);
+    check(!(await page.locator(".install-note").count()), "el aviso no se cerró");
+    check((await h.state()).settings.instalarVisto === true, "no se guardó que se cerró");
+  },
+
   // Contrarreloj: empezar, contestar y que corra el reloj.
   async contrarreloj(h) {
     const { page } = h;
@@ -568,6 +593,64 @@ const PRUEBAS = {
     await h.foto("panos");
     const felt = await page.evaluate(() => document.documentElement.dataset.felt);
     check(felt === "azul", `el paño no cambió (${felt})`);
+  },
+
+  // Lo que pasó a Premium: dos manos, reglas a mano, dos capítulos de la guía y el historial
+  // completo. Los tipos de mesa siguen gratis.
+  async premiumMas(h) {
+    const { page } = h;
+    const PREM = (es, en) => h.see(`${es} es parte de Premium`, `${en} is part of Premium`);
+    const volver = async () => {
+      await page.locator(".layer.full button").filter({ visible: true }).first().click();
+      await page.waitForTimeout(500);
+    };
+    // Mesa: un tipo de mesa se elige gratis; una regla a mano o dos manos piden Premium.
+    await h.tab("Jugar", "Play");
+    await h.css("section:not([hidden]) .table-btn", 600);
+    await h.click("Vegas con rendición", "Vegas with surrender", { wait: 400 });
+    const reglas = (await h.state()).settings.rules;
+    check(reglas && reglas.surrender === true && reglas.h17 === true, "el tipo de mesa no se pudo elegir gratis");
+    await h.click("Volver a separar ases", "Resplit aces", { wait: 700 });
+    await PREM("Ajustar cada regla de la mesa", "Adjusting each table rule");
+    check(!(await h.state()).settings.rules.rsa, "la regla cambió sin Premium");
+    await volver();
+    await h.css("section:not([hidden]) .table-btn", 600);
+    await page.locator(`.field:has-text("${h.T("Tus manos por ronda", "Your hands per round")}")`).first().scrollIntoViewIfNeeded();
+    await h.foto("mesa-premium");
+    await page.locator(`.field:has-text("${h.T("Tus manos por ronda", "Your hands per round")}") .pill`).filter({ visible: true }).nth(1).click();
+    await page.waitForTimeout(700);
+    await PREM("Jugar dos manos por ronda", "Playing two hands per round");
+    await volver();
+    // Guía: Desviaciones es de Premium; Reglas del blackjack, no.
+    await h.tab("Aprender", "Learn");
+    await h.css('section:not([hidden]) [aria-label="Abrir la Guía"], section:not([hidden]) [aria-label="Open the Guide"]', 700);
+    await page.locator(`.list-item:has-text("${h.T("Illustrious 18 y Fab 4", "Illustrious 18 and Fab 4")}")`).filter({ visible: true }).first().click();
+    await page.waitForTimeout(700);
+    await PREM("Este capítulo de la guía", "This guide chapter");
+    await volver();
+    await h.click("Reglas del blackjack", "Blackjack rules", { exact: true, wait: 700 });
+    check(!(await page.getByText(h.T("es parte de Premium", "is part of Premium")).filter({ visible: true }).count()), "las reglas del blackjack piden Premium");
+    // Progreso: con más de 7 tandas, ver todas pide Premium.
+    await page.evaluate(() => {
+      const k = "ventaja21.state.v1";
+      const s = JSON.parse(localStorage.getItem(k));
+      s.train = {
+        ...(s.train || {}),
+        totalHands: 120,
+        totalOk: 100,
+        sessions: Array.from({ length: 12 }, (_, i) => ({ t: Date.now() - (12 - i) * 864e5, ok: 6 + (i % 4), n: 10, before: 1000, after: 1010 })),
+      };
+      localStorage.setItem(k, JSON.stringify(s));
+      Storage.prototype.setItem = () => {};
+    });
+    await page.reload();
+    await page.waitForTimeout(1200);
+    await h.tab("Progreso", "Progress");
+    await h.click("Desglose", "Breakdown", { exact: true, wait: 500 });
+    await h.see("Tu historial completo, con todas tus tandas, es parte de Premium.", "Your full history, with every session, is part of Premium.");
+    await h.foto("historial");
+    await h.click("Todas", "All", { exact: true, wait: 700 });
+    await PREM("Tu historial completo", "Your full history");
   },
 
   // Premium en modo app (simulado): planes, condiciones, sin prueba de 30 minutos; y Premium regalado con fecha.
