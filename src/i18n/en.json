@@ -3218,5 +3218,11 @@
 "No se pudo completar el pago. Probá de nuevo o con otro medio.": "The payment couldn't be completed. Try again or use another method.",
 "Entrar con Google para comprar": "Sign in with Google to buy",
 "Ya lo compré: revisar": "I already bought it: check",
-"Activando…": "Activating…"
+"Activando…": "Activating…",
+"Primero elegí qué progreso querés guardar (el de este aparato o el de la cuenta).": "First choose which progress to keep (this device's or the account's).",
+"No se pudo guardar tu progreso en la cuenta. Revisá la conexión y probá de nuevo.": "Your progress couldn't be saved to your account. Check your connection and try again.",
+"Al cerrar sesión, tu progreso queda guardado en tu cuenta y se borra de este aparato.": "When you sign out, your progress stays saved in your account and is removed from this device.",
+"¿Cerrar sesión?": "Sign out?",
+"Tu progreso queda guardado en tu cuenta de Google y se borra de este aparato. Cuando vuelvas a entrar, lo recuperás tal cual.": "Your progress stays saved in your Google account and is removed from this device. When you sign back in, you get it back as it was.",
+"Sí, cerrar sesión": "Yes, sign out"
 }

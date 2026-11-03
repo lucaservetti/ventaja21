@@ -11,7 +11,7 @@ import {
   resolveConflict,
   setNick,
   signInNative,
-  signOut,
+  cerrarSesion,
   syncNow,
   useAccount,
 } from "../cloud.js";
@@ -63,6 +63,9 @@ function Account() {
   const [nickMal, setNickMal] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [salir, setSalir] = useState(false);
+  const [saliendo, setSaliendo] = useState(false);
+  const [salirErr, setSalirErr] = useState(null);
   useEffect(() => setNickText(acct ? acct.nick : ""), [acct && acct.uid]);
 
   return (
@@ -158,7 +161,7 @@ function Account() {
             </p>
           </div>
           <div className="btns" style={{ marginTop: 14 }}>
-            <Button kind="ghost" onClick={signOut}>
+            <Button kind="ghost" onClick={() => setSalir(true)}>
               Cerrar sesión
             </Button>
             <button
@@ -170,7 +173,8 @@ function Account() {
             </button>
           </div>
           <p className="muted small" style={{ marginTop: 8 }}>
-            Al cerrar sesión, tu progreso queda en este celular.
+            Al cerrar sesión, tu progreso queda guardado en tu cuenta y se
+            borra de este aparato.
           </p>
         </>
       )}
@@ -209,6 +213,50 @@ function Account() {
             </div>
           </>
         ) : null}
+      </Modal>
+      <Modal
+        open={salir}
+        onClose={() => {
+          setSalir(false);
+          setSalirErr(null);
+        }}
+      >
+        <h2 style={{ fontSize: 22 }}>¿Cerrar sesión?</h2>
+        <p className="muted" style={{ marginTop: 6 }}>
+          Tu progreso queda guardado en tu cuenta de Google y se borra de este
+          aparato. Cuando vuelvas a entrar, lo recuperás tal cual.
+        </p>
+        {salirErr ? (
+          <p className="small bad" role="alert" style={{ marginTop: 8 }}>
+            {salirErr}
+          </p>
+        ) : null}
+        <div className="btns" style={{ marginTop: 16 }}>
+          <Button
+            disabled={saliendo}
+            onClick={async () => {
+              setSaliendo(true);
+              setSalirErr(null);
+              const r = await cerrarSesion();
+              setSaliendo(false);
+              if (r.ok) {
+                setSalir(false);
+                nav.popAll();
+              } else setSalirErr(r.error);
+            }}
+          >
+            {saliendo ? "Guardando…" : "Sí, cerrar sesión"}
+          </Button>
+          <Button
+            kind="ghost"
+            onClick={() => {
+              setSalir(false);
+              setSalirErr(null);
+            }}
+          >
+            Cancelar
+          </Button>
+        </div>
       </Modal>
       <Modal open={confirm} onClose={() => setConfirm(false)}>
         <h2 style={{ fontSize: 22 }}>¿Borrar tu cuenta?</h2>

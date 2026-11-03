@@ -14,6 +14,7 @@ import {
   getSessionCloud,
   setSessionCloud,
   setSettings,
+  resetAll,
   setState,
   subscribe,
 } from "./state.js";
@@ -274,6 +275,47 @@ function signOut() {
   premiosEmit({ data: null });
   saveAcct(null);
   setSync({ status: "off", at: 0, conflict: null });
+}
+
+// Cerrar sesión: primero se sube lo último a la cuenta y después el aparato queda como nuevo (así,
+// en una compu o un celular prestado, el que viene después no sigue con tu progreso). Al volver a
+// entrar, el progreso baja de la cuenta. Quedan solo las preferencias del aparato y una compra de
+// Google Play hecha en él. Si no se pudo subir (sin conexión), no se cierra: devuelve el error.
+async function cerrarSesion() {
+  if (!acct) return { ok: true };
+  if (sync.conflict)
+    return {
+      ok: false,
+      error:
+        "Primero elegí qué progreso querés guardar (el de este aparato o el de la cuenta).",
+    };
+  try {
+    await upload();
+  } catch {
+    setSync({ status: "error" });
+    return {
+      ok: false,
+      error:
+        "No se pudo guardar tu progreso en la cuenta. Revisá la conexión y probá de nuevo.",
+    };
+  }
+  const s = getState().settings;
+  const quedan = {
+    premium: s.premium,
+    theme: s.theme,
+    bigText: s.bigText,
+    sound: s.sound,
+    ambience: s.ambience,
+    recordatorios: s.recordatorios,
+  };
+  signOut();
+  resetAll();
+  setSettings(
+    Object.fromEntries(
+      Object.entries(quedan).filter(([, v]) => v !== undefined),
+    ),
+  );
+  return { ok: true };
 }
 
 // ---- Premium por cuenta (premium/{uid}) ----
@@ -753,6 +795,7 @@ function lessonsDone() {
 export {
   ACCOUNTS,
   CLOUD,
+  cerrarSesion,
   checkPremium,
   NATIVE as CLOUD_NATIVE,
   checkPremios,
