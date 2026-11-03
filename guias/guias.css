@@ -150,6 +150,14 @@ details p { margin: 10px 0 0; color: var(--text-2); }
 @media (max-width: 620px) { .g-tiles { grid-template-columns: 1fr; } }
 
 /* Cierre y pie */
+/* Lo que sigue (gratis y Premium en la app) */
+.g-sigue-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 16px; }
+.g-sigue-item { position: relative; padding: 18px 18px 16px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); }
+.g-sigue-item h3 { margin: 8px 0 6px; font-size: 17px; }
+.g-sigue-item p { margin: 0; color: var(--text-2); font-size: 15px; }
+.g-sigue-item.premium { border-color: rgba(233, 185, 73, 0.45); background: linear-gradient(160deg, rgba(233, 185, 73, 0.10), var(--surface) 60%); }
+.g-tag { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; background: var(--surface-2); color: var(--text-2); }
+.g-sigue-item.premium .g-tag { background: var(--gold); color: var(--gold-ink); }
 .g-cta { position: relative; isolation: isolate; overflow: hidden; margin: 50px 0 40px; text-align: center; padding: 46px 22px; border-radius: 28px; background: radial-gradient(80% 120% at 50% 0%, #17603f 0%, #0a2c1c 60%, var(--bg) 100%); border: 1px solid var(--line); }
 .g-cta::before { content: ""; position: absolute; inset: 0; z-index: -1; background-image: var(--suits); background-size: 110px; opacity: 0.05; }
 .g-cta img { width: 62px; height: 62px; }
