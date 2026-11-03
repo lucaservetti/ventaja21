@@ -60,6 +60,7 @@ function Account() {
   const { acct, sync } = useAccount();
   const [err, setErr] = useState(null);
   const [nick, setNickText] = useState(acct ? acct.nick : "");
+  const [nickMal, setNickMal] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
   useEffect(() => setNickText(acct ? acct.nick : ""), [acct && acct.uid]);
@@ -135,12 +136,25 @@ function Account() {
                 type="text"
                 value={nick}
                 maxLength={20}
-                onChange={(e) => setNickText(e.target.value)}
-                onBlur={() => setNick(nick)}
+                onChange={(e) => {
+                  setNickText(e.target.value);
+                  setNickMal(false);
+                }}
+                onBlur={async () => {
+                  if (nick.trim() && !(await setNick(nick))) setNickMal(true);
+                }}
+                aria-invalid={nickMal}
+                aria-describedby="nick-ayuda"
               />
             </label>
-            <p className="muted small">
-              Lo ven los demás. Podés usar un apodo.
+            <p
+              id="nick-ayuda"
+              className={nickMal ? "small bad" : "muted small"}
+              role={nickMal ? "alert" : undefined}
+            >
+              {nickMal
+                ? "Ese nombre no se puede usar. Elegí otro (sin insultos ni groserías)."
+                : "Lo ven los demás. Podés usar un apodo, sin insultos ni groserías."}
             </p>
           </div>
           <div className="btns" style={{ marginTop: 14 }}>

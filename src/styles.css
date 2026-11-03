@@ -9181,3 +9181,83 @@ html[data-theme="light"] .tab.on .tab-ic {
     font-size: 11.5px;
   }
 }
+
+/* ---------- Ranking: reportar un nombre ---------- */
+.rank-flag {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin: -6px -8px -6px 2px;
+  border-radius: 50%;
+  color: var(--text-3);
+  background: none;
+}
+.rank-flag:hover,
+.rank-flag:focus-visible {
+  color: var(--text-2);
+  background: var(--surface-2);
+}
+.rank-flag:disabled {
+  opacity: 0.4;
+}
+.rank-reported {
+  margin: 10px 2px 0;
+}
+.prem-legal {
+  justify-content: center;
+  margin-top: 14px;
+}
+
+/* ---------- Aviso de versión nueva (Android) ---------- */
+.update-card {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--tabbar-h) + var(--safe-b) + 14px);
+  z-index: 41;
+  max-width: 520px;
+  margin: 0 auto;
+  width: calc(100% - var(--gutter-l) - var(--gutter-r));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 10px 12px 14px;
+  border-radius: var(--r-l);
+  background: var(--surface-2);
+  border: 1px solid var(--accent-line);
+  box-shadow: var(--shadow);
+  animation: fadeUp 0.3s ease both;
+}
+.update-card .grow {
+  min-width: 0;
+}
+.update-card .small {
+  color: var(--text-2);
+  margin-top: 2px;
+}
+.update-close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: var(--text-3);
+  background: none;
+}
+.update-card a.btn {
+  flex: none;
+  text-decoration: none;
+  padding-inline: 14px;
+}
+.update-card b {
+  display: block;
+  font-size: 15px;
+  line-height: 1.25;
+}
+.update-card .small {
+  font-size: 13px;
+  line-height: 1.35;
+}

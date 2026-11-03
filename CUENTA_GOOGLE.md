@@ -105,6 +105,25 @@ Pasámelos y los arreglo.
 
 Los cierres de la app nativa de Android (no los de la pantalla) aparecen solos en Play Console → **Calidad → Android vitals**.
 
+## Moderar el ranking (Google Play lo pide)
+
+Los apodos del ranking los ve cualquiera, así que Google Play pide filtrarlos y poder reportarlos. La app ya:
+
+- **no deja usar** apodos con insultos o groserías (`src/nombres-filtro.js`);
+- **muestra "Jugador"** si a alguien se le coló uno;
+- tiene una **banderita** al lado de cada nombre: quien la toca deja de ver ese nombre y nos llega un reporte.
+
+**Revisalos una vez por semana:** Firebase → **Firestore Database → Datos → reportes**. Cada reporte tiene:
+
+- `nombre`: el apodo reportado;
+- `puntaje`: dónde está, por ejemplo `daily/2026-11-20/scores/abc123`.
+
+Si el apodo es ofensivo, **borrá ese documento** (el de `puntaje`) y sale del ranking. Si insiste, buscá ese UID (el final de `puntaje`) en **Authentication → Usuarios** y deshabilitá la cuenta. Los reportes se borran solos a los 90 días.
+
+## Cuando cambian las reglas de la base de datos
+
+Las reglas (`firestore.rules`) **no se publican solas**: Firebase → **Firestore Database → Reglas**, borrá todo, pegá el contenido nuevo de `firestore.rules` y tocá **Publicar**. Antes, `node tests/reglas.mjs` (con los emuladores) comprueba que aguanten los ataques.
+
 ## Cómo se prueba sin el proyecto real
 
 `tests/e2e/nube.mjs` prueba todo contra los emuladores oficiales de Firebase, con las mismas reglas:

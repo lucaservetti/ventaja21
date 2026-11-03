@@ -239,6 +239,27 @@ function val(v) {
 }
 const field = (doc, k) => (doc && doc.fields ? val(doc.fields[k]) : undefined);
 
+// Descomprime sin pasarse de `tope` bytes (un archivo armado a propósito podría ocupar gigas).
+async function gunzipConTope(bytes, tope) {
+  const reader = new Blob([bytes])
+    .stream()
+    .pipeThrough(new DecompressionStream("gzip"))
+    .getReader();
+  const partes = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.length;
+    if (total > tope) {
+      reader.cancel().catch(() => {});
+      throw new Error("demasiado grande");
+    }
+    partes.push(value);
+  }
+  return new TextDecoder().decode(await new Blob(partes).arrayBuffer());
+}
+
 // Lecciones terminadas según el progreso guardado en la nube (users/{uid}, comprimido).
 async function lessonsDone(doc) {
   try {
@@ -246,10 +267,7 @@ async function lessonsDone(doc) {
     const gz = field(doc, "gz");
     if (!text && gz) {
       const bytes = Uint8Array.from(atob(gz), (c) => c.charCodeAt(0));
-      const stream = new Blob([bytes])
-        .stream()
-        .pipeThrough(new DecompressionStream("gzip"));
-      text = await new Response(stream).text();
+      text = await gunzipConTope(bytes, 4e6);
     }
     if (!text || !text.startsWith("V21:")) return 0;
     const bin = atob(text.slice(4));
@@ -476,7 +494,7 @@ async function borrar(uid, env) {
 }
 
 // ---- Limpieza diaria (Cron de Cloudflare) ----
-// Borra los puntajes del ranking de hace más de 60 días y los reportes de errores vencidos. Firebase
+// Borra los puntajes del ranking de hace más de 60 días y los errores y reportes vencidos. Firebase
 // lo podría hacer solo (TTL), pero pide activar la facturación. Mira una franja de días (no solo
 // ayer) por si algún día no corrió. Los premios miran como mucho 42 días para atrás.
 const GUARDAR_DIAS = 60;
@@ -500,21 +518,120 @@ async function limpiar(env, now = Date.now()) {
     });
     for (const x of r || []) if (x.document) nombres.push(x.document.name);
   }
-  const vencidos = await d.query("", {
-    from: [{ collectionId: "errores" }],
-    where: {
-      fieldFilter: {
-        field: { fieldPath: "expireAt" },
-        op: "LESS_THAN",
-        value: { timestampValue: new Date(now).toISOString() },
+  for (const coleccion of ["errores", "reportes"]) {
+    const vencidos = await d.query("", {
+      from: [{ collectionId: coleccion }],
+      where: {
+        fieldFilter: {
+          field: { fieldPath: "expireAt" },
+          op: "LESS_THAN",
+          value: { timestampValue: new Date(now).toISOString() },
+        },
       },
-    },
-    ...soloNombre,
-  });
-  for (const x of vencidos || []) if (x.document) nombres.push(x.document.name);
+      ...soloNombre,
+    });
+    for (const x of vencidos || [])
+      if (x.document) nombres.push(x.document.name);
+  }
   for (let i = 0; i < nombres.length; i += 500)
     await d.commit(nombres.slice(i, i + 500).map((n) => ({ delete: n })));
   return nombres.length;
+}
+
+// ---- Límites de uso ----
+// Cada cuenta (o cada conexión, para los errores) puede hacer unos pocos pedidos por minuto: así
+// nadie gasta la cuota gratis de la base de datos a propósito. Usa el limitador de Cloudflare
+// (wrangler.toml) y, si no está, uno en memoria.
+const ventanas = new Map();
+async function dentroDelLimite(env, nombre, clave, porMinuto) {
+  const lim = env[nombre];
+  if (lim && typeof lim.limit === "function") {
+    try {
+      return (await lim.limit({ key: clave })).success;
+    } catch {
+      // Sigue con el de memoria.
+    }
+  }
+  const ahora = Date.now();
+  const k = `${nombre}:${clave}`;
+  let v = ventanas.get(k);
+  if (!v || ahora - v.desde > 60e3) v = { desde: ahora, n: 0 };
+  v.n++;
+  ventanas.set(k, v);
+  if (ventanas.size > 5000)
+    for (const [kk, vv] of ventanas)
+      if (ahora - vv.desde > 60e3) ventanas.delete(kk);
+  return v.n <= porMinuto;
+}
+const muchos = (req) =>
+  json(req, 429, { error: "Demasiados pedidos: probá en un minuto" });
+
+// ---- Errores de la app ----
+// La app manda acá sus errores (sin datos de la persona) y el servidor los guarda en errores/,
+// recortados, con un límite por conexión. Vencen a los 90 días (los borra limpiar()).
+const txt = (v, max) => String(v == null ? "" : v).slice(0, max);
+async function guardarError(req, env) {
+  let b;
+  try {
+    const raw = await req.text();
+    if (raw.length > 8000) throw new Error("grande");
+    b = JSON.parse(raw);
+  } catch {
+    return json(req, 400, { error: "mal formado" });
+  }
+  const now = Date.now();
+  const fields = {
+    msg: { stringValue: txt(b.msg, 300) || "error" },
+    stack: { stringValue: txt(b.stack, 1500) },
+    where: { stringValue: txt(b.where, 200) },
+    version: { stringValue: txt(b.version, 20) },
+    plataforma: {
+      stringValue: b.plataforma === "android" ? "android" : "web",
+    },
+    idioma: { stringValue: txt(b.idioma, 10) },
+    t: { integerValue: String(now) },
+    expireAt: { timestampValue: new Date(now + 90 * DAY).toISOString() },
+  };
+  const d = db(env);
+  await d.commit([
+    { update: { name: d.name(`errores/${crypto.randomUUID()}`), fields } },
+  ]);
+  return json(req, 200, { ok: true });
+}
+
+// ---- Reportes de nombres del ranking ----
+// Alguien reporta un nombre ofensivo: se guarda en reportes/ para revisarlo a mano (ver
+// CUENTA_GOOGLE.md, "Moderar el ranking"). Vencen a los 90 días.
+async function guardarReporte(req, env) {
+  let b;
+  try {
+    const raw = await req.text();
+    if (raw.length > 2000) throw new Error("grande");
+    b = JSON.parse(raw);
+  } catch {
+    return json(req, 400, { error: "mal formado" });
+  }
+  const tipo = b.tipo === "weekly" ? "weekly" : "daily";
+  const clave = String(b.clave || "");
+  const uid = String(b.uid || "");
+  if (!/^20\d\d-\d\d-\d\d$/.test(clave) || !/^[A-Za-z0-9_-]{1,128}$/.test(uid))
+    return json(req, 400, { error: "mal formado" });
+  const now = Date.now();
+  const d = db(env);
+  await d.commit([
+    {
+      update: {
+        name: d.name(`reportes/${crypto.randomUUID()}`),
+        fields: {
+          puntaje: { stringValue: `${tipo}/${clave}/scores/${uid}` },
+          nombre: { stringValue: txt(b.nombre, 40) },
+          t: { integerValue: String(now) },
+          expireAt: { timestampValue: new Date(now + 90 * DAY).toISOString() },
+        },
+      },
+    },
+  ]);
+  return json(req, 200, { ok: true });
 }
 
 export default {
@@ -526,8 +643,23 @@ export default {
       return new Response(null, { status: 204, headers: cors(req) });
     const url = new URL(req.url);
     const route = url.pathname;
-    if ((route !== "/premios" && route !== "/borrar") || req.method !== "POST")
+    if (
+      !["/premios", "/borrar", "/errores", "/reportar"].includes(route) ||
+      req.method !== "POST"
+    )
       return json(req, 404, { error: "no existe" });
+    if (route === "/errores" || route === "/reportar") {
+      const ip = req.headers.get("CF-Connecting-IP") || "local";
+      if (!(await dentroDelLimite(env, "LIMITE_IP", ip, 10)))
+        return muchos(req);
+      try {
+        return route === "/errores"
+          ? await guardarError(req, env)
+          : await guardarReporte(req, env);
+      } catch {
+        return json(req, 500, { error: "No se pudo guardar" });
+      }
+    }
     let uid;
     try {
       const auth = req.headers.get("Authorization") || "";
@@ -535,6 +667,8 @@ export default {
     } catch {
       return json(req, 401, { error: "Entrá con tu cuenta de Google" });
     }
+    if (!(await dentroDelLimite(env, "LIMITE_CUENTA", uid, 6)))
+      return muchos(req);
     if (route === "/borrar") {
       try {
         await borrar(uid, env);
@@ -555,4 +689,12 @@ export default {
   },
 };
 
-export { borrar, limpiar, premios, serviceToken, verifyIdToken };
+export {
+  borrar,
+  dentroDelLimite,
+  gunzipConTope,
+  limpiar,
+  premios,
+  serviceToken,
+  verifyIdToken,
+};

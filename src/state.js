@@ -284,6 +284,8 @@ function deepMerge(a, e) {
     return e === undefined ? a : e;
   let t = Array.isArray(a) ? [...a] : { ...a };
   for (let s of Object.keys(e)) {
+    // Un respaldo armado a mano no puede tocar la estructura interna de los objetos.
+    if (s === "__proto__" || s === "constructor" || s === "prototype") continue;
     let n = a ? a[s] : undefined,
       l = e[s];
     if (
@@ -740,6 +742,7 @@ function exportBackup() {
 // Lee un respaldo sin aplicarlo (para mostrar qué tiene antes de restaurar).
 function readBackup(a) {
   let e = String(a || "").trim();
+  if (e.length > 3e6) throw new Error("El respaldo es demasiado grande.");
   if (!e.startsWith("V21:"))
     throw new Error("El código no es un respaldo de Edge 21.");
   let s;

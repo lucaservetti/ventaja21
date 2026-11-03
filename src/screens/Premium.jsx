@@ -18,7 +18,7 @@ import {
 } from "../platform.js";
 import { useNav } from "../nav.js";
 import { ACCOUNTS, useAccount } from "../cloud.js";
-import { LOCALE } from "../i18n/index.js";
+import { LANG, LOCALE } from "../i18n/index.js";
 
 const FEATURES = {
   casino: "El modo casino real",
@@ -276,6 +276,24 @@ function Premium({ feature }) {
               Privacidad de los anuncios
             </button>
           ) : null}
+          <p className="small legal-links prem-legal">
+            <a
+              className="link"
+              href={`https://edge21.app/terminos.html${LANG === "en" ? "#en" : ""}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Términos de uso
+            </a>
+            <a
+              className="link"
+              href={`https://edge21.app/privacidad.html${LANG === "en" ? "#en" : ""}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Política de privacidad
+            </a>
+          </p>
         </div>
       ) : null}
       <div className="bottom-actions">

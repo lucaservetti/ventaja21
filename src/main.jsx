@@ -1,4 +1,10 @@
 import {
+  TIENDA,
+  cerrarAviso,
+  revisarVersion,
+  useAvisoVersion,
+} from "./actualizar.js";
+import {
   Activity,
   Component,
   useEffect,
@@ -487,6 +493,7 @@ function App() {
             </section>
           ) : null;
         })}
+        {l.length === 0 ? <AvisoVersion /> : null}
         {l.length === 0 ? <TabBar tab={e} onTab={(k) => y.setTab(k)} /> : null}
         {C ? (
           <C open={true} onClose={() => y.closeSheet()} {...o.props} />
@@ -494,6 +501,42 @@ function App() {
         <Toasts items={[goalToast, achToast, premToast].filter(Boolean)} />
       </div>
     </NavContext.Provider>
+  );
+}
+// "Hay una versión nueva" (solo Android; ver actualizar.js).
+function AvisoVersion() {
+  const v = useAvisoVersion();
+  if (!v) return null;
+  return (
+    <div className="update-card" role="status">
+      <Icon name="refresh" size={20} />
+      <div className="grow">
+        <b>{v.obligatoria ? "Actualizá la app" : "Hay una versión nueva"}</b>
+        <div className="small">
+          {v.obligatoria
+            ? "Esta versión ya no funciona bien. Actualizala en Google Play para seguir."
+            : "Tu progreso se mantiene."}
+        </div>
+      </div>
+      <a
+        className="btn btn-sm btn-primary"
+        href={TIENDA}
+        target="_blank"
+        rel="noreferrer"
+      >
+        Actualizar
+      </a>
+      {v.obligatoria ? null : (
+        <button
+          type="button"
+          className="update-close"
+          aria-label="Cerrar el aviso"
+          onClick={cerrarAviso}
+        >
+          <Icon name="close" size={16} />
+        </button>
+      )}
+    </div>
   );
 }
 function TabBar({ tab: a, onTab: e }) {
@@ -639,6 +682,7 @@ appRoot.render(
 takeChallengeFromUrl();
 initPlatform();
 initCloud();
+setTimeout(revisarVersion, 2500);
 if ("serviceWorker" in navigator && !NATIVE) {
   const hadController = !!navigator.serviceWorker.controller;
   let updateReady = false;

@@ -1,5 +1,6 @@
 // Desafiar a un amigo: un enlace con las mismas cartas (conteo) o las mismas manos (contrarreloj)
 // y tu puntaje. Quien lo abre juega exactamente lo mismo y comparan. No hace falta cuenta.
+import { ofensivo } from "./nombres-filtro.js";
 import { getState, setSettings } from "./state.js";
 import { shareText } from "./share.js";
 
@@ -31,9 +32,14 @@ function parseChallenge(code) {
       k: d.k,
       s: d.s >>> 0,
       sc: Math.max(0, Math.min(999, Number(d.sc) || 0)),
-      nm: String(d.nm || "").slice(0, 20),
+      nm: ofensivo(String(d.nm || "")) ? "" : String(d.nm || "").slice(0, 20),
       n: d.k === "c" ? Math.max(5, Math.min(52, Number(d.n) || 15)) : undefined,
-      sp: d.k === "c" ? String(d.sp || "normal") : undefined,
+      sp:
+        d.k === "c"
+          ? ["relaxed", "normal", "fast", "pro"].includes(d.sp)
+            ? d.sp
+            : "normal"
+          : undefined,
       m: d.k === "c" ? (d.m === "pairs" ? "pairs" : "single") : undefined,
     };
   } catch {

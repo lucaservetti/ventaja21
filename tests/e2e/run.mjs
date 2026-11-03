@@ -284,6 +284,26 @@ const PRUEBAS = {
     check(st.train && st.train.totalHands >= 1, "la mano no se guardó");
   },
 
+  // Android: si en Google Play hay una versión más nueva, avisa; si es obligatoria, no se cierra.
+  async avisoVersion(h) {
+    const { page } = h;
+    let version = { ultima: "99.0.0", minima: "1.0.0" };
+    await page.route("**/version.json", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify(version) }));
+    await page.evaluate(() => localStorage.setItem("v21.sim", "1"));
+    await page.reload();
+    await h.see("Hay una versión nueva", "There's a new version", 8000);
+    await h.css(".update-close", 400);
+    check(!(await page.locator(".update-card").count()), "el aviso no se cerró");
+    await page.reload();
+    await page.waitForTimeout(3500);
+    check(!(await page.locator(".update-card").count()), "el aviso cerrado volvió a aparecer");
+    version = { ultima: "99.0.0", minima: "98.0.0" };
+    await page.reload();
+    await h.see("Actualizá la app", "Update the app", 8000);
+    check(!(await page.locator(".update-close").count()), "el aviso obligatorio se puede cerrar");
+    await page.evaluate(() => localStorage.removeItem("v21.sim"));
+  },
+
   // La mesa: apostar, repartir y terminar la ronda.
   async mesa(h) {
     const { page } = h;

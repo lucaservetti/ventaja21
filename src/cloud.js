@@ -2,6 +2,7 @@
 // diario y manda los errores de la app para poder arreglarlos. Usa Firebase (Auth y Firestore) por su
 // API REST, sin el SDK de Firebase, así la app no pesa más. Sin configuración (firebase.config.json
 // vacío) todo esto queda apagado y la app funciona igual que siempre.
+import { ofensivo } from "./nombres-filtro.js";
 import { useSyncExternalStore } from "react";
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import {
@@ -221,7 +222,11 @@ async function finishSignIn(googleIdToken) {
     exp: Date.now() + Number(r.expiresIn || 3600) * 1000,
     name: r.displayName || r.fullName || "",
     email: r.email || "",
-    nick: (prev && prev.nick) || shortName(r.displayName || r.fullName),
+    nick:
+      (prev && prev.nick) ||
+      (ofensivo(shortName(r.displayName || r.fullName))
+        ? "Jugador"
+        : shortName(r.displayName || r.fullName)),
     lastSync: prev ? prev.lastSync : 0,
     dirty: prev ? prev.dirty : false,
     posted: prev ? prev.posted || [] : [],
@@ -618,10 +623,27 @@ async function setNick(nick) {
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 20);
-  if (!acct || !clean) return;
+  if (!acct || !clean) return false;
+  if (ofensivo(clean)) return false;
   saveAcct({ ...acct, nick: clean });
   lastPosted = "";
   postScores().catch(() => {});
+  return true;
+}
+
+// Reportar un nombre del ranking (lo guarda el servidor para revisarlo; ver servidor/index.js).
+function reportarNombre(kind, row) {
+  if (!CFG || !CFG.api) return Promise.resolve();
+  return fetch(`${CFG.api}/reportar`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      tipo: kind,
+      clave: kind === "daily" ? dayKey() : mondayKey(),
+      uid: row.id,
+      nombre: String(row.name || "").slice(0, 40),
+    }),
+  }).catch(() => {});
 }
 
 // ---- Borrar la cuenta (Google Play lo exige si la app permite crear cuentas) ----
@@ -654,21 +676,19 @@ function reportError(err, where = "") {
   seen.add(msg);
   reported++;
   const stack = String((err && err.stack) || "").slice(0, 1500);
-  fetch(`${FS}/errores?key=${CFG.apiKey}`, {
+  // Van al servidor, que los guarda con un límite por conexión (ver servidor/index.js).
+  if (!CFG.api) return;
+  fetch(`${CFG.api}/errores`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(
-      toFields({
-        msg,
-        stack,
-        where: String(where).slice(0, 200),
-        version: __APP_VERSION__,
-        plataforma: NATIVE ? "android" : "web",
-        idioma: document.documentElement.lang || "",
-        t: Date.now(),
-        expireAt: new Date(Date.now() + 90 * DAY),
-      }),
-    ),
+    body: JSON.stringify({
+      msg,
+      stack,
+      where: String(where).slice(0, 200),
+      version: __APP_VERSION__,
+      plataforma: NATIVE ? "android" : "web",
+      idioma: document.documentElement.lang || "",
+    }),
   }).catch(() => {});
 }
 
@@ -737,14 +757,15 @@ export {
   checkPremios,
   deleteAccount,
   initCloud,
+  onPremio,
   renderWebButton,
   reportError,
+  reportarNombre,
   resolveConflict,
   setNick,
   signInNative,
   signOut,
   syncNow,
-  onPremio,
   topScores,
   useAccount,
   usePremios,
