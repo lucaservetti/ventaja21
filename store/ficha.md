@@ -29,7 +29,7 @@ ENTRENÁ DONDE FALLÁS
 
 UN CASINO EN TU MANO
 • Simulador de blackjack con otros jugadores, chequeos de conteo y un mentor de jugadas y apuestas.
-• Reglas configurables: mazos, corte del zapato, 3:2 o 6:5, H17 o S17, rendición, doblar después de separar y más.
+• Seis tipos de mesa listos: casino clásico, 8 mazos, Vegas, online en vivo, online automático y la trampa del 6:5.
 
 PREMIUM (MENSUAL, ANUAL CON PRUEBA GRATIS, O UN SOLO PAGO)
 • Sin anuncios.
@@ -38,6 +38,8 @@ PREMIUM (MENSUAL, ANUAL CON PRUEBA GRATIS, O UN SOLO PAGO)
 • Simulador de banca: cuánta plata necesitás y tu riesgo de quebrar.
 • Análisis de tus errores: tu tabla pintada según dónde fallás y cómo vas mejorando.
 • Paños y mazos: el color de la mesa, el dorso de las cartas y el mazo de 4 colores.
+• La mesa a tu medida: cada regla a mano (mazos, corte, 3:2 o 6:5, H17, rendición y más) y dos manos por ronda.
+• Guía y progreso completos: desviaciones, el valor de cada regla y tu historial con todas tus tandas.
 • Sistemas de conteo avanzados y diario de casino real.
 • O ganalo jugando: días de Premium de regalo por racha, podio semanal y terminar las lecciones.
 

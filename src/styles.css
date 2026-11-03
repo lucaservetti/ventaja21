@@ -9520,3 +9520,15 @@ html[data-theme="light"] .cele-card {
     display: none;
   }
 }
+
+/* Precisión en el tiempo con muchas tandas (historial de Premium): barras finas, sin números. */
+.hist-pills {
+  margin-top: 10px;
+}
+.bars.dense {
+  gap: 2px;
+}
+.bars.dense .b {
+  border-radius: 3px;
+  min-height: 6px;
+}

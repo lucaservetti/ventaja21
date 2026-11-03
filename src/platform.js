@@ -145,6 +145,9 @@ function needsApp(name, params = {}) {
 // Sistemas de conteo de Premium. Hi-Lo y KO son gratis.
 const PREMIUM_SYSTEMS = ["hiopt1", "hiopt2", "zen", "omega2", "halves"];
 
+// Capítulos de la guía que son de Premium.
+const PREMIUM_CHAPTERS = ["devs", "tablerules"];
+
 // Pantallas que son de Premium. La ruta de desviaciones es gratis hasta el nivel 2.
 function needsPremium(name, params = {}, st = getState()) {
   if (hasPremium(st)) return false;
@@ -156,6 +159,9 @@ function needsPremium(name, params = {}, st = getState()) {
     "looks",
     "mistakes",
   ].includes(name);
+  // En la guía, las desviaciones y el valor de cada regla son de Premium.
+  if (name === "guideChapter" && PREMIUM_CHAPTERS.includes(params.id))
+    locked = true;
   if (name === "devLevel") {
     const n =
       params.level ||
@@ -619,6 +625,7 @@ export {
   APP_MODE,
   NATIVE,
   PREMIUM_SYSTEMS,
+  PREMIUM_CHAPTERS,
   WEB_DEMO,
   DEMO_LEVELS,
   DEMO_SECTIONS,

@@ -29,6 +29,10 @@ const FEATURES = {
   looks: "Elegir paños y mazos",
   mistakes: "El análisis de tus errores",
   systems: "Usar sistemas de conteo avanzados",
+  rules: "Ajustar cada regla de la mesa",
+  hands: "Jugar dos manos por ronda",
+  guideChapter: "Este capítulo de la guía",
+  history: "Tu historial completo",
 };
 const PERKS = [
   {
@@ -45,6 +49,16 @@ const PERKS = [
     icon: "target",
     title: "Ruta de desviaciones completa",
     sub: "Los 10 niveles: los Illustrious 18, el Fab 4 y calcular el conteo real.",
+  },
+  {
+    icon: "shoe",
+    title: "La mesa a tu medida",
+    sub: "Ajustá cada regla a mano y jugá dos manos por ronda.",
+  },
+  {
+    icon: "book",
+    title: "Guía y progreso completos",
+    sub: "Los capítulos de desviaciones y del valor de cada regla, y tu historial con todas tus tandas.",
   },
   {
     icon: "stats",

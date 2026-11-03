@@ -29,7 +29,7 @@ TRAIN WHERE YOU MISS
 
 A CASINO IN YOUR POCKET
 • Blackjack simulator with other players, count checks and a play and betting mentor.
-• Configurable rules: decks, shoe penetration, 3:2 or 6:5, H17 or S17, surrender, double after split and more.
+• Six ready-made tables: classic casino, 8 decks, Vegas, live online, automatic online and the 6:5 trap.
 
 PREMIUM (MONTHLY, YEARLY WITH A FREE TRIAL, OR ONE-TIME)
 • No ads.
@@ -38,6 +38,8 @@ PREMIUM (MONTHLY, YEARLY WITH A FREE TRIAL, OR ONE-TIME)
 • Bankroll simulator: how much money you need and your risk of ruin.
 • Mistake analysis: your chart colored by where you miss and how you're improving.
 • Tables and decks: felt color, card backs and a 4-color deck.
+• Your table, your way: every rule by hand (decks, penetration, 3:2 or 6:5, H17, surrender and more) and two hands per round.
+• Full guide and progress: deviations, what each rule is worth, and your history with every session.
 • Advanced counting systems and a real casino journal.
 • Or earn it by playing: free days of Premium for streaks, the weekly podium and finishing the lessons.
 

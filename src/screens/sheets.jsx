@@ -49,6 +49,12 @@ function SettingsSheet({ open: a, onClose: e }) {
     y = TABLE_PRESETS.find((m) =>
       Object.entries(m.rules).every(([b, S]) => l[b] === S),
     );
+  // Ajustar cada regla a mano es de Premium (los tipos de mesa son gratis).
+  const regla = (cambio) => {
+    if (hasPremium(t)) return setRules(cambio);
+    e();
+    s.push("premium", { feature: "rules" });
+  };
   return (
     <Sheet open={a} onClose={e} title="Ajustes" tall={true}>
       {
@@ -134,6 +140,7 @@ function SettingsSheet({ open: a, onClose: e }) {
       <h3 className="sheet-sub">Reglas de tu mesa</h3>
       <p className="muted small" style={{ marginBottom: 10 }}>
         La estrategia, las tandas y el simulador se adaptan a estas reglas.
+        {hasPremium(t) ? "" : " Elegir un tipo de mesa es gratis; ajustar cada regla a mano, Premium."}
       </p>
       <div className="preset-list">
         {TABLE_PRESETS.filter((m) => m.id !== "rng").map((m) => (
@@ -148,31 +155,34 @@ function SettingsSheet({ open: a, onClose: e }) {
           </button>
         ))}
       </div>
+      <p className="eyebrow" style={{ margin: "14px 0 6px" }}>
+        Ajustar a mano <PremiumTag st={t} />
+      </p>
       <div className="field">
         <span>Mazos</span>
         <Pills
           options={[4, 6, 8].map((m) => ({ value: m, label: String(m) }))}
           value={l.decks}
-          onChange={(m) => setRules({ decks: m })}
+          onChange={(m) => regla({ decks: m })}
         />
       </div>
       <Toggle
         id="s-h17"
         label="El crupier pide con 17 blando (H17)"
         checked={l.h17}
-        onChange={(m) => setRules({ h17: m })}
+        onChange={(m) => regla({ h17: m })}
       />
       <Toggle
         id="s-das"
         label="Doblar después de separar"
         checked={l.das}
-        onChange={(m) => setRules({ das: m })}
+        onChange={(m) => regla({ das: m })}
       />
       <Toggle
         id="s-ls"
         label="Rendición tardía"
         checked={l.surrender}
-        onChange={(m) => setRules({ surrender: m })}
+        onChange={(m) => regla({ surrender: m })}
       />
       <div className="tags" style={{ marginTop: 6 }}>
         {describeRules(l).map((m) => (
