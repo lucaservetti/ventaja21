@@ -319,7 +319,10 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
             </span>
           </span>
           <span className="grow">
-            <span className="eyebrow acc">Sección {a.id} · completa</span>
+            <span className="eyebrow acc">
+              Sección {a.id}
+              <span className="sr-only"> · completa</span>
+            </span>
             <b className="sec-done-title">{a.title}</b>
           </span>
           <span className="muted small num">

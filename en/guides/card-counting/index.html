@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How to count cards in blackjack: the Hi-Lo method step by step | Edge 21</title>
+<meta name="description" content="Learn to count cards with the Hi-Lo method: each card's value, the running count, the true count and how much to bet. With a drill to practice right here.">
+<meta name="theme-color" content="#06110c">
+<link rel="canonical" href="https://edge21.app/en/guides/card-counting/">
+<link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/card-counting/">
+<link rel="alternate" hreflang="es" href="https://edge21.app/guias/contar-cartas/">
+<link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/contar-cartas/">
+<link rel="icon" href="/app/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/app/apple-touch-icon.png">
+<meta property="og:title" content="How to count cards in blackjack: the Hi-Lo method step by step | Edge 21">
+<meta property="og:description" content="Learn to count cards with the Hi-Lo method: each card's value, the running count, the true count and how much to bet. With a drill to practice right here.">
+<meta property="og:image" content="https://edge21.app/img/og.jpg">
+<meta property="og:url" content="https://edge21.app/en/guides/card-counting/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Edge 21">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/guias/guias.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to count cards in blackjack","description":"Learn to count cards with the Hi-Lo method: each card's value, the running count, the true count and how much to bet. With a drill to practice right here.","inLanguage":"en","url":"https://edge21.app/en/guides/card-counting/","image":"https://edge21.app/img/og.jpg","author":{"@type":"Organization","name":"Edge 21"},"publisher":{"@type":"Organization","name":"Edge 21","logo":{"@type":"ImageObject","url":"https://edge21.app/app/icon-512.png"}}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Guides","item":"https://edge21.app/en/guides/"},{"@type":"ListItem","position":2,"name":"How to count cards in blackjack","item":"https://edge21.app/en/guides/card-counting/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is counting cards legal?","acceptedAnswer":{"@type":"Answer","text":"Counting in your head is legal in most places. Using a phone or any device at the table is prohibited, and the casino can ask you to stop playing."}},{"@type":"Question","name":"How long does it take to learn to count?","acceptedAnswer":{"@type":"Answer","text":"The values take minutes. Keeping the count of a whole shoe, fast and at a full table, takes weeks of practice. Edge 21 has a 10-level path that gets you there step by step."}},{"@type":"Question","name":"Is Hi-Lo the best system?","acceptedAnswer":{"@type":"Answer","text":"It's the most used because it's simple and performs very well. There are more precise systems (like Zen or Omega II), but they're harder and the difference is small."}}]}</script>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/img/ficha.svg" alt="">Edge 21</a>
+    <nav aria-label="Site">
+      <a href="/en/guides/">Guides</a>
+    </nav>
+    <a class="lang-link" href="/guias/contar-cartas/" hreflang="es" lang="es">ES</a>
+    <a class="btn gold sm" href="/app/">Play now</a>
+  </div>
+</header>
+<main class="wrap">
+
+  <nav class="g-crumbs" aria-label="Breadcrumb"><a href="/en/guides/">Guides</a> <span aria-hidden="true">›</span> <span>How to count cards in blackjack</span></nav>
+  <article>
+    <h1>How to count cards in blackjack</h1>
+    <p class="g-lead">Counting cards isn't memorizing the deck or having a genius mind: it's keeping <b>one single number</b> in your head that goes up and down with the cards that come out. That number tells you when more high cards are left in the shoe, which is when the player has the edge. Here's the world's most used method, <b>Hi-Lo</b>, in 4 steps.</p>
+    <section class="g-sec"><h2>Why it works</h2><p>High cards (10, J, Q, K and Ace) favor you: there are more blackjacks (which pay 3 to 2), your doubles do better and the dealer, who must hit until 17, busts more often. Low cards (2 to 6) favor the dealer. When lots of low cards are already out, more high cards are left in the shoe, and that's when betting more pays off.</p></section>
+    <section class="g-sec g-step"><h2>Step 1 · Each card's value</h2><p>Add or subtract like this for every card you see. That's it.</p><div class="g-values">
+      <div class="g-val"><div class="g-cards"><span class="g-card red" role="img" aria-label="2"><span class="g-rank">2</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.3S2.7 15.5 2.7 9.1C2.7 6 5 3.6 7.9 3.6c1.8 0 3.3.9 4.1 2.3.8-1.4 2.3-2.3 4.1-2.3 2.9 0 5.2 2.4 5.2 5.5 0 6.4-9.3 12.2-9.3 12.2z"/></svg></span><span class="g-card" role="img" aria-label="4"><span class="g-rank">4</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c-2.6 3.9-8.3 7-8.3 11.4 0 2.6 2 4.5 4.4 4.5 1.5 0 2.7-.7 3.4-1.7-.3 2-1.2 3.6-2.6 5.1h6.2c-1.4-1.5-2.3-3.1-2.6-5.1.7 1 1.9 1.7 3.4 1.7 2.4 0 4.4-1.9 4.4-4.5 0-4.4-5.7-7.5-8.3-11.4z"/></svg></span><span class="g-card red" role="img" aria-label="6"><span class="g-rank">6</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.8c2.6 3.7 5.3 6.9 8.3 10.2-3 3.3-5.7 6.5-8.3 10.2-2.6-3.7-5.3-6.9-8.3-10.2 3-3.3 5.7-6.5 8.3-10.2z"/></svg></span></div><b class="plus">+1</b><span>2 · 3 · 4 · 5 · 6</span></div>
+      <div class="g-val"><div class="g-cards"><span class="g-card" role="img" aria-label="7"><span class="g-rank">7</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4a4.4 4.4 0 0 0-4.1 6A4.4 4.4 0 1 0 10.9 15c-.3 2.4-1.3 4.4-2.9 6.6h8c-1.6-2.2-2.6-4.2-2.9-6.6a4.4 4.4 0 1 0 3-6.6 4.4 4.4 0 0 0-4.1-6z"/></svg></span><span class="g-card red" role="img" aria-label="8"><span class="g-rank">8</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.3S2.7 15.5 2.7 9.1C2.7 6 5 3.6 7.9 3.6c1.8 0 3.3.9 4.1 2.3.8-1.4 2.3-2.3 4.1-2.3 2.9 0 5.2 2.4 5.2 5.5 0 6.4-9.3 12.2-9.3 12.2z"/></svg></span><span class="g-card" role="img" aria-label="9"><span class="g-rank">9</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c-2.6 3.9-8.3 7-8.3 11.4 0 2.6 2 4.5 4.4 4.5 1.5 0 2.7-.7 3.4-1.7-.3 2-1.2 3.6-2.6 5.1h6.2c-1.4-1.5-2.3-3.1-2.6-5.1.7 1 1.9 1.7 3.4 1.7 2.4 0 4.4-1.9 4.4-4.5 0-4.4-5.7-7.5-8.3-11.4z"/></svg></span></div><b class="zero">0</b><span>7 · 8 · 9</span></div>
+      <div class="g-val"><div class="g-cards"><span class="g-card red" role="img" aria-label="10"><span class="g-rank r10">10</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.8c2.6 3.7 5.3 6.9 8.3 10.2-3 3.3-5.7 6.5-8.3 10.2-2.6-3.7-5.3-6.9-8.3-10.2 3-3.3 5.7-6.5 8.3-10.2z"/></svg></span><span class="g-card" role="img" aria-label="K"><span class="g-rank">K</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4a4.4 4.4 0 0 0-4.1 6A4.4 4.4 0 1 0 10.9 15c-.3 2.4-1.3 4.4-2.9 6.6h8c-1.6-2.2-2.6-4.2-2.9-6.6a4.4 4.4 0 1 0 3-6.6 4.4 4.4 0 0 0-4.1-6z"/></svg></span><span class="g-card" role="img" aria-label="A"><span class="g-rank">A</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c-2.6 3.9-8.3 7-8.3 11.4 0 2.6 2 4.5 4.4 4.5 1.5 0 2.7-.7 3.4-1.7-.3 2-1.2 3.6-2.6 5.1h6.2c-1.4-1.5-2.3-3.1-2.6-5.1.7 1 1.9 1.7 3.4 1.7 2.4 0 4.4-1.9 4.4-4.5 0-4.4-5.7-7.5-8.3-11.4z"/></svg></span></div><b class="minus">−1</b><span>10 · J · Q · K · A</span></div>
+    </div></section>
+<section class="g-sec g-step"><h2>Step 2 · The running count</h2><p>You start at 0 after the shuffle and add the value of every card that appears on the table: yours, the other players' and the dealer's. That total is the <b>running count</b>. For example: a 5 comes out (+1), a K (−1), a 3 (+1) and a 6 (+1): the running count is <b>+2</b>.</p><div class="g-drill" id="practica" data-t="{&quot;h&quot;:&quot;Try it: count these cards&quot;,&quot;p&quot;:&quot;10 cards will come out, one by one. Keep the Hi-Lo count and type the running count at the end.&quot;,&quot;empezar&quot;:&quot;Start&quot;,&quot;otra&quot;:&quot;Again&quot;,&quot;pregunta&quot;:&quot;What's the running count?&quot;,&quot;comprobar&quot;:&quot;Check&quot;,&quot;bien&quot;:&quot;Exactly!&quot;,&quot;mal&quot;:&quot;Close: it was {0}.&quot;,&quot;detalle&quot;:&quot;Here's how it went, card by card:&quot;}">
+      <h3>Try it: count these cards</h3>
+      <p class="g-muted">10 cards will come out, one by one. Keep the Hi-Lo count and type the running count at the end.</p>
+      <div class="g-drill-table"><div class="g-drill-card" aria-live="polite"></div><div class="g-drill-n"></div></div>
+      <div class="g-drill-ask" hidden>
+        <label for="g-drill-in">What's the running count?</label>
+        <div class="g-drill-row"><input id="g-drill-in" type="text" inputmode="numeric" autocomplete="off" placeholder="+0"><button type="button" class="btn gold sm" data-a="check">Check</button></div>
+      </div>
+      <div class="g-drill-res" aria-live="polite"></div>
+      <button type="button" class="btn gold" data-a="start">Start</button>
+    </div></section>
+<section class="g-sec g-step"><h2>Step 3 · The true count</h2><p>A +6 doesn't mean the same with 6 decks left as with 1. So you divide the running count by the decks left to be dealt (estimated by looking at the discard tray). The result is the <b>true count</b>, and that's the one that matters.</p><div class="g-table-wrap"><table class="g-table"><thead><tr><th scope="col">Running count</th><th scope="col">Decks left</th><th scope="col">True count</th></tr></thead><tbody><tr><td>+6</td><td>6</td><td>+1</td></tr><tr><td>+6</td><td>3</td><td>+2</td></tr><tr><td>+6</td><td>1.5</td><td>+4</td></tr><tr><td>−4</td><td>2</td><td>−2</td></tr></tbody></table></div></section>
+<section class="g-sec g-step"><h2>Step 4 · How much to bet</h2><p>With a true count of +1 or less, bet the minimum (1 unit). From +2, raise it gradually. A careful example:</p><div class="g-table-wrap"><table class="g-table"><thead><tr><th scope="col">True count</th><th scope="col">Bet</th></tr></thead><tbody><tr><td>+1 or less</td><td>1 unit</td></tr><tr><td>+2</td><td>2 units</td></tr><tr><td>+3</td><td>4 units</td></tr><tr><td>+4 or more</td><td>6 to 8 units</td></tr></tbody></table></div><p class="g-note">The edge from counting is small (1 to 2%) and shows up in the long run, over hundreds of hours. In the short run you can lose, even counting perfectly.</p></section>
+    <section class="g-sec"><h2>4 myths about counting cards</h2><ul class="g-list"><li><b>“It's illegal.”</b> Counting in your head is legal in most places. What's prohibited is using devices at the table, and the casino can ask you not to play blackjack.</li><li><b>“You have to memorize every card.”</b> You keep a single number.</li><li><b>“You have to be a genius.”</b> It's adding and subtracting one at a time. The hard part is doing it fast at a full table: that's trainable.</li><li><b>“Counting means you always win.”</b> The edge is small and long-term. That's why it's for learning and understanding the game, not for getting rich.</li></ul></section>
+    <section class="g-sec"><h2>Frequently asked questions</h2><details><summary>Is counting cards legal?</summary><p>Counting in your head is legal in most places. Using a phone or any device at the table is prohibited, and the casino can ask you to stop playing.</p></details><details><summary>How long does it take to learn to count?</summary><p>The values take minutes. Keeping the count of a whole shoe, fast and at a full table, takes weeks of practice. Edge 21 has a 10-level path that gets you there step by step.</p></details><details><summary>Is Hi-Lo the best system?</summary><p>It's the most used because it's simple and performs very well. There are more precise systems (like Zen or Omega II), but they're harder and the difference is small.</p></details></section>
+  </article>
+  <section class="g-cta">
+    <img src="/img/ficha.svg" alt="">
+    <h2>Practice it for free on Edge 21</h2>
+    <p>Short lessons, a table that corrects every play and a 10-level path to learn to count. No real money.</p>
+    <a class="btn gold" href="/app/">Play free now</a>
+  </section>
+</main>
+<footer class="wrap">
+  <span>Edge 21 ♠ · It's for learning: only play with money you don't need.</span>
+  <nav>
+    <a href="/en/guides/">Guides</a>
+    <a href="/privacidad.html#en">Privacy policy</a>
+    <a href="/terminos.html#en">Terms of use</a>
+    <a href="mailto:soporte@edge21.app">soporte@edge21.app</a>
+    <a href="https://www.instagram.com/edge21.app/" rel="noopener">Instagram</a>
+    <a href="https://www.tiktok.com/@edge21.app" rel="noopener">TikTok</a>
+  </nav>
+</footer>
+<script>try{localStorage.setItem("edge21.lang","en")}catch(e){}</script>
+<script src="/guias/guias.js" defer></script>
+</body>
+</html>

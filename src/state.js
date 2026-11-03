@@ -811,6 +811,7 @@ export {
   readBackup,
   getState,
   importBackup,
+  LEVELS,
   levelFor,
   getActivityTick,
   markActive,

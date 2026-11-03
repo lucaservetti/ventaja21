@@ -1,6 +1,8 @@
 import { CLOUD } from "../cloud.js";
 import { useState } from "react";
-import { dayKey, useStore } from "../state.js";
+import { dayKey, setSettings, useStore } from "../state.js";
+import { APP_MODE } from "../platform.js";
+import { LOCALE } from "../i18n/index.js";
 import { Icon } from "../ui/icons.jsx";
 import { RANKS, makeCard } from "../engine/cards.js";
 import {
@@ -166,7 +168,9 @@ function CountTab() {
                   )}
                   key={k}
                 >
-                  {"DLMMJVS"[d.getDay()]}
+                  {new Intl.DateTimeFormat(LOCALE, { weekday: "narrow" })
+                    .format(d)
+                    .toUpperCase()}
                 </i>
               );
             })}
@@ -182,6 +186,34 @@ function CountTab() {
         >
           <Icon name="podium" size={16} /> Ver el ranking del desafío
         </button>
+      ) : null}
+      {APP_MODE &&
+      !(st.settings.recordatorios && st.settings.recordatorios.on) &&
+      !st.settings.recSugerido &&
+      Object.keys(daily.results).length >= 1 ? (
+        <div className="card rec-suggest">
+          <span className="li-icon">
+            <Icon name="clock" />
+          </span>
+          <div className="grow">
+            <b>¿Te aviso para no perder la racha?</b>
+            <p className="muted small">
+              Elegís qué días y a qué hora. Si ya practicaste, no te molesta.
+            </p>
+            <div className="btns-row">
+              <Button small onClick={() => nav.push("recordatorios")}>
+                Elegir cuándo
+              </Button>
+              <Button
+                small
+                kind="ghost"
+                onClick={() => setSettings({ recSugerido: true })}
+              >
+                Ahora no
+              </Button>
+            </div>
+          </div>
+        </div>
       ) : null}
       <button
         type="button"

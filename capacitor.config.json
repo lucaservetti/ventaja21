@@ -19,6 +19,10 @@
         "twitter": false
       },
       "logLevel": 1
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_edge21",
+      "iconColor": "#E9B949"
     }
   }
 }

@@ -284,6 +284,70 @@ const PRUEBAS = {
     check(st.train && st.train.totalHands >= 1, "la mano no se guardó");
   },
 
+  // Celebración: al subir de rango aparece con su botón para compartir; "Seguir" la cierra y no vuelve.
+  async celebracion(h) {
+    const { page } = h;
+    const app = page.url();
+    await page.goto(new URL("../privacidad.html", app).href);
+    await page.evaluate(() => {
+      const st = JSON.parse(localStorage.getItem("ventaja21.state.v1"));
+      st.rating = { value: 1105, peak: 1105, history: [] };
+      st.cele = { r: 1, s: [], n: [], pend: [], ob: true };
+      localStorage.setItem("ventaja21.state.v1", JSON.stringify(st));
+    });
+    await page.goto(app);
+    await page.waitForTimeout(900);
+    await h.tab("Entrenar", "Train");
+    await h.see("Subiste de rango", "You moved up a rank");
+    await h.see("Ficha verde", "Green chip");
+    await h.foto("celebracion");
+    await h.click("Seguir", "Continue", { exact: true, wait: 400 });
+    check(!(await page.locator(".cele").count()), "la celebración no se cerró");
+    const st = await h.state();
+    check(st.cele.pend.length === 0 && st.cele.r === 2, "no quedó anotada: " + JSON.stringify(st.cele));
+    await h.tab("Conteo", "Count");
+    check(!(await page.locator(".cele").count()), "la celebración volvió a aparecer");
+  },
+
+  // Recordatorios: la sugerencia aparece después del primer desafío, y en la pantalla se elige
+  // la frecuencia y la hora; en Ajustes se ve el resumen.
+  async recordatorios(h) {
+    const { page, T } = h;
+    // Fuera de la app (si no, al recargar guarda su estado y pisa el que se escribe acá).
+    const app = page.url();
+    await page.goto(new URL("../privacidad.html", app).href);
+    await page.evaluate(() => {
+      const st = JSON.parse(localStorage.getItem("ventaja21.state.v1"));
+      const d = new Date();
+      const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      st.daily = { last: k, streak: 1, best: 1, results: { [k]: { ok: true, err: 0, score: 100 } } };
+      localStorage.setItem("ventaja21.state.v1", JSON.stringify(st));
+      localStorage.setItem("v21.sim", "1");
+    });
+    await page.goto(app);
+    await page.waitForTimeout(900);
+    await h.tab("Conteo", "Count");
+    await h.see("¿Te aviso para no perder la racha?", "Want a reminder so you don't lose your streak?");
+    await h.click("Elegir cuándo", "Choose when", { wait: 600 });
+    await h.see("Recordarme practicar", "Remind me to practice");
+    await h.css("#rec-on + .toggle, label[for=rec-on]", 400);
+    await h.see("Próximo aviso", "Next reminder");
+    await h.click("Una vez por semana", "Once a week", { wait: 300 });
+    await page.locator(".rec-day").nth(6).click();
+    await page.waitForTimeout(300);
+    await page.locator(".rec-time").fill("21:30");
+    await page.waitForTimeout(400);
+    const rec = (await h.state()).settings.recordatorios;
+    check(rec && rec.on && rec.dias.length === 1 && rec.dias[0] === 0 && rec.hora === "21:30", "no se guardaron los recordatorios: " + JSON.stringify(rec));
+    await page.locator('[aria-label="Volver"], [aria-label="Back"]').filter({ visible: true }).first().click();
+    await page.waitForTimeout(500);
+    check(!(await page.locator(".rec-suggest").filter({ visible: true }).count()), "la sugerencia sigue aunque ya los prendió");
+    await page.getByRole("button", { name: T("Ajustes", "Settings") }).filter({ visible: true }).first().click();
+    await page.waitForTimeout(500);
+    await h.see("Una vez por semana, a las 21:30", "Once a week, at 21:30");
+    await page.evaluate(() => localStorage.removeItem("v21.sim"));
+  },
+
   // Android: si en Google Play hay una versión más nueva, avisa; si es obligatoria, no se cierra.
   async avisoVersion(h) {
     const { page } = h;

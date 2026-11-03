@@ -1,3 +1,7 @@
+import { initCelebraciones } from "./celebraciones.js";
+import { Celebracion } from "./screens/Celebracion.jsx";
+import { initRecordatorios } from "./recordatorios.js";
+import { Recordatorios } from "./screens/Recordatorios.jsx";
 import {
   TIENDA,
   cerrarAviso,
@@ -138,6 +142,7 @@ const SCREENS = {
   premios: Premios,
   mistakes: Mistakes,
   enApp: EnApp,
+  recordatorios: Recordatorios,
   account: Account,
   challenge: Challenge,
   ranking: Ranking,
@@ -352,6 +357,12 @@ function App() {
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, [onboardedNow]);
+  // Tocar un recordatorio (recordatorios.js) abre la pestaña que corresponde.
+  useEffect(() => {
+    const ir = (ev) => TAB_SCREENS[ev.detail] && y.setTab(ev.detail);
+    window.addEventListener("v21-ir", ir);
+    return () => window.removeEventListener("v21-ir", ir);
+  }, []);
   // Tema (oscuro o claro) y tamaño de letra.
   const theme = a.settings.theme || "dark";
   const bigText = !!a.settings.bigText;
@@ -494,6 +505,9 @@ function App() {
           ) : null;
         })}
         {l.length === 0 ? <AvisoVersion /> : null}
+        {l.length === 0 && !o && a.cele && a.cele.pend && a.cele.pend.length ? (
+          <Celebracion item={a.cele.pend[0]} />
+        ) : null}
         {l.length === 0 ? <TabBar tab={e} onTab={(k) => y.setTab(k)} /> : null}
         {C ? (
           <C open={true} onClose={() => y.closeSheet()} {...o.props} />
@@ -682,6 +696,8 @@ appRoot.render(
 takeChallengeFromUrl();
 initPlatform();
 initCloud();
+initRecordatorios();
+initCelebraciones();
 setTimeout(revisarVersion, 2500);
 if ("serviceWorker" in navigator && !NATIVE) {
   const hadController = !!navigator.serviceWorker.controller;
