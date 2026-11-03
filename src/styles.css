@@ -7881,13 +7881,21 @@ html[lang="en"] .en-dup {
 .sec-done .grow {
   min-width: 0;
 }
-.sec-done-title {
+.sec-done .eyebrow {
   display: block;
-  margin-top: 2px;
-  font-size: 16px;
+  letter-spacing: 0.08em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.sec-done-title {
+  display: -webkit-box;
+  margin-top: 2px;
+  font-size: 16px;
+  line-height: 1.25;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .sec-done-chev {
   flex: none;
@@ -8311,7 +8319,7 @@ html[data-theme="light"] .res-note p {
 html[data-theme="light"] .cpath {
   background: linear-gradient(180deg, var(--accent-soft), var(--surface) 55%);
 }
-html[data-theme="light"] .placard {
+html[data-theme="light"] :is(.placard, .sec-done) {
   background: linear-gradient(160deg, #e3efe6, var(--surface) 70%);
 }
 html[data-theme="light"] .placard::after {
@@ -9078,4 +9086,98 @@ html[data-theme="light"] .tab.on .tab-ic {
 }
 .demo-note b {
   color: var(--accent-text);
+}
+
+/* ---------- Celulares chicos y letra grande: que los rótulos y números entren en su caja ---------- */
+.tiles > .tile {
+  container-type: inline-size;
+}
+.tile .eyebrow {
+  letter-spacing: 0.06em;
+}
+.tile-l,
+.pf-skill-name {
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+@container (max-width: 96px) {
+  .tile .tile-v {
+    font-size: 24px !important;
+  }
+  .tile .eyebrow {
+    font-size: 11px;
+  }
+  .tile-l {
+    font-size: 12.5px;
+  }
+}
+.chart-grid {
+  container-type: inline-size;
+}
+@container (max-width: 340px) {
+  .chart-row {
+    grid-template-columns: 38px repeat(10, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .chart-col {
+    font-size: 12px;
+    letter-spacing: -0.04em;
+  }
+}
+.chart-hint,
+.result-card,
+.cta-bar {
+  container-type: inline-size;
+}
+@container (max-width: 300px) {
+  .chart-hint .mini-chart .chart-row {
+    grid-template-columns: 28px repeat(10, minmax(0, 1fr));
+    gap: 2px;
+  }
+  .chart-hint .chart-col {
+    font-size: 11px;
+    letter-spacing: -0.06em;
+  }
+  .chart-hint .mini-chart .cell {
+    font-size: 11px;
+  }
+  .result-card .res-title,
+  .result-card .res-move {
+    font-size: 23px;
+  }
+  .cta-bar .cta-title {
+    font-size: 16px;
+  }
+  .cta-bar .cta-sub {
+    font-size: 13px;
+  }
+}
+@container (max-width: 260px) {
+  .chart-row {
+    grid-template-columns: 30px repeat(10, minmax(0, 1fr));
+    gap: 3px;
+  }
+  .chart-col {
+    font-size: 11px;
+    letter-spacing: -0.07em;
+  }
+  .chart-rowlabel {
+    font-size: 11.5px;
+  }
+}
+.heat-wrap {
+  container-type: inline-size;
+}
+@container (max-width: 300px) {
+  .heat-row {
+    grid-template-columns: 32px repeat(10, minmax(0, 1fr));
+    gap: 3px;
+  }
+  .heat-row .chart-col {
+    font-size: 11px;
+    letter-spacing: -0.07em;
+  }
+  .heat-row .chart-rowlabel {
+    font-size: 11.5px;
+  }
 }

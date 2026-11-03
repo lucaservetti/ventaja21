@@ -6,7 +6,8 @@ const path = require("path");
 const L = process.argv[2] || "es";
 const que = process.argv[3] || "todo";
 const S = path.join(__dirname, "salida");
-const P = path.join(S, `piezas-${L}`);
+const TIKTOK = process.env.TIKTOK === "1";
+const P = path.join(S, `piezas-${L}${TIKTOK ? "-tiktok" : ""}`);
 const FPS = 60;
 const ROOT = path.resolve(__dirname, "../..");
 const frames = (k) => path.join(S, `${L}-${k}`, "f%05d.png");
@@ -20,7 +21,7 @@ const slide = (from, d, delay = 0) => `${from}*pow(1-min(max(t-${delay},0)/${d},
 function vertical(k, { cuenta = null } = {}) {
   const d = dur(k);
   const total = +(d + 1.0).toFixed(3);
-  const out = path.join(ROOT, "store/video/redes", `edge21-${k}-${L}.mp4`);
+  const out = path.join(ROOT, "store/video/redes", `edge21-${k}-${L}${TIKTOK ? "-tiktok" : ""}.mp4`);
   const inputs = [
     "-loop", "1", "-framerate", String(FPS), "-i", path.join(P, "v-fondo.png"),
     "-loop", "1", "-framerate", String(FPS), "-i", path.join(P, `v-titulo-${k}.png`),
@@ -83,10 +84,14 @@ function tienda() {
   console.log(path.relative(ROOT, out), t.toFixed(2) + " s");
 }
 
-if (que === "todo" || que === "vertical") {
+if (TIKTOK) {
+  // En TikTok, solo los videos sin plata ni fichas en pantalla.
+  vertical("quiz", { cuenta: 1.3 });
+  vertical("count");
+} else if (que === "todo" || que === "vertical") {
   vertical("quiz", { cuenta: 1.3 });
   vertical("count");
   vertical("table");
   vertical("learn");
 }
-if (que === "todo" || que === "tienda") tienda();
+if (!TIKTOK && (que === "todo" || que === "tienda")) tienda();

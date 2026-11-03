@@ -1,5 +1,7 @@
 # Semana 1 en redes: 7 publicaciones
 
+> **Para TikTok, usá [`TIKTOK.md`](TIKTOK.md)**: tiene descripciones, videos y fotos pensados para TikTok, que es mucho más estricto con todo lo que parezca apuestas. Las descripciones de TikTok de más abajo quedan solo como referencia.
+
 Primero en **Instagram**, y el mismo día, un par de horas después, en **TikTok**. El mejor horario es entre las 19 y las 22 h.
 
 | Día | Qué | Tipo | Archivos |
