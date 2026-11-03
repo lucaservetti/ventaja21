@@ -309,6 +309,16 @@ await paso("errores: se guardan recortados, sin cuenta, y con límite por conexi
   check(n.filter((s) => s === 429).length === 2, `debería frenar después de 10: ${n}`);
 });
 
+await paso("reportar un nombre: se guarda para revisarlo; datos raros no", async () => {
+  const envLim = { PROJECT_ID: P, EMULATOR: "127.0.0.1" };
+  const rep = (body) => worker.fetch(new Request("https://api.edge21.app/reportar", { method: "POST", headers: { "Content-Type": "application/json", "CF-Connecting-IP": "7.7.7.7" }, body: JSON.stringify(body) }), envLim);
+  check((await rep({ tipo: "daily", clave: "2026-11-03", uid: "abc123", nombre: "feo" })).status === 200, "debería guardar el reporte");
+  check((await rep({ tipo: "daily", clave: "../../premium/x", uid: "abc", nombre: "x" })).status === 400, "una clave rara debería dar 400");
+  check((await rep({ tipo: "daily", clave: "2026-11-03", uid: "a/b", nombre: "x" })).status === 400, "un uid raro debería dar 400");
+  const q = await fetch(`${FS}:runQuery`, { method: "POST", headers: { Authorization: "Bearer owner", "Content-Type": "application/json" }, body: JSON.stringify({ structuredQuery: { from: [{ collectionId: "reportes" }] } }) }).then((x) => x.json());
+  check(q.some((x) => x.document && x.document.fields.puntaje.stringValue === "daily/2026-11-03/scores/abc123"), "no quedó el reporte");
+});
+
 await paso("progreso comprimido armado para ocupar gigas: se corta", async () => {
   const gz = await new Response(new Blob([new Uint8Array(20e6)]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer();
   let corto = false;

@@ -67,10 +67,30 @@ const html = fs
     "<!--I18N-->",
     () => `<script type="application/json" id="i18n-en">${JSON.stringify(EN).replace(/<\//g, "<\\/")}</script>`,
   );
+// Política de seguridad de la web: el navegador solo corre el código de la app (por su huella) y el
+// de Google para entrar con la cuenta, y solo habla con Firebase y con el servidor de Edge 21. Si
+// alguien lograra meter código en la página, no corre. Solo en la web: en Android, Capacitor agrega
+// su propio código a la página y esta política lo frenaría.
+const huella = crypto.createHash("sha256").update(script.trim()).digest("base64");
+const local = firebase.emulator || /^http:/.test(firebase.api) ? " http://127.0.0.1:* http://localhost:*" : "";
+const csp = [
+  "default-src 'self'",
+  `script-src 'self' 'sha256-${huella}' https://accounts.google.com/gsi/client`,
+  "style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data:",
+  `connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com ${firebase.api} https://accounts.google.com/gsi/${local}`,
+  "frame-src https://accounts.google.com/gsi/",
+  "worker-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join("; ");
+const htmlWeb = html.replace('<meta charset="utf-8">', () => `<meta charset="utf-8">\n<meta http-equiv="Content-Security-Policy" content="${csp}">`);
 // La app vive en app/ (edge21.app/app); en el inicio está la página de presentación.
-fs.writeFileSync("app/index.html", html);
+fs.writeFileSync("app/index.html", htmlWeb);
 
-const hash = crypto.createHash("sha256").update(html).digest("hex").slice(0, 10);
+const hash = crypto.createHash("sha256").update(htmlWeb).digest("hex").slice(0, 10);
 const fontFiles = fs.readdirSync("app/fonts").filter((f) => f.endsWith(".woff2")).map((f) => `  "./fonts/${f}",`).join("\n");
 fs.writeFileSync(
   "app/sw.js",
@@ -80,7 +100,8 @@ fs.writeFileSync(
 // Carpeta www/: la misma app para el proyecto Android (Capacitor). No va al repositorio.
 fs.rmSync("www", { recursive: true, force: true });
 fs.mkdirSync("www");
-for (const f of ["index.html", "manifest.webmanifest", "favicon.svg", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"])
+fs.writeFileSync("www/index.html", html);
+for (const f of ["manifest.webmanifest", "favicon.svg", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"])
   fs.copyFileSync(`app/${f}`, `www/${f}`);
 fs.copyFileSync("privacidad.html", "www/privacidad.html");
 fs.cpSync("app/fonts", "www/fonts", { recursive: true });

@@ -40,7 +40,10 @@ const srv = http.createServer((req, res) => {
 await new Promise((ok) => srv.listen(0, ok));
 // El servidor de premios (el mismo código que corre en Cloudflare), apuntando a los emuladores.
 const api = http.createServer(async (req, res) => {
-  const r = await worker.fetch(new Request(`http://127.0.0.1:8787${req.url}`, { method: req.method, headers: req.headers }), { PROJECT_ID: "demo-edge21", EMULATOR: "127.0.0.1" });
+  const partes = [];
+  for await (const c of req) partes.push(c);
+  const body = req.method === "POST" && partes.length ? Buffer.concat(partes) : undefined;
+  const r = await worker.fetch(new Request(`http://127.0.0.1:8787${req.url}`, { method: req.method, headers: req.headers, body }), { PROJECT_ID: "demo-edge21", EMULATOR: "127.0.0.1" });
   res.writeHead(r.status, Object.fromEntries(r.headers));
   res.end(Buffer.from(await r.arrayBuffer()));
 });

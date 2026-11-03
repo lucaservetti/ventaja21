@@ -494,7 +494,7 @@ async function borrar(uid, env) {
 }
 
 // ---- Limpieza diaria (Cron de Cloudflare) ----
-// Borra los puntajes del ranking de hace más de 60 días y los reportes de errores vencidos. Firebase
+// Borra los puntajes del ranking de hace más de 60 días y los errores y reportes vencidos. Firebase
 // lo podría hacer solo (TTL), pero pide activar la facturación. Mira una franja de días (no solo
 // ayer) por si algún día no corrió. Los premios miran como mucho 42 días para atrás.
 const GUARDAR_DIAS = 60;
@@ -518,18 +518,21 @@ async function limpiar(env, now = Date.now()) {
     });
     for (const x of r || []) if (x.document) nombres.push(x.document.name);
   }
-  const vencidos = await d.query("", {
-    from: [{ collectionId: "errores" }],
-    where: {
-      fieldFilter: {
-        field: { fieldPath: "expireAt" },
-        op: "LESS_THAN",
-        value: { timestampValue: new Date(now).toISOString() },
+  for (const coleccion of ["errores", "reportes"]) {
+    const vencidos = await d.query("", {
+      from: [{ collectionId: coleccion }],
+      where: {
+        fieldFilter: {
+          field: { fieldPath: "expireAt" },
+          op: "LESS_THAN",
+          value: { timestampValue: new Date(now).toISOString() },
+        },
       },
-    },
-    ...soloNombre,
-  });
-  for (const x of vencidos || []) if (x.document) nombres.push(x.document.name);
+      ...soloNombre,
+    });
+    for (const x of vencidos || [])
+      if (x.document) nombres.push(x.document.name);
+  }
   for (let i = 0; i < nombres.length; i += 500)
     await d.commit(nombres.slice(i, i + 500).map((n) => ({ delete: n })));
   return nombres.length;
@@ -596,6 +599,41 @@ async function guardarError(req, env) {
   return json(req, 200, { ok: true });
 }
 
+// ---- Reportes de nombres del ranking ----
+// Alguien reporta un nombre ofensivo: se guarda en reportes/ para revisarlo a mano (ver
+// CUENTA_GOOGLE.md, "Moderar el ranking"). Vencen a los 90 días.
+async function guardarReporte(req, env) {
+  let b;
+  try {
+    const raw = await req.text();
+    if (raw.length > 2000) throw new Error("grande");
+    b = JSON.parse(raw);
+  } catch {
+    return json(req, 400, { error: "mal formado" });
+  }
+  const tipo = b.tipo === "weekly" ? "weekly" : "daily";
+  const clave = String(b.clave || "");
+  const uid = String(b.uid || "");
+  if (!/^20\d\d-\d\d-\d\d$/.test(clave) || !/^[A-Za-z0-9_-]{1,128}$/.test(uid))
+    return json(req, 400, { error: "mal formado" });
+  const now = Date.now();
+  const d = db(env);
+  await d.commit([
+    {
+      update: {
+        name: d.name(`reportes/${crypto.randomUUID()}`),
+        fields: {
+          puntaje: { stringValue: `${tipo}/${clave}/scores/${uid}` },
+          nombre: { stringValue: txt(b.nombre, 40) },
+          t: { integerValue: String(now) },
+          expireAt: { timestampValue: new Date(now + 90 * DAY).toISOString() },
+        },
+      },
+    },
+  ]);
+  return json(req, 200, { ok: true });
+}
+
 export default {
   async scheduled(event, env, ctx) {
     ctx.waitUntil(limpiar(env));
@@ -606,16 +644,18 @@ export default {
     const url = new URL(req.url);
     const route = url.pathname;
     if (
-      !["/premios", "/borrar", "/errores"].includes(route) ||
+      !["/premios", "/borrar", "/errores", "/reportar"].includes(route) ||
       req.method !== "POST"
     )
       return json(req, 404, { error: "no existe" });
-    if (route === "/errores") {
+    if (route === "/errores" || route === "/reportar") {
       const ip = req.headers.get("CF-Connecting-IP") || "local";
       if (!(await dentroDelLimite(env, "LIMITE_IP", ip, 10)))
         return muchos(req);
       try {
-        return await guardarError(req, env);
+        return route === "/errores"
+          ? await guardarError(req, env)
+          : await guardarReporte(req, env);
       } catch {
         return json(req, 500, { error: "No se pudo guardar" });
       }
