@@ -46,6 +46,9 @@ self.addEventListener("fetch", (e) => {
   const scope = new URL(self.registration.scope).pathname;
   const isApp = url.pathname === scope || url.pathname === scope + "index.html";
   if (req.mode === "navigate" && !isApp) return;
+  // Lo de afuera de la app (version.json, las imágenes de la página web…) va siempre a la red.
+  if (url.origin === self.location.origin && !url.pathname.startsWith(scope))
+    return;
   if (url.pathname.startsWith(scope + "sitio/")) return;
   if (req.mode === "navigate") {
     e.respondWith(

@@ -152,9 +152,19 @@ En `store/testers.md` están los mensajes listos para mandar (en español y en i
 
 ## Actualizar la app más adelante
 
-1. Hacé los cambios (o pedímelos). Se sube la versión en `package.json`.
-2. **Actions → Android → Run workflow** y bajá el `.aab` nuevo.
+**La web se actualiza sola:** cada cambio que se publica en `main` llega a edge21.app en unos minutos. Quien la tenga abierta ve la versión nueva apenas no esté en medio de algo.
+
+**Android, paso a paso:**
+
+1. Hacé los cambios (o pedímelos). Se sube la versión en `package.json` (por ejemplo, de `1.13.0` a `1.14.0`).
+2. **Actions → Android → Run workflow** y bajá el `.aab` nuevo. El número interno (`versionCode`) sube solo.
 3. Play Console → la pista que corresponda → **Crear versión** → subilo.
+4. **Cuando Google lo apruebe y esté publicado,** cambiá `"ultima"` en `version.json` (en la raíz del repositorio) por la versión nueva y publicalo. Así, a quien tenga una versión vieja le aparece el aviso **"Hay una versión nueva"** con el botón para actualizar. **No lo cambies antes:** si Play todavía no la muestra, el aviso llevaría a una página sin nada para actualizar.
+5. **Si hay un arreglo urgente** (seguridad, algo que se rompió), subí también `"minima"` a esa versión: a quien tenga una más vieja, el aviso no se le cierra hasta que actualice.
+
+**Si cambiaste la base de datos o el servidor:**
+- `servidor/`: se publica solo en Cloudflare al llegar a `main`.
+- `firestore.rules`: hay que pegarlas a mano en Firebase (ver `CUENTA_GOOGLE.md`, "Cuando cambian las reglas").
 
 ## Recomendado (no obligatorio)
 

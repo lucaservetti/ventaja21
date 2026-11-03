@@ -3125,5 +3125,11 @@
 "Reportar el nombre de la posición {0}": "Report the name in position {0}",
 "Reportar nombre": "Report name",
 "Gracias: ese nombre ya no se te muestra y lo vamos a revisar.": "Thanks: you won't see that name anymore, and we'll review it.",
-"El respaldo es demasiado grande.": "The backup is too large."
+"El respaldo es demasiado grande.": "The backup is too large.",
+"Actualizá la app": "Update the app",
+"Hay una versión nueva": "There's a new version",
+"Esta versión ya no funciona bien. Actualizala en Google Play para seguir.": "This version no longer works well. Update it on Google Play to keep going.",
+"Tu progreso se mantiene.": "Your progress is kept.",
+"Actualizar": "Update",
+"Cerrar el aviso": "Close the notice"
 }
