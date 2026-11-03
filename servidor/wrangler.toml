@@ -12,6 +12,17 @@ routes = [{ pattern = "api.edge21.app", custom_domain = true }]
 [triggers]
 crons = ["23 7 * * *"]
 
+# Límites de uso (ver dentroDelLimite en index.js): pedidos por minuto por cuenta y por conexión.
+[[ratelimits]]
+name = "LIMITE_CUENTA"
+namespace_id = "2101"
+simple = { limit = 6, period = 60 }
+
+[[ratelimits]]
+name = "LIMITE_IP"
+namespace_id = "2102"
+simple = { limit = 10, period = 60 }
+
 [vars]
 PROJECT_ID = "edge21-fb71e"
 # Premio de bienvenida (3 días por entrar con Google): "1" cuando la app esté en Google Play.

@@ -37,6 +37,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: servidor
+          wranglerVersion: "4.157.0"
           secrets: |
             FIREBASE_SA
         env:

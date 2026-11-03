@@ -654,21 +654,19 @@ function reportError(err, where = "") {
   seen.add(msg);
   reported++;
   const stack = String((err && err.stack) || "").slice(0, 1500);
-  fetch(`${FS}/errores?key=${CFG.apiKey}`, {
+  // Van al servidor, que los guarda con un límite por conexión (ver servidor/index.js).
+  if (!CFG.api) return;
+  fetch(`${CFG.api}/errores`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(
-      toFields({
-        msg,
-        stack,
-        where: String(where).slice(0, 200),
-        version: __APP_VERSION__,
-        plataforma: NATIVE ? "android" : "web",
-        idioma: document.documentElement.lang || "",
-        t: Date.now(),
-        expireAt: new Date(Date.now() + 90 * DAY),
-      }),
-    ),
+    body: JSON.stringify({
+      msg,
+      stack,
+      where: String(where).slice(0, 200),
+      version: __APP_VERSION__,
+      plataforma: NATIVE ? "android" : "web",
+      idioma: document.documentElement.lang || "",
+    }),
   }).catch(() => {});
 }
 

@@ -1,10 +1,12 @@
 // Prueba del servidor de premios (servidor/index.js) contra los emuladores de Firebase.
 // Uso: npx firebase-tools emulators:exec --project demo-edge21 --only auth,firestore "node tests/servidor.mjs"
-import worker, { limpiar, premios, serviceToken, verifyIdToken } from "../servidor/index.js";
+import worker, { gunzipConTope, limpiar, premios, serviceToken, verifyIdToken } from "../servidor/index.js";
 import { DAY, dayKeyUTC, diasRecientes, mondayUTC } from "../src/premios.js";
 
 const P = "demo-edge21";
-const env = { PROJECT_ID: P, EMULATOR: "127.0.0.1", BIENVENIDA: "1" };
+// Sin límite de pedidos en las pruebas de premios (los límites se prueban aparte, al final).
+const sinLimite = { limit: async () => ({ success: true }) };
+const env = { PROJECT_ID: P, EMULATOR: "127.0.0.1", BIENVENIDA: "1", LIMITE_CUENTA: sinLimite, LIMITE_IP: sinLimite };
 const FS = `http://127.0.0.1:8080/v1/projects/${P}/databases/(default)/documents`;
 const AUTH = "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1";
 const always = () => true;
@@ -277,6 +279,47 @@ await paso("limpieza diaria: borra puntajes de hace más de 60 días y errores v
   check(!(await get("errores/vencido")), "quedó un error vencido");
   check(await get(`daily/${nuevo}/scores/a`), "borró un puntaje de hace 30 días");
   check(await get("errores/vigente"), "borró un error que no venció");
+});
+
+await paso("límite de pedidos: una cuenta no puede pedir los premios 20 veces seguidas", async () => {
+  const u = await user();
+  const envLim = { PROJECT_ID: P, EMULATOR: "127.0.0.1", BIENVENIDA: "1" };
+  const estados = [];
+  for (let i = 0; i < 8; i++)
+    estados.push((await worker.fetch(new Request("https://api.edge21.app/premios", { method: "POST", headers: { Authorization: `Bearer ${u.token}` } }), envLim)).status);
+  check(estados.slice(0, 6).every((s) => s === 200), `los primeros 6 deberían andar: ${estados}`);
+  check(estados.slice(6).every((s) => s === 429), `después del sexto debería frenar: ${estados}`);
+});
+
+await paso("errores: se guardan recortados, sin cuenta, y con límite por conexión", async () => {
+  const envLim = { PROJECT_ID: P, EMULATOR: "127.0.0.1" };
+  const mandar = (body, ip = "1.2.3.4") =>
+    worker.fetch(new Request("https://api.edge21.app/errores", { method: "POST", headers: { "Content-Type": "application/json", "CF-Connecting-IP": ip }, body: typeof body === "string" ? body : JSON.stringify(body) }), envLim);
+  const r = await mandar({ msg: "x".repeat(5000), stack: "s", where: "w", version: "1", plataforma: "hackeo", idioma: "es", extra: "no" });
+  check(r.status === 200, `debería guardarlo: ${r.status}`);
+  check((await mandar("esto no es json", "5.6.7.8")).status === 400, "un pedido mal formado debería dar 400");
+  check((await mandar("x".repeat(9000), "5.6.7.8")).status === 400, "un pedido gigante debería dar 400");
+  const q = await fetch(`${FS}:runQuery`, { method: "POST", headers: { Authorization: "Bearer owner", "Content-Type": "application/json" }, body: JSON.stringify({ structuredQuery: { from: [{ collectionId: "errores" }], where: { fieldFilter: { field: { fieldPath: "where" }, op: "EQUAL", value: { stringValue: "w" } } } } }) }).then((x) => x.json());
+  const doc = q.find((x) => x.document).document;
+  check(doc.fields.msg.stringValue.length === 300, "el mensaje no se recortó");
+  check(doc.fields.plataforma.stringValue === "web", "la plataforma no se limpió");
+  check(!doc.fields.extra, "guardó un campo de más");
+  const n = [];
+  for (let i = 0; i < 12; i++) n.push((await mandar({ msg: "y" + i }, "9.9.9.9")).status);
+  check(n.filter((s) => s === 429).length === 2, `debería frenar después de 10: ${n}`);
+});
+
+await paso("progreso comprimido armado para ocupar gigas: se corta", async () => {
+  const gz = await new Response(new Blob([new Uint8Array(20e6)]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer();
+  let corto = false;
+  try {
+    await gunzipConTope(new Uint8Array(gz), 4e6);
+  } catch {
+    corto = true;
+  }
+  check(corto, "debería cortar al pasar el tope");
+  const chico = await new Response(new Blob(["hola"]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer();
+  check((await gunzipConTope(new Uint8Array(chico), 4e6)) === "hola", "uno normal debería andar");
 });
 
 console.log(fails.length ? `${fails.length} prueba(s) fallaron` : "todas las pruebas pasaron");
