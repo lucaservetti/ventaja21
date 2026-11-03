@@ -9384,3 +9384,139 @@ html[data-theme="light"] .cpath {
 .level-card {
   background-image: var(--suits-app), radial-gradient(90% 120% at 100% 0%, rgba(233, 185, 73, 0.08), transparent 60%);
 }
+
+/* ---------- Celebración de logros ---------- */
+.cele {
+  position: fixed;
+  inset: 0;
+  z-index: 85;
+  display: grid;
+  place-items: center;
+  padding: 24px var(--gutter-r) calc(var(--safe-b) + 24px) var(--gutter-l);
+  background: rgba(3, 10, 7, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: fadeIn 0.25s ease both;
+  overflow: hidden;
+}
+.cele-card {
+  position: relative;
+  width: min(420px, 100%);
+  text-align: center;
+  padding: 30px 22px 22px;
+  border-radius: 28px;
+  border: 1px solid var(--accent-line);
+  background:
+    var(--suits-app),
+    radial-gradient(90% 80% at 50% 0%, #17603f 0%, #0b2f1e 60%, var(--surface) 100%);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  animation: celeIn 0.5s cubic-bezier(0.2, 0.9, 0.25, 1.2) both;
+}
+html[data-theme="light"] .cele-card {
+  background:
+    var(--suits-app),
+    radial-gradient(90% 80% at 50% 0%, var(--accent-soft) 0%, var(--surface) 70%);
+}
+.cele-card .eyebrow {
+  margin: 16px 0 6px;
+}
+.cele-title {
+  font-size: 32px;
+  line-height: 1.1;
+  margin: 0 0 8px;
+}
+.cele-card .muted {
+  margin: 0 auto 20px;
+  max-width: 28em;
+}
+.cele-btns {
+  display: grid;
+  gap: 10px;
+}
+.cele-badge {
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 92px;
+  margin: 0 auto;
+  border-radius: 50%;
+  font-size: 46px;
+  color: var(--accent);
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.18), transparent 60%), #0d261a;
+  border: 2px solid var(--accent-line);
+  box-shadow: 0 0 0 8px rgba(233, 185, 73, 0.08), 0 0 40px rgba(233, 185, 73, 0.35);
+  animation: celeBadge 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s both;
+}
+.cele-bigchip {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--c) 0 42%, transparent 43%),
+    repeating-conic-gradient(var(--c) 0 18deg, #fff 18deg 36deg);
+  box-shadow: inset 0 0 0 4px rgba(0, 0, 0, 0.18), 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+.cele-fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.cele-chip,
+.cele-suit {
+  position: absolute;
+  top: -40px;
+  font-style: normal;
+  animation: celeFall linear both;
+}
+.cele-chip {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--c) 0 40%, transparent 41%),
+    repeating-conic-gradient(var(--c) 0 30deg, #fff 30deg 60deg);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+.cele-suit {
+  color: #f3efe2;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+.cele-suit.red {
+  color: #e2483d;
+}
+@keyframes celeFall {
+  from {
+    transform: translateY(0) rotate(0);
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(110vh) rotate(var(--r));
+    opacity: 0;
+  }
+}
+@keyframes celeIn {
+  from {
+    transform: translateY(30px) scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes celeBadge {
+  from {
+    transform: scale(0.3) rotate(-160deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cele-fx {
+    display: none;
+  }
+}

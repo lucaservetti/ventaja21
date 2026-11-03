@@ -284,6 +284,31 @@ const PRUEBAS = {
     check(st.train && st.train.totalHands >= 1, "la mano no se guardó");
   },
 
+  // Celebración: al subir de rango aparece con su botón para compartir; "Seguir" la cierra y no vuelve.
+  async celebracion(h) {
+    const { page } = h;
+    const app = page.url();
+    await page.goto(new URL("../privacidad.html", app).href);
+    await page.evaluate(() => {
+      const st = JSON.parse(localStorage.getItem("ventaja21.state.v1"));
+      st.rating = { value: 1105, peak: 1105, history: [] };
+      st.cele = { r: 1, s: [], n: [], pend: [], ob: true };
+      localStorage.setItem("ventaja21.state.v1", JSON.stringify(st));
+    });
+    await page.goto(app);
+    await page.waitForTimeout(900);
+    await h.tab("Entrenar", "Train");
+    await h.see("Subiste de rango", "You moved up a rank");
+    await h.see("Ficha verde", "Green chip");
+    await h.foto("celebracion");
+    await h.click("Seguir", "Continue", { exact: true, wait: 400 });
+    check(!(await page.locator(".cele").count()), "la celebración no se cerró");
+    const st = await h.state();
+    check(st.cele.pend.length === 0 && st.cele.r === 2, "no quedó anotada: " + JSON.stringify(st.cele));
+    await h.tab("Conteo", "Count");
+    check(!(await page.locator(".cele").count()), "la celebración volvió a aparecer");
+  },
+
   // Recordatorios: la sugerencia aparece después del primer desafío, y en la pantalla se elige
   // la frecuencia y la hora; en Ajustes se ve el resumen.
   async recordatorios(h) {

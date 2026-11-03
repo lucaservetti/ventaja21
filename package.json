@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "node build.mjs",
-    "test": "eslint && node tests/simulador.mjs && node tests/estrategia.mjs && node tests/nombres.mjs && node tests/recordatorios.mjs",
+    "test": "eslint && node tests/simulador.mjs && node tests/estrategia.mjs && node tests/nombres.mjs && node tests/recordatorios.mjs && node tests/celebraciones.mjs",
     "lint": "eslint",
     "test:e2e": "node tests/e2e/run.mjs",
     "guias": "node tools/guias/armar.mjs"

@@ -3181,5 +3181,15 @@
 "Probar un aviso": "Send a test reminder",
 "Las notificaciones de Edge 21 están apagadas en Android": "Edge 21 notifications are turned off in Android",
 "Para activarlas: Ajustes del celular → Apps → Edge 21 → Notificaciones. Después volvé acá y prendé los recordatorios.": "To turn them on: phone Settings → Apps → Edge 21 → Notifications. Then come back here and turn on reminders.",
-"Los avisos salen en la app de Android. En la web se guardan tus preferencias.": "Reminders show up in the Android app. On the web, your preferences are saved."
+"Los avisos salen en la app de Android. En la web se guardan tus preferencias.": "Reminders show up in the Android app. On the web, your preferences are saved.",
+"Subiste de rango": "You moved up a rank",
+"¡Terminaste todas las lecciones!": "You finished all the lessons!",
+"{0} lecciones. Ya sabés lo mismo que un contador de verdad.": "{0} lessons. You now know what a real card counter knows.",
+"{0} lecciones terminadas. La sección {1} te espera.": "{0} lessons done. Section {1} is waiting for you.",
+"¡Completaste la ruta de conteo!": "You completed the counting path!",
+"Nivel {0} aprobado": "Level {0} passed",
+"Ya llevás el conteo real de un zapato entero con la mesa llena.": "You can now keep the true count of a whole shoe at a full table.",
+"Subí a {0} en Edge 21 🃏": "I moved up to {0} on Edge 21 🃏",
+"{0} en la ruta de conteo de Edge 21 🧠": "{0} on the Edge 21 counting path 🧠",
+"Terminé \"{0}\" en Edge 21 🃏": "I finished \"{0}\" on Edge 21 🃏"
 }
