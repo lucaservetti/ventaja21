@@ -242,6 +242,13 @@
     .feat, .plan, .lcard { transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
     .feat:hover, .plan:hover, .lcard:hover { transform: translateY(-3px); border-color: rgba(233, 185, 73, 0.45); box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35); }
   }
+  /* Oro con relieve: botones y la palabra destacada del título */
+  .btn.gold { position: relative; overflow: hidden; background: linear-gradient(180deg, #f6d77a 0%, #e9b949 45%, #cf9a2e 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -2px 0 rgba(120, 80, 10, 0.35), 0 6px 18px rgba(233, 185, 73, 0.22); text-shadow: 0 1px 0 rgba(255, 240, 200, 0.35); }
+  .btn.gold::after { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.45), transparent); transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none; }
+  @media (hover: hover) { .btn.gold:hover::after { left: 130%; } }
+  h1 em { background: linear-gradient(100deg, #f6d77a 0%, #e9b949 30%, #fff1c4 48%, #e9b949 62%, #c9952c 100%); background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 6s ease-in-out infinite; }
+  @keyframes shimmer { 0%, 100% { background-position: 100% 0; } 50% { background-position: 0 0; } }
+
   /* Redes */
   .socials { display: flex; gap: 6px; }
   .socials a { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; color: var(--text-2); border: 1px solid var(--line); transition: color 0.15s, border-color 0.15s; }
