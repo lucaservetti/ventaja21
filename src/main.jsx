@@ -166,29 +166,54 @@ function App() {
     u = useRef(o);
   r.current = l;
   u.current = o;
+  // Historial del navegador: cada pantalla u hoja abierta suma una entrada, así "atrás" la cierra.
+  // `d` cuenta los "atrás" que hizo la app (no la persona) y que todavía no llegaron. Mientras haya
+  // uno en camino, una pantalla nueva espera a que llegue para sumar su entrada: si no, el "atrás"
+  // pendiente se comería la entrada nueva y el próximo "atrás" sacaría de la app (a la página de
+  // inicio). Pasaba al cerrar Ajustes y abrir otra pantalla desde ahí.
   let d = useRef(0),
-    p = () => {
+    porSumar = useRef(0),
+    espera = useRef(0),
+    sumar = () => {
       try {
         history.pushState({ v21: screenSeq }, "");
-        return true;
       } catch {
-        return false;
+        // sin historial: la pantalla igual se abre
+      }
+    },
+    soltar = () => {
+      clearTimeout(espera.current);
+      d.current = 0;
+      for (; porSumar.current > 0; porSumar.current--) sumar();
+    },
+    p = () => {
+      if (d.current > 0) {
+        porSumar.current++;
+        return true;
+      }
+      sumar();
+      return true;
+    },
+    atras = (n) => {
+      d.current++;
+      clearTimeout(espera.current);
+      // Por si el navegador no avisa (no había adónde volver): no dejar nada esperando.
+      espera.current = setTimeout(soltar, 1200);
+      try {
+        if (n > 1) history.go(-n);
+        else history.back();
+      } catch {
+        soltar();
       }
     },
     f = (k) => {
-      if (k && k.hist) {
-        d.current++;
-        try {
-          history.back();
-        } catch {
-          d.current--;
-        }
-      }
+      if (k && k.hist) atras(1);
     };
   useEffect(() => {
     let k = () => {
       if (d.current > 0) {
         d.current--;
+        if (d.current === 0) soltar();
         return;
       }
       if (u.current) {
@@ -288,14 +313,7 @@ function App() {
         let k = r.current;
         i([]);
         let v = k.filter((m) => m.hist).length;
-        if (v) {
-          d.current += 1;
-          try {
-            history.go(-v);
-          } catch {
-            d.current--;
-          }
-        }
+        if (v) atras(v);
       },
       goTab(k) {
         this.popAll();

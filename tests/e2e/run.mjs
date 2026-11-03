@@ -448,6 +448,33 @@ const PRUEBAS = {
     check((await h.state()).settings.instalarVisto === true, "no se guardó que se cerró");
   },
 
+  // "Atrás" no saca de la app: abrir una pantalla desde una hoja (Ajustes → Tu cuenta) y volver,
+  // con el botón de la app y con el del navegador, deja en la app (antes llevaba a la página de inicio).
+  async volverAtras(h) {
+    const { page } = h;
+    const ajustes = 'section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]';
+    const enApp = () => page.evaluate(() => /\/app\/(index\.html)?$/.test(location.pathname));
+    await h.tab("Progreso", "Progress");
+    for (let vuelta = 0; vuelta < 2; vuelta++) {
+      await h.css(ajustes, 600);
+      await h.click("Tu cuenta", "Your account", { wait: 700 });
+      // Volver: la primera vez con el botón de la app, la segunda con el del navegador.
+      if (vuelta === 0) await page.locator('.layer.full [aria-label="Volver"], .layer.full [aria-label="Back"]').filter({ visible: true }).first().click();
+      else await page.goBack();
+      await page.waitForTimeout(700);
+      check(await enApp(), `salió de la app (vuelta ${vuelta + 1})`);
+      check(!(await page.locator(".layer.full").filter({ visible: true }).count()), "la pantalla no se cerró");
+    }
+    // Abrir y cerrar Ajustes con la X, varias veces: sigue en la app.
+    for (let i = 0; i < 3; i++) {
+      await h.css(ajustes, 500);
+      await page.locator('.sheet [aria-label="Cerrar"], .sheet [aria-label="Close"]').filter({ visible: true }).first().click();
+      await page.waitForTimeout(500);
+    }
+    check(await enApp(), "cerrar Ajustes sacó de la app");
+    await h.see("Progreso", "Progress");
+  },
+
   // Contrarreloj: empezar, contestar y que corra el reloj.
   async contrarreloj(h) {
     const { page } = h;
