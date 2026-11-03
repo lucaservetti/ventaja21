@@ -94,6 +94,13 @@ const migas = (lang, nombre) => {
   const c = COMUN[lang];
   return `<nav class="g-crumbs" aria-label="${lang === "en" ? "Breadcrumb" : "Ruta"}"><a href="${RUTAS[lang].guias}">${c.migas}</a> <span aria-hidden="true">›</span> <span>${esc(nombre)}</span></nav>`;
 };
+// "Lo que sigue": qué se practica en la app después de leer la guía (gratis y con Premium).
+const sigueHtml = (lang, sg) =>
+  sg
+    ? `<section class="g-sec g-sigue"><h2>${sg.h}</h2><p>${sg.intro}</p><div class="g-sigue-grid">${sg.items
+        .map((it) => `<div class="g-sigue-item ${it.tag}"><span class="g-tag">${COMUN[lang][it.tag]}</span><h3>${it.t}</h3><p>${it.p}</p></div>`)
+        .join("")}</div></section>`
+    : "";
 const faqHtml = (lang, faq) =>
   `<section class="g-sec"><h2>${COMUN[lang].faq}</h2>${faq.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join("")}</section>`;
 const faqLd = (faq) => ({
@@ -159,6 +166,7 @@ function estrategia(lang) {
       <p class="g-note">${t.leyenda}</p>
     </section>
     ${secciones}
+    ${sigueHtml(lang, t.sigue)}
     ${faqHtml(lang, t.faq)}
   </article>
   <script type="application/json" id="g-datos">${JSON.stringify(datos).replace(/</g, "\\u003c")}</script>`;
@@ -211,6 +219,7 @@ function conteo(lang) {
     <section class="g-sec"><h2>${t.porque.h}</h2><p>${t.porque.p}</p></section>
     ${pasos}
     <section class="g-sec"><h2>${t.mitos.h}</h2><ul class="g-list">${t.mitos.lista.map((l) => `<li>${l}</li>`).join("")}</ul></section>
+    ${sigueHtml(lang, t.sigue)}
     ${faqHtml(lang, t.faq)}
   </article>`;
   return pagina({

@@ -21,6 +21,8 @@ export const COMUN = {
     leer: "Leer la guía",
     min: "min de lectura",
     faq: "Preguntas frecuentes",
+    gratis: "Gratis",
+    premium: "Premium",
   },
   en: {
     nav: { inicio: "Home", guias: "Guides", jugar: "Play now" },
@@ -35,6 +37,8 @@ export const COMUN = {
     leer: "Read the guide",
     min: "min read",
     faq: "Frequently asked questions",
+    gratis: "Free",
+    premium: "Premium",
   },
 };
 
@@ -102,6 +106,16 @@ export const ESTRATEGIA = {
         ],
       },
     ],
+    sigue: {
+      h: "Lo que sigue: de la tabla a la mesa",
+      intro: "Leer la tabla es el primer paso. Lo que hace la diferencia es jugarla sin pensar, y después saber cuándo conviene salirse de ella.",
+      items: [
+        { t: "Sabértela de memoria", p: "Tandas de manos que apuntan justo a las que fallás y tarjetas con repaso espaciado, hasta que cada jugada te salga sola.", tag: "gratis" },
+        { t: "Jugar con la mesa de verdad", p: "Un simulador con otros jugadores que te corrige cada decisión mientras jugás, como en un casino.", tag: "gratis" },
+        { t: "Las 18 desviaciones", p: "Con el conteo, algunas jugadas cambian: por ejemplo, 16 contra 10 te plantás si el conteo es positivo. Los Illustrious 18 y el Fab 4, practicados nivel por nivel.", tag: "premium" },
+        { t: "Tu tabla, tu mesa", p: "Ajustá cada regla (8 mazos, el crupier que pide con 17 blando, rendición) y practicá con la tabla exacta de la mesa donde jugás.", tag: "premium" },
+      ],
+    },
     faq: [
       ["¿La estrategia básica garantiza ganar?", "No. Baja la ventaja de la casa al mínimo (alrededor de 0,5 %), pero la casa sigue teniendo ventaja. Es la base para jugar bien, y la base para contar cartas."],
       ["¿Sirve para cualquier casino?", "Sirve para mesas de 4 a 8 mazos. Lo único que cambia algunas casillas es si el crupier pide o se planta con 17 blando: elegí la opción de tu mesa arriba de la tabla."],
@@ -156,6 +170,16 @@ export const ESTRATEGIA = {
         ],
       },
     ],
+    sigue: {
+      h: "What's next: from the chart to the table",
+      intro: "Reading the chart is the first step. What makes the difference is playing it without thinking, and then knowing when to leave it.",
+      items: [
+        { t: "Know it by heart", p: "Rounds of hands aimed exactly at the ones you miss, plus spaced-repetition cards, until every play comes out on its own.", tag: "gratis" },
+        { t: "Play at a real table", p: "A simulator with other players that corrects every decision as you play, like in a casino.", tag: "gratis" },
+        { t: "The 18 deviations", p: "With the count, some plays change: for example, you stand on 16 against a 10 when the count is positive. The Illustrious 18 and the Fab 4, practiced level by level.", tag: "premium" },
+        { t: "Your chart, your table", p: "Adjust every rule (8 decks, dealer hits soft 17, surrender) and practice with the exact chart for the table you play at.", tag: "premium" },
+      ],
+    },
     faq: [
       ["Does basic strategy guarantee winning?", "No. It cuts the house edge to the minimum (about 0.5%), but the house still has the edge. It's the foundation for playing well, and the foundation for counting cards."],
       ["Does it work at any casino?", "It works for 4- to 8-deck games. The only thing that changes a few cells is whether the dealer hits or stands on soft 17: pick your table's option above the chart."],
@@ -231,6 +255,16 @@ export const CONTEO = {
         "<b>“Contando ganás siempre.”</b> La ventaja es chica y a la larga. Por eso es para aprender y entender el juego, no para hacerse rico.",
       ],
     },
+    sigue: {
+      h: "Lo que sigue: contar en serio",
+      intro: "Entender el Hi-Lo lleva diez minutos. Contar un zapato entero, rápido y sin que se te note, lleva práctica.",
+      items: [
+        { t: "La ruta de conteo", p: "10 niveles, del valor de cada carta a contar un zapato entero al ritmo del casino, con Hi-Lo o KO.", tag: "gratis" },
+        { t: "El desafío diario", p: "Un formato distinto cada día y un ranking para compararte con los demás.", tag: "gratis" },
+        { t: "Las desviaciones", p: "Usar el conteo también para jugar: los Illustrious 18 y el Fab 4, que suman la mayor parte de la ventaja extra.", tag: "premium" },
+        { t: "Sistemas avanzados y casino real", p: "Hi-Opt I y II, Zen, Omega II y Wong Halves, el modo casino con tu plata y vigilancia, y el simulador de banca para saber cuánto necesitás.", tag: "premium" },
+      ],
+    },
     faq: [
       ["¿Contar cartas es legal?", "Contar mentalmente es legal en la mayoría de los lugares. Usar un celular o cualquier aparato en la mesa está prohibido, y el casino puede pedirte que dejes de jugar."],
       ["¿Cuánto tiempo lleva aprender a contar?", "Los valores se aprenden en minutos. Llevar el conteo de un zapato entero, rápido y con la mesa llena, lleva semanas de práctica. En Edge 21 hay una ruta de 10 niveles que te lleva de a poco."],
@@ -301,6 +335,16 @@ export const CONTEO = {
         "<b>“You have to memorize every card.”</b> You keep a single number.",
         "<b>“You have to be a genius.”</b> It's adding and subtracting one at a time. The hard part is doing it fast at a full table: that's trainable.",
         "<b>“Counting means you always win.”</b> The edge is small and long-term. That's why it's for learning and understanding the game, not for getting rich.",
+      ],
+    },
+    sigue: {
+      h: "What's next: counting for real",
+      intro: "Understanding Hi-Lo takes ten minutes. Counting a whole shoe, fast and without it showing, takes practice.",
+      items: [
+        { t: "The counting path", p: "10 levels, from each card's value to counting a whole shoe at casino speed, with Hi-Lo or KO.", tag: "gratis" },
+        { t: "The daily challenge", p: "A different format every day and a leaderboard to compare yourself with others.", tag: "gratis" },
+        { t: "Deviations", p: "Using the count to play too: the Illustrious 18 and the Fab 4, which add most of the extra edge.", tag: "premium" },
+        { t: "Advanced systems and real casino", p: "Hi-Opt I and II, Zen, Omega II and Wong Halves, casino mode with your money and surveillance, and the bankroll simulator to know how much you need.", tag: "premium" },
       ],
     },
     faq: [
