@@ -6,7 +6,7 @@ La idea: que lo gratis alcance para aprender de verdad, y que Premium sea para q
 
 | | Qué | Cuándo |
 | --- | --- | --- |
-| **Gratis** | Lecciones, ruta de conteo, Entrenar, ejercicios, desafíos, simulador y los sistemas Hi-Lo, KO y Hi-Opt I | Siempre |
+| **Gratis** | Lecciones, ruta de conteo, Entrenar, ejercicios, desafíos, simulador y los sistemas Hi-Lo y KO | Siempre |
 | **Anuncio de pantalla completa** | Al volver al menú después de terminar 2 cosas | Como mucho 1 cada 5 min y 6 por día. Ninguno el primer día |
 | **Anuncio con premio** (opcional) | Segunda oportunidad del desafío diario | Cuando la persona lo elige |
 | **Premios** | Días de Premium de regalo por racha, podio semanal y terminar las lecciones (con cuenta de Google) | Tope de 14 días cada 30 días |

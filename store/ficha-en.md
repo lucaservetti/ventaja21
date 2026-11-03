@@ -20,7 +20,7 @@ LEARN TO COUNT CARDS
 • A 10-level counting path: from card values to counting a whole shoe.
 • Running count and true count, with guided practice before every level.
 • A daily challenge with a different format every day, a weekly leaderboard and a counting speed drill: can you keep up with casino speed?
-• Hi-Lo, KO and Hi-Opt I free; Zen, Omega II, Wong Halves and more with Premium.
+• Hi-Lo and KO free; Hi-Opt I and II, Zen, Omega II and Wong Halves with Premium.
 
 TRAIN WHERE YOU MISS
 • Rounds of hands aimed at your weak spots: hard totals, soft totals and pairs.

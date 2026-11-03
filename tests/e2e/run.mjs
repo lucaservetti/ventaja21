@@ -534,7 +534,8 @@ const PRUEBAS = {
     await h.tab("Progreso", "Progress");
     await h.css('section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
     await h.click("Sistema de conteo", "Counting system", { wait: 600 });
-    await h.click("Zen Count", "Zen Count", { wait: 700 });
+    // Hi-Opt I también es de Premium: gratis quedan Hi-Lo y KO.
+    await h.click("Hi-Opt I", "Hi-Opt I", { wait: 700 });
     await h.see("Usar sistemas de conteo avanzados es parte de Premium", "Using advanced counting systems is part of Premium");
     // Con Premium (cuenta): todo abierto.
     await page.evaluate(() => {

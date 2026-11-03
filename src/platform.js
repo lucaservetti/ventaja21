@@ -142,8 +142,8 @@ function needsApp(name, params = {}) {
   return null;
 }
 
-// Sistemas de conteo de Premium. Hi-Lo, KO y Hi-Opt I son gratis.
-const PREMIUM_SYSTEMS = ["hiopt2", "zen", "omega2", "halves"];
+// Sistemas de conteo de Premium. Hi-Lo y KO son gratis.
+const PREMIUM_SYSTEMS = ["hiopt1", "hiopt2", "zen", "omega2", "halves"];
 
 // Pantallas que son de Premium. La ruta de desviaciones es gratis hasta el nivel 2.
 function needsPremium(name, params = {}, st = getState()) {
