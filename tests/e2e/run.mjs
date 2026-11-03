@@ -484,6 +484,10 @@ const PRUEBAS = {
     const menu = await page.locator("nav.tabbar").boundingBox();
     check(menu && menu.x === 0 && menu.width > 200 && menu.height > 800, `el menú no está al costado: ${JSON.stringify(menu)}`);
     check(await page.locator(".tab-brand").isVisible(), "no se ve la marca en el menú");
+    check(await page.locator(".tab-resumen").isVisible(), "no se ve el resumen abajo del menú");
+    // Aprender: tu tabla al costado del camino.
+    await h.tab("Aprender", "Learn");
+    check(await page.locator("section:not([hidden]) .learn-aside .chart-grid").isVisible(), "no está tu tabla al costado de Aprender");
     await h.foto("menu");
     // Ajustes: ventana en el medio (no pegada abajo).
     await h.tab("Progreso", "Progress");

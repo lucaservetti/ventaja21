@@ -86,7 +86,8 @@ function spotKeyFor(tab, row, col) {
   return `${KIND[tab]}${r}|${UPS[col]}`;
 }
 
-function MyChart({ tab: initialTab = "hard" }) {
+// `aside`: la versión que va al costado de Aprender en la compu (sin barra de arriba ni el final).
+function MyChart({ tab: initialTab = "hard", aside = false }) {
   const st = useStore();
   const nav = useNav();
   const rules = useRules();
@@ -107,13 +108,22 @@ function MyChart({ tab: initialTab = "hard" }) {
   const pick = (row, col) => setSel({ tab, row, col });
   const selOk = sel && sel.tab === tab;
   return (
-    <div className="my-chart fade-up">
-      <TopBar
-        onClose={() => nav.pop()}
-        closeIcon="back"
-        title="Tu tabla"
-        sub={`${rules.decks} mazos · ${rules.h17 ? "H17" : "S17"}${rules.surrender ? " · con rendición" : ""}`}
-      />
+    <div className={cx("my-chart", aside ? "mc-aside" : "fade-up")}>
+      {aside ? (
+        <div className="mc-aside-head">
+          <h2>Tu tabla</h2>
+          <span className="muted small">
+            {`${rules.decks} mazos · ${rules.h17 ? "H17" : "S17"}${rules.surrender ? " · con rendición" : ""}`}
+          </span>
+        </div>
+      ) : (
+        <TopBar
+          onClose={() => nav.pop()}
+          closeIcon="back"
+          title="Tu tabla"
+          sub={`${rules.decks} mazos · ${rules.h17 ? "H17" : "S17"}${rules.surrender ? " · con rendición" : ""}`}
+        />
+      )}
       <div className="card mc-head">
         <div className="row between">
           <span className="eyebrow">Filas que ya aprendiste</span>
@@ -231,6 +241,8 @@ function MyChart({ tab: initialTab = "hard" }) {
           </span>
         </div>
       )}
+      {aside ? null : (
+        <>
       <div className="section-title">
         <h2>En palabras</h2>
       </div>
@@ -254,6 +266,8 @@ function MyChart({ tab: initialTab = "hard" }) {
       >
         Ver la tabla limpia, sin marcas
       </Button>
+        </>
+      )}
     </div>
   );
 }

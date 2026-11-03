@@ -10,6 +10,8 @@ import {
   openLesson,
 } from "../lessons/content.js";
 import { useNav } from "../nav.js";
+import { useEscritorio } from "../escritorio.js";
+import { MyChart } from "./MyChart.jsx";
 import { GoalBadge } from "./goal.jsx";
 import { reviewCount } from "../lessons/Review.jsx";
 import { APP_MODE, NATIVE, WEB_DEMO, hasPremium, shop } from "../platform.js";
@@ -230,6 +232,7 @@ function InstalarIphone({ st, lessonsDone }) {
   );
 }
 function LearnTab() {
+  const desk = useEscritorio();
   let a = useStore(),
     e = useNav(),
     { done: t, currentId: s } = lessonProgress(a),
@@ -248,7 +251,7 @@ function LearnTab() {
       }
       openLesson(e, r);
     };
-  return (
+  const camino = (
     <div className="fade-up learn">
       <PageHeader
         title="Aprender"
@@ -312,6 +315,16 @@ function LearnTab() {
       ))}
       <div style={{ height: 30 }} />
       <Toasts items={i ? [i] : []} />
+    </div>
+  );
+  // En la compu, con pantalla bien ancha: tu tabla de estrategia al costado del camino.
+  if (!desk) return camino;
+  return (
+    <div className="learn-desk">
+      {camino}
+      <aside className="learn-aside" aria-label="Tu tabla de estrategia">
+        <MyChart aside={true} />
+      </aside>
     </div>
   );
 }
