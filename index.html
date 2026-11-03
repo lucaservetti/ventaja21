@@ -322,6 +322,7 @@
       <a href="#funciones" data-t="n1"></a>
       <a href="#premium" data-t="n2"></a>
       <a href="#preguntas" data-t="n3"></a>
+      <a class="to-guias" href="guias/" data-t="n4"></a>
     </nav>
     <div class="socials">
       <a href="https://www.instagram.com/edge21.app/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor"/></svg></a>
@@ -537,6 +538,7 @@
   <footer>
     <span data-t="foot"></span>
     <nav>
+      <a class="to-guias" href="guias/" data-t="n4"></a>
       <a id="privacy" href="privacidad.html" data-t="privacy"></a>
       <a id="terms" href="terminos.html" data-t="terms"></a>
       <a id="delacc" href="borrar-cuenta.html" data-t="delacc"></a>
@@ -564,7 +566,7 @@
       "qz-more": "¿Te gustó? En la app hay miles de manos, la tabla completa y el conteo de cartas.",
       "qz-left": "Te quedan {0} de prueba", "qz-left1": "Te queda 1 de prueba", "qz-end-t": "¡Jugaste tus 4 manos de prueba!",
       "qz-end-p": "En la app seguís con miles de manos, la tabla completa, lecciones y el conteo de cartas. Gratis y sin plata real.", "qz-end-btn": "Seguir jugando gratis", dock: "Aprendé blackjack gratis",
-      n1: "Funciones", n2: "Premium", n3: "Preguntas", go: "Jugar ahora", rail: "El blackjack paga 3 a 2 · El crupier se planta en 17",
+      n1: "Funciones", n2: "Premium", n3: "Preguntas", n4: "Guías", go: "Jugar ahora", rail: "El blackjack paga 3 a 2 · El crupier se planta en 17",
       t1: "36 lecciones", t2: "10 niveles de conteo", t3: "Español e inglés", t4: "Sin plata real",
       "v-title": "Mirala en acción", "v-sub": "Así se ve por dentro: cada mano, cada carta y cada apuesta.",
       v1: "La jugada correcta, con el porqué", v2: "Bajas +1, del 7 al 9 nada, altas −1", v3: "Contá y apostá con el conteo",
@@ -619,7 +621,7 @@
       "qz-more": "Liked it? The app has thousands of hands, the full chart and card counting.",
       "qz-left": "{0} practice hands left", "qz-left1": "1 practice hand left", "qz-end-t": "You played your 4 practice hands!",
       "qz-end-p": "Keep going in the app: thousands of hands, the full chart, lessons and card counting. Free, no real money.", "qz-end-btn": "Keep playing for free", dock: "Learn blackjack for free",
-      n1: "Features", n2: "Premium", n3: "FAQ", go: "Play now", rail: "Blackjack pays 3 to 2 · Dealer stands on 17",
+      n1: "Features", n2: "Premium", n3: "FAQ", n4: "Guides", go: "Play now", rail: "Blackjack pays 3 to 2 · Dealer stands on 17",
       t1: "36 lessons", t2: "10 counting levels", t3: "Spanish and English", t4: "No real money",
       "v-title": "See it in action", "v-sub": "This is what it looks like inside: every hand, every card and every bet.",
       v1: "The right play, with the why", v2: "Low +1, 7 to 9 zero, high −1", v3: "Count and bet with the count",
@@ -691,6 +693,7 @@
     const sub = lang === "en" ? "I want to try Edge 21 on Android" : "Quiero probar Edge 21 en Android";
     const body = lang === "en" ? "My Google Play email is: " : "Mi mail de Google Play es: ";
     document.getElementById("tester").href = `mailto:soporte@edge21.app?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+    document.querySelectorAll(".to-guias").forEach((a) => (a.href = lang === "en" ? "en/guides/" : "guias/"));
     for (const [id, f] of [["privacy", "privacidad"], ["terms", "terminos"], ["delacc", "borrar-cuenta"]])
       document.getElementById(id).href = `${f}.html${lang === "en" ? "#en" : ""}`;
     try { localStorage.setItem("edge21.lang", lang); } catch {}

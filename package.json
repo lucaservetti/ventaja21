@@ -8,7 +8,8 @@
     "build": "node build.mjs",
     "test": "eslint && node tests/simulador.mjs && node tests/estrategia.mjs && node tests/nombres.mjs && node tests/recordatorios.mjs",
     "lint": "eslint",
-    "test:e2e": "node tests/e2e/run.mjs"
+    "test:e2e": "node tests/e2e/run.mjs",
+    "guias": "node tools/guias/armar.mjs"
   },
   "dependencies": {
     "@capacitor-community/admob": "8.2.1",
