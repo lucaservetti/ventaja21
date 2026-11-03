@@ -817,6 +817,7 @@ function SimAction({ action, allowed, table }) {
       type="button"
       className={cx("sim-act", `act-${action}`)}
       disabled={!allowed[action]}
+      title={`${ACTION_NAMES[action]} (tecla ${action})`}
       onClick={() => {
         vibrate(8);
         table.act(action);

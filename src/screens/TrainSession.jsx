@@ -446,6 +446,7 @@ function ActionButton({
       type="button"
       className={cx("act-btn", `act-${a}`, s && "wide", n && "compact")}
       disabled={!o}
+      title={`${ACTION_NAMES[a]} (tecla ${a})`}
       onClick={() => t(a)}
     >
       <span className={cx("act-letter", `c-${ACT_CLS[a]}`)}>{a}</span>

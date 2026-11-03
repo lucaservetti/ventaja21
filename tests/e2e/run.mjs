@@ -475,6 +475,38 @@ const PRUEBAS = {
     await h.see("Progreso", "Progress");
   },
 
+  // En la compu: menú al costado (siempre a la vista), Ajustes como ventana en el medio, el menú
+  // cierra una pantalla abierta, y las teclas H/S/D/P/R juegan en Entrenar.
+  async escritorio(h) {
+    const { page } = h;
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.waitForTimeout(400);
+    const menu = await page.locator("nav.tabbar").boundingBox();
+    check(menu && menu.x === 0 && menu.width > 200 && menu.height > 800, `el menú no está al costado: ${JSON.stringify(menu)}`);
+    check(await page.locator(".tab-brand").isVisible(), "no se ve la marca en el menú");
+    await h.foto("menu");
+    // Ajustes: ventana en el medio (no pegada abajo).
+    await h.tab("Progreso", "Progress");
+    await h.css('section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    const hoja = await page.locator(".sheet").boundingBox();
+    check(hoja && hoja.y > 10 && hoja.y + hoja.height < 900 - 10 && hoja.x > 248, `Ajustes no quedó en el medio: ${JSON.stringify(hoja)}`);
+    await h.foto("ajustes");
+    // Abrir una pantalla y usar el menú: se cierra y va a esa pestaña.
+    await h.click("Tu cuenta", "Your account", { wait: 700 });
+    check(await page.locator("nav.tabbar").isVisible(), "con una pantalla abierta el menú desaparece");
+    await h.tab("Aprender", "Learn");
+    await page.waitForTimeout(500);
+    check(!(await page.locator(".layer.full").filter({ visible: true }).count()), "el menú no cerró la pantalla");
+    // Teclado en Entrenar: "S" se planta.
+    await h.tab("Entrenar", "Train");
+    await h.click("Repartir 10 manos", "Deal 10 hands", { wait: 900 });
+    await page.keyboard.press("s");
+    await page.waitForTimeout(500);
+    const txt = await h.screenText();
+    check(/Correcto|No era esa|Correct|Not that one/.test(txt), "la tecla S no jugó");
+    await h.foto("teclado");
+  },
+
   // Contrarreloj: empezar, contestar y que corra el reloj.
   async contrarreloj(h) {
     const { page } = h;
