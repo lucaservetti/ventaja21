@@ -9836,3 +9836,47 @@ html[data-theme="light"] .app.escritorio .tabbar {
     margin-bottom: 16px;
   }
 }
+
+/* Aprender, al empezar: el test de nivel (opcional). */
+.test-card {
+  margin: 4px 0 16px;
+  padding: 20px;
+  border: 1px solid var(--accent-line);
+  background: linear-gradient(160deg, var(--accent-soft), var(--surface) 65%);
+}
+.test-card h2 {
+  font-size: 22px;
+  margin: 6px 0 6px;
+}
+.test-card-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+.test-card-btns .btn {
+  flex: 1 1 160px;
+}
+/* Bienvenida: lo que vas a hacer, en tres líneas. */
+.onb-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 26px auto 0;
+  display: grid;
+  gap: 8px;
+  width: fit-content;
+  text-align: left;
+  color: var(--text-2);
+}
+.onb-bullets li::before {
+  content: "♠";
+  color: var(--accent);
+  margin-right: 10px;
+}
+/* En la compu sin menú (la bienvenida): todo centrado en una columna. */
+@media (min-width: 1024px) {
+  .app.escritorio.sin-menu {
+    --side: 0px;
+    --col: 560px;
+  }
+}

@@ -1,66 +1,22 @@
 import { useMemo, useState } from "react";
-import { markActive, setGoalMinutes, setState, useStore } from "../state.js";
+import { markActive, setState } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
 import { makeCard, parseCard } from "../engine/cards.js";
 import { sfx, vibrate } from "../sound.js";
 import {
   Button,
   IconButton,
-  Pills,
   PlayingCard,
   Segments,
   cx,
 } from "../ui/components.jsx";
 import { SECTIONS } from "../lessons/content.js";
 import { Logo } from "../ui/common.jsx";
-import { ActionButton } from "./TrainSession.jsx";
 import { useNav } from "../nav.js";
 
-const ONB_SLIDES = [
-  {
-    eyebrow: "Cómo aprendés",
-    title: ["Practicá con ", "manos reales"],
-    text: "Jugás manos de verdad y te mostramos la mejor jugada al instante. Se aprende haciendo, no leyendo.",
-    demo: "hand",
-  },
-  {
-    eyebrow: "Siempre sabés por qué",
-    title: ["Entendé ", "cada jugada"],
-    text: "Después de cada mano te explicamos la jugada correcta en palabras simples: aprendés la razón, no solo la regla.",
-    demo: "note",
-  },
-  {
-    eyebrow: "Afilá el conteo",
-    title: ["Contá cada vez ", "más rápido"],
-    text: "Los ejercicios te piden cada vez más velocidad y precisión, hasta que contar te salga solo, aun con presión.",
-    demo: "count",
-  },
-  {
-    eyebrow: "Como en el casino",
-    title: ["Entrená con ", "presión de mesa"],
-    text: "Sumamos velocidad, charla y chequeos sorpresa, para que tu primera vez en un casino ya te resulte conocida.",
-    demo: "table",
-  },
-];
-const EXPERIENCE_OPTIONS = [
-  { value: "never", label: "Nunca jugué" },
-  { value: "rules", label: "Conozco las reglas" },
-  { value: "basic", label: "Uso la estrategia básica" },
-  { value: "count", label: "Ya cuento cartas" },
-];
-const GOAL_OPTIONS = [
-  { value: "casino", label: "En un casino" },
-  { value: "online", label: "Online" },
-  { value: "home", label: "En casa, con amigos" },
-  { value: "learn", label: "Solo quiero aprender" },
-];
+// Test de nivel: como mucho 8 preguntas, de la sección 1 a la 4. Termina en la primera que no
+// sabés: ahí empezás. Así el que recién arranca contesta una o dos, y el que ya sabe, todas.
 const PLACEMENT_QUESTIONS = [
-  {
-    s: 1,
-    q: "Te pasás de 21 y después el crupier también se pasa. ¿Qué pasa?",
-    o: ["Empate", "Perdés vos", "Gana el que se pasó por menos"],
-    a: 1,
-  },
   {
     s: 1,
     q: "El crupier tiene 16. ¿Qué tiene que hacer?",
@@ -92,14 +48,6 @@ const PLACEMENT_QUESTIONS = [
   },
   {
     s: 2,
-    q: "Tenés A,7 y el crupier muestra un 9.",
-    o: ["Plantarme", "Pedir", "Doblar"],
-    a: 1,
-    cards: ["As", "7h"],
-    up: "9d",
-  },
-  {
-    s: 2,
     q: "Tenés 8,8 y el crupier muestra un 10.",
     o: ["Separar", "Plantarme", "Pedir"],
     a: 0,
@@ -113,12 +61,6 @@ const PLACEMENT_QUESTIONS = [
     a: 1,
   },
   {
-    s: 3,
-    q: "¿Qué mesa conviene?",
-    o: ["La que paga el blackjack 3:2", "La que paga 6:5", "Da lo mismo"],
-    a: 0,
-  },
-  {
     s: 4,
     q: "En el sistema Hi-Lo, ¿cuánto vale un 5?",
     o: ["+1", "0", "−1"],
@@ -130,355 +72,49 @@ const PLACEMENT_QUESTIONS = [
     o: ["+2", "+3", "+18"],
     a: 0,
   },
-  {
-    s: 4,
-    q: "Con el conteo real alto, ¿qué conviene?",
-    o: ["Apostar más", "Apostar menos", "Lo mismo"],
-    a: 0,
-  },
 ];
-const MINUTE_OPTIONS = [
-  { value: 5, label: "tranqui" },
-  { value: 10, label: "lo normal" },
-  { value: 15, label: "en serio" },
-  { value: 20, label: "a fondo" },
-];
+// Bienvenida: una sola pantalla y adentro. El test de nivel se ofrece después, en Aprender (es
+// opcional), así nadie se abruma antes de empezar.
 function Onboarding() {
-  const st = useStore();
-  let [a, e] = useState("welcome"),
-    [t, s] = useState(0),
-    [n, l] = useState(null),
-    [i, o] = useState(null);
-  if (a === "welcome")
-    return (
-      <div className="layer full onb onb-welcome">
-        <div className="onb-hero">
-          <Logo size={96} />
-          <h1>Edge 21</h1>
-          <p className="muted">
-            Aprendé estrategia básica y conteo de cartas, paso a paso, como un
-            profesional.
-          </p>
-          <div className="onb-cards">
-            <PlayingCard card={makeCard("A", "s")} size="lg" deal={true} />
-            <PlayingCard card={makeCard("K", "h")} size="lg" deal={true} />
-          </div>
-        </div>
-        <div className="bottom-actions">
-          <Button onClick={() => e("slides")}>Empezar</Button>
-          <p className="center dim tiny" style={{ marginTop: 10 }}>
-            Es para aprender: contar con la cabeza es legal, pero usar el
-            celular en la mesa no.
-          </p>
-        </div>
-      </div>
+  const empezar = () => {
+    sfx.tap();
+    setState((m) =>
+      markActive({
+        ...m,
+        profile: {
+          ...m.profile,
+          onboarded: true,
+          createdAt: m.profile.createdAt || Date.now(),
+        },
+        lastTab: "aprender",
+      }),
     );
-  if (a === "slides") {
-    let c = ONB_SLIDES[t];
-    return (
-      <div className="layer full onb">
-        <div className="lesson-top">
-          <IconButton
-            icon="back"
-            className="sq"
-            label="Atrás"
-            onClick={() => (t ? s(t - 1) : e("welcome"))}
-          />
-          <div className="onb-progress grow">
-            <span
-              style={{ width: `${((t + 1) / (ONB_SLIDES.length + 4)) * 100}%` }}
-            />
-          </div>
-        </div>
-        <div className="onb-demo" key={t}>
-          <OnbDemo kind={c.demo} />
-        </div>
-        <div className="onb-text fade-up" key={"t" + t}>
-          <div className="eyebrow acc">{c.eyebrow}</div>
-          <h1>
-            {c.title[0]}
-            <span className="acc">{c.title[1]}</span>
-          </h1>
-          <p className="muted">{c.text}</p>
-        </div>
-        <div className="bottom-actions">
-          <Button
-            kind="white"
-            onClick={() => (t + 1 < ONB_SLIDES.length ? s(t + 1) : e("exp"))}
-          >
-            Seguir
-          </Button>
-        </div>
-      </div>
-    );
-  }
-  if (a === "exp" || a === "goal") {
-    let c = a === "exp",
-      r = c ? EXPERIENCE_OPTIONS : GOAL_OPTIONS,
-      u = c ? n : i;
-    return (
-      <div className="layer full onb">
-        <div className="lesson-top">
-          <IconButton
-            icon="back"
-            className="sq"
-            label="Atrás"
-            onClick={() => e(c ? "slides" : "exp")}
-          />
-          <div className="onb-progress grow">
-            <span
-              style={{
-                width: `${((ONB_SLIDES.length + (c ? 1 : 2)) / (ONB_SLIDES.length + 4)) * 100}%`,
-              }}
-            />
-          </div>
-        </div>
-        <div className="onb-q fade-up" key={a}>
-          <div className="eyebrow acc">Contanos de vos</div>
-          <h1>{c ? "¿Cuánto sabés de blackjack?" : "¿Dónde pensás jugar?"}</h1>
-          <div className="options" style={{ marginTop: 22 }}>
-            {r.map((d) => (
-              <button
-                type="button"
-                className={cx("option", u === d.value && "picked")}
-                onClick={() => {
-                  vibrate(6);
-                  if (c) {
-                    l(d.value);
-                  } else {
-                    o(d.value);
-                  }
-                }}
-                key={d.value}
-              >
-                <span>{d.label}</span>
-                {u === d.value ? (
-                  <Icon name="check" size={20} stroke={3} />
-                ) : null}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="bottom-actions">
-          <Button disabled={!u} onClick={() => e(c ? "goal" : "minutes")}>
-            Seguir
-          </Button>
-        </div>
-      </div>
-    );
-  }
-  if (a === "minutes") {
-    const picked = st.dailyGoal.chosen ? st.dailyGoal.minutes : null;
-    return (
-      <div className="layer full onb">
-        <div className="lesson-top">
-          <IconButton
-            icon="back"
-            className="sq"
-            label="Atrás"
-            onClick={() => e("goal")}
-          />
-          <div className="onb-progress grow">
-            <span
-              style={{
-                width: `${((ONB_SLIDES.length + 3) / (ONB_SLIDES.length + 4)) * 100}%`,
-              }}
-            />
-          </div>
-        </div>
-        <div className="onb-q onb-minutes fade-up" key={a}>
-          <div className="eyebrow acc">Tu meta diaria</div>
-          <h1>¿Cuánto tiempo por día querés practicar?</h1>
-          <p className="muted" style={{ marginTop: 10 }}>
-            Un anillo se llena con lo que practicás y tu racha suma un día cada
-            vez que cumplís la meta. La cambiás cuando quieras.
-          </p>
-          <div className="options" style={{ marginTop: 22 }}>
-            {MINUTE_OPTIONS.map((opt) => (
-              <button
-                type="button"
-                className={cx("option", picked === opt.value && "picked")}
-                onClick={() => {
-                  vibrate(6);
-                  setGoalMinutes(opt.value);
-                }}
-                key={opt.value}
-              >
-                <span>
-                  <b>{opt.value} minutos</b>{" "}
-                  <span className="muted">· {opt.label}</span>
-                </span>
-                {picked === opt.value ? (
-                  <Icon name="check" size={20} stroke={3} />
-                ) : null}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="bottom-actions">
-          <Button disabled={!picked} onClick={() => e("quiz")}>
-            Seguir
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  };
   return (
-    <div className="layer full onb">
-      <Placement embedded={true} exp={n} goal={i} onBack={() => e("minutes")} />
-    </div>
-  );
-}
-function OnbDemo({ kind: a }) {
-  if (a === "hand") {
-    let e = { H: true, S: true, D: true, P: true, R: false };
-    return (
-      <div className="demo-wrap">
-        <div className="deal-card compact">
-          <div className="deal-grid">
-            <div className="deal-side">
-              <div className="eyebrow">El crupier muestra 9</div>
-              <div className="card-row" style={{ marginTop: 10 }}>
-                <PlayingCard card={makeCard("9", "c")} size="md" deal={true} />
-                <PlayingCard card={makeCard("9", "c")} size="md" down={true} />
-              </div>
-            </div>
-            <div className="deal-side">
-              <div className="eyebrow acc">Tu mano</div>
-              <div className="card-row" style={{ marginTop: 10 }}>
-                <PlayingCard card={makeCard("9", "h")} size="md" deal={true} />
-                <PlayingCard card={makeCard("9", "s")} size="md" deal={true} />
-              </div>
-            </div>
-          </div>
+    <div className="layer full onb onb-welcome">
+      <div className="onb-hero">
+        <Logo size={96} />
+        <h1>Edge 21</h1>
+        <p className="muted">
+          Aprendé estrategia básica y conteo de cartas, paso a paso, con manos
+          de verdad.
+        </p>
+        <div className="onb-cards">
+          <PlayingCard card={makeCard("A", "s")} size="lg" deal={true} />
+          <PlayingCard card={makeCard("K", "h")} size="lg" deal={true} />
         </div>
-        <div className="action-grid demo-actions">
-          <ActionButton a="H" allowed={e} onClick={() => {}} compact={true} />
-          <ActionButton a="S" allowed={e} onClick={() => {}} compact={true} />
-          <ActionButton a="D" allowed={e} onClick={() => {}} compact={true} />
-          <span className="demo-pick">
-            <ActionButton a="P" allowed={e} onClick={() => {}} compact={true} />
-          </span>
-        </div>
-        <div className="demo-best">
-          <span className="fb-icon ok">
-            <Icon name="check" size={16} stroke={3} />
-          </span>
-          La mejor jugada: separar
-        </div>
+        <ul className="onb-bullets">
+          <li>Lecciones de 2 a 5 minutos</li>
+          <li>Una mesa que te corrige cada jugada</li>
+          <li>Sin plata real</li>
+        </ul>
       </div>
-    );
-  }
-  if (a === "note")
-    return (
-      <div className="demo-wrap">
-        <div className="result-card" style={{ margin: 0 }}>
-          <div className="row">
-            <span className="res-icon bad">
-              <Icon name="x" size={20} stroke={3} />
-            </span>
-            <h2 className="grow" style={{ fontSize: 26 }}>
-              No era esa
-            </h2>
-            <span className="res-delta bad num">−18</span>
-          </div>
-          <div className="res-moves">
-            <div>
-              <div className="eyebrow">Tu jugada</div>
-              <div className="res-move">Plantarse</div>
-            </div>
-            <div>
-              <div className="eyebrow">La mejor</div>
-              <div className="res-move acc">Pedir</div>
-            </div>
-          </div>
-          <div className="res-note">
-            <h3>Por qué</h3>
-            <p>
-              Pedí con 15 contra un 10. Duele, pero el crupier termina en 17 o
-              más la mayoría de las veces: plantarte solo espera a perder.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  if (a === "count") {
-    let e = ["9c", "5h", "Kc", "3h"].map(parseCard),
-      t = ["0", "+1", "−1", "+1"];
-    return (
-      <div className="demo-wrap center">
-        <div className="eyebrow">Conteo corrido</div>
-        <div
-          className="card-row"
-          style={{ justifyContent: "center", marginTop: 12 }}
-        >
-          {e.map((s, n) => (
-            <div className="center" key={s.id}>
-              <PlayingCard card={s} size="md" deal={true} />
-              <div
-                className={cx(
-                  "demo-tag num",
-                  t[n] === "+1" ? "good" : t[n] === "−1" ? "bad" : "muted",
-                )}
-              >
-                {t[n]}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="demo-rc">
-          <span>Conteo corrido</span>
-          <b className="acc num">+1</b>
-        </div>
-        <Pills
-          options={["Relajado", "Normal", "Rápido", "Pro"].map((s) => ({
-            value: s,
-            label: s,
-          }))}
-          value="Pro"
-          onChange={() => {}}
-        />
-      </div>
-    );
-  }
-  return (
-    <div className="demo-wrap">
-      <div className="tiles">
-        <div className="tile">
-          <div className="eyebrow">Banca</div>
-          <div className="tile-v num" style={{ fontSize: 24 }}>
-            $500
-          </div>
-        </div>
-        <div className="tile">
-          <div className="eyebrow">Apuesta</div>
-          <div className="tile-v num" style={{ fontSize: 24 }}>
-            $25
-          </div>
-        </div>
-        <div className="tile">
-          <div className="eyebrow">Ritmo</div>
-          <div className="tile-v acc" style={{ fontSize: 24 }}>
-            Pro
-          </div>
-        </div>
-      </div>
-      <div
-        className="card-row"
-        style={{ justifyContent: "center", margin: "16px 0" }}
-      >
-        <PlayingCard card={makeCard("J", "c")} size="md" deal={true} />
-        <PlayingCard card={makeCard("J", "h")} size="md" deal={true} />
-      </div>
-      <div className="demo-best wide">
-        <span className="fb-icon acc-bg">
-          <Icon name="plus" size={16} stroke={3} />
-        </span>
-        <span>
-          <b>Chequeo de conteo</b>
-          <br />
-          <span className="muted small">¿Cuál es el conteo corrido?</span>
-        </span>
+      <div className="bottom-actions">
+        <Button onClick={empezar}>Empezar</Button>
+        <p className="center dim tiny" style={{ marginTop: 10 }}>
+          Es para aprender: contar con la cabeza es legal, pero usar el
+          celular en la mesa no.
+        </p>
       </div>
     </div>
   );
@@ -509,7 +145,8 @@ function Placement({
       setTimeout(() => {
         r((b) => [...b, { s: p.s, ok: m }]);
         d(null);
-        o((b) => b + 1);
+        // La primera que no sabés termina el test: empezás por esa sección.
+        o((b) => (m ? b + 1 : PLACEMENT_QUESTIONS.length));
       }, 650);
     },
     C = useMemo(() => {
@@ -549,6 +186,7 @@ function Placement({
         let S = {
           ...m.profile,
           onboarded: true,
+          testHecho: true,
           startSection: v,
           placement: { t: Date.now(), ...C.bySec },
         };
@@ -604,25 +242,14 @@ function Placement({
           <div className="grow" />
         </div>
         <div className="eyebrow acc" style={{ marginTop: 20 }}>
-          Test de nivel
+          Test de nivel · 2 minutos
         </div>
-        <h1>¿Por dónde empezamos?</h1>
+        <h1>¿Por dónde empezás?</h1>
         <p className="muted" style={{ marginTop: 12, fontSize: 18 }}>
-          {"Son "}
-          {PLACEMENT_QUESTIONS.length}
-          {
-            " preguntas cortas, de reglas, estrategia, plata y conteo. Si no sabés una, elegí "
-          }
-          <b style={{ color: "var(--text)" }}>No sé</b>: así te ubicamos mejor.
+          {`Hasta ${PLACEMENT_QUESTIONS.length} preguntas cortas. Cuando una no la sepas, tocá `}
+          <b style={{ color: "var(--text)" }}>No sé</b>
+          {": ahí termina y empezás desde esa parte. Lo anterior queda como superado."}
         </p>
-        <div className="placement-secs">
-          {SECTIONS.slice(0, 4).map((v) => (
-            <div className="row" style={{ gap: 12 }} key={v.id}>
-              <span className="how-n">{v.id}</span>
-              <span>{v.title}</span>
-            </div>
-          ))}
-        </div>
         <div className="bottom-actions">
           <Button onClick={() => o(0)}>Empezar el test</Button>
           {a ? (

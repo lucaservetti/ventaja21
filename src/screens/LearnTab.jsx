@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { setSettings, useStore } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
-import { IconButton, Toasts, cx } from "../ui/components.jsx";
+import { Button, IconButton, Toasts, cx } from "../ui/components.jsx";
 import { PageHeader } from "../ui/common.jsx";
 import {
   LESSONS,
@@ -190,6 +190,37 @@ function lessonProgress(a) {
     t = LESSONS.find((s) => !e(s.id));
   return { done: e, currentId: t ? t.id : null };
 }
+// Al empezar: el test de nivel (opcional) para saltear lo que ya sabés. Desaparece al hacerlo, al
+// elegir empezar de cero o al terminar la primera lección.
+function TestCard({ st, lessonsDone }) {
+  const nav = useNav();
+  if (
+    lessonsDone > 0 ||
+    st.profile.testHecho ||
+    st.profile.placement ||
+    st.settings.testVisto
+  )
+    return null;
+  return (
+    <div className="card test-card">
+      <div className="eyebrow acc">Test de nivel · 2 minutos</div>
+      <h2>¿Ya sabés algo de blackjack?</h2>
+      <p className="muted">
+        Contestá unas preguntas y salteá lo que ya sabés. Si recién empezás,
+        arrancá directo con la primera lección.
+      </p>
+      <div className="test-card-btns">
+        <Button onClick={() => nav.push("placement")}>Hacer el test</Button>
+        <Button
+          kind="ghost"
+          onClick={() => setSettings({ testVisto: true })}
+        >
+          Empiezo de cero
+        </Button>
+      </div>
+    </div>
+  );
+}
 // En el iPhone (Safari, sin instalar): después de la primera lección, cómo dejar Edge 21 en la
 // pantalla de inicio. Se puede cerrar y no vuelve.
 function esIphone() {
@@ -272,6 +303,7 @@ function LearnTab() {
           </>
         }
       />
+      <TestCard st={a} lessonsDone={l} />
       <NextStepsCard st={a} done={t} />
       {WEB_DEMO ? (
         <button
