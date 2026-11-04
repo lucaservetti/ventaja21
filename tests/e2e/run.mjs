@@ -152,6 +152,27 @@ const PRUEBAS = {
     check(st.profile && st.profile.onboarded, "el perfil no quedó marcado como listo");
   },
 
+  // Test de nivel desde Aprender: corto, termina en la primera que no sabés y saltea lo anterior.
+  async testNivel(h) {
+    const { page } = h;
+    await h.tab("Aprender", "Learn");
+    await h.see("¿Ya sabés algo de blackjack?", "Do you already know some blackjack?");
+    await h.foto("tarjeta");
+    await h.click("Hacer el test", "Take the test", { wait: 600 });
+    await h.click("Empezar el test", "Start the test", { wait: 600 });
+    // Las dos de la sección 1, bien; la primera de la 2, "No sé": empieza en la sección 2.
+    await h.click("Pedir carta", "Hit", { exact: true, wait: 1100 });
+    await h.click("7 o 17 (17 blando)", "7 or 17 (soft 17)", { wait: 1100 });
+    await h.click("No sé", "I don't know", { exact: true, wait: 1100 });
+    await h.see("Tu punto de partida", "Your starting point");
+    await h.foto("resultado");
+    await h.click("Listo", "Done", { exact: true, wait: 700 });
+    const st = await h.state();
+    check(st.profile.startSection === 2, `empieza en la sección ${st.profile.startSection}`);
+    check(st.lessons.l1 && st.lessons.l1.viaTest, "la sección 1 no quedó superada");
+    check(!(await page.getByText(h.T("¿Ya sabés algo de blackjack?", "Do you already know some blackjack?")).filter({ visible: true }).count()), "la tarjeta del test sigue");
+  },
+
   // Una lección completa de la primera sección.
   async leccion(h) {
     const { page } = h;

@@ -478,7 +478,7 @@ function App() {
   if (!a.profile.onboarded)
     return (
       <NavContext.Provider value={y}>
-        <div className="app">
+        <div className={cx("app", desk && "escritorio sin-menu")}>
           <Onboarding />
         </div>
       </NavContext.Provider>

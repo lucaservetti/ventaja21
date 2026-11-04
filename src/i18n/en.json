@@ -3230,5 +3230,17 @@
 "Se activa cuando haya más jugadores en el ranking.": "It turns on once there are more players on the leaderboard.",
 "Días de Premium de regalo por jugar seguido o terminar las lecciones": "Free days of Premium for playing in a row or finishing the lessons",
 "{0} (tecla {1})": "{0} ({1} key)",
-"Instalar en la compu": "Install on this computer"
+"Instalar en la compu": "Install on this computer",
+"Aprendé estrategia básica y conteo de cartas, paso a paso, con manos de verdad.": "Learn basic strategy and card counting, step by step, with real hands.",
+"Lecciones de 2 a 5 minutos": "2 to 5 minute lessons",
+"Una mesa que te corrige cada jugada": "A table that corrects every play",
+"Sin plata real": "No real money",
+"Test de nivel · 2 minutos": "Level test · 2 minutes",
+"¿Por dónde empezás?": "Where do you start?",
+"Hasta {0} preguntas cortas. Cuando una no la sepas, tocá ": "Up to {0} short questions. When you don't know one, tap ",
+": ahí termina y empezás desde esa parte. Lo anterior queda como superado.": ": it ends there and you start from that part. Everything before counts as passed.",
+"¿Ya sabés algo de blackjack?": "Do you already know some blackjack?",
+"Contestá unas preguntas y salteá lo que ya sabés. Si recién empezás, arrancá directo con la primera lección.": "Answer a few questions and skip what you already know. If you're just starting, go straight to the first lesson.",
+"Hacer el test": "Take the test",
+"Empiezo de cero": "Start from scratch"
 }
