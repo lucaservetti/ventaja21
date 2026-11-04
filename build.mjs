@@ -30,6 +30,8 @@ const firebase = {
   webClientId: process.env.GOOGLE_WEB_CLIENT_ID || fbFile.webClientId || "",
   // Servidor de premios (servidor/): da los días de Premium de regalo.
   api: process.env.PREMIOS_API || fbFile.api || "https://api.edge21.app",
+  // Cuentas que ven el panel de la medición (el servidor lo controla igual: DUENOS en wrangler.toml).
+  duenos: fbFile.duenos || [],
   // Solo para pruebas locales con los emuladores de Firebase.
   ...(process.env.FIREBASE_EMULATOR ? { emulator: process.env.FIREBASE_EMULATOR } : {}),
 };

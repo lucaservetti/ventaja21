@@ -83,7 +83,7 @@ ${cuerpo}
     <a href="https://www.tiktok.com/@edge21.app" rel="noopener">TikTok</a>
   </nav>
 </footer>
-<script>try{localStorage.setItem("edge21.lang","${lang}")}catch(e){}</script>
+<script>try{localStorage.setItem("edge21.lang","${lang}")}catch(e){}try{if(!localStorage.getItem("edge21.origen")){var u=new URLSearchParams(location.search),o=u.get("ref")||u.get("utm_source")||"";if(!o&&document.referrer){var h=new URL(document.referrer).hostname;if(h.slice(-location.hostname.length)!==location.hostname)o=h}localStorage.setItem("edge21.origen",o||"directo")}}catch(e){}</script>
 ${conScript ? '<script src="/guias/guias.js" defer></script>' : ""}
 </body>
 </html>

@@ -18,6 +18,8 @@ import {
 } from "react";
 import { createRoot } from "react-dom/client";
 import { Logo } from "./ui/common.jsx";
+import { initMedir } from "./medir.js";
+import { Panel } from "./screens/Panel.jsx";
 import { instalarEscritorio, useEscritorio, usePuedeInstalar } from "./escritorio.js";
 import { jsx as _jsx } from "react/jsx-runtime";
 import {
@@ -126,6 +128,7 @@ const SCREENS = {
   guide: Guide,
   guideChapter: GuideChapter,
   placement: Placement,
+  panel: Panel,
   countLevel: CountLevel,
   review: Review,
   drillPairs: DrillPairs,
@@ -792,6 +795,7 @@ initPlatform();
 initCloud();
 initRecordatorios();
 initCelebraciones();
+initMedir();
 setTimeout(revisarVersion, 2500);
 if ("serviceWorker" in navigator && !NATIVE) {
   const hadController = !!navigator.serviceWorker.controller;

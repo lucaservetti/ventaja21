@@ -36,7 +36,7 @@ function cors(req) {
     ORIGINS.includes(o) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(o);
   return {
     "Access-Control-Allow-Origin": ok ? o : ORIGINS[0],
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Authorization, Content-Type",
     "Access-Control-Max-Age": "86400",
     Vary: "Origin",
@@ -677,9 +677,164 @@ async function limpiar(env, now = Date.now()) {
     for (const x of vencidos || [])
       if (x.document) nombres.push(x.document.name);
   }
+  // Medición: los aparatos que no abren la app hace más de 60 días.
+  const viejas = await d.query("", {
+    from: [{ collectionId: "instalaciones" }],
+    where: {
+      fieldFilter: {
+        field: { fieldPath: "ult" },
+        op: "LESS_THAN",
+        value: { stringValue: diaAR(now - MED_DIAS * DAY) },
+      },
+    },
+    ...soloNombre,
+  });
+  for (const x of viejas || []) if (x.document) nombres.push(x.document.name);
   for (let i = 0; i < nombres.length; i += 500)
     await d.commit(nombres.slice(i, i + 500).map((n) => ({ delete: n })));
   return nombres.length;
+}
+
+
+// ---- Medición anónima ----
+// La app manda eventos sueltos (abrió la app hoy, terminó su primera lección, entró con Google…)
+// con un identificador al azar del aparato, que no se une a la cuenta ni a nada personal. No se
+// guarda la IP. Acá solo se suman contadores por día (metricas/{día}) y, por aparato, el día que
+// llegó y el último que abrió (instalaciones/{id}, se borra a los 60 días sin abrir), para saber
+// cuántos vuelven al día siguiente y a la semana. Ver la sección "Estadísticas" en privacidad.html.
+const HITOS = [
+  "empezar",
+  "leccion1",
+  "leccion3",
+  "seccion1",
+  "test",
+  "entreno",
+  "mesa",
+  "conteo",
+  "desafio",
+  "cuenta",
+  "premium",
+  "compra",
+];
+const PLATS = ["android", "iphone-app", "iphone", "compu-app", "compu", "celu"];
+const ID_OK = /^[a-z0-9]{8,24}$/;
+const MED_DIAS = 60;
+// El día en la hora de Argentina (UTC−3): el panel lo lee el dueño, que está ahí.
+const diaAR = (t) => new Date(t - 3 * 3600e3).toISOString().slice(0, 10);
+const diasEntre = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / DAY);
+function sumar(d, dia, campos) {
+  return {
+    transform: {
+      document: d.name(`metricas/${dia}`),
+      fieldTransforms: campos.map((c) => ({
+        fieldPath: c,
+        increment: { integerValue: "1" },
+      })),
+    },
+  };
+}
+
+async function medir(req, env, now = Date.now()) {
+  const raw = await req.text();
+  if (raw.length > 2000) return 413;
+  let m;
+  try {
+    m = JSON.parse(raw);
+  } catch {
+    return 400;
+  }
+  const ev = String(m && m.e);
+  const id = String(m && m.id);
+  if (!ID_OK.test(id) || !(ev === "nuevo" || ev === "activo" || HITOS.includes(ev)))
+    return 400;
+  const plat = PLATS.includes(m.p) ? m.p : "otra";
+  const src = /^[a-z0-9_]{1,24}$/.test(m.src || "") ? m.src : "otro";
+  const d = db(env);
+  const dia = diaAR(now);
+  const nombre = `instalaciones/${id}`;
+  const inst = await d.get(nombre);
+  const d0 = field(inst, "d0");
+  const ult = field(inst, "ult");
+  const writes = [];
+  const nueva = () => ({
+    update: {
+      name: d.name(nombre),
+      fields: {
+        d0: { stringValue: dia },
+        ult: { stringValue: dia },
+        p: { stringValue: plat },
+        src: { stringValue: src },
+      },
+    },
+    currentDocument: { exists: false },
+  });
+  if (ev === "nuevo") {
+    if (inst) return 200; // ya estaba: no se cuenta dos veces
+    writes.push(nueva(), sumar(d, dia, ["e.nuevo", "e.activo", `src.${src}`, `plat.${plat}`]));
+  } else if (ev === "activo") {
+    if (!inst) {
+      // Un aparato de antes de la medición: cuenta como activo, sin día de llegada conocido.
+      writes.push(nueva(), sumar(d, dia, ["e.activo"]));
+    } else if (ult !== dia) {
+      const campos = ["e.activo"];
+      writes.push({
+        update: { name: d.name(nombre), fields: { ult: { stringValue: dia } } },
+        updateMask: { fieldPaths: ["ult"] },
+      });
+      writes.push(sumar(d, dia, campos));
+      const n = diasEntre(d0, dia);
+      if (n === 1) writes.push(sumar(d, d0, ["r.d1"]));
+      if (n === 7) writes.push(sumar(d, d0, ["r.d7"]));
+      // Volvió alguna vez en la primera semana (cuenta una sola vez por aparato).
+      if (n >= 1 && n <= 7 && !field(inst, "volvio")) {
+        writes.push({
+          update: { name: d.name(nombre), fields: { volvio: { booleanValue: true } } },
+          updateMask: { fieldPaths: ["volvio"] },
+        });
+        writes.push(sumar(d, d0, ["r.semana"]));
+      }
+    } else return 200;
+  } else {
+    // Un hito: el día que pasó y, si se sabe, el día que llegó ese aparato (para el embudo).
+    writes.push(sumar(d, dia, [`e.${ev}`]));
+    if (d0) writes.push(sumar(d, d0, [`c.${ev}`]));
+  }
+  try {
+    await d.commit(writes);
+  } catch (e) {
+    // Dos "nuevo" casi juntos del mismo aparato: el segundo no cuenta.
+    if (e.status === 400 || e.status === 409) return 200;
+    throw e;
+  }
+  return 200;
+}
+
+// Panel del dueño: los contadores de los últimos días (solo para las cuentas de DUENOS).
+async function panel(uid, env, now = Date.now(), dias = 30) {
+  const duenos = String(env.DUENOS || "")
+    .split(",")
+    .map((x) => x.trim())
+    .filter(Boolean);
+  if (!duenos.includes(uid)) return null;
+  const d = db(env);
+  const claves = [];
+  for (let i = 0; i < Math.min(90, Math.max(1, dias)); i++)
+    claves.push(diaAR(now - i * DAY));
+  const docs = await d.getMany(claves.map((k) => `metricas/${k}`));
+  return {
+    hoy: claves[0],
+    dias: claves.map((k) => {
+      const doc = docs[`metricas/${k}`];
+      return {
+        dia: k,
+        e: field(doc, "e") || {},
+        c: field(doc, "c") || {},
+        r: field(doc, "r") || {},
+        src: field(doc, "src") || {},
+        plat: field(doc, "plat") || {},
+      };
+    }),
+  };
 }
 
 // ---- Límites de uso ----
@@ -790,6 +945,33 @@ export default {
     // Avisos de pago de Paddle (los firma Paddle; no pasan por la sesión ni por CORS).
     if (route === "/pagos/paddle" && req.method === "POST")
       return avisoPaddle(req, env);
+    // Medición anónima (la app la manda con sendBeacon: no espera respuesta).
+    if (route === "/m" && req.method === "POST") {
+      const ip = req.headers.get("CF-Connecting-IP") || "local";
+      if (!(await dentroDelLimite(env, "LIMITE_IP", `m:${ip}`, 10)))
+        return muchos(req);
+      try {
+        return new Response(null, { status: await medir(req, env), headers: cors(req) });
+      } catch {
+        return new Response(null, { status: 500, headers: cors(req) });
+      }
+    }
+    // Panel del dueño (con su sesión de Google).
+    if (route === "/panel" && req.method === "GET") {
+      let quien;
+      try {
+        const auth = req.headers.get("Authorization") || "";
+        quien = await verifyIdToken(auth.replace(/^Bearer\s+/i, ""), env);
+      } catch {
+        return json(req, 401, { error: "Entrá con tu cuenta de Google" });
+      }
+      try {
+        const r = await panel(quien, env, Date.now(), Number(url.searchParams.get("dias")) || 30);
+        return r ? json(req, 200, r) : json(req, 403, { error: "Solo para el dueño" });
+      } catch {
+        return json(req, 500, { error: "No se pudo leer" });
+      }
+    }
     if (
       !["/premios", "/borrar", "/errores", "/reportar"].includes(route) ||
       req.method !== "POST"
@@ -837,6 +1019,9 @@ export default {
 };
 
 export {
+  diaAR,
+  medir,
+  panel,
   anotarPago,
   avisoPaddle,
   borrar,

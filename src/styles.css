@@ -9880,3 +9880,46 @@ html[data-theme="light"] .app.escritorio .tabbar {
     --col: 560px;
   }
 }
+
+/* Panel de estadísticas (solo el dueño). */
+.pn-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: 14.5px;
+}
+.pn-head {
+  padding-bottom: 2px;
+}
+.pn-bar {
+  position: relative;
+  height: 10px;
+  border-radius: 6px;
+  background: var(--surface-3);
+  overflow: visible;
+}
+.pn-head .pn-bar {
+  height: auto;
+  background: none;
+}
+.pn-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+  background: var(--accent);
+}
+.pn-bar b {
+  position: absolute;
+  right: -2px;
+  top: -18px;
+  font-size: 11px;
+  color: var(--text-2);
+  display: none;
+}
+.pn-num {
+  min-width: 70px;
+  text-align: right;
+  font-weight: 700;
+}
