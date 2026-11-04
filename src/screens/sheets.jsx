@@ -1,4 +1,4 @@
-import { ACCOUNTS, useAccount } from "../cloud.js";
+import { ACCOUNTS, ES_DUENO, useAccount } from "../cloud.js";
 import { useState } from "react";
 import {
   TABLE_PRESETS,
@@ -96,6 +96,26 @@ function SettingsSheet({ open: a, onClose: e }) {
               {acct
                 ? `Guardando tu progreso en ${acct.email || "tu cuenta de Google"}`
                 : "Guardá tu progreso con Google (opcional)"}
+            </span>
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+      ) : null}
+      {ES_DUENO(acct) ? (
+        <button
+          type="button"
+          className="list-item setting-link"
+          onClick={() => {
+            e();
+            s.push("panel");
+          }}
+        >
+          <span className="li-text">
+            <span className="li-title" style={{ fontSize: 17 }}>
+              Estadísticas
+            </span>
+            <span className="li-sub" style={{ display: "block" }}>
+              Cuánta gente entra, hasta dónde llega y si vuelve (solo vos)
             </span>
           </span>
           <Icon name="chev" className="li-chev" />
@@ -252,6 +272,13 @@ function SettingsSheet({ open: a, onClose: e }) {
           <Icon name="chev" className="li-chev" />
         </button>
       ) : null}
+      <Toggle
+        id="s-stats"
+        label="Estadísticas anónimas"
+        sub="Nos ayudan a mejorar la app: cuántos vuelven, hasta dónde llegan. Sin datos tuyos."
+        checked={!n.sinEstadisticas}
+        onChange={(m) => setSettings({ sinEstadisticas: !m })}
+      />
       <Toggle
         id="s-big"
         label="Letra más grande"

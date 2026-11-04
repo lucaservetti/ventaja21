@@ -318,6 +318,19 @@ async function cerrarSesion() {
   return { ok: true };
 }
 
+// ---- Panel de la medición (solo para las cuentas de "duenos") ----
+const ES_DUENO = (acc) =>
+  !!(acc && CFG && Array.isArray(CFG.duenos) && CFG.duenos.includes(acc.uid));
+async function pedirPanel(dias = 30) {
+  if (!acct) throw new Error("Entrá con tu cuenta de Google");
+  const r = await fetch(`${CFG.api}/panel?dias=${dias}`, {
+    headers: { Authorization: `Bearer ${await token()}` },
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || `Error ${r.status}`);
+  return data;
+}
+
 // ---- Premium por cuenta (premium/{uid}) ----
 // El dueño de la app lo marca a mano en Firebase (o, más adelante, un pago en la web). Vale en la web
 // y en Android. Campos: activo (sí/no) y, opcional, hasta (fecha en que vence).
@@ -795,7 +808,9 @@ function lessonsDone() {
 export {
   ACCOUNTS,
   CLOUD,
+  ES_DUENO,
   cerrarSesion,
+  pedirPanel,
   checkPremium,
   NATIVE as CLOUD_NATIVE,
   checkPremios,

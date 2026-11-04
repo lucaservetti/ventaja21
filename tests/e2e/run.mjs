@@ -532,6 +532,75 @@ const PRUEBAS = {
     await h.foto("teclado");
   },
 
+  // Medición anónima: "nuevo" con de dónde vino, los hitos una sola vez, se apaga en Ajustes; y el
+  // panel del dueño (con el servidor simulado).
+  async medicion(h) {
+    const { page } = h;
+    const eventos = [];
+    await page.route("**/m", (r) => {
+      try {
+        eventos.push(JSON.parse(r.request().postData()));
+      } catch {
+        // nada
+      }
+      return r.fulfill({ status: 200, body: "" });
+    });
+    await page.addInitScript(() => {
+      window.__medirTest = true;
+    });
+    await page.goto(page.url().split("?")[0] + "?ref=tiktok_prueba");
+    await page.waitForTimeout(1200);
+    const de = (e) => eventos.filter((x) => x.e === e);
+    check(de("nuevo").length === 1 && de("nuevo")[0].src === "tiktok_prueba", `nuevo: ${JSON.stringify(eventos)}`);
+    check(/^[a-z0-9]{8,24}$/.test(de("nuevo")[0].id) && !("email" in de("nuevo")[0]), "el identificador no es anónimo");
+    await h.click("Empezar", "Start", { exact: true, wait: 1200 });
+    check(de("empezar").length === 1, `empezar: ${JSON.stringify(eventos.map((x) => x.e))}`);
+    // Otra vez el mismo día: ni "nuevo" ni "activo" de nuevo.
+    await page.reload();
+    await page.waitForTimeout(1200);
+    check(de("nuevo").length === 1 && de("activo").length === 0 && de("empezar").length === 1, `repetidos: ${JSON.stringify(eventos.map((x) => x.e))}`);
+    // Apagada en Ajustes: no manda más.
+    await h.tab("Progreso", "Progress");
+    await h.css('section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    await h.click("Estadísticas anónimas", "Anonymous statistics", { wait: 400 });
+    check((await h.state()).settings.sinEstadisticas === true, "no se apagó");
+    await page.keyboard.press("Escape");
+    const antes = eventos.length;
+    await page.evaluate(() => {
+      const k = "ventaja21.state.v1";
+      const s = JSON.parse(localStorage.getItem(k));
+      s.lessons = { l1: { done: true, stars: 3 } };
+      localStorage.setItem(k, JSON.stringify(s));
+      localStorage.setItem("edge21.account", JSON.stringify({ uid: "FoItGSWPJZSRqaXN5ORR8oNgFKN2", token: "x", refresh: "x", exp: Date.now() + 864e5, name: "Luca", email: "", nick: "Luca S.", lastSync: Date.now(), dirty: false }));
+      Storage.prototype.setItem = () => {};
+    });
+    await page.route("**/panel*", (r) =>
+      r.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          hoy: "2026-11-04",
+          dias: [
+            { dia: "2026-11-04", e: { nuevo: 3, activo: 5 }, c: { empezar: 3 }, r: {}, src: { tiktok: 2, directo: 1 }, plat: { iphone: 2, celu: 1 } },
+            { dia: "2026-11-03", e: { nuevo: 10, activo: 10 }, c: { empezar: 9, leccion1: 6, leccion3: 3 }, r: { d1: 4, semana: 5 }, src: { tiktok: 7, google: 3 }, plat: { celu: 6, compu: 4 } },
+          ],
+        }),
+      }),
+    );
+    await page.reload();
+    await page.waitForTimeout(1500);
+    check(eventos.length === antes, `mandó estando apagada: ${JSON.stringify(eventos.slice(antes))}`);
+    // Panel: solo para el dueño, desde Ajustes.
+    await h.tab("Progreso", "Progress");
+    await h.css('section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    await h.click("Estadísticas", "Statistics", { exact: true, wait: 900 });
+    await h.see("Hasta dónde llegan", "How far they get");
+    await h.see("Terminaron 1 lección", "Finished 1 lesson");
+    const txt = await h.screenText();
+    check(/13/.test(txt) && /40 ?%/.test(txt), `números del panel: ${txt.slice(0, 300)}`);
+    await h.foto("panel");
+  },
+
   // Contrarreloj: empezar, contestar y que corra el reloj.
   async contrarreloj(h) {
     const { page } = h;
@@ -783,7 +852,7 @@ const PRUEBAS = {
     for (const [name, fn] of Object.entries(PRUEBAS)) {
       if (SOLO && SOLO !== name) continue;
       const ctx = await browser.newContext({ viewport: { width: ANCHO, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, locale: lang === "es" ? "es-UY" : "en-US", colorScheme: TEMA });
-      const seed = name === "onboarding" ? null : AJUSTES ? { ...ONB, settings: AJUSTES } : ONB;
+      const seed = ["onboarding", "medicion"].includes(name) ? null : AJUSTES ? { ...ONB, settings: AJUSTES } : ONB;
       if (AUDITAR) await ctx.addInitScript({ path: path.join(ROOT, "tests/e2e/auditoria.js") });
       await ctx.addInitScript(`if (!sessionStorage.getItem("seeded")) { sessionStorage.setItem("seeded","1"); localStorage.setItem("edge21.lang", ${JSON.stringify(lang)}); ${seed ? `localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(seed))});` : ""} }`);
       const page = await ctx.newPage();

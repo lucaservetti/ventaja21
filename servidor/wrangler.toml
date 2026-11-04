@@ -29,6 +29,8 @@ PROJECT_ID = "edge21-fb71e"
 BIENVENIDA = "0"
 # Premio del podio semanal: "1" cuando haya bastante gente en el ranking (ver src/premios.js).
 PODIO = "0"
+# Cuentas que pueden ver el panel de la medición (uid de Firebase, separadas por coma).
+DUENOS = "FoItGSWPJZSRqaXN5ORR8oNgFKN2"
 # Pagos en la web (Paddle): el código del precio "Para siempre" (pri_…). Ver PAGOS_WEB.md.
 PADDLE_PRECIO_SIEMPRE = ""
 

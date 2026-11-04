@@ -19,6 +19,7 @@ import {
 import { useNav } from "../nav.js";
 import { ACCOUNTS, checkPremium, useAccount } from "../cloud.js";
 import { MOSTRAR, PAGOS_WEB, onPagoWeb, pagarWeb } from "../pagos-web.js";
+import { hito } from "../medir.js";
 import { LANG, LOCALE } from "../i18n/index.js";
 
 const FEATURES = {
@@ -117,12 +118,16 @@ function Premium({ feature }) {
   const [, setTick] = useState(0);
   const [plan, setPlan] = useState("yearly");
   useEffect(() => onShop(() => setTick((x) => x + 1)), []);
+  useEffect(() => hito("premium"), []);
   // Pago en la web: "abriendo", "esperando" (pagó; el servidor lo anota en unos segundos), "error".
   const [pago, setPago] = useState(null);
   useEffect(
     () =>
       onPagoWeb((e) => {
-        if (e === "listo") setPago("esperando");
+        if (e === "listo") {
+          setPago("esperando");
+          hito("compra");
+        }
         else if (e === "error") setPago("error");
         else setPago((p) => (p === "abriendo" ? null : p));
       }),

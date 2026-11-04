@@ -1,6 +1,6 @@
 // Prueba del servidor de premios (servidor/index.js) contra los emuladores de Firebase.
 // Uso: npx firebase-tools emulators:exec --project demo-edge21 --only auth,firestore "node tests/servidor.mjs"
-import worker, { borrar, gunzipConTope, limpiar, premios, serviceToken, verifyIdToken } from "../servidor/index.js";
+import worker, { borrar, diaAR, gunzipConTope, medir, panel, limpiar, premios, serviceToken, verifyIdToken } from "../servidor/index.js";
 import { DAY, dayKeyUTC, diasRecientes, mondayUTC } from "../src/premios.js";
 
 const P = "demo-edge21";
@@ -396,6 +396,50 @@ await paso("pagos en la web (Paddle): firma, suscripción, pago único y avisos 
   const sinUid = structuredClone(sub);
   sinUid.data.custom_data = null;
   check((await avisar(sinUid)).status === 200, "sin uid igual se contesta");
+});
+
+await paso("medición: nuevo, vuelve al día siguiente y a la semana, hitos por día y por cohorte, datos raros no", async () => {
+  const envM = { PROJECT_ID: P, EMULATOR: "127.0.0.1", DUENOS: "dueno1,dueno2" };
+  const t0 = Date.parse("2026-10-01T15:00:00Z");
+  const mandar = (o, t = t0) => medir(new Request("https://api.edge21.app/m", { method: "POST", body: JSON.stringify(o) }), envM, t);
+  const met = async (dia) => {
+    const doc = await get(`metricas/${dia}`);
+    const out = {};
+    const plano = (f, pre) => { for (const [k, v] of Object.entries(f || {})) { if (v.mapValue) plano(v.mapValue.fields, `${pre}${k}.`); else out[`${pre}${k}`] = Number(v.integerValue); } };
+    plano(doc && doc.fields, "");
+    return out;
+  };
+  const d0 = diaAR(t0);
+  check((await mandar({ e: "nuevo", id: "aparato000001", p: "iphone", src: "tiktok" })) === 200, "nuevo");
+  check((await mandar({ e: "nuevo", id: "aparato000001", p: "iphone", src: "tiktok" })) === 200, "nuevo repetido");
+  await mandar({ e: "nuevo", id: "aparato000002", p: "compu", src: "google" });
+  await mandar({ e: "leccion1", id: "aparato000001" });
+  let m = await met(d0);
+  check(m["e.nuevo"] === 2 && m["e.activo"] === 2, `nuevos/activos: ${JSON.stringify(m)}`);
+  check(m["src.tiktok"] === 1 && m["src.google"] === 1 && m["plat.iphone"] === 1, `fuentes: ${JSON.stringify(m)}`);
+  check(m["e.leccion1"] === 1 && m["c.leccion1"] === 1, `hito: ${JSON.stringify(m)}`);
+  // El mismo día otra vez: no suma activo.
+  await mandar({ e: "activo", id: "aparato000001" });
+  check((await met(d0))["e.activo"] === 2, "activo dos veces el mismo día");
+  // Al día siguiente: activo y vuelve al día 1 (se anota en el día que llegó).
+  const t1 = t0 + DAY;
+  await mandar({ e: "activo", id: "aparato000001" }, t1);
+  await mandar({ e: "mesa", id: "aparato000001" }, t1);
+  m = await met(d0);
+  check(m["r.d1"] === 1 && m["r.semana"] === 1 && m["c.mesa"] === 1, `vuelve al día 1: ${JSON.stringify(m)}`);
+  const m1 = await met(diaAR(t1));
+  check(m1["e.activo"] === 1 && m1["e.mesa"] === 1, `al otro día: ${JSON.stringify(m1)}`);
+  // A la semana: d7, pero "volvió en la semana" no se cuenta dos veces.
+  await mandar({ e: "activo", id: "aparato000001" }, t0 + 7 * DAY);
+  m = await met(d0);
+  check(m["r.d7"] === 1 && m["r.semana"] === 1, `semana: ${JSON.stringify(m)}`);
+  // Datos raros: no.
+  check((await mandar({ e: "inventado", id: "aparato000003" })) === 400, "evento inventado");
+  check((await mandar({ e: "activo", id: "../users/x" })) === 400, "id raro");
+  // Panel: solo los dueños.
+  check((await panel("otro", envM, t1)) === null, "el panel no debería abrirse a otros");
+  const pn = await panel("dueno2", envM, t1, 3);
+  check(pn && pn.dias.length === 3 && pn.dias[1].dia === d0 && pn.dias[1].e.nuevo === 2, `panel: ${JSON.stringify(pn && pn.dias[1])}`);
 });
 
 console.log(fails.length ? `${fails.length} prueba(s) fallaron` : "todas las pruebas pasaron");
