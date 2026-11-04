@@ -23,7 +23,13 @@ import { SYSTEMS, SYSTEM_IDS } from "../engine/systems.js";
 import { HiLoValues } from "../lessons/visuals.jsx";
 import { SystemValues } from "./CountTab.jsx";
 import { useNav } from "../nav.js";
-import { APP_MODE, NATIVE, PREMIUM_SYSTEMS, hasPremium } from "../platform.js";
+import {
+  APP_MODE,
+  NATIVE,
+  PREMIUM_SYSTEMS,
+  hasPremium,
+  puedeUsar,
+} from "../platform.js";
 import { resumenRecordatorios } from "../recordatorios-plan.js";
 import { PremiumTag } from "./Premium.jsx";
 import { LANG, setLang } from "../i18n/index.js";
@@ -51,7 +57,7 @@ function SettingsSheet({ open: a, onClose: e }) {
     );
   // Ajustar cada regla a mano es de Premium (los tipos de mesa son gratis).
   const regla = (cambio) => {
-    if (hasPremium(t)) return setRules(cambio);
+    if (puedeUsar("rules", t)) return setRules(cambio);
     e();
     s.push("premium", { feature: "rules" });
   };
@@ -452,7 +458,7 @@ function SystemSheet({ open: a, onClose: e }) {
               type="button"
               className={cx("sys-item", o && "on")}
               onClick={() => {
-                if (PREMIUM_SYSTEMS.includes(l) && !hasPremium(st)) {
+                if (PREMIUM_SYSTEMS.includes(l) && !puedeUsar("systems", st)) {
                   e();
                   nav.push("premium", { feature: "systems" });
                   return;

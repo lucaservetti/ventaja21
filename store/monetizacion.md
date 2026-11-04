@@ -7,7 +7,7 @@ La idea: que lo gratis alcance para aprender de verdad, y que Premium sea para q
 | | Qué | Cuándo |
 | --- | --- | --- |
 | **Gratis** | Lecciones, ruta de conteo, Entrenar, ejercicios, desafíos, simulador y los sistemas Hi-Lo y KO | Siempre |
-| **Anuncio de pantalla completa** | Al volver al menú después de terminar 2 cosas | Como mucho 1 cada 5 min y 6 por día. Ninguno el primer día |
+| **Anuncio de pantalla completa** | Al volver al menú después de terminar 2 cosas | Como mucho 1 cada 5 min y 4 por día. Ninguno los primeros 3 días |
 | **Anuncio con premio** (opcional) | Segunda oportunidad del desafío diario | Cuando la persona lo elige |
 | **Premios** | Días de Premium de regalo por racha, podio semanal y terminar las lecciones (con cuenta de Google) | Tope de 14 días cada 30 días |
 | **Premium mensual** | US$2,99 por mes | Cancelás cuando quieras |
@@ -41,7 +41,9 @@ Por qué estos números:
 
 ### Lo que ya hace la app
 
-- **Pantalla completa (intersticial):** solo al volver al menú, y solo si terminaste 2 cosas desde el último (lecciones, tandas, ejercicios, partidas). Como mucho uno cada 5 minutos y 6 por día. **Ninguno el primer día**: la primera impresión es la que decide si la gente se queda y qué reseña deja.
+- **Pantalla completa (intersticial):** solo al volver al menú, y solo si terminaste 2 cosas desde el último (lecciones, tandas, ejercicios, partidas). Como mucho uno cada 5 minutos y 4 por día. **Ninguno los primeros 3 días**: la primera impresión es la que decide si la gente se queda y qué reseña deja.
+- **Con premio, "probá una función 20 minutos":** desde la pantalla de Premium de una función (modo casino, análisis de errores, paños…), mirás un anuncio y la usás 20 minutos. **Una sola vez por persona** (queda guardado en la cuenta): para volver a usarla o probar otra, Premium. Al terminar se quita todo: se cierra la pantalla, vuelven el sistema Hi-Lo, los paños comunes, la mesa estándar y una mano por ronda.
+- **Bloqueá en AdMob los anuncios de juegos de azar y apuestas** (Bloqueo de categorías sensibles): no tiene sentido mostrar casinos de verdad en una app "sin plata real".
 - **Con premio (bonificado), siempre opcional:**
   - *Segunda oportunidad:* si fallaste el desafío diario, mirás un anuncio y tenés otro intento que cuenta, con otras cartas. Si ibas con racha, la salvás.
   - Si no hay anuncio disponible (sin conexión, por ejemplo), el premio se da igual. Nunca castigamos a nadie porque no cargó un anuncio.

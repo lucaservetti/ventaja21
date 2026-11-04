@@ -57,8 +57,8 @@ Después, en GitHub: **Settings → Secrets and variables → Actions → New re
 **Cómo funcionan los anuncios en la app:** el detalle está en `store/monetizacion.md`. En resumen:
 
 - un anuncio de pantalla completa solo al volver al menú después de terminar 2 cosas;
-- como mucho uno cada 5 minutos y 6 por día;
-- ninguno el primer día ni en medio de una práctica;
+- como mucho uno cada 5 minutos y 4 por día;
+- ninguno los primeros 3 días ni en medio de una práctica;
 - el anuncio con premio es siempre opcional: segunda oportunidad del desafío diario;
 - con Premium o durante la prueba gratis, ninguno.
 

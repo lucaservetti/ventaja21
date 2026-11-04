@@ -32,7 +32,7 @@ import { TABLE_SPEEDS, Table, money } from "../engine/table.js";
 import { TableView } from "./TableView.jsx";
 import { useNav } from "../nav.js";
 import { PremiumTag } from "./Premium.jsx";
-import { hasPremium } from "../platform.js";
+import { puedeUsar } from "../platform.js";
 
 let tableInstance = null;
 function tableOptions(st) {
@@ -50,7 +50,7 @@ function tableOptions(st) {
     countCheck: t.countCheck,
     pressure: t.pressure,
     // Dos manos por ronda es de Premium (si se vence, vuelve a una).
-    spots: t.spots === 2 && hasPremium(st) ? 2 : 1,
+    spots: t.spots === 2 && puedeUsar("hands", st) ? 2 : 1,
     quietResults: true,
   };
 }
@@ -420,7 +420,8 @@ function TableSheet({ open, onClose, table }) {
     Object.entries(p.rules).every(([k, v]) => rules[k] === v),
   );
   // Gratis: los tipos de mesa. Premium: ajustar cada regla a mano y jugar dos manos.
-  const prem = hasPremium(st);
+  const prem = puedeUsar("rules", st);
+  const premManos = puedeUsar("hands", st);
   const aPremium = (feature) => {
     onClose();
     nav.push("premium", { feature });
@@ -555,9 +556,9 @@ function TableSheet({ open, onClose, table }) {
         </span>
         <Pills
           options={[1, 2].map((n) => ({ value: n, label: String(n) }))}
-          value={t.spots === 2 && prem ? 2 : 1}
+          value={t.spots === 2 && premManos ? 2 : 1}
           onChange={(spots) =>
-            spots === 2 && !prem
+            spots === 2 && !premManos
               ? aPremium("hands")
               : setTable({ spots })
           }

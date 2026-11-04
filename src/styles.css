@@ -9951,3 +9951,19 @@ html[data-theme="light"] .app.escritorio .tabbar {
 .pz-amigos {
   display: grid;
 }
+
+/* Premium: probar una función 20 minutos (una sola vez). */
+.prem-prueba {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 16px;
+  border: 1px dashed var(--accent-line);
+}
+.prem-prueba-nota {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: var(--text-2);
+}

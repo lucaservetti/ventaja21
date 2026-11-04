@@ -308,6 +308,8 @@ async function cerrarSesion() {
     sound: s.sound,
     ambience: s.ambience,
     recordatorios: s.recordatorios,
+    // La prueba gratis de 20 minutos ya usada en este aparato no vuelve al cerrar sesión.
+    prueba: s.prueba,
   };
   signOut();
   resetAll();

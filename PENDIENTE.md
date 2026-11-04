@@ -13,6 +13,8 @@
 
 ## Al lanzar en Google Play
 
+- AdMob: en **Bloqueo de contenido → Categorías sensibles**, bloqueá **Juegos de azar y apuestas** (y, si querés, "Citas"), para que no aparezcan casinos de verdad en la app.
+
 - `servidor/wrangler.toml`: `BIENVENIDA = "1"`. Activa los 3 días de bienvenida, también para quienes ya entraron con Google.
 - `src/platform.js`: decidir si la web sigue como prueba o se abre más (`WEB_DEMO_ON`).
 - `index.html`: `PUBLISHED = true`.

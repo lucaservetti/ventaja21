@@ -32,7 +32,7 @@ import { shortDate } from "./TrainTab.jsx";
 import { AchievementsCard } from "./achievements.jsx";
 import { WeekCard } from "./week.jsx";
 import { PremiumTag } from "./Premium.jsx";
-import { hasPremium } from "../platform.js";
+import { puedeUsar } from "../platform.js";
 import { ACCOUNTS } from "../cloud.js";
 import { BackupNudge } from "./Backup.jsx";
 import { useNav } from "../nav.js";
@@ -453,7 +453,7 @@ const BREAKDOWN_GROUPS = [
 function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
   // Cuántas tandas se ven: las últimas 7 gratis; 30 o todas (hasta 120) con Premium.
   const [rango, setRango] = useState(7);
-  const prem = hasPremium(a);
+  const prem = puedeUsar("history", a);
   const ver = prem ? rango : 7;
   const todas = a.train.sessions.filter((r) => r.kind !== "exam");
   let s = useRules(),
