@@ -86,6 +86,8 @@ import {
   NATIVE,
   PREMIUM_SYSTEMS,
   hasPremium,
+  PRUEBA_MS,
+  puedeUsar,
   initPlatform,
   maybeAskReview,
   maybeShowAd,
@@ -402,7 +404,7 @@ function App() {
     if (meta) meta.content = theme === "light" ? "#f4efe4" : "#06110c";
   }, [theme, bigText]);
   // Paños y mazos (Premium): se ven con Premium; si no (o si se venció), la mesa de siempre.
-  const looksOn = hasPremium(a);
+  const looksOn = puedeUsar("looks", a);
   const look = looksOn
     ? {
         felt: a.settings.felt || "",
@@ -419,7 +421,7 @@ function App() {
   }, [look.felt, look.back, look.deck]);
   // Un sistema de conteo de Premium sin Premium (por ejemplo, se venció un regalo): vuelve a Hi-Lo.
   const sysLocked =
-    PREMIUM_SYSTEMS.includes(a.settings.system) && !hasPremium(a);
+    PREMIUM_SYSTEMS.includes(a.settings.system) && !puedeUsar("systems", a);
   useEffect(() => {
     if (sysLocked) setSettings({ system: "hilo" });
   }, [sysLocked]);
@@ -430,6 +432,46 @@ function App() {
     setPremToast({ id: Date.now(), msg, kind: "info" });
     setTimeout(() => setPremToast(null), ms);
   };
+  // Fin de la prueba de 20 minutos de una función Premium: todo vuelve a la versión gratis. El
+  // sistema de conteo y los paños vuelven solos (dependen de puedeUsar); acá se vuelven las reglas
+  // de la mesa y las manos por ronda, y se cierra la pantalla de Premium que esté abierta.
+  const prueba = a.settings.prueba;
+  useEffect(() => {
+    if (!prueba || prueba.cerrada) return undefined;
+    const quitar = () => {
+      const st = getState();
+      if (hasPremium(st)) return; // compró durante la prueba: no se toca nada
+      const cambios = { prueba: { ...st.settings.prueba, cerrada: true } };
+      if (prueba.grupo === "rules") cambios.rules = {};
+      setSettings(cambios);
+      if (prueba.grupo === "hands" && st.table.spots === 2)
+        setState((v) => ({ ...v, table: { ...v.table, spots: 1 } }));
+      if (r.current.some((k) => needsPremium(k.name, k.params))) y.popAll();
+      showPremToast(
+        "Terminó tu prueba de 20 minutos. Para seguir usándola, pasate a Premium.",
+        6000,
+      );
+    };
+    const falta = prueba.hasta - Date.now();
+    if (falta <= 0) {
+      quitar();
+      return undefined;
+    }
+    if (falta > PRUEBA_MS - 5000)
+      showPremToast("Empezó tu prueba: tenés 20 minutos.", 4000);
+    const id = setTimeout(quitar, falta);
+    const aviso =
+      falta > 2 * 60000
+        ? setTimeout(
+            () => showPremToast("Te quedan 2 minutos de prueba.", 4000),
+            falta - 2 * 60000,
+          )
+        : null;
+    return () => {
+      clearTimeout(id);
+      clearTimeout(aviso);
+    };
+  }, [prueba && prueba.hasta, prueba && prueba.cerrada]);
   useEffect(() => {
     if (depth.current > 0 && l.length === 0)
       maybeShowAd().then((n) => {

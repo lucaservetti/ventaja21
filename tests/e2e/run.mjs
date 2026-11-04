@@ -601,6 +601,54 @@ const PRUEBAS = {
     await h.foto("panel");
   },
 
+  // Prueba gratis: ver un anuncio para usar UNA función 20 minutos, una sola vez; otra función pide
+  // Premium; al terminar se quita todo (pantallas, reglas a mano) y no se puede volver a probar.
+  async pruebaGratis(h) {
+    const { page } = h;
+    const inyectar = async (f) => {
+      await page.evaluate((src) => {
+        const k = "ventaja21.state.v1";
+        const s = JSON.parse(localStorage.getItem(k));
+        new Function("s", src)(s);
+        localStorage.setItem(k, JSON.stringify(s));
+        Storage.prototype.setItem = () => {};
+      }, f);
+      await page.reload();
+      await page.waitForTimeout(1300);
+    };
+    await page.evaluate(() => localStorage.setItem("v21.sim", "1"));
+    await page.reload();
+    await page.waitForTimeout(1200);
+    const ajustes = 'section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]';
+    await h.tab("Progreso", "Progress");
+    await h.click("Análisis de tus errores", "Mistake analysis", { wait: 700 });
+    await h.see("¿La querés probar primero?", "Want to try it first?");
+    await h.foto("oferta");
+    await h.click("Probar 20 minutos (ver un anuncio)", "Try it for 20 minutes (watch an ad)", { wait: 900 });
+    let st = await h.state();
+    check(st.settings.prueba && st.settings.prueba.grupo === "mistakes", `prueba: ${JSON.stringify(st.settings.prueba)}`);
+    check(!(await page.getByText(h.T("¿La querés probar primero?", "Want to try it first?")).filter({ visible: true }).count()), "no se abrió la función");
+    await page.locator(".layer.full button").filter({ visible: true }).first().click();
+    await page.waitForTimeout(500);
+    // Otra función: no se puede probar.
+    await h.css(ajustes, 600);
+    await h.click("Paños y mazos", "Tables and decks", { wait: 800 });
+    await h.see("Tu prueba gratis es de otra función", "Your free trial is for another feature");
+    check(!(await page.getByText(h.T("Probar 20 minutos (ver un anuncio)", "Try it for 20 minutes (watch an ad)")).count()), "ofrece una segunda prueba");
+    // Se termina: se cierra y no se puede volver a probar.
+    await inyectar("s.settings.prueba.hasta = Date.now() - 1000;");
+    st = await h.state();
+    check(st.settings.prueba.cerrada === true, "no se cerró la prueba");
+    await h.tab("Progreso", "Progress");
+    await h.click("Análisis de tus errores", "Mistake analysis", { wait: 700 });
+    await h.see("Ya usaste tu prueba gratis de 20 minutos", "You already used your free 20-minute trial");
+    await h.foto("usada");
+    // Reglas a mano probadas: al terminar vuelven a la mesa estándar.
+    await inyectar("s.settings.prueba = { grupo: 'rules', desde: Date.now() - 1300000, hasta: Date.now() - 1000 }; s.settings.rules = { decks: 4, h17: true, rsa: true };");
+    st = await h.state();
+    check(st.settings.rules && Object.keys(st.settings.rules).length === 0, `las reglas no volvieron: ${JSON.stringify(st.settings.rules)}`);
+  },
+
   // Contrarreloj: empezar, contestar y que corra el reloj.
   async contrarreloj(h) {
     const { page } = h;

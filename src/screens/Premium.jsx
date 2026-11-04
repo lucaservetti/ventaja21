@@ -15,6 +15,11 @@ import {
   restorePremium,
   shop,
   showAdPrivacy,
+  empezarPrueba,
+  grupoDe,
+  pruebaActiva,
+  pruebaUsada,
+  puedeProbar,
 } from "../platform.js";
 import { useNav } from "../nav.js";
 import { ACCOUNTS, checkPremium, useAccount } from "../cloud.js";
@@ -112,9 +117,10 @@ function money(micros, currency) {
   }
 }
 
-function Premium({ feature }) {
+function Premium({ feature, then }) {
   const st = useStore();
   const nav = useNav();
+  const [probando, setProbando] = useState(false);
   const [, setTick] = useState(0);
   const [plan, setPlan] = useState("yearly");
   useEffect(() => onShop(() => setTick((x) => x + 1)), []);
@@ -238,6 +244,15 @@ function Premium({ feature }) {
                 : "Todo lo avanzado y sin anuncios."}
         </p>
       </div>
+      <PruebaGratis
+        feature={feature}
+        then={then}
+        st={st}
+        nav={nav}
+        probando={probando}
+        setProbando={setProbando}
+        owned={owned}
+      />
       <div className="card prem-perks">
         {PERKS.map((p) => (
           <div className="prem-perk" key={p.title}>
@@ -428,6 +443,62 @@ function Premium({ feature }) {
 }
 
 // Etiqueta "Premium" para lo que está bloqueado sin Premium.
+const PRUEBA_NOMBRE = {
+  casino: "el modo casino real",
+  bankroll: "el simulador de banca",
+  journal: "el diario de casino real",
+  devLevel: "la ruta de desviaciones completa",
+  looks: "los paños y mazos",
+  mistakes: "el análisis de tus errores",
+  systems: "los sistemas de conteo avanzados",
+  rules: "las reglas de la mesa a mano",
+  hands: "las dos manos por ronda",
+  guideChapter: "los capítulos Premium de la guía",
+  history: "tu historial completo",
+};
+// Probar UNA función 20 minutos a cambio de un anuncio (una sola vez; ver platform.js).
+function PruebaGratis({ feature, then, st, nav, probando, setProbando, owned }) {
+  if (owned || !APP_MODE || !feature || !FEATURES[feature]) return null;
+  const activa = pruebaActiva(st);
+  if (activa && activa !== grupoDe(feature))
+    return (
+      <p className="small prem-prueba-nota">
+        {`Tu prueba gratis es de otra función (${FEATURES[activa] || activa}). Para usar esta, hace falta Premium.`}
+      </p>
+    );
+  if (pruebaUsada(st))
+    return (
+      <p className="small prem-prueba-nota">
+        Ya usaste tu prueba gratis de 20 minutos. Para volver a usarla o probar
+        otra función, hace falta Premium.
+      </p>
+    );
+  if (!puedeProbar(st)) return null;
+  return (
+    <div className="card prem-prueba">
+      <b>¿La querés probar primero?</b>
+      <p className="muted small">
+        {`Mirá un anuncio y usá ${PRUEBA_NOMBRE[grupoDe(feature)] || "esta función"} gratis durante 20 minutos. Es una sola prueba: después, para seguir usándola o probar otra función, hace falta Premium.`}
+      </p>
+      <Button
+        kind="outline"
+        disabled={probando}
+        onClick={async () => {
+          setProbando(true);
+          const ok = await empezarPrueba(feature);
+          setProbando(false);
+          if (!ok) return;
+          // Si venías a abrir una pantalla, se abre; si era un ajuste, se vuelve y ya se puede usar.
+          if (then) nav.replace(feature, then);
+          else nav.pop();
+        }}
+      >
+        {probando ? "Cargando…" : "Probar 20 minutos (ver un anuncio)"}
+      </Button>
+    </div>
+  );
+}
+
 function PremiumTag({ st }) {
   if (hasPremium(st)) return null;
   return (

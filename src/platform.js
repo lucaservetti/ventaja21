@@ -150,9 +150,43 @@ const PREMIUM_SYSTEMS = ["hiopt1", "hiopt2", "zen", "omega2", "halves"];
 // Capítulos de la guía que son de Premium.
 const PREMIUM_CHAPTERS = ["devs", "tablerules"];
 
+// ---- Prueba de una función Premium ----
+// En la app gratis, a cambio de mirar un anuncio, se puede probar UNA función de Premium (la que
+// estabas por abrir) durante 20 minutos, una sola vez. Al terminar se vuelve todo a la versión
+// gratis (ver useFinDePrueba en main.jsx). Queda en settings.prueba, que viaja con la cuenta.
+const PRUEBA_MS = 20 * 60 * 1000;
+// A qué función pertenece cada pantalla o ajuste de Premium.
+const grupoDe = (name) => (name === "casinoPlay" ? "casino" : name);
+function pruebaActiva(st = getState()) {
+  const p = st.settings.prueba;
+  return p && p.hasta > Date.now() ? p.grupo : null;
+}
+function pruebaUsada(st = getState()) {
+  return !!st.settings.prueba;
+}
+// ¿Se puede usar esta función? Con Premium, todas; con la prueba, solo la elegida y mientras dure.
+function puedeUsar(grupo, st = getState()) {
+  return hasPremium(st) || pruebaActiva(st) === grupo;
+}
+// Se ofrece solo en la app (donde hay anuncios), sin Premium y si nunca se usó.
+function puedeProbar(st = getState()) {
+  return APP_MODE && !hasPremium(st) && !pruebaUsada(st);
+}
+async function empezarPrueba(feature) {
+  if (!puedeProbar()) return false;
+  const ok = await watchAdForReward();
+  if (!ok) return false;
+  const now = Date.now();
+  setSettings({
+    prueba: { grupo: grupoDe(feature), desde: now, hasta: now + PRUEBA_MS },
+  });
+  return true;
+}
+
 // Pantallas que son de Premium. La ruta de desviaciones es gratis hasta el nivel 2.
 function needsPremium(name, params = {}, st = getState()) {
   if (hasPremium(st)) return false;
+  if (pruebaActiva(st) === grupoDe(name)) return false;
   let locked = [
     "casino",
     "casinoPlay",
@@ -177,14 +211,14 @@ function needsPremium(name, params = {}, st = getState()) {
 // Reglas para que no molesten:
 // - nunca en medio de una lección, una tanda o la mesa: solo al volver al menú;
 // - solo después de terminar 2 cosas (lecciones, tandas, ejercicios) desde el último;
-// - como mucho uno cada 5 minutos y 6 por día;
-// - el primer día de uso, ninguno;
-// - con Premium (o la prueba gratis), ninguno.
+// - como mucho uno cada 5 minutos y 4 por día;
+// - los primeros 3 días de uso, ninguno (primero que se enganchen);
+// - con Premium, ninguno.
 // Los anuncios con premio son siempre opcionales: los elegís vos para ganar algo.
 const AD_GAP_MS = 5 * 60 * 1000;
-const ADS_PER_DAY = 6;
+const ADS_PER_DAY = 4;
 const ACTIVITIES_PER_AD = 2;
-const GRACE_MS = 24 * 60 * 60 * 1000;
+const GRACE_MS = 3 * 24 * 60 * 60 * 1000; // los primeros 3 días, ninguno
 const AD_ID = __ADMOB_INTERSTITIAL__;
 const REWARD_ID = __ADMOB_REWARDED__;
 const ADS_KEY = "edge21.ads";
@@ -624,6 +658,13 @@ function initPlatform() {
 }
 
 export {
+  PRUEBA_MS,
+  empezarPrueba,
+  grupoDe,
+  pruebaActiva,
+  pruebaUsada,
+  puedeProbar,
+  puedeUsar,
   APP_MODE,
   NATIVE,
   PREMIUM_SYSTEMS,
