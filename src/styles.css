@@ -9923,3 +9923,31 @@ html[data-theme="light"] .app.escritorio .tabbar {
   text-align: right;
   font-weight: 700;
 }
+
+/* Premios: invitar amigos. */
+.pz-invitar,
+.pz-invitado {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 18px;
+}
+.pz-invitar {
+  border: 1px solid var(--accent-line);
+}
+.pz-invitado {
+  margin: 0 0 14px;
+  border: 1px solid var(--accent-line);
+  background: linear-gradient(160deg, var(--accent-soft), var(--surface) 65%);
+}
+.pz-link {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  font-weight: 700;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+.pz-amigos {
+  display: grid;
+}

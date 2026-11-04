@@ -19,6 +19,16 @@ const PODIO_MIN = 10;
 // ganarían siempre los mismos). Para activarlo: true acá y PODIO = "1" en servidor/wrangler.toml.
 const PODIO_ACTIVO = false;
 const DAY = 24 * 60 * 60 * 1000;
+// Invitar amigos: el amigo entra con tu enlace y una cuenta de Google nueva, y vale cuando juega el
+// desafío diario en AMIGO_META días distintos dentro de sus primeros AMIGO_PLAZO días. Ahí ganan
+// AMIGO_DIAS días de Premium los dos (no cuentan para el tope del mes). Como mucho AMIGO_TOPE amigos.
+const AMIGO_META = 5;
+const AMIGO_PLAZO = 14;
+const AMIGO_DIAS = 3;
+const AMIGO_TOPE = 10;
+// Premios que no cuentan para el tope de 14 días por mes.
+const esLibre = (id) =>
+  id === "bienvenida" || id === "invitado" || id.startsWith("amigo-");
 
 function dayKeyUTC(t) {
   return new Date(t).toISOString().slice(0, 10);
@@ -59,12 +69,17 @@ function mondayUTC(t) {
 function diasRecientes(ganados, now) {
   let n = 0;
   for (const [id, g] of Object.entries(ganados || {}))
-    if (id !== "bienvenida" && now - g.t < TOPE_VENTANA * DAY) n += g.dias;
+    if (!esLibre(id) && now - g.t < TOPE_VENTANA * DAY) n += g.dias;
   return n;
 }
 
 export {
+  AMIGO_DIAS,
+  AMIGO_META,
+  AMIGO_PLAZO,
+  AMIGO_TOPE,
   DAY,
+  esLibre,
   PODIO_ACTIVO,
   PODIO_MIN,
   PREMIOS,

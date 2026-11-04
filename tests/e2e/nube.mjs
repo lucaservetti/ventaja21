@@ -38,12 +38,15 @@ const srv = http.createServer((req, res) => {
   fs.readFile(path.join(ROOT, p), (e, d) => (e ? res.writeHead(404).end() : res.writeHead(200, { "content-type": p.endsWith(".html") ? "text/html; charset=utf-8" : "application/octet-stream" }).end(d)));
 });
 await new Promise((ok) => srv.listen(0, ok));
+// Sin límite de pedidos (acá la misma cuenta entra desde varios "celulares"; los límites se prueban
+// en tests/servidor.mjs).
+const sinLimite = { limit: async () => ({ success: true }) };
 // El servidor de premios (el mismo código que corre en Cloudflare), apuntando a los emuladores.
 const api = http.createServer(async (req, res) => {
   const partes = [];
   for await (const c of req) partes.push(c);
   const body = req.method === "POST" && partes.length ? Buffer.concat(partes) : undefined;
-  const r = await worker.fetch(new Request(`http://127.0.0.1:8787${req.url}`, { method: req.method, headers: req.headers, body }), { PROJECT_ID: "demo-edge21", EMULATOR: "127.0.0.1" });
+  const r = await worker.fetch(new Request(`http://127.0.0.1:8787${req.url}`, { method: req.method, headers: req.headers, body }), { PROJECT_ID: "demo-edge21", EMULATOR: "127.0.0.1", LIMITE_CUENTA: sinLimite, LIMITE_IP: sinLimite });
   res.writeHead(r.status, Object.fromEntries(r.headers));
   res.end(Buffer.from(await r.arrayBuffer()));
 });
@@ -132,6 +135,29 @@ await paso("cerrar sesión guarda en la cuenta y deja el aparato como nuevo; vol
   await b.waitForTimeout(500);
   const st2 = await state(b);
   check(st2.lessons.l1 && st2.lessons.l1.done && st2.train.totalHands === 42, "no volvió el progreso");
+});
+
+await paso("invitar amigos: el enlace de Ana trae a Beto, que entra con Google y queda anotado", async () => {
+  const r = await a.evaluate(() => window.__cloudTest.checkPremios(true));
+  const codigo = r && r.invitar && r.invitar.codigo;
+  check(/^[A-HJ-NP-Z2-9]{6}$/.test(codigo || ""), `código de Ana: ${JSON.stringify(r && r.invitar)}`);
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "es-UY" });
+  await ctx.addInitScript(`if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s","1"); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(base))}); }`);
+  const e = await ctx.newPage();
+  await e.goto(`${url}?amigo=${codigo}`);
+  await e.waitForTimeout(900);
+  check(!/amigo=/.test(e.url()), "el código quedó en la dirección");
+  await e.locator('nav.tabbar button:has-text("Aprender")').click();
+  await e.getByText("Te invitó un amigo").first().waitFor({ timeout: 4000 });
+  const res = await e.evaluate((t) => window.__cloudTest.finishSignIn(t), fakeGoogle("g-beto", "Beto Gómez", "beto@ejemplo.com"));
+  check(res === "uploaded", `entrar: ${res}`);
+  const betoUid = await e.evaluate(() => JSON.parse(localStorage.getItem("edge21.account")).uid);
+  const doc = await owner(`${FS}/amigos/${betoUid}`);
+  check(doc && doc.fields.por.stringValue === uid && doc.fields.nick.stringValue === "Beto G.", `amigos: ${JSON.stringify(doc && doc.fields)}`);
+  check(!(await e.evaluate(() => localStorage.getItem("edge21.amigo"))), "el código quedó guardado");
+  const r2 = await a.evaluate(() => window.__cloudTest.checkPremios(true));
+  check(r2.invitar.amigos.length === 1 && r2.invitar.amigos[0].nick === "Beto G." && r2.invitar.amigos[0].estado === "progreso", `amigos de Ana: ${JSON.stringify(r2.invitar)}`);
+  await ctx.close();
 });
 
 const c = await phone(otroProgreso);
