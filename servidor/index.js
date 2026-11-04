@@ -9,6 +9,10 @@
 // - cada premio se da una vez (el podio, una por semana) y hay un tope de 14 días cada 30 días.
 // Configuración: wrangler.toml (PROJECT_ID) y el secreto FIREBASE_SA (clave de cuenta de servicio).
 import {
+  AMIGO_DIAS,
+  AMIGO_META,
+  AMIGO_PLAZO,
+  AMIGO_TOPE,
   DAY,
   PODIO_MIN,
   PREMIOS,
@@ -291,6 +295,8 @@ async function premios(uid, env, now = Date.now(), opts = {}) {
     `premios/${uid}`,
     `premium/${uid}`,
     `users/${uid}`,
+    `amigos/${uid}`,
+    `invita/${uid}`,
     ...racha.map((k) => `daily/${k}/scores/${uid}`),
   ]);
   const premiosDoc = docs[`premios/${uid}`];
@@ -352,6 +358,31 @@ async function premios(uid, env, now = Date.now(), opts = {}) {
   if (run >= 30) merece.push({ id: "racha30", dias: 7 });
   if (lecciones >= 36) merece.push({ id: "graduacion", dias: 3 });
   for (const m of podios) merece.push({ id: `podio-${m}`, dias: 2 });
+
+  // Invitar amigos (ver src/premios.js). Cada lado se da su premio cuando le toca revisar.
+  // a) Si a esta cuenta la invitaron: vale cuando jugó el desafío AMIGO_META días en su plazo.
+  const yoAmigo = docs[`amigos/${uid}`];
+  let invitado = null;
+  if (yoAmigo) {
+    const t0 = field(yoAmigo, "t");
+    const sus = await d.getMany(clavesDelPlazo(uid, t0));
+    const dias = diasDeDesafio(sus, uid, t0, onTime);
+    if (dias >= AMIGO_META)
+      merece.push({ id: "invitado", dias: AMIGO_DIAS, libre: true });
+    invitado = {
+      dias: Math.min(dias, AMIGO_META),
+      meta: AMIGO_META,
+      vence: t0 + AMIGO_PLAZO * DAY,
+    };
+  }
+  // b) Los amigos que invitó esta cuenta: hasta AMIGO_TOPE premios.
+  const amigos = await misAmigos(d, uid, ganados, now, onTime);
+  let cupo = AMIGO_TOPE - Object.keys(ganados).filter((k) => k.startsWith("amigo-")).length;
+  for (const a of amigos)
+    if (a.estado === "listo" && cupo > 0) {
+      merece.push({ id: `amigo-${a.uid}`, dias: AMIGO_DIAS, libre: true });
+      cupo--;
+    }
   const nuevos = [];
   const tope = [];
   let usados = diasRecientes(ganados, now);
@@ -475,9 +506,40 @@ async function premios(uid, env, now = Date.now(), opts = {}) {
       estado: estado(p.id, progreso >= p.meta),
     };
   });
+  const codigo = await miCodigo(d, uid, docs[`invita/${uid}`]);
+  const yaGanados = Object.keys(ganados).filter((k) => k.startsWith("amigo-")).length;
   return {
     premios: lista,
-    nuevos: nuevos.map((id) => (id.startsWith("podio-") ? "podio" : id)),
+    invitar: {
+      codigo,
+      ganados: yaGanados,
+      tope: AMIGO_TOPE,
+      meta: AMIGO_META,
+      plazo: AMIGO_PLAZO,
+      dias: AMIGO_DIAS,
+      amigos: amigos.map((a) => ({
+        nick: a.nick,
+        dias: a.dias,
+        estado: ganados[`amigo-${a.uid}`]
+          ? "ganado"
+          : a.estado === "listo"
+            ? "tope"
+            : a.estado,
+      })),
+    },
+    invitado: invitado && {
+      ...invitado,
+      estado: ganados.invitado
+        ? nuevos.includes("invitado")
+          ? "nuevo"
+          : "ganado"
+        : invitado.vence < now
+          ? "vencido"
+          : "progreso",
+    },
+    nuevos: nuevos.map((id) =>
+      id.startsWith("podio-") ? "podio" : id.startsWith("amigo-") ? "amigo" : id,
+    ),
     dias: nuevos.reduce((s, id) => s + ganados[id].dias, 0),
     hasta,
     usados,
@@ -625,13 +687,185 @@ async function avisoPaddle(req, env) {
   }
 }
 
+
+// ---- Invitar amigos ----
+const CODIGO_LETRAS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+const CODIGO_OK = /^[A-HJ-NP-Z2-9]{6}$/;
+// Los puntajes del desafío de `uid` en su plazo de amigo (desde el día antes de entrar).
+function clavesDelPlazo(uid, t0) {
+  const claves = [];
+  for (let i = -1; i <= AMIGO_PLAZO; i++)
+    claves.push(`daily/${dayKeyUTC(t0 + i * DAY)}/scores/${uid}`);
+  return claves;
+}
+// Días distintos con puntaje del desafío (guardado ese día) entre que entró y su plazo.
+function diasDeDesafio(docs, uid, t0, onTime) {
+  let n = 0;
+  for (let i = -1; i <= AMIGO_PLAZO; i++) {
+    const k = dayKeyUTC(t0 + i * DAY);
+    const doc = docs[`daily/${k}/scores/${uid}`];
+    if (doc && onTime(k, doc.createTime) && Date.parse(doc.createTime) >= t0 - DAY)
+      n++;
+  }
+  return n;
+}
+// Los amigos que invitó `uid`, con cuántos días jugó cada uno: "listo" (cumplió y falta darle el
+// premio a quien invitó), "progreso" o "vencido".
+async function misAmigos(d, uid, ganados, now, onTime) {
+  const r = await d.query("", {
+    from: [{ collectionId: "amigos" }],
+    where: {
+      fieldFilter: {
+        field: { fieldPath: "por" },
+        op: "EQUAL",
+        value: { stringValue: uid },
+      },
+    },
+    limit: 40,
+  });
+  const lista = (r || [])
+    .filter((x) => x.document)
+    .map((x) => ({
+      uid: x.document.name.split("/").pop(),
+      t: field(x.document, "t"),
+      nick: field(x.document, "nick") || "Amigo",
+    }))
+    .sort((a, b) => a.t - b.t);
+  const out = [];
+  for (const a of lista) {
+    if (ganados[`amigo-${a.uid}`]) {
+      out.push({ ...a, dias: AMIGO_META, estado: "ganado" });
+      continue;
+    }
+    const sus = await d.getMany(clavesDelPlazo(a.uid, a.t));
+    const dias = diasDeDesafio(sus, a.uid, a.t, onTime);
+    out.push({
+      ...a,
+      dias: Math.min(dias, AMIGO_META),
+      estado:
+        dias >= AMIGO_META
+          ? "listo"
+          : now > a.t + AMIGO_PLAZO * DAY
+            ? "vencido"
+            : "progreso",
+    });
+  }
+  return out;
+}
+// El código para invitar de `uid` (se crea la primera vez).
+async function miCodigo(d, uid, invitaDoc) {
+  const ya = field(invitaDoc, "codigo");
+  if (ya) return ya;
+  for (let intento = 0; intento < 4; intento++) {
+    const bytes = crypto.getRandomValues(new Uint8Array(6));
+    const codigo = [...bytes]
+      .map((b) => CODIGO_LETRAS[b % CODIGO_LETRAS.length])
+      .join("");
+    try {
+      await d.commit([
+        {
+          update: {
+            name: d.name(`codigos/${codigo}`),
+            fields: { uid: { stringValue: uid } },
+          },
+          currentDocument: { exists: false },
+        },
+        {
+          update: {
+            name: d.name(`invita/${uid}`),
+            fields: { codigo: { stringValue: codigo } },
+          },
+          currentDocument: { exists: false },
+        },
+      ]);
+      return codigo;
+    } catch (e) {
+      // Ese código ya existía, o se creó al mismo tiempo en otro pedido.
+      if (e.status !== 400 && e.status !== 409) throw e;
+      const otra = await d.get(`invita/${uid}`);
+      if (field(otra, "codigo")) return field(otra, "codigo");
+    }
+  }
+  return null;
+}
+// Nombre corto para que quien invitó vea quién es: "Ana P." (nada más).
+function nombreCorto(n) {
+  const p = String(n || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (!p.length) return "Amigo";
+  const r = p[0].slice(0, 14) + (p[1] ? ` ${p[1][0].toUpperCase()}.` : "");
+  return r.replace(/[<>&"]/g, "");
+}
+// ¿Cuándo se creó esta cuenta de Google en Firebase? (para aceptar solo cuentas nuevas)
+async function cuentaCreada(idToken, env) {
+  const host = env.EMULATOR
+    ? `http://${env.EMULATOR}:9099/identitytoolkit.googleapis.com`
+    : "https://identitytoolkit.googleapis.com";
+  const r = await fetch(`${host}/v1/accounts:lookup?key=${env.API_KEY || "x"}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ idToken }),
+  });
+  const data = await r.json();
+  const u = data && data.users && data.users[0];
+  return u ? Number(u.createdAt) : 0;
+}
+// Unirse con el código de quien te invitó. Solo cuentas creadas hace menos de 3 días, una vez.
+async function unirme(uid, idToken, codigo, env, now = Date.now()) {
+  if (!CODIGO_OK.test(String(codigo || ""))) return { estado: "invalido" };
+  const d = db(env);
+  const [cod, ya] = await Promise.all([d.get(`codigos/${codigo}`), d.get(`amigos/${uid}`)]);
+  const por = field(cod, "uid");
+  if (!por) return { estado: "invalido" };
+  if (por === uid) return { estado: "propio" };
+  if (ya) return { estado: "ya" };
+  const creada = await cuentaCreada(idToken, env);
+  if (!creada || now - creada > 3 * DAY) return { estado: "vieja" };
+  let nick = "Amigo";
+  try {
+    nick = nombreCorto(decodeJwt(idToken).payload.name);
+  } catch {
+    // sin nombre
+  }
+  try {
+    await d.commit([
+      {
+        update: {
+          name: d.name(`amigos/${uid}`),
+          fields: {
+            por: { stringValue: por },
+            t: { integerValue: String(now) },
+            nick: { stringValue: nick },
+          },
+        },
+        currentDocument: { exists: false },
+      },
+    ]);
+  } catch (e) {
+    if (e.status === 400 || e.status === 409) return { estado: "ya" };
+    throw e;
+  }
+  return { estado: "ok" };
+}
+
 // Al borrar la cuenta: se borran sus premios y el Premium de regalo. El Premium para siempre
 // (puesto a mano o comprado) y el pagado en la web quedan, por si vuelve a entrar con la misma
 // cuenta (o para pasarlo a mano a la nueva, ver servidor/README.md).
 async function borrar(uid, env) {
   const d = db(env);
-  const premium = await d.get(`premium/${uid}`);
-  const writes = [{ delete: d.name(`premios/${uid}`) }];
+  const [premium, invita] = await Promise.all([
+    d.get(`premium/${uid}`),
+    d.get(`invita/${uid}`),
+  ]);
+  const writes = [
+    { delete: d.name(`premios/${uid}`) },
+    { delete: d.name(`amigos/${uid}`) },
+    { delete: d.name(`invita/${uid}`) },
+  ];
+  if (field(invita, "codigo"))
+    writes.push({ delete: d.name(`codigos/${field(invita, "codigo")}`) });
   if (premium && field(premium, "hasta") && !field(premium, "pago"))
     writes.push({ delete: d.name(`premium/${uid}`) });
   await d.commit(writes);
@@ -973,7 +1207,7 @@ export default {
       }
     }
     if (
-      !["/premios", "/borrar", "/errores", "/reportar"].includes(route) ||
+      !["/premios", "/borrar", "/errores", "/reportar", "/amigos"].includes(route) ||
       req.method !== "POST"
     )
       return json(req, 404, { error: "no existe" });
@@ -998,6 +1232,19 @@ export default {
     }
     if (!(await dentroDelLimite(env, "LIMITE_CUENTA", uid, 6)))
       return muchos(req);
+    if (route === "/amigos") {
+      try {
+        const body = await req.json().catch(() => ({}));
+        const auth = req.headers.get("Authorization") || "";
+        return json(
+          req,
+          200,
+          await unirme(uid, auth.replace(/^Bearer\s+/i, ""), body.codigo, env),
+        );
+      } catch {
+        return json(req, 500, { error: "No se pudo" });
+      }
+    }
     if (route === "/borrar") {
       try {
         await borrar(uid, env);
@@ -1019,6 +1266,7 @@ export default {
 };
 
 export {
+  unirme,
   diaAR,
   medir,
   panel,

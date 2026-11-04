@@ -12,6 +12,7 @@ import {
 import { useNav } from "../nav.js";
 import { useEscritorio } from "../escritorio.js";
 import { MyChart } from "./MyChart.jsx";
+import { codigoAmigo, useAccount } from "../cloud.js";
 import { GoalBadge } from "./goal.jsx";
 import { reviewCount } from "../lessons/Review.jsx";
 import { APP_MODE, NATIVE, WEB_DEMO, hasPremium, shop } from "../platform.js";
@@ -190,6 +191,25 @@ function lessonProgress(a) {
     t = LESSONS.find((s) => !e(s.id));
   return { done: e, currentId: t ? t.id : null };
 }
+// Si llegaste con el enlace de un amigo y todavía no entraste con Google: cómo ganan los dos.
+function AmigoCard() {
+  const nav = useNav();
+  const { acct } = useAccount();
+  if (acct || !codigoAmigo()) return null;
+  return (
+    <div className="card test-card amigo-card">
+      <div className="eyebrow acc">Te invitó un amigo</div>
+      <h2>Ganen Premium los dos</h2>
+      <p className="muted">
+        Entrá con Google y jugá el desafío diario 5 días distintos en tus
+        primeras dos semanas: ganan 3 días de Premium cada uno.
+      </p>
+      <div className="test-card-btns">
+        <Button onClick={() => nav.push("account")}>Entrar con Google</Button>
+      </div>
+    </div>
+  );
+}
 // Al empezar: el test de nivel (opcional) para saltear lo que ya sabés. Desaparece al hacerlo, al
 // elegir empezar de cero o al terminar la primera lección.
 function TestCard({ st, lessonsDone }) {
@@ -303,6 +323,7 @@ function LearnTab() {
           </>
         }
       />
+      <AmigoCard />
       <TestCard st={a} lessonsDone={l} />
       <NextStepsCard st={a} done={t} />
       {WEB_DEMO ? (

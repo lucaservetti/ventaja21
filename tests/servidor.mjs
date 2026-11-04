@@ -1,6 +1,6 @@
 // Prueba del servidor de premios (servidor/index.js) contra los emuladores de Firebase.
 // Uso: npx firebase-tools emulators:exec --project demo-edge21 --only auth,firestore "node tests/servidor.mjs"
-import worker, { borrar, diaAR, gunzipConTope, medir, panel, limpiar, premios, serviceToken, verifyIdToken } from "../servidor/index.js";
+import worker, { borrar, diaAR, gunzipConTope, medir, panel, unirme, limpiar, premios, serviceToken, verifyIdToken } from "../servidor/index.js";
 import { DAY, dayKeyUTC, diasRecientes, mondayUTC } from "../src/premios.js";
 
 const P = "demo-edge21";
@@ -440,6 +440,50 @@ await paso("medición: nuevo, vuelve al día siguiente y a la semana, hitos por 
   check((await panel("otro", envM, t1)) === null, "el panel no debería abrirse a otros");
   const pn = await panel("dueno2", envM, t1, 3);
   check(pn && pn.dias.length === 3 && pn.dias[1].dia === d0 && pn.dias[1].e.nuevo === 2, `panel: ${JSON.stringify(pn && pn.dias[1])}`);
+});
+
+await paso("invitar amigos: código, unirse solo con cuenta nueva, 5 días de desafío, premio a los dos y tope de 10", async () => {
+  const jugar = async (uid, dias) => {
+    for (let i = 0; i < dias; i++) await put(`daily/${dayKeyUTC(Date.now() + i * DAY)}/scores/${uid}`, { name: "x", score: 100, ok: true, t: Date.now() });
+  };
+  const yo = await user();
+  const r0 = await premios(yo.uid, env, Date.now(), { onTime: always });
+  const codigo = r0.invitar.codigo;
+  check(/^[A-HJ-NP-Z2-9]{6}$/.test(codigo), `código: ${codigo}`);
+  check((await premios(yo.uid, env, Date.now(), { onTime: always })).invitar.codigo === codigo, "el código cambió");
+  // Unirse: propio no, inválido no, nuevo sí (una sola vez), cuenta vieja no.
+  check((await unirme(yo.uid, yo.token, codigo, env)).estado === "propio", "propio");
+  const amigo = await user();
+  check((await unirme(amigo.uid, amigo.token, "ZZZZZZ", env)).estado === "invalido", "inválido");
+  check((await unirme(amigo.uid, amigo.token, codigo, env)).estado === "ok", "unirse");
+  check((await unirme(amigo.uid, amigo.token, codigo, env)).estado === "ya", "dos veces");
+  const viejo = await user();
+  check((await unirme(viejo.uid, viejo.token, codigo, env, Date.now() + 4 * DAY)).estado === "vieja", "cuenta vieja");
+  // Con 4 días todavía no; con 5, premio para los dos (sin tope del mes).
+  await jugar(amigo.uid, 4);
+  let ra = await premios(amigo.uid, env, Date.now(), { onTime: always });
+  check(ra.invitado && ra.invitado.estado === "progreso" && ra.invitado.dias === 4, `4 días: ${JSON.stringify(ra.invitado)}`);
+  let ry = await premios(yo.uid, env, Date.now(), { onTime: always });
+  check(ry.invitar.amigos.length === 1 && ry.invitar.amigos[0].estado === "progreso" && ry.invitar.amigos[0].dias === 4, `amigos: ${JSON.stringify(ry.invitar)}`);
+  await jugar(amigo.uid, 5);
+  ra = await premios(amigo.uid, env, Date.now(), { onTime: always });
+  check(ra.nuevos.includes("invitado") && ra.invitado.estado === "nuevo", `invitado: ${JSON.stringify(ra)}`);
+  ry = await premios(yo.uid, env, Date.now(), { onTime: always });
+  check(ry.nuevos.includes("amigo") && ry.invitar.ganados === 1 && ry.invitar.amigos[0].estado === "ganado", `quien invitó: ${JSON.stringify(ry.invitar)}`);
+  check((await premios(yo.uid, env, Date.now(), { onTime: always })).nuevos.length === 0, "se dio dos veces");
+  // Tope: con 11 amigos que cumplen, se dan 10.
+  const otro = await user();
+  const cod2 = (await premios(otro.uid, env, Date.now(), { onTime: always })).invitar.codigo;
+  for (let i = 0; i < 11; i++) {
+    const a = await user();
+    await unirme(a.uid, a.token, cod2, env);
+    await jugar(a.uid, 5);
+  }
+  const rt = await premios(otro.uid, env, Date.now(), { onTime: always });
+  check(rt.invitar.ganados === 10 && rt.invitar.amigos.filter((x) => x.estado === "tope").length === 1, `tope: ${JSON.stringify(rt.invitar)}`);
+  // Borrar la cuenta borra su código.
+  await borrar(otro.uid, env);
+  check(!(await get(`codigos/${cod2}`)), "el código quedó");
 });
 
 console.log(fails.length ? `${fails.length} prueba(s) fallaron` : "todas las pruebas pasaron");

@@ -31,6 +31,8 @@ BIENVENIDA = "0"
 PODIO = "0"
 # Cuentas que pueden ver el panel de la medición (uid de Firebase, separadas por coma).
 DUENOS = "FoItGSWPJZSRqaXN5ORR8oNgFKN2"
+# Clave pública de Firebase (la misma de la app): para saber cuándo se creó una cuenta (invitar amigos).
+API_KEY = "AIzaSyBRQvpHNOL5W5md04iJfAVbAuLvfLVtqi4"
 # Pagos en la web (Paddle): el código del precio "Para siempre" (pri_…). Ver PAGOS_WEB.md.
 PADDLE_PRECIO_SIEMPRE = ""
 

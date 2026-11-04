@@ -564,6 +564,8 @@
 <script>
   // De dónde llegó la persona (para la medición anónima de la app, ver src/medir.js).
   try{if(!localStorage.getItem("edge21.origen")){var u=new URLSearchParams(location.search),o=u.get("ref")||u.get("utm_source")||"";if(!o&&document.referrer){var h=new URL(document.referrer).hostname;if(h.slice(-location.hostname.length)!==location.hostname)o=h}localStorage.setItem("edge21.origen",o||"directo")}}catch(e){}
+  // Si vino con el enlace de un amigo (?amigo=CÓDIGO), queda guardado para la app.
+  try{var am=(new URLSearchParams(location.search).get("amigo")||"").toUpperCase();if(/^[A-HJ-NP-Z2-9]{6}$/.test(am))localStorage.setItem("edge21.amigo",am)}catch(e){}
   // Cuando la app esté publicada en Google Play, cambiá PUBLISHED a true.
   const PUBLISHED = false;
   const PLAY_URL = "https://play.google.com/store/apps/details?id=com.lucaservetti.ventaja21";

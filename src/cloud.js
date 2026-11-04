@@ -234,6 +234,7 @@ async function finishSignIn(googleIdToken) {
   });
   const result = await firstSync();
   await checkPremium();
+  await unirmeAmigo();
   checkPremios(true);
   // El puntaje de hoy entra al ranking apenas entrás.
   postScores().catch(() => {});
@@ -316,6 +317,65 @@ async function cerrarSesion() {
     ),
   );
   return { ok: true };
+}
+
+// ---- Invitar amigos ----
+// Si llegaste con el enlace de un amigo (?amigo=CÓDIGO), se guarda; al entrar con Google se lo
+// manda al servidor, que lo acepta solo para cuentas nuevas (ver servidor/index.js → unirme).
+const AMIGO_KEY = "edge21.amigo";
+const AMIGO_RES = "edge21.amigo.res";
+function tomarCodigoAmigo() {
+  try {
+    const u = new URLSearchParams(location.search);
+    const c = (u.get("amigo") || "").toUpperCase();
+    if (/^[A-HJ-NP-Z2-9]{6}$/.test(c)) {
+      localStorage.setItem(AMIGO_KEY, c);
+      u.delete("amigo");
+      const q = u.toString();
+      history.replaceState(
+        history.state,
+        "",
+        location.pathname + (q ? `?${q}` : "") + location.hash,
+      );
+    }
+  } catch {
+    // sin almacenamiento
+  }
+}
+function codigoAmigo() {
+  try {
+    return localStorage.getItem(AMIGO_KEY);
+  } catch {
+    return null;
+  }
+}
+// Cómo salió unirse: "ok", "vieja" (la cuenta ya existía), "propio", "invalido", "ya".
+function resultadoAmigo() {
+  try {
+    return localStorage.getItem(AMIGO_RES);
+  } catch {
+    return null;
+  }
+}
+async function unirmeAmigo() {
+  const codigo = codigoAmigo();
+  if (!codigo || !acct || !CFG.api) return;
+  try {
+    const r = await fetch(`${CFG.api}/amigos`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${await token()}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ codigo }),
+    });
+    if (!r.ok) return; // se reintenta la próxima vez
+    const { estado } = await r.json();
+    localStorage.removeItem(AMIGO_KEY);
+    localStorage.setItem(AMIGO_RES, estado);
+  } catch {
+    // sin conexión: queda guardado y se reintenta
+  }
 }
 
 // ---- Panel de la medición (solo para las cuentas de "duenos") ----
@@ -750,6 +810,8 @@ function reportError(err, where = "") {
 // ---- Arranque ----
 function initCloud() {
   if (!CLOUD) return;
+  tomarCodigoAmigo();
+  if (acct && codigoAmigo()) unirmeAmigo().then(() => checkPremios(true));
   if (EMU)
     window.__cloudTest = {
       checkPremios,
@@ -809,6 +871,8 @@ export {
   ACCOUNTS,
   CLOUD,
   ES_DUENO,
+  codigoAmigo,
+  resultadoAmigo,
   cerrarSesion,
   pedirPanel,
   checkPremium,
