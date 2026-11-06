@@ -221,13 +221,13 @@ async function pistaDeSonido(cues, dur) {
       band.Q.value = 0.6;
       const g = ctx.createGain();
       g.gain.setValueAtTime(1e-4, t);
-      g.gain.linearRampToValueAtTime(0.05 * v, t + 0.8);
-      g.gain.setValueAtTime(0.05 * v, t + d - 1);
+      g.gain.linearRampToValueAtTime(0.014 * v, t + 0.8);
+      g.gain.setValueAtTime(0.014 * v, t + d - 1);
       g.gain.linearRampToValueAtTime(1e-4, t + d);
       const lfo = ctx.createOscillator();
       lfo.frequency.value = 0.09;
       const lg = ctx.createGain();
-      lg.gain.value = 0.015 * v;
+      lg.gain.value = 0.005 * v;
       lfo.connect(lg).connect(g.gain);
       src.connect(band).connect(g).connect(comp);
       src.start(t);
