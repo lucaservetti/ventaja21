@@ -1,6 +1,14 @@
 # Semana 2 en redes: 7 videos
 
-Son 7 videos cortos (de 13 a 19 segundos), en formato vertical de 1080×1920. **Sirven para TikTok, Instagram (Reels) y YouTube Shorts.**
+Son 7 videos cortos en formato vertical de 1080×1920. **Sirven para TikTok, Instagram (Reels) y YouTube Shorts.**
+
+Los videos del 2 al 7 están hechos con la versión 2 del generador:
+- 60 FPS, así se ven fluidos;
+- duran entre 26 y 30 segundos;
+- traen **efectos de sonido propios**: cartas, golpe del sello, tic de la cuenta regresiva, campanita al acertar y un murmullo de salón suave. Están sintetizados por nosotros, así que no tienen derechos de autor;
+- el volumen está nivelado como piden TikTok e Instagram.
+
+El video 1 (el quiz) es el de antes.
 
 Los textos de los videos ya cuidan las reglas de TikTok: no dicen "casino", "apuesta", "plata" ni "dinero", y abajo aparece "contenido educativo, sin dinero". En Instagram las descripciones pueden decir "blackjack".
 
@@ -19,7 +27,7 @@ Cada carpeta tiene el `.mp4` y `portada.png`, que es el cuadro de la pregunta, e
 ## Cómo publicar (lo que más suma)
 
 1. **Horario:** de 19 a 22 h. Primero Instagram y, una o dos horas después, TikTok. YouTube Shorts, cuando puedas: es el mismo archivo.
-2. **Música:** los videos no traen música, a propósito. Al subirlos, agregá un **audio en tendencia** de la *Biblioteca de música comercial*, con el volumen bajo. Los audios en tendencia ayudan a que te muestren más.
+2. **Sonido:** los videos ya traen sus efectos. Si querés sumar un **audio en tendencia** de la *Biblioteca de música comercial*, ponelo muy bajo (5 a 10 %) y dejá el sonido original al 100 %. Así se siguen escuchando las cartas y el sello.
 3. **La primera hora, contestá todos los comentarios.** Es lo que más empuja un video.
 4. **Fijá un comentario tuyo** con la respuesta o una pregunta (abajo te dejo uno para cada video).
 5. **En Instagram:** al publicar, tocá *Editar portada → Agregar desde el carrete* y elegí la `portada.png`. Activá también "Compartir en el feed".
@@ -130,6 +138,7 @@ Si pedís otra carta, ¿qué chance tenés de pasarte de 21? 📊
 12 → 31% · 13 → 38% · 14 → 46% · 15 → 54%
 16 → 62% · 17 → 69% · 18 → 77% · 19 → 85% · 20 → 92%
 
+Con 12 solo te pasás con 4 de las 13 cartas (10, J, Q, K). Con 17, con 9 de las 13.
 Por eso con 12 a veces se pide y con 17 nunca. Guardalo para la próxima 📌
 
 (Valores aproximados, con un mazo completo.)

@@ -1,236 +1,345 @@
-// Guiones de los videos cortos (los graba tools/redes/videos.mjs). Cada video es HTML con
-// animaciones CSS que arrancan en un segundo dado. Reglas para que retengan:
+// Guiones de los videos cortos (los graba tools/redes/videos.mjs con las piezas de motor.mjs).
+// Reglas para que retengan:
 // - el gancho (la pregunta) en el primer segundo, sin logo ni saludo;
-// - de 11 a 17 segundos;
-// - texto grande, porque casi todos miran sin sonido;
-// - un pedido al final: comentar, guardar o seguir;
+// - algo nuevo en pantalla cada 1 o 2 segundos (cartas que vuelan, sellos, cuentas, números);
+// - texto grande, porque muchos miran sin sonido; el sonido suma, no explica;
+// - un pedido antes del cierre: comentar, guardar o seguir;
 // - nada de "casino", "apuesta", "plata" ni "dinero" (TikTok los castiga): cartas, lógica, probabilidad.
+// El video 1 de la semana 2 (el quiz de 12 contra 2) se hizo con la versión anterior del motor.
+import {
+  A, an, E, escena, titulo, parr, chico, tag, punto, icono, numero, ventana, carta,
+  cuentaAtras, votacion, sello, confeti, final, sfx, rnd,
+} from "./motor.mjs";
 
-const SUIT = {
-  s: '<path d="M12 2C9 6 3 9 3 14c0 3 2.5 5 5 5 1.5 0 2.7-.6 3.3-1.5L10 22h4l-1.3-4.5c.6.9 1.8 1.5 3.3 1.5 2.5 0 5-2 5-5 0-5-6-8-9-12z"/>',
-  h: '<path d="M12 21.5s-7.5-4.6-9.8-9.3C.4 8.3 2.8 4 6.7 4c2.4 0 4 1.4 5.3 3.3C13.3 5.4 14.9 4 17.3 4c3.9 0 6.3 4.3 4.5 8.2C19.5 16.9 12 21.5 12 21.5z"/>',
-  d: '<path d="M12 1.5 21 12l-9 10.5L3 12z"/>',
-  c: '<circle cx="12" cy="6.8" r="4.4"/><circle cx="6.6" cy="13.2" r="4.4"/><circle cx="17.4" cy="13.2" r="4.4"/><path d="M10.6 13h2.8l1.6 9H9z"/>',
-};
-const suit = (s, size) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="currentColor">${SUIT[s]}</svg>`;
-// Una carta ("10s", "Ah"…), de `tam` px de ancho; `st` suma estilos (por ejemplo, su animación).
-function carta(c, tam = 150, st = "") {
+const valor = (c) => {
   const r = c.slice(0, -1);
-  const s = c.slice(-1);
-  const roja = s === "h" || s === "d";
-  return `<div class="carta${roja ? " roja" : ""}" style="width:${tam}px;height:${tam * 1.4}px;${st}"><b style="font-size:${tam * 0.36}px">${r}</b><span class="p1">${suit(s, tam * 0.24)}</span><span class="p2">${suit(s, tam * 0.5)}</span></div>`;
+  return ["2", "3", "4", "5", "6"].includes(r) ? 1 : ["7", "8", "9"].includes(r) ? 0 : -1;
+};
+const signo = (n) => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "0");
+const tono = (n) => (n > 0 ? "mas" : n < 0 ? "menos" : "cero");
+const chip = (de, html, st = "") => {
+  sfx(de, "blip");
+  return `<span class="op2" style="${an(A("pop", de, 0.45, E.back))}${st}">${html}</span>`;
+};
+
+// Dos cartas iguales que se separan y reciben una carta nueva cada una (ases y ochos).
+function separar(de, { par, nuevas, junto, juntoTxt, juntoMalo, totales, titular }) {
+  const [a, b] = par;
+  const corte = de + 2.4;
+  const reparte = corte + 1;
+  sfx(reparte + 0.5, "ding");
+  return `
+    ${tag(de, par[0].startsWith("A") ? "Ases" : "Ochos")}
+    <div style="position:relative;width:880px;height:400px">
+      ${carta(a, 170, { abs: true, x: -42, y: -20, r: -4, de: de + 0.2, mueve: { de: corte, x1: -210, r1: 0 }, z: 1 })}
+      ${carta(b, 170, { abs: true, x: 42, y: -14, r: 4, de: de + 0.35, mueve: { de: corte, x1: 210, r1: 0 }, z: 2 })}
+      ${carta(nuevas[0], 170, { abs: true, x: -150, y: 26, r: 7, de: reparte, z: 3 })}
+      ${carta(nuevas[1], 170, { abs: true, x: 270, y: 26, r: 7, de: reparte + 0.18, z: 4 })}
+      <div style="position:absolute;left:0;right:0;bottom:-4px;display:grid;place-items:center">${ventana(de + 0.8, corte, `<span class="total${juntoMalo ? " malo" : ""}">${junto}</span>`)}</div>
+      <div style="position:absolute;left:0;width:440px;bottom:-4px;display:grid;place-items:center">${ventana(reparte + 0.5, null, `<span class="total bueno">${totales[0]}</span>`)}</div>
+      <div style="position:absolute;right:0;width:440px;bottom:-4px;display:grid;place-items:center;padding-left:120px">${ventana(reparte + 0.65, null, `<span class="total bueno">${totales[1]}</span>`)}</div>
+    </div>
+    <div class="sobre" style="height:90px">
+      ${ventana(de + 1.1, corte, `<p>Juntos: <b>${juntoTxt}</b></p>`, "", "entra")}
+      ${ventana(corte, null, `<span class="tag verde">✂️ Separados</span>`)}
+    </div>
+    ${titulo(reparte + 1.1, titular, { tag: "h2" })}`;
 }
-const dorso = (tam = 150, st = "") => `<div class="carta dorso" style="width:${tam}px;height:${tam * 1.4}px;${st}"></div>`;
-// Aparece en `de` segundos y, si hay `hasta`, se va en ese momento.
-function anim(de, hasta = null, tipo = "entra", dur = 0.45) {
-  const a = [`${tipo} ${dur}s cubic-bezier(.2,.8,.2,1) ${de}s both`];
-  if (hasta != null) a.push(`sale .3s ease ${hasta}s forwards`);
-  return `animation:${a.join(",")}`;
-}
-const capa = (de, hasta, html, extra = "") => `<div class="capa" style="${anim(de, hasta)};${extra}">${html}</div>`;
-// Cuenta regresiva de 3 segundos con barra que se achica.
-function cuenta(de) {
-  return `<div style="position:relative;width:100%;height:240px">
-    <div class="barra" style="${anim(de, de + 3)}"><i style="animation:achica 3s linear ${de}s both"></i></div>
-    ${[3, 2, 1].map((n, i) => `<div class="cuenta" style="position:absolute;inset:0;display:grid;place-items:center;opacity:0;animation:flash 1s linear ${de + i}s both">${n}</div>`).join("")}
-  </div>`;
-}
-// Cierre de todos los videos.
-const final = (de, frase = "Practicalo gratis en Edge 21") =>
-  capa(
-    de,
-    null,
-    `<img class="logo" src="/img/ficha.svg" style="${anim(de, null, "pop", 0.5)}">
-     <h2 style="${anim(de + 0.15)}">${frase}</h2>
-     <div class="cta" style="${anim(de + 0.35, null, "pop", 0.5)}">Link en el perfil</div>
-     <p class="chico" style="${anim(de + 0.55)}">Lecciones, desafío diario y práctica sin dinero</p>`,
-  );
-const item = (de, signo, texto) => `<div class="item" style="${anim(de)}"><b>${signo}</b><span>${texto}</span></div>`;
 
 const VIDEOS = {
-  // 1. Quiz: la respuesta sorprende (casi todos se plantan).
-  "1-quiz-12-contra-2": {
-    serie: "¿SABÉS JUGAR ESTA MANO? #2",
-    dur: 14.5,
-    portada: 1.6,
-    html: [
-      capa(0, 5.4, `
-        <h2 style="${anim(0.1)}">Tenés <em>12</em> y el crupier muestra un <em>2</em></h2>
-        <div class="fila" style="gap:70px">
-          <div class="mano"><span class="lbl">Crupier</span><div class="fila" style="gap:12px">${carta("2c", 170, anim(0.35, null, "carta", 0.5))}${dorso(170, anim(0.5, null, "carta", 0.5))}</div></div>
-          <div class="mano"><span class="lbl">Vos</span><div class="fila" style="gap:12px">${carta("10s", 170, anim(0.7, null, "carta", 0.5))}${carta("2d", 170, anim(0.85, null, "carta", 0.5))}</div><span class="total" style="${anim(1.1)}">12</span></div>
-        </div>
-        <div class="ops" style="${anim(1.3)}"><span class="op">PEDIR</span><span class="op">PLANTARTE</span></div>
-        ${cuenta(2.2)}`),
-      capa(5.4, 12.6, `
-        <div class="ops" style="${anim(5.4, null, "pop")}"><span class="op ok">PEDIR ✓</span><span class="op no">PLANTARTE</span></div>
-        <h2 style="${anim(5.9)}">Contra un <em>2 o un 3</em>, con 12 se pide</h2>
-        <div class="caja" style="${anim(6.6)}"><p>Al crupier todavía le cuesta pasarse. Contra <b>4, 5 y 6</b>, ahí sí: te plantás.</p></div>
-        <h2 style="${anim(9.6, null, "pop")}">¿Acertaste? <em>Comentá</em> 👇</h2>`),
-      final(12.6),
-    ].join(""),
-  },
-
-  // 2. Desafío de memoria: 10 cartas, ¿cuánto da? (la respuesta al final; se mira dos veces).
+  // 2. Desafío de memoria: 10 cartas, ¿cuánto da? La respuesta, con la cuenta carta por carta.
   "2-desafio-memoria": {
     serie: "DESAFÍO DE MEMORIA",
-    dur: 19,
-    portada: 1.2,
-    html: (() => {
+    dur: 28.6,
+    portada: 2.6,
+    semilla: 11,
+    html() {
       const cartas = ["5h", "Ks", "3d", "9c", "6s", "Ah", "2c", "10d", "4h", "7s"];
-      const val = (c) => {
-        const r = c.slice(0, -1);
-        return ["2", "3", "4", "5", "6"].includes(r) ? 1 : ["7", "8", "9"].includes(r) ? 0 : -1;
-      };
-      const t0 = 3.8;
-      const paso = 0.75;
-      const fin = t0 + cartas.length * paso;
+      const t0 = 5.6;
+      const paso = 0.82;
+      const fin = t0 + cartas.length * paso + 0.35;
+      let suma = 0;
+      const parciales = cartas.map((c) => (suma += valor(c)));
+      const rev = fin + 4.9;
       return [
-        capa(0, t0, `
-          <h1 style="${anim(0.1)}">¿Podés llevar la <em>cuenta</em>?</h1>
-          <div class="lista" style="width:86%">
-            ${item(0.6, "+1", "2, 3, 4, 5 y 6")}
-            ${item(0.9, "0", "7, 8 y 9")}
-            ${item(1.2, "−1", "10, figuras y As")}
+        escena(0, 5.0, `
+          ${titulo(0.1, "¿Podés llevar la *cuenta*? 🧠")}
+          <div class="lista">
+            ${punto(1.1, "+1", "2 · 3 · 4 · 5 · 6", "mas")}
+            ${punto(1.45, "0", "7 · 8 · 9", "cero")}
+            ${punto(1.8, "−1", "10 · J · Q · K · A", "menos")}
           </div>
-          <p style="${anim(1.8)}">Sumá cada carta. <b>Son 10.</b></p>`),
-        `<div class="capa" style="${anim(t0, fin)}">
-          <div style="position:relative;width:360px;height:504px">
-            ${cartas.map((c, i) => `<div style="position:absolute;inset:0;${anim(t0 + i * paso, t0 + (i + 1) * paso - 0.05, "carta", 0.3)}">${carta(c, 360)}</div>`).join("")}
+          ${parr(2.5, "Van a salir <b>10 cartas</b>. Sumá en tu cabeza.")}
+          ${tag(3.6, "¿Listo?")}`),
+        escena(5.3, fin, `
+          <div class="lbl" style="position:relative;height:40px;width:400px;display:grid;place-items:center">
+            ${cartas.map((_, i) => ventana(t0 + i * paso, i < 9 ? t0 + (i + 1) * paso : null, `Carta ${i + 1} de 10`, "grid-area:1/1", null)).join("")}
           </div>
-          <div class="lbl" style="position:relative;height:40px;width:300px">${cartas.map((_, i) => `<span style="position:absolute;inset:0;${anim(t0 + i * paso, t0 + (i + 1) * paso - 0.05, "entra", 0.01)}">${i + 1} de 10</span>`).join("")}</div>
-        </div>`,
-        capa(fin, fin + 3, `
-          <h1 class="xl" style="${anim(fin, null, "pop")}">¿Cuánto <em>te dio</em>?</h1>
-          <p style="${anim(fin + 0.3)}">Comentalo antes de ver la respuesta 👇</p>
-          ${cuenta(fin)}`),
-        capa(fin + 3, null, `
-          <span class="tag verde" style="${anim(fin + 3, null, "pop")}">Respuesta</span>
-          <h1 class="xl" style="${anim(fin + 3.1, null, "pop")}"><em>+2</em></h1>
-          <div class="fila" style="flex-wrap:wrap;gap:14px;max-width:900px">
-            ${cartas.map((c, i) => `<div class="mano" style="gap:8px;${anim(fin + 3.4 + i * 0.12)}">${carta(c, 80)}<span class="v ${val(c) > 0 ? "mas" : val(c) < 0 ? "menos" : "cero"}" style="font-size:34px">${val(c) > 0 ? "+1" : val(c) < 0 ? "−1" : "0"}</span></div>`).join("")}
+          <div style="position:relative;width:880px;height:600px">
+            ${cartas.map((c, i) => carta(c, 400, { abs: true, de: t0 + i * paso, x: Math.round((rnd() * 2 - 1) * 16), y: Math.round((rnd() * 2 - 1) * 10), r: +((rnd() * 2 - 1) * 6).toFixed(1), z: i + 1, dur: 0.5 })).join("")}
           </div>
-          <p style="${anim(fin + 5)}">¿Acertaste? <b>Guardalo y probá otra vez</b> 📌</p>`),
+          <div class="fila" style="gap:16px">
+            ${cartas.map((_, i) => `<i class="punto-p" style="${an(A("enciende", t0 + i * paso + 0.2, 0.25))}"></i>`).join("")}
+          </div>`, { gap: 34 }),
+        escena(fin + 0.25, rev - 0.2, `
+          ${titulo(fin + 0.3, "¿Cuánto *te dio*?", { clase: "xl" })}
+          ${parr(fin + 0.9, "Escribilo en los comentarios <b>antes de ver la respuesta</b> 👇")}
+          ${cuentaAtras(fin + 1.4, 3)}`),
+        `${(sfx(fin + 2.9, "subida", { d: 1.5, v: 0.8 }), "")}`,
+        escena(rev, rev + 6.6, `
+          ${tag(rev + 0.05, "Respuesta", "verde", false)}
+          <h1 class="xl" style="${an(A("pop", rev + 0.15, 0.55, E.back))}color:#e9b949">+2</h1>
+          ${confeti(rev + 0.2)}
+          <div class="grilla">
+            ${cartas.map((c, i) => {
+              const t = rev + 1.2 + i * 0.3;
+              sfx(t, "blip", { p: valor(c) > 0 ? 1.15 : valor(c) < 0 ? 0.8 : 0.95, v: 0.8 });
+              return `<div class="mano" style="gap:10px;${an(A("pop", t, 0.4, E.back))}">${carta(c, 118)}<span class="val ${tono(valor(c))}">${signo(valor(c))}</span></div>`;
+            }).join("")}
+          </div>
+          <div class="sobre"><p style="${an(A("entra", rev + 1.1, 0.4))}">Cuenta: <b class="sobre" style="display:inline-grid;min-width:90px">${parciales.map((p, i) => ventana(rev + 1.2 + i * 0.3, i < 9 ? rev + 1.5 + i * 0.3 : null, `<em>${signo(p)}</em>`, "grid-area:1/1")).join("")}</b></p></div>
+          ${titulo(rev + 4.5, "¿Acertaste? *Guardalo* 📌", { tag: "h2" })}`, { gap: 30 }),
+        `${(sfx(rev + 0.15, "ding"), "")}`,
+        final(rev + 6.85),
       ].join("");
-    })(),
+    },
   },
 
-  // 3. Mito o verdad: ¿contar cartas es ilegal?
+  // 3. ¿Mito o verdad?: contar cartas, ¿es ilegal?
   "3-mito-ilegal": {
     serie: "¿MITO O VERDAD?",
-    dur: 13.5,
-    portada: 1.4,
-    html: [
-      capa(0, 4.3, `
-        <div class="fila" style="gap:0">${carta("Kh", 170, `${anim(0.1, null, "carta", 0.5)};transform:rotate(-10deg)`)}${carta("As", 190, anim(0.25, null, "carta", 0.5))}${carta("10d", 170, anim(0.4, null, "carta", 0.5))}</div>
-        <h1 style="${anim(0.6)}">¿Contar cartas es <em>ilegal</em>?</h1>
-        <div class="sello mito" style="animation:sello .5s cubic-bezier(.2,.8,.2,1) 2.4s both">MITO</div>`),
-      capa(4.3, 11.5, `
-        <span class="tag rojo" style="${anim(4.3, null, "pop")}">Mito</span>
-        <div class="lista">
-          ${item(4.6, "✓", "Contar con la cabeza <b>es legal</b>: es memoria y matemática.")}
-          ${item(5.6, "✗", "Lo prohibido es usar <b>aparatos o ayuda</b> en la mesa.")}
-          ${item(6.6, "!", "En muchos lugares pueden pedirte que <b>no juegues más</b>: es su regla, no la ley.")}
-        </div>
-        <h2 style="${anim(8.6, null, "pop")}">¿Lo sabías? <em>Comentá</em> 👇</h2>`),
-      final(11.5),
-    ].join(""),
+    dur: 25.6,
+    portada: 4.9,
+    semilla: 21,
+    html() {
+      const v = votacion(2.1, "MITO");
+      return [
+        escena(0, 6.3, `
+          <div style="position:relative;width:640px;height:320px">
+            ${carta("Kh", 190, { abs: true, x: -165, y: 22, r: -13, de: 0.05, desde: [-900, -200, -40] })}
+            ${carta("As", 200, { abs: true, de: 0.18, desde: [0, 900, 0] })}
+            ${carta("10d", 190, { abs: true, x: 165, y: 22, r: 13, de: 0.31 })}
+          </div>
+          ${titulo(0.45, "¿Contar cartas es *ilegal*?")}
+          <div class="sobre">${v.html}${sello(v.fin + 0.25, "MITO")}</div>`),
+        escena(6.55, 10.75, `
+          ${tag(6.6, "✓ Legal", "verde", false)}
+          ${icono(6.8, "🧠")}
+          ${titulo(7.05, "Contar con la cabeza *es legal*", { tag: "h2" })}
+          ${parr(8.1, "Es memoria y matemática: <b>nadie te puede prohibir pensar.</b>")}`),
+        `${(sfx(6.6, "bien"), "")}`,
+        escena(11.0, 15.25, `
+          ${tag(11.05, "✗ Prohibido", "rojo", false)}
+          ${icono(11.25, "📵")}
+          ${titulo(11.5, "Lo prohibido: *aparatos* o ayuda de otros", { tag: "h2" })}
+          ${parr(12.6, "Celulares, calculadoras o cualquier dispositivo en la mesa.")}`),
+        `${(sfx(11.05, "error"), "")}`,
+        escena(15.5, 19.9, `
+          ${tag(15.55, "⚠️ Ojo", "", false)}
+          ${icono(15.75, "🚪")}
+          ${titulo(16.0, "En muchos lugares pueden pedirte que *no juegues más*", { tag: "h2", paso: 0.06 })}
+          ${parr(17.4, "Es una regla del lugar, <b>no una ley.</b>")}`),
+        `${(sfx(15.55, "pop"), "")}`,
+        escena(20.15, 22.55, `
+          ${titulo(20.2, "¿Lo *sabías*? / Comentá 👇")}
+          <div class="fila" style="flex-wrap:wrap;gap:16px">
+            ${chip(20.9, "✓ Legal", "color:#46c47f")}${chip(21.05, "✗ Aparatos", "color:#ff7a6b")}${chip(21.2, "⚠️ Regla del lugar")}
+          </div>`),
+        final(22.8),
+      ].join("");
+    },
   },
 
-  // 4. Probabilidad: chance de pasarte según tu mano (para guardar).
+  // 4. Probabilidad: chance de pasarte según tu mano, y el porqué con las 13 cartas.
   "4-chance-de-pasarte": {
     serie: "PROBABILIDAD",
-    dur: 15,
-    portada: 3.8,
-    html: (() => {
-      const filas = [
-        [12, 31], [13, 38], [14, 46], [15, 54], [16, 62], [17, 69], [18, 77], [19, 85], [20, 92],
-      ];
+    dur: 30.1,
+    portada: 2.5,
+    semilla: 31,
+    html() {
+      const filas = [[12, 31], [13, 38], [14, 46], [15, 54], [16, 62], [17, 69], [18, 77], [19, 85], [20, 92]];
       const color = (p) => (p < 45 ? "#46c47f" : p < 65 ? "#e9b949" : "#ff6b5c");
+      const rangos = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+      // Las 13 cartas: las que te pasan se ponen rojas una por una.
+      const fichas = (de, rojas, desde) =>
+        `<div class="tiles">${rangos.map((r, i) => {
+          const k = rojas.indexOf(r);
+          if (k >= 0) sfx(desde + k * 0.16, "blip", { p: 0.75 + k * 0.03, v: 0.7 });
+          return `<span class="tile" style="${an(A("pop", de + i * 0.035, 0.35, E.back), k >= 0 && A("enrojece", desde + k * 0.16, 0.2))}">${r}</span>`;
+        }).join("")}</div>`;
       return [
-        capa(0, 12.8, `
-          <h2 style="${anim(0.1)}">Si pedís otra carta, ¿qué chance tenés de <em>pasarte</em>?</h2>
-          <div class="bars">
-            ${filas.map(([t, p], i) => `<div class="bar" style="${anim(1.2 + i * 0.35)}"><span>${t}</span><span class="t"><i style="width:${p}%;background:${color(p)};animation:crece .6s cubic-bezier(.2,.8,.2,1) ${1.3 + i * 0.35}s both"></i></span><span style="color:${color(p)}">${p}%</span></div>`).join("")}
+        escena(0, 4.9, `
+          ${titulo(0.1, "Si pedís otra carta, ¿qué chance tenés de *pasarte*?", { tag: "h2", paso: 0.06 })}
+          <div class="fila" style="gap:16px">
+            ${carta("10s", 180, { de: 0.7 })}${carta("6h", 180, { de: 0.85 })}
+            <span style="font-size:80px;font-weight:800;color:#9fb3a6;${an(A("pop", 1.4, 0.4))}">+</span>
+            ${carta("Kc", 180, { de: 1.5, voltea: 2.4 })}
           </div>
-          <div class="caja" style="${anim(5.2)}"><p>Con <b>12</b>, solo 31%. Con <b>16</b>, 62%. Por eso con 12 a veces se pide y con 17, nunca.</p></div>
-          <p class="chico" style="${anim(5.6)}">Valores aproximados, con un mazo completo.</p>
-          <h2 style="${anim(8.8, null, "pop")}">Guardalo para la próxima 📌</h2>`),
-        final(12.8),
+          <div class="sobre" style="height:76px">
+            ${ventana(1.1, 2.75, `<span class="total">16</span>`)}
+            ${ventana(2.75, null, `<span class="total malo">26 · ¡Te pasaste!</span>`)}
+          </div>`),
+        `${(sfx(2.8, "error"), "")}`,
+        escena(5.15, 13.3, `
+          ${titulo(5.2, "Chance de pasarte si pedís con…", { tag: "h3", paso: 0.05 })}
+          <div class="bars">
+            ${filas.map(([t, p], i) => {
+              const d = 5.7 + i * 0.42;
+              sfx(d, "blip", { p: 0.8 + i * 0.07, v: 0.75 });
+              const brilla = t === 12 || t === 17;
+              if (brilla) sfx(10.2 + (t === 17 ? 0.3 : 0), "pop");
+              return `<div class="bar" style="${an(A("izq", d, 0.45), brilla && A("ilumina", 10.2 + (t === 17 ? 0.3 : 0), 0.35))}"><span>${t}</span><span class="t"><i style="width:${p}%;background:${color(p)};${an(A("crece", d + 0.08, 0.8))}"></i></span><span style="color:${color(p)}">${numero(d + 0.08, p, 0.8)}%</span></div>`;
+            }).join("")}
+          </div>
+          ${chico(9.9, "Valores aproximados, con un mazo completo.")}`, { gap: 30 }),
+        escena(13.55, 19.1, `
+          ${titulo(13.6, "¿Por qué con *12* es solo 31%?", { tag: "h2" })}
+          ${fichas(14.4, ["10", "J", "Q", "K"], 15.1)}
+          ${parr(16.0, "Solo te pasás con <b>4 de las 13</b> cartas.")}
+          <h1 class="xl" style="${an(A("pop", 16.9, 0.5, E.back))}color:#46c47f">31%</h1>`),
+        `${(sfx(16.9, "ding"), "")}`,
+        escena(19.35, 24.5, `
+          ${titulo(19.4, "¿Y con *17*?", { tag: "h2" })}
+          ${fichas(19.9, ["5", "6", "7", "8", "9", "10", "J", "Q", "K"], 20.4)}
+          ${parr(21.9, "Te pasás con <b>9 de las 13</b>.")}
+          <h1 class="xl" style="${an(A("pop", 22.6, 0.5, E.back))}color:#ff6b5c">69%</h1>
+          ${titulo(23.2, "Por eso con 17 *nunca* se pide", { tag: "h3", sonido: false })}`, { gap: 34 }),
+        `${(sfx(22.6, "error", { v: 0.8 }), "")}`,
+        escena(24.75, 26.9, `
+          ${titulo(24.8, "*Guardalo* para la próxima 📌")}
+          ${parr(25.6, "Y mandáselo a quien siempre pide con\u00a017\u00a0😅")}`),
+        final(27.1),
       ].join("");
-    })(),
+    },
   },
 
   // 5. La peor mano: 16 contra un 10.
   "5-la-peor-mano": {
     serie: "LA PEOR MANO",
-    dur: 14,
-    portada: 1.4,
-    html: [
-      capa(0, 4.2, `
-        <h1 style="${anim(0.1)}"><em>16</em> contra un <em>10</em></h1>
-        <div class="fila" style="gap:70px">
-          <div class="mano"><span class="lbl">Crupier</span>${carta("10d", 150, anim(0.4, null, "carta", 0.5))}</div>
-          <div class="mano"><span class="lbl">Vos</span><div class="fila" style="gap:12px">${carta("10s", 150, anim(0.6, null, "carta", 0.5))}${carta("6h", 150, anim(0.75, null, "carta", 0.5))}</div></div>
-        </div>
-        <p style="${anim(1.3)}">La mano que más pierde. <b>¿Qué hacés?</b></p>`),
-      capa(4.2, 12, `
-        <div class="lista">
-          ${item(4.3, "✗", "<b>Plantarte:</b> perdés la mayoría de las veces.")}
-          ${item(5.3, "✓", "<b>Pedir:</b> también perdés seguido, pero un poco menos.")}
-          ${item(6.3, "✓✓", "<b>Rendirte</b>, si la mesa lo permite: perdés solo la mitad.")}
-        </div>
-        <div class="caja" style="${anim(8)}"><p>No hay jugada que gane. La idea es <b>perder lo menos posible</b>: eso es estrategia.</p></div>
-        <h2 style="${anim(10, null, "pop")}">¿Vos qué hacías? 👇</h2>`),
-      final(12),
-    ].join(""),
+    dur: 26.2,
+    portada: 1.6,
+    semilla: 41,
+    html() {
+      return [
+        escena(0, 6.6, `
+          ${titulo(0.1, "*16* contra un *10*")}
+          <div class="fila" style="gap:64px;align-items:flex-start">
+            <div class="mano"><span class="lbl">Crupier</span><div class="fila" style="gap:12px">${carta("10d", 160, { de: 0.5 })}${carta(null, 160, { de: 0.65 })}</div></div>
+            <div class="mano"><span class="lbl">Vos</span><div class="fila" style="gap:12px">${carta("10s", 160, { de: 0.8 })}${carta("6h", 160, { de: 0.95 })}</div><span class="total malo" style="${an(A("pop", 1.35, 0.4, E.back))}">16</span></div>
+          </div>
+          ${parr(1.8, "La mano que <b>más pierde</b>. ¿Qué hacés?")}
+          <div class="fila" style="gap:14px">${chip(2.4, "PLANTARTE")}${chip(2.55, "PEDIR")}${chip(2.7, "RENDIRTE")}</div>
+          ${cuentaAtras(3.4, 3, 170)}`, { gap: 34 }),
+        escena(6.85, 14.6, `
+          ${titulo(6.9, "Lo que pasa *a la larga*:", { tag: "h3" })}
+          <div class="lista">
+            ${punto(7.5, "✗", "<b>Plantarte:</b> perdés la mayoría de las veces", "menos")}
+            ${punto(8.7, "✓", "<b>Pedir:</b> también perdés seguido, pero un poco menos", "mas")}
+            ${punto(9.9, "✓✓", "<b>Rendirte</b> (si la mesa lo permite): perdés solo la mitad", "mas")}
+          </div>
+          <div class="caja" style="${an(A("entra", 11.4, 0.5))}"><p>Plantarte y pedir pierden <em>casi igual</em>… pero pedir, <b>un poquito menos</b>.</p></div>`, { gap: 30 }),
+        `${(sfx(7.6, "error", { v: 0.7 }), sfx(8.8, "bien", { v: 0.8 }), sfx(10.0, "ding"), "")}`,
+        escena(14.85, 19.6, `
+          ${icono(14.9, "💡")}
+          ${titulo(15.2, "No hay jugada que *gane*.")}
+          ${titulo(16.6, "La estrategia es / *perder lo menos posible*.", { tag: "h2", sonido: true })}`),
+        escena(19.85, 22.8, `
+          ${titulo(19.9, "¿Vos qué *hacías*? 👇")}
+          <div class="fila" style="flex-wrap:wrap;gap:16px">${chip(20.6, "✋ Me planto")}${chip(20.75, "👆 Pido")}${chip(20.9, "🏳️ Me rindo")}</div>
+          ${parr(21.4, "Comentalo y te digo si acertaste.")}`),
+        final(23.05),
+      ].join("");
+    },
   },
 
-  // 6. Siempre: separar ases y ochos.
+  // 6. Regla de oro: ases y ochos, siempre se separan (con la jugada animada).
   "6-ases-y-ochos": {
     serie: "REGLA DE ORO",
-    dur: 15,
-    portada: 1.3,
-    html: [
-      capa(0, 3.2, `
-        <h1 style="${anim(0.1)}">¿Por qué <em>siempre</em> se separan los <em>ases</em> y los <em>ochos</em>?</h1>
-        <div class="fila">${carta("Ah", 140, anim(0.6, null, "carta", 0.5))}${carta("As", 140, anim(0.75, null, "carta", 0.5))}${carta("8c", 140, anim(0.9, null, "carta", 0.5))}${carta("8d", 140, anim(1.05, null, "carta", 0.5))}</div>`),
-      capa(3.2, 7.6, `
-        <div class="fila">${carta("Ah", 160, anim(3.3, null, "carta", 0.4))}${carta("As", 160, anim(3.4, null, "carta", 0.4))}</div>
-        <p style="${anim(3.8)}">Juntos valen <b>2 o 12</b>: una mano floja.</p>
-        <span class="tag" style="${anim(4.6, null, "pop")}">Separados</span>
-        <h2 style="${anim(5)}">Dos manos que arrancan con <em>11</em>: muchas chances de <em>21</em></h2>`),
-      capa(7.6, 12.6, `
-        <div class="fila">${carta("8c", 160, anim(7.7, null, "carta", 0.4))}${carta("8d", 160, anim(7.8, null, "carta", 0.4))}</div>
-        <p style="${anim(8.2)}">Juntos valen <b>16</b>: la peor mano que hay.</p>
-        <span class="tag" style="${anim(9, null, "pop")}">Separados</span>
-        <h2 style="${anim(9.4)}">Dos manos que arrancan con <em>8</em>: mucho mejor</h2>
-        <h2 style="${anim(11, null, "pop")}">Seguí para más 👇</h2>`),
-      final(12.6),
-    ].join(""),
+    dur: 28.0,
+    portada: 1.9,
+    semilla: 51,
+    html() {
+      return [
+        escena(0, 4.6, `
+          ${titulo(0.1, "¿Por qué *siempre* se separan los *ases* y los *ochos*?", { paso: 0.06 })}
+          <div class="fila" style="gap:16px">
+            ${carta("Ah", 150, { de: 1.3, r: -6 })}${carta("As", 150, { de: 1.45, r: -2 })}${carta("8c", 150, { de: 1.6, r: 2 })}${carta("8d", 150, { de: 1.75, r: 6 })}
+          </div>`),
+        escena(4.85, 13.1, separar(4.9, {
+          par: ["Ah", "As"], nuevas: ["Kd", "9c"], junto: "2 o 12", juntoTxt: "valen 2 o 12, una mano floja 😕",
+          totales: ["21 🔥", "20"], titular: "Cada mano arranca con *11*: muchas chances de *21*",
+        }), { gap: 26 }),
+        escena(13.35, 21.6, separar(13.4, {
+          par: ["8c", "8d"], nuevas: ["10s", "Qh"], junto: "16", juntoMalo: true, juntoTxt: "16, la peor mano 😬",
+          totales: ["18", "18"], titular: "Dos manos con *8*: mucho mejor que un *16*",
+        }), { gap: 26 }),
+        escena(21.85, 24.9, `
+          ${titulo(21.9, "Ases y ochos: / *siempre* se separan ✂️")}
+          ${parr(23.0, "Seguí para <b>una jugada por día</b> 👇")}`),
+        final(25.15),
+      ].join("");
+    },
   },
 
-  // 7. Mito o verdad: ¿el que cuenta cartas gana siempre?
+  // 7. ¿Mito o verdad?: el que cuenta cartas, ¿gana siempre?
   "7-mito-gana-siempre": {
     serie: "¿MITO O VERDAD?",
-    dur: 13.5,
-    portada: 1.4,
-    html: [
-      capa(0, 4.3, `
-        <div class="fila">${carta("5h", 150, anim(0.1, null, "carta", 0.5))}${carta("3c", 150, anim(0.25, null, "carta", 0.5))}${carta("6d", 150, anim(0.4, null, "carta", 0.5))}</div>
-        <h1 style="${anim(0.6)}">¿El que cuenta cartas <em>gana siempre</em>?</h1>
-        <div class="sello mito" style="animation:sello .5s cubic-bezier(.2,.8,.2,1) 2.4s both">MITO</div>`),
-      capa(4.3, 11.5, `
-        <span class="tag rojo" style="${anim(4.3, null, "pop")}">Mito</span>
-        <div class="lista">
-          ${item(4.6, "1", "La ventaja es <b>chica</b>: alrededor de un 1%.")}
-          ${item(5.6, "2", "En el camino se pierde <b>muchas veces</b>: hay rachas.")}
-          ${item(6.6, "3", "Funciona <b>a la larga</b>, con práctica y disciplina.")}
-        </div>
-        <h2 style="${anim(8.6, null, "pop")}">¿Lo sabías? <em>Comentá</em> 👇</h2>`),
-      final(11.5),
-    ].join(""),
+    dur: 28.1,
+    portada: 4.8,
+    semilla: 61,
+    html() {
+      const v = votacion(2.3, "MITO");
+      // Una partida larga: sube y baja (rachas), pero a la larga termina arriba.
+      const claves = [[0, 0], [8, 6], [18, -4], [30, -16], [38, -9], [46, -21], [55, -8], [64, -2], [72, -12], [84, 9], [92, 4], [100, 25]];
+      const pts = [];
+      for (let i = 0; i <= 100; i++) {
+        const k = claves.findIndex(([x]) => x >= i);
+        const [x1, y1] = claves[Math.max(0, k - 1)];
+        const [x2, y2] = claves[k];
+        const f = x2 === x1 ? 0 : (i - x1) / (x2 - x1);
+        const y = y1 + (y2 - y1) * f + (i % 100 ? (rnd() * 2 - 1) * 2.6 : 0);
+        pts.push([i * 8.6, 250 - y * 7.4]);
+      }
+      const d = pts.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
+      const tg = 12.7;
+      const dg = 3.3;
+      sfx(tg + 0.46 * dg, "error", { v: 0.6 });
+      sfx(tg + dg + 0.1, "bien");
+      return [
+        escena(0, 6.4, `
+          <div class="fila" style="gap:18px">
+            ${["5h", "3c", "6d"].map((c, i) => `<div class="mano" style="gap:10px">${carta(c, 150, { de: 0.05 + i * 0.13 })}<span class="val mas" style="${an(A("pop", 0.85 + i * 0.15, 0.4, E.back))}">+1</span></div>`).join("")}
+          </div>
+          ${titulo(0.5, "¿El que cuenta cartas *gana siempre*?")}
+          <div class="sobre">${v.html}${sello(v.fin + 0.25, "MITO")}</div>`),
+        escena(6.65, 11.35, `
+          <div class="nro" style="${an(A("pop", 6.7, 0.5, E.back))}">1</div>
+          ${titulo(6.95, "La ventaja es *chica*", { tag: "h2" })}
+          <h1 class="xl" style="${an(A("pop", 7.8, 0.5, E.back))}color:#e9b949">≈ 1%</h1>
+          ${parr(8.5, "A favor, sí… pero <b>muy poquito</b>.")}`),
+        `${(sfx(7.8, "pop"), "")}`,
+        escena(11.6, 17.9, `
+          <div class="nro" style="${an(A("pop", 11.65, 0.5, E.back))}">2</div>
+          ${titulo(11.9, "Hay *rachas*: se pierde muchas veces", { tag: "h2" })}
+          <div class="grafico" style="${an(A("entra", 12.4, 0.4))}">
+            <svg viewBox="0 0 860 440" width="860" height="440"><line x1="0" y1="250" x2="860" y2="250" class="cero"/>
+              <path d="${d}" pathLength="1" class="linea" style="${an(A("dibuja", tg, dg, E.lin))}"/></svg>
+            <i class="cabeza" style="offset-path:path('${d}');${an(A("sigue", tg, dg, E.lin))}"></i>
+            <span class="nota mala" style="left:300px;top:395px;${an(A("pop", tg + 0.46 * dg, 0.4, E.back))}">racha mala 😬</span>
+            <span class="nota buena" style="right:-6px;top:6px;${an(A("pop", tg + dg + 0.1, 0.4, E.back))}">a la larga ↗</span>
+          </div>`, { gap: 30 }),
+        `${(sfx(tg, "subida", { d: dg, v: 0.45 }), "")}`,
+        escena(18.15, 22.3, `
+          <div class="nro" style="${an(A("pop", 18.2, 0.5, E.back))}">3</div>
+          ${titulo(18.45, "Funciona *a la larga*, con práctica y disciplina", { tag: "h2", paso: 0.06 })}
+          <div class="fila" style="flex-wrap:wrap;gap:16px">${chip(19.6, "🧠 Práctica")}${chip(19.85, "🎯 Disciplina")}${chip(20.1, "⏳ Paciencia")}</div>`),
+        escena(22.55, 24.9, `
+          ${titulo(22.6, "Es matemática, / no *magia*.")}
+          ${parr(23.5, "¿Lo sabías? <b>Comentá</b> 👇")}`),
+        final(25.15),
+      ].join("");
+    },
   },
 };
 
-export { VIDEOS, anim, carta };
+export { VIDEOS };
