@@ -36,14 +36,14 @@ const TABLE_SPEEDS = {
 };
 const BOT_NAMES = ["Ana", "Bruno", "Caro", "Diego"];
 const CHATTER = [
-  "¿Me cambiás estos billetes?",
+  "¿Me cambias estos billetes?",
   "¡Vamos, que sale un diez!",
   "Mozo, ¿me trae un café?",
   "¿Cuánto paga el seguro?",
   "Esta mesa está fría hoy…",
   "¡Uh, otra vez 16!",
-  "¿Me pasás las fichas verdes?",
-  "Dale, dale, que viene el As.",
+  "¿Me pasas las fichas verdes?",
+  "¡Vamos, vamos, que viene el As!",
 ];
 
 let handSeq = 1;
@@ -97,7 +97,7 @@ class Table {
   // pressure, silent (sin avisos durante el juego), quietResults (sin aviso de ganaste/perdiste),
   // lenient (acepta la jugada básica aunque el conteo pida una desviación), rules.
   // Modo casino: minBet y maxBet (límites de la mesa), decisionTime (segundos para decidir; si se
-  // pasa, la mano se planta) y heat (la vigilancia del casino mira cómo movés la apuesta).
+  // pasa, la mano se planta) y heat (la vigilancia del casino mira cómo mueves la apuesta).
   configure(options = {}, initial = false) {
     const prevRules = this.rules;
     this.opts = {
@@ -322,13 +322,13 @@ class Table {
       this.toast("El jefe de mesa empezó a mirar tus apuestas.", "warn", 3200);
     else if (before < 70 && this.heat >= 70)
       this.toast(
-        "Te están vigilando de cerca. Mové la apuesta con más cuidado.",
+        "Te están vigilando de cerca. Mueve la apuesta con más cuidado.",
         "warn",
         3600,
       );
     if (this.heat >= 100) this.backedOff = true;
   }
-  // Puntaje de camuflaje (0 a 100): cuánto parecés un jugador común.
+  // Puntaje de camuflaje (0 a 100): cuánto pareces un jugador común.
   get camo() {
     const s = this.session;
     return camoScore(s.heatPeak, s.obviousJumps, s.coverBets);
@@ -451,7 +451,7 @@ class Table {
     if (this.phase === "settle") this.clearTable();
     if (this.phase !== "bet") return;
     if (this.bet <= 0) {
-      this.toast("Poné una apuesta para repartir.", "warn");
+      this.toast("Pon una apuesta para repartir.", "warn");
       return;
     }
     if (this.bet > this.bankroll) {
@@ -599,12 +599,12 @@ class Table {
           best: shouldTake ? "I" : "N",
           chosen: took ? "I" : "N",
           title: shouldTake
-            ? "Acá convenía el seguro"
+            ? "Aquí convenía el seguro"
             : "El seguro no conviene",
           note: shouldTake
-            ? `Con conteo real ${this.fmtTC()} (+3 o más) el seguro gana plata.`
+            ? `Con conteo real ${this.fmtTC()} (+3 o más) el seguro gana dinero.`
             : this.opts.deviations && this.useCountCoach
-              ? `Con conteo real ${this.fmtTC()} el seguro pierde. Se toma recién con +3 o más.`
+              ? `Con conteo real ${this.fmtTC()} el seguro pierde. Se toma solo con +3 o más.`
               : "El seguro es una apuesta aparte que pierde alrededor de 7 % a la larga. Sin contar, nunca lo tomes.",
         };
       }
@@ -628,7 +628,7 @@ class Table {
       dealerBJ = isBlackjack(this.dealer.cards);
       if (dealerBJ) await this.revealHole();
       else if (this.insuranceBet)
-        this.toast("El crupier no tiene blackjack: perdés el seguro.", "info");
+        this.toast("El crupier no tiene blackjack: pierdes el seguro.", "info");
     }
     if (dealerBJ) {
       for (const seat of this.botSeats)

@@ -50,7 +50,7 @@ const PERKS = [
   {
     icon: "crown",
     title: "Modo casino real",
-    sub: "Tu plata, límites de mesa, tiempo para decidir, vigilancia, modo turista y el examen con certificado.",
+    sub: "Tu dinero, límites de mesa, tiempo para decidir, vigilancia, modo turista y el examen con certificado.",
   },
   {
     icon: "target",
@@ -60,7 +60,7 @@ const PERKS = [
   {
     icon: "shoe",
     title: "La mesa a tu medida",
-    sub: "Ajustá cada regla a mano y jugá dos manos por ronda.",
+    sub: "Ajusta cada regla a mano y juega dos manos por ronda.",
   },
   {
     icon: "book",
@@ -70,12 +70,12 @@ const PERKS = [
   {
     icon: "stats",
     title: "Simulador de banca",
-    sub: "Cuánta plata necesitás y tu riesgo de quebrar, en tu moneda.",
+    sub: "Cuánto dinero necesitas y tu riesgo de quebrar, en tu moneda.",
   },
   {
     icon: "eye",
     title: "Análisis de tus errores",
-    sub: "Tu tabla pintada según dónde fallás, las jugadas que más te cuestan y cómo vas mejorando.",
+    sub: "Tu tabla pintada según dónde fallas, las jugadas que más te cuestan y cómo vas mejorando.",
   },
   {
     icon: "sparkle",
@@ -90,7 +90,7 @@ const PERKS = [
   {
     icon: "book",
     title: "Diario de casino real",
-    sub: "Anotá lo que jugás de verdad y mirá tu resultado por hora.",
+    sub: "Anota lo que juegas de verdad y mira tu resultado por hora.",
   },
 ];
 // Precios de la web (pagos.config.json): más baratos que en Google Play, porque no tienen su comisión.
@@ -99,7 +99,7 @@ const WEB_PRICES = {
   yearly: { micros: Math.round((MOSTRAR.yearly || 0) * 1e6), currency: MOSTRAR.moneda || "USD", trialDays: MOSTRAR.pruebaDias || 0 },
   lifetime: { micros: Math.round((MOSTRAR.lifetime || 0) * 1e6), currency: MOSTRAR.moneda || "USD", trialDays: 0 },
 };
-// Precios de muestra para ver la pantalla en la compu (en el celular vienen de Google Play,
+// Precios de muestra para ver la pantalla en la computadora (en el celular vienen de Google Play,
 // en la moneda de cada país).
 const SAMPLE = {
   monthly: { micros: 2990000, currency: "USD", trialDays: 0 },
@@ -182,15 +182,15 @@ function Premium({ feature, then }) {
       badge: y.trialDays
         ? `${y.trialDays} días gratis`
         : save > 0
-          ? `Ahorrás ${save} %`
+          ? `Ahorras ${save} %`
           : null,
-      extra: y.trialDays && save > 0 ? `Ahorrás ${save} %` : null,
+      extra: y.trialDays && save > 0 ? `Ahorras ${save} %` : null,
     },
     m && {
       id: "monthly",
       name: "Mensual",
       price: `${m.price} al mes`,
-      note: "Cancelás cuando quieras",
+      note: "Cancelas cuando quieras",
     },
     plans.lifetime && {
       id: "lifetime",
@@ -214,15 +214,15 @@ function Premium({ feature, then }) {
     ? null
     : web && PAGOS_WEB
       ? pick === "lifetime"
-        ? "Pagás una vez y Premium es tuyo para siempre en esta cuenta de Google, en la web y en la app."
+        ? "Pagas una vez y Premium es tuyo para siempre en esta cuenta de Google, en la web y en la app."
         : info.trialDays
-          ? `Gratis por ${info.trialDays} días; después, ${info.price} por año. Se renueva solo y lo cancelás cuando quieras desde el mail del pago. Si cancelás antes de que termine la prueba, no se te cobra nada.`
-          : `${info.price} por ${pick === "yearly" ? "año" : "mes"}. Se renueva solo y lo cancelás cuando quieras desde el mail del pago.`
+          ? `Gratis por ${info.trialDays} días; después, ${info.price} por año. Se renueva solo y lo cancelas cuando quieras desde el mail del pago. Si cancelas antes de que termine la prueba, no se te cobra nada.`
+          : `${info.price} por ${pick === "yearly" ? "año" : "mes"}. Se renueva solo y lo cancelas cuando quieras desde el mail del pago.`
       : pick === "lifetime"
-      ? "Pagás una vez y Premium es tuyo para siempre en esta cuenta de Google."
+      ? "Pagas una vez y Premium es tuyo para siempre en esta cuenta de Google."
       : info.trialDays
-        ? `Gratis por ${info.trialDays} días; después, ${info.price} por año. Se renueva solo y lo cancelás cuando quieras en Google Play. Si cancelás antes de que termine la prueba, no se te cobra nada.`
-        : `${info.price} por ${pick === "yearly" ? "año" : "mes"}. Se renueva solo y lo cancelás cuando quieras en Google Play.`;
+        ? `Gratis por ${info.trialDays} días; después, ${info.price} por año. Se renueva solo y lo cancelas cuando quieras en Google Play. Si cancelas antes de que termine la prueba, no se te cobra nada.`
+        : `${info.price} por ${pick === "yearly" ? "año" : "mes"}. Se renueva solo y lo cancelas cuando quieras en Google Play.`;
 
   return (
     <div className="premium fade-up">
@@ -235,10 +235,10 @@ function Premium({ feature, then }) {
         <p className="muted">
           {owned
             ? shop.kind === "lifetime"
-              ? "Tenés Premium para siempre. ¡Gracias por apoyar la app!"
-              : "¡Ya sos Premium! Gracias por apoyar la app."
+              ? "Tienes Premium para siempre. ¡Gracias por apoyar la app!"
+              : "¡Ya eres Premium! Gracias por apoyar la app."
             : gift
-              ? `Tenés Premium de regalo hasta el ${new Date(gift).toLocaleDateString(LOCALE, { day: "numeric", month: "long" })}.`
+              ? `Tienes Premium de regalo hasta el ${new Date(gift).toLocaleDateString(LOCALE, { day: "numeric", month: "long" })}.`
               : feature && FEATURES[feature]
                 ? `${FEATURES[feature]} es parte de Premium.`
                 : "Todo lo avanzado y sin anuncios."}
@@ -272,15 +272,15 @@ function Premium({ feature, then }) {
         <div className="prem-plans" role="radiogroup" aria-label="Planes">
           {web && PAGOS_WEB ? (
             <p className="small prem-web">
-              Pagás con tarjeta, Apple Pay, Google Pay o PayPal, en tu moneda.
-              Premium queda en tu cuenta de Google: lo tenés acá, en el iPhone,
-              en la compu y en la app de Android.
+              Pagas con tarjeta, Apple Pay, Google Pay o PayPal, en tu moneda.
+              Premium queda en tu cuenta de Google: lo tienes aquí, en el iPhone,
+              en la computadora y en la app de Android.
             </p>
           ) : web ? (
             <p className="small prem-web">
               Por ahora Premium se compra en la app de Android, que sale muy
-              pronto en Google Play. Si ya sos Premium, entrá con tu cuenta de
-              Google y lo tenés también acá.
+              pronto en Google Play. Si ya eres Premium, entra con tu cuenta de
+              Google y lo tienes también aquí.
             </p>
           ) : null}
           {options.map((o) => (
@@ -315,7 +315,7 @@ function Premium({ feature, then }) {
         </p>
       ) : pago === "error" ? (
         <p className="small bad" role="status" style={{ marginTop: 10, fontWeight: 600 }}>
-          No se pudo completar el pago. Probá de nuevo o con otro medio.
+          No se pudo completar el pago. Prueba de nuevo o con otro medio.
         </p>
       ) : null}
       {shop.error ? (
@@ -337,7 +337,7 @@ function Premium({ feature, then }) {
             <Icon name="sparkle" />
           </span>
           <span className="li-text">
-            <span className="li-title">También lo podés ganar</span>
+            <span className="li-title">También lo puedes ganar</span>
             <span className="li-sub" style={{ display: "block" }}>
               Días de Premium de regalo por jugar seguido o terminar las lecciones
             </span>
@@ -476,9 +476,9 @@ function PruebaGratis({ feature, then, st, nav, probando, setProbando, owned }) 
   if (!puedeProbar(st)) return null;
   return (
     <div className="card prem-prueba">
-      <b>¿La querés probar primero?</b>
+      <b>¿La quieres probar primero?</b>
       <p className="muted small">
-        {`Mirá un anuncio y usá ${PRUEBA_NOMBRE[grupoDe(feature)] || "esta función"} gratis durante 20 minutos. Es una sola prueba: después, para seguir usándola o probar otra función, hace falta Premium.`}
+        {`Mira un anuncio y usa ${PRUEBA_NOMBRE[grupoDe(feature)] || "esta función"} gratis durante 20 minutos. Es una sola prueba: después, para seguir usándola o probar otra función, hace falta Premium.`}
       </p>
       <Button
         kind="outline"

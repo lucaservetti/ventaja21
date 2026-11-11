@@ -1,5 +1,5 @@
 // Análisis de tus errores (Premium): la tabla pintada según cómo te va en cada casilla, los errores
-// que más plata cuestan, qué tipo de error repetís y cómo venís mejorando semana a semana.
+// que más dinero cuestan, qué tipo de error repites y cómo vienes mejorando semana a semana.
 import { useMemo, useState } from "react";
 import { useStore } from "../state.js";
 import { Button, CHART_COLS, Segmented, cx } from "../ui/components.jsx";
@@ -15,16 +15,16 @@ const rankText = (r) => (r === "T" ? "10" : r === "A" ? "As" : r);
 
 // Qué tipo de error es: lo que elegiste contra lo que había que hacer.
 function errType(chosen, best) {
-  if (best === "P") return "No separás cuando conviene";
-  if (chosen === "P") return "Separás cuando no conviene";
-  if (best === "D") return "No doblás cuando conviene";
-  if (chosen === "D") return "Doblás cuando no conviene";
-  if (best === "R") return "No te rendís cuando conviene";
-  if (chosen === "R") return "Te rendís cuando no conviene";
+  if (best === "P") return "No separas cuando conviene";
+  if (chosen === "P") return "Separas cuando no conviene";
+  if (best === "D") return "No doblas cuando conviene";
+  if (chosen === "D") return "Doblas cuando no conviene";
+  if (best === "R") return "No te rindes cuando conviene";
+  if (chosen === "R") return "Te rindes cuando no conviene";
   if (best === "I" || best === "N" || chosen === "I" || chosen === "N")
     return "El seguro";
-  if (chosen === "H" && best === "S") return "Pedís cuando hay que plantarse";
-  if (chosen === "S" && best === "H") return "Te plantás cuando hay que pedir";
+  if (chosen === "H" && best === "S") return "Pides cuando hay que plantarse";
+  if (chosen === "S" && best === "H") return "Te plantas cuando hay que pedir";
   return `${ACTION_NAMES[chosen] || chosen} en vez de ${ACTION_NAMES[best] || best}`;
 }
 // Cuánto cuesta un error, en fracción de la apuesta (lo que se pierde en promedio cada vez).
@@ -56,7 +56,7 @@ function Heatmap({ st, rules }) {
     <div className="card">
       <div className="eyebrow">Tu tabla, según tus errores</div>
       <p className="muted small" style={{ margin: "4px 0 12px" }}>
-        Verde: la sabés. Amarillo: a veces fallás. Rojo: la fallás seguido. Tocá
+        Verde: la sabes. Amarillo: a veces fallas. Rojo: la fallas seguido. Toca
         una casilla para ver el detalle.
       </p>
       <Segmented
@@ -251,14 +251,14 @@ function Mistakes() {
           </>
         ) : (
           <p className="muted" style={{ marginTop: 8 }}>
-            No tenés errores pendientes. Cuando falles una mano en Entrenar o en
-            la mesa, aparece acá.
+            No tienes errores pendientes. Cuando falles una mano en Entrenar o en
+            la mesa, aparece aquí.
           </p>
         )}
       </div>
       {types.length ? (
         <div className="card">
-          <div className="eyebrow">Qué tipo de error repetís</div>
+          <div className="eyebrow">Qué tipo de error repites</div>
           <div className="ma-types">
             {types.map(([k, n]) => (
               <div className="ma-type" key={k}>
@@ -273,15 +273,15 @@ function Mistakes() {
         </div>
       ) : null}
       <div className="card">
-        <div className="eyebrow">Cómo venís mejorando</div>
+        <div className="eyebrow">Cómo vienes mejorando</div>
         <p className="muted small" style={{ margin: "4px 0 0" }}>
           {trend === null
-            ? "Entrená en semanas distintas para ver tu evolución."
+            ? "Entrena en semanas distintas para ver tu evolución."
             : trend > 0
               ? `Subiste ${trend} puntos de precisión desde tu primera semana.`
               : trend < 0
-                ? `Bajaste ${-trend} puntos desde tu primera semana. Repasá tus errores.`
-                : "Te mantenés igual que tu primera semana."}
+                ? `Bajaste ${-trend} puntos desde tu primera semana. Repasa tus errores.`
+                : "Te mantienes igual que tu primera semana."}
         </p>
         <div className="ma-weeks" aria-label="Precisión por semana">
           {weeks.map((w, i) => {

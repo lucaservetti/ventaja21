@@ -1,4 +1,4 @@
-// "Seguí en la app": lo que aparece en la web de prueba cuando se llega al límite (ver WEB_DEMO en
+// "Sigue en la app": lo que aparece en la web de prueba cuando se llega al límite (ver WEB_DEMO en
 // platform.js). Invita a guardar el progreso con Google, a seguir las redes y a ser tester.
 import { Icon } from "../ui/icons.jsx";
 import { Button } from "../ui/components.jsx";
@@ -14,19 +14,19 @@ const TESTER =
 const TEXTOS = {
   aprender: [
     "Lo que sigue está en la app",
-    "En la web probás las secciones 1 y 2. Contar cartas, apostar con el conteo y el resto del camino están en la app.",
+    "En la web pruebas las secciones 1 y 2. Contar cartas, apostar con el conteo y el resto del camino están en la app.",
   ],
   conteo: [
     "Los niveles que siguen están en la app",
-    "En la web llegás hasta el nivel 3 de la ruta de conteo. Del 4 al 10, y la práctica sin límite, en la app.",
+    "En la web llegas hasta el nivel 3 de la ruta de conteo. Del 4 al 10, y la práctica sin límite, en la app.",
   ],
   entrenar: [
     "Ya jugaste la tanda de hoy",
-    "En la web hay una por día. Mañana tenés otra, o seguí sin límite en la app.",
+    "En la web hay una por día. Mañana tienes otra, o sigue sin límite en la app.",
   ],
   jugar: [
     "Ya jugaste las 20 manos de hoy",
-    "En la web hay 20 manos por día en la mesa. Mañana tenés más, o jugá sin límite en la app.",
+    "En la web hay 20 manos por día en la mesa. Mañana tienes más, o juega sin límite en la app.",
   ],
   premium: [
     "Premium es de la app",
@@ -34,7 +34,7 @@ const TEXTOS = {
   ],
   info: [
     "Estás en la versión web de prueba",
-    "Acá probás una parte de Edge 21. La app completa sale en Google Play en unas semanas.",
+    "Aquí pruebas una parte de Edge 21. La app completa sale en Google Play en unas semanas.",
   ],
 };
 
@@ -68,17 +68,17 @@ function EnApp({ feature }) {
               <>
                 <b>Tu progreso ya está guardado</b>
                 <p className="muted small">
-                  Cuando bajes la app, entrá con la misma cuenta de Google y
-                  seguís donde estabas. Y te esperan 3 días de Premium de
+                  Cuando bajes la app, entra con la misma cuenta de Google y
+                  sigues donde estabas. Y te esperan 3 días de Premium de
                   regalo.
                 </p>
               </>
             ) : (
               <>
-                <b>Guardá tu progreso para la app</b>
+                <b>Guarda tu progreso para la app</b>
                 <p className="muted small">
-                  Entrá con Google: lo que hiciste acá pasa a la app, y te
-                  llevás 3 días de Premium de regalo cuando salga.
+                  Entra con Google: lo que hiciste aquí pasa a la app, y te
+                  llevas 3 días de Premium de regalo cuando salga.
                 </p>
                 <Button onClick={() => nav.push("account")}>
                   Entrar con Google
@@ -94,9 +94,9 @@ function EnApp({ feature }) {
           <Icon name="share" />
         </span>
         <div>
-          <b>Enterate cuando salga</b>
+          <b>Entérate cuando salga</b>
           <p className="muted small">
-            Seguinos: avisamos el día que sale y subimos un tip por día.
+            Síguenos: avisamos el día que sale y subimos un tip por día.
           </p>
           <div className="ea-links">
             <a
@@ -124,9 +124,9 @@ function EnApp({ feature }) {
           <Icon name="play" />
         </span>
         <div>
-          <b>¿Tenés Android? Probala antes que nadie</b>
+          <b>¿Tienes Android? Pruébala antes que nadie</b>
           <p className="muted small">
-            Buscamos personas para probar la app antes de que salga. Escribinos
+            Buscamos personas para probar la app antes de que salga. Escríbenos
             con el mail de tu cuenta de Google Play.
           </p>
           <a className="btn btn-secondary btn-sm" href={TESTER}>

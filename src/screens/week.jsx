@@ -59,7 +59,7 @@ function insight(now, prev) {
     parts.push(
       now.active >= 5
         ? "Muy constante: así es como se aprende a contar."
-        : `Practicaste ${now.active} ${now.active === 1 ? "día" : "días"}. Probá sumar uno más.`,
+        : `Practicaste ${now.active} ${now.active === 1 ? "día" : "días"}. Prueba sumar uno más.`,
     );
   return parts.join(" ");
 }

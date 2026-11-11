@@ -1,5 +1,5 @@
 // Velocidad de conteo: tandas de 10 cartas cada vez más rápidas. Mide cuántas cartas por segundo
-// contás bien y te compara con el ritmo de un casino.
+// cuentas bien y te compara con el ritmo de un casino.
 import { useEffect, useRef, useState } from "react";
 import { recordDrill, useStore } from "../state.js";
 import { buildDecks, shuffle } from "../engine/cards.js";
@@ -157,10 +157,10 @@ function SpeedDrill() {
             </>
           ) : (
             <>
-              <h2 style={{ fontSize: 24 }}>¿Qué tan rápido contás?</h2>
+              <h2 style={{ fontSize: 24 }}>¿Qué tan rápido cuentas?</h2>
               <p className="muted" style={{ marginTop: 8 }}>
-                Tandas de {ROUND} cartas. Cada vez que acertás el conteo, la
-                siguiente va más rápido. Tenés {LIVES} vidas: con dos errores
+                Tandas de {ROUND} cartas. Cada vez que aciertas el conteo, la
+                siguiente va más rápido. Tienes {LIVES} vidas: con dos errores
                 termina. Te queda la velocidad más alta que contaste bien.
               </p>
             </>
@@ -218,7 +218,7 @@ function SpeedDrill() {
               <PlayingCard card={shown} size="md" deal={true} key={shown.id} />
             ) : null}
           </div>
-          <p className="center muted small">Contá en silencio…</p>
+          <p className="center muted small">Cuenta en silencio…</p>
         </>
       ) : phase === "answer" ? (
         <>
@@ -241,7 +241,7 @@ function SpeedDrill() {
             {last.ok
               ? `Contaste bien a ${rateText(last.rate)} cartas por segundo. La próxima va más rápido.`
               : lives > 0
-                ? `Pusiste ${fmtSigned(last.v)}. Te queda ${lives} ${lives === 1 ? "vida" : "vidas"}: repetís esta velocidad.`
+                ? `Pusiste ${fmtSigned(last.v)}. Te queda ${lives} ${lives === 1 ? "vida" : "vidas"}: repites esta velocidad.`
                 : `Pusiste ${fmtSigned(last.v)}. Se terminaron las vidas.`}
           </p>
           <div className="bottom-actions">

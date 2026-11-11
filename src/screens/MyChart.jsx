@@ -86,7 +86,7 @@ function spotKeyFor(tab, row, col) {
   return `${KIND[tab]}${r}|${UPS[col]}`;
 }
 
-// `aside`: la versión que va al costado de Aprender en la compu (sin barra de arriba ni el final).
+// `aside`: la versión que va al costado de Aprender en la computadora (sin barra de arriba ni el final).
 function MyChart({ tab: initialTab = "hard", aside = false }) {
   const st = useStore();
   const nav = useNav();
@@ -136,7 +136,7 @@ function MyChart({ tab: initialTab = "hard", aside = false }) {
           <ProgressBar value={learnedCount.n / learnedCount.total} />
         </div>
         <p className="muted small" style={{ marginTop: 10 }}>
-          Las filas se encienden cuando hacés la lección que las enseña. Tocá
+          Las filas se encienden cuando haces la lección que las enseña. Toca
           cualquier casilla para ver por qué se juega así.
         </p>
       </div>
@@ -212,7 +212,7 @@ function MyChart({ tab: initialTab = "hard", aside = false }) {
       />
       <div className="mc-dots-legend muted small">
         <span>
-          <i className="mc-dot good" /> la dominás
+          <i className="mc-dot good" /> la dominas
         </span>
         <span>
           <i className="mc-dot mid" /> bien
@@ -236,7 +236,7 @@ function MyChart({ tab: initialTab = "hard", aside = false }) {
         <div className="card flat mc-hint">
           <Icon name="info" size={20} />
           <span>
-            Tocá una casilla para ver la jugada, la razón y cómo te va con esa
+            Toca una casilla para ver la jugada, la razón y cómo te va con esa
             mano.
           </span>
         </div>

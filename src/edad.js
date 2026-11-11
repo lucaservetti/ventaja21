@@ -1,5 +1,5 @@
 // Control de edad: Edge 21 es para mayores de 18 (ver terminos.html). Antes de usar la app se
-// pregunta el año de nacimiento, de forma neutra (no "¿sos mayor?", que invita a mentir).
+// pregunta el año de nacimiento, de forma neutra (no "¿eres mayor?", que invita a mentir).
 // - No se guarda el año: solo el resultado, en este aparato ("ok" o "menor").
 // - Si da menor, la app queda cerrada en este aparato (volver a contestar no cambia nada).
 // - Hasta que no se confirma, no arrancan los anuncios ni las estadísticas.

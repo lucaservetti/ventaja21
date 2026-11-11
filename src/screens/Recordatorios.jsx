@@ -1,5 +1,5 @@
 // Ajustes → Recordatorios: cuándo avisar para practicar (solo en la app de Android). La persona
-// decide todo desde acá: prenderlos o apagarlos, qué días, a qué hora y el aviso de racha.
+// decide todo desde aquí: prenderlos o apagarlos, qué días, a qué hora y el aviso de racha.
 import { useEffect, useState } from "react";
 import { useStore } from "../state.js";
 import { Button, Pills, Toggle, cx } from "../ui/components.jsx";
@@ -56,7 +56,7 @@ function Recordatorios() {
     if (r === "denied") {
       setEstado("denied");
       setAviso(
-        "Android no dejó mostrar notificaciones. Mirá cómo activarlas acá abajo.",
+        "Android no dejó mostrar notificaciones. Mira cómo activarlas aquí abajo.",
       );
     } else if (NATIVE) setEstado(await permiso());
   };
@@ -193,7 +193,7 @@ function Recordatorios() {
           <b>Las notificaciones de Edge 21 están apagadas en Android</b>
           <p className="muted small">
             Para activarlas: Ajustes del celular → Apps → Edge 21 →
-            Notificaciones. Después volvé acá y prendé los recordatorios.
+            Notificaciones. Después vuelve aquí y prende los recordatorios.
           </p>
         </div>
       ) : null}

@@ -1,5 +1,5 @@
 // Tarjetas de la tabla: cada casilla de la estrategia básica es una tarjeta con repaso espaciado.
-// La acertás y vuelve en 1, 3, 7, 14, 30 y 60 días; la fallás y vuelve hoy mismo.
+// La aciertas y vuelve en 1, 3, 7, 14, 30 y 60 días; la fallas y vuelve hoy mismo.
 import { useMemo } from "react";
 import { dayKey } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
@@ -111,7 +111,7 @@ function ChartCards({ st, nav }) {
         <span className="li-title">Tarjetas de la tabla</span>
         <span className="li-sub" style={{ display: "block" }}>
           {firstTime
-            ? "Memorizá la tabla casilla por casilla: cada una vuelve justo antes de que te la olvides."
+            ? "Memoriza la tabla casilla por casilla: cada una vuelve justo antes de que te la olvides."
             : ready
               ? `${info.due.length ? `${info.due.length} para repasar` : "Nada vencido"}${info.fresh.length ? ` · ${info.fresh.length} nuevas` : ""}`
               : `Al día. ${info.next ? whenText(info.next) : ""}`}

@@ -1,6 +1,6 @@
 // Lo que cambia en la app de Android (Play Store): algunos anuncios y la compra de Premium.
 // En la web (GitHub Pages) no hay anuncios ni compras y todo queda abierto, como siempre.
-// Para probar en la compu cómo se ve en Android: localStorage.setItem("v21.sim", "1") y recargar.
+// Para probar en la computadora cómo se ve en Android: localStorage.setItem("v21.sim", "1") y recargar.
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import {
   AdMob,
@@ -68,7 +68,7 @@ function giftUntil(st = getState()) {
 }
 
 // ---- La web como prueba (apagada) ----
-// La web es la app completa: es como se usa Edge 21 en iPhone y en la computadora. Lo gratis es
+// La web es la app completa: es como se usa Edge 21 en iPhone y en la computadoratadora. Lo gratis es
 // igual que en Android, y Premium va por la cuenta de Google. Si algún día se quiere volver a una
 // web de prueba (las secciones 1 y 2 de Aprender, los niveles 1 a 3 de Conteo, una tanda de
 // Entrenar y 20 manos por día; lo demás invita a la app), alcanza con poner WEB_DEMO_ON en true.
@@ -215,7 +215,7 @@ function needsPremium(name, params = {}, st = getState()) {
 // - como mucho uno cada 5 minutos y 4 por día;
 // - los primeros 3 días de uso, ninguno (primero que se enganchen);
 // - con Premium, ninguno.
-// Los anuncios con premio son siempre opcionales: los elegís vos para ganar algo.
+// Los anuncios con premio son siempre opcionales: los eliges tú para ganar algo.
 const AD_GAP_MS = 5 * 60 * 1000;
 const ADS_PER_DAY = 4;
 const ACTIVITIES_PER_AD = 2;
@@ -398,7 +398,7 @@ async function showAdPrivacy() {
 const shop = {
   ready: false,
   plans: {}, // monthly, yearly, lifetime: { price, micros, currency, offerId, trialDays }
-  kind: null, // "sub" o "lifetime": lo que tenés
+  kind: null, // "sub" o "lifetime": lo que tienes
   error: null,
   busy: false,
   listeners: new Set(),
@@ -529,7 +529,7 @@ async function buyPremium(plan = "yearly") {
     offer = info && p ? p.getOffer(info.offerId) : null;
   }
   if (!offer) {
-    shop.error = "No pudimos cargar el precio. Revisá la conexión.";
+    shop.error = "No pudimos cargar el precio. Revisa la conexión.";
     emitShop();
     return;
   }
@@ -655,7 +655,7 @@ function initPlatform() {
   followSystemFont();
   restoreFromMirror().finally(keepMirror);
   initShop().catch(() => {});
-  // Los anuncios arrancan recién con la edad confirmada (ver src/edad.js).
+  // Los anuncios arrancan solo con la edad confirmada (ver src/edad.js).
   cuandoEdadOk(initAds);
 }
 

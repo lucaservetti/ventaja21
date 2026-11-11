@@ -236,7 +236,7 @@ async function finishSignIn(googleIdToken) {
   await checkPremium();
   await unirmeAmigo();
   checkPremios(true);
-  // El puntaje de hoy entra al ranking apenas entrás.
+  // El puntaje de hoy entra al ranking apenas entras.
   postScores().catch(() => {});
   return result;
 }
@@ -279,7 +279,7 @@ function signOut() {
 }
 
 // Cerrar sesión: primero se sube lo último a la cuenta y después el aparato queda como nuevo (así,
-// en una compu o un celular prestado, el que viene después no sigue con tu progreso). Al volver a
+// en una computadora o un celular prestado, el que viene después no sigue con tu progreso). Al volver a
 // entrar, el progreso baja de la cuenta. Quedan solo las preferencias del aparato y una compra de
 // Google Play hecha en él. Si no se pudo subir (sin conexión), no se cierra: devuelve el error.
 async function cerrarSesion() {
@@ -288,7 +288,7 @@ async function cerrarSesion() {
     return {
       ok: false,
       error:
-        "Primero elegí qué progreso querés guardar (el de este aparato o el de la cuenta).",
+        "Primero elige qué progreso quieres guardar (el de este aparato o el de la cuenta).",
     };
   try {
     await upload();
@@ -297,7 +297,7 @@ async function cerrarSesion() {
     return {
       ok: false,
       error:
-        "No se pudo guardar tu progreso en la cuenta. Revisá la conexión y probá de nuevo.",
+        "No se pudo guardar tu progreso en la cuenta. Revisa la conexión y prueba de nuevo.",
     };
   }
   const s = getState().settings;
@@ -384,7 +384,7 @@ async function unirmeAmigo() {
 const ES_DUENO = (acc) =>
   !!(acc && CFG && Array.isArray(CFG.duenos) && CFG.duenos.includes(acc.uid));
 async function pedirPanel(dias = 30) {
-  if (!acct) throw new Error("Entrá con tu cuenta de Google");
+  if (!acct) throw new Error("Entra con tu cuenta de Google");
   const r = await fetch(`${CFG.api}/panel?dias=${dias}`, {
     headers: { Authorization: `Bearer ${await token()}` },
   });

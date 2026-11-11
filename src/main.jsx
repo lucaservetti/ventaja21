@@ -277,7 +277,7 @@ function App() {
         }
       },
       push(k, v = {}) {
-        // En la web de prueba, lo que es de la app abre "Seguí en la app" (Premium incluido).
+        // En la web de prueba, lo que es de la app abre "Sigue en la app" (Premium incluido).
         const app =
           needsApp(k, v) ||
           (WEB_DEMO && (k === "premium" || needsPremium(k, v))
@@ -437,7 +437,7 @@ function App() {
     setTimeout(() => setPremToast(null), ms);
   };
   // Fin de la prueba de 20 minutos de una función Premium: todo vuelve a la versión gratis. El
-  // sistema de conteo y los paños vuelven solos (dependen de puedeUsar); acá se vuelven las reglas
+  // sistema de conteo y los paños vuelven solos (dependen de puedeUsar); aquí se vuelven las reglas
   // de la mesa y las manos por ronda, y se cierra la pantalla de Premium que esté abierta.
   const prueba = a.settings.prueba;
   useEffect(() => {
@@ -452,7 +452,7 @@ function App() {
         setState((v) => ({ ...v, table: { ...v.table, spots: 1 } }));
       if (r.current.some((k) => needsPremium(k.name, k.params))) y.popAll();
       showPremToast(
-        "Terminó tu prueba de 20 minutos. Para seguir usándola, pasate a Premium.",
+        "Terminó tu prueba de 20 minutos. Para seguir usándola, pásate a Premium.",
         6000,
       );
     };
@@ -462,7 +462,7 @@ function App() {
       return undefined;
     }
     if (falta > PRUEBA_MS - 5000)
-      showPremToast("Empezó tu prueba: tenés 20 minutos.", 4000);
+      showPremToast("Empezó tu prueba: tienes 20 minutos.", 4000);
     const id = setTimeout(quitar, falta);
     const aviso =
       falta > 2 * 60000
@@ -498,15 +498,15 @@ function App() {
       onPremio((r) =>
         showPremToast(
           r.dias === 1
-            ? "¡Ganaste 1 día de Premium! Mirá tus premios en Progreso."
-            : `¡Ganaste ${r.dias} días de Premium! Mirá tus premios en Progreso.`,
+            ? "¡Ganaste 1 día de Premium! Mira tus premios en Progreso."
+            : `¡Ganaste ${r.dias} días de Premium! Mira tus premios en Progreso.`,
           5000,
         ),
       ),
     [],
   );
   const [goalToast, setGoalToast] = useState(null);
-  // La racha suma el día con la primera actividad que terminás; la meta de minutos es aparte.
+  // La racha suma el día con la primera actividad que terminas; la meta de minutos es aparte.
   useStreakCelebration((streak) => {
     const msg =
       streak > 1
@@ -568,12 +568,12 @@ function App() {
               {_jsx(v, { active: shown })}
               {k.id !== "jugar" ? (
                 <p className="credit">
-                  Edge 21 ♠ · para aprender, sin plata real
+                  Edge 21 ♠ · para aprender, sin dinero real
                 </p>
               ) : null}
             </section>
           );
-          // Las pestañas ocultas no se vuelven a dibujar mientras practicás (React las actualiza
+          // Las pestañas ocultas no se vuelven a dibujar mientras practicas (React las actualiza
           // cuando hay tiempo libre). La mesa queda afuera: su ronda sigue andando aunque no se vea.
           return k.id === "jugar" ? (
             sec
@@ -630,10 +630,10 @@ function AvisoVersion() {
     <div className="update-card" role="status">
       <Icon name="refresh" size={20} />
       <div className="grow">
-        <b>{v.obligatoria ? "Actualizá la app" : "Hay una versión nueva"}</b>
+        <b>{v.obligatoria ? "Actualiza la app" : "Hay una versión nueva"}</b>
         <div className="small">
           {v.obligatoria
-            ? "Esta versión ya no funciona bien. Actualizala en Google Play para seguir."
+            ? "Esta versión ya no funciona bien. Actualízala en Google Play para seguir."
             : "Tu progreso se mantiene."}
         </div>
       </div>
@@ -701,7 +701,7 @@ function TabBar({ tab: a, onTab: e }) {
   const desk = useEscritorio();
   return (
     <nav className="tabbar" aria-label="Secciones">
-      {/* Solo en la compu (menú al costado): la marca arriba y, si se puede, instalarla. */}
+      {/* Solo en la computadora (menú al costado): la marca arriba y, si se puede, instalarla. */}
       <div className="tab-brand" aria-hidden="true">
         <Logo size={34} />
         <b>Edge 21</b>
@@ -730,7 +730,7 @@ function TabBar({ tab: a, onTab: e }) {
           onClick={instalarEscritorio}
         >
           <Icon name="download" size={18} />
-          <span>Instalar en la compu</span>
+          <span>Instalar en la computadora</span>
         </button>
       ) : null}
     </nav>
@@ -764,7 +764,7 @@ const ErrorBoundary = class extends Component {
         >
           <h1 style={{ fontSize: 30 }}>Algo salió mal</h1>
           <p className="muted">
-            Hubo un error inesperado. Tu progreso está guardado. Probá volver a
+            Hubo un error inesperado. Tu progreso está guardado. Prueba volver a
             abrir la app.
           </p>
           <button

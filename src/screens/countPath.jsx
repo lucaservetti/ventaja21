@@ -51,7 +51,7 @@ function CountPathCard() {
     if (!levelUnlocked(st, level)) {
       setToast({
         id: Date.now(),
-        msg: `Aprobá el nivel ${level.n - 1} para desbloquear este.`,
+        msg: `Aprueba el nivel ${level.n - 1} para desbloquear este.`,
         kind: "info",
       });
       setTimeout(() => setToast(null), 2200);
@@ -65,7 +65,7 @@ function CountPathCard() {
       <div className="cpath-head">
         <div className="grow">
           <div className="eyebrow acc">Ruta de conteo</div>
-          <h2 className="cpath-title">Aprendé a contar, paso a paso</h2>
+          <h2 className="cpath-title">Aprende a contar, paso a paso</h2>
         </div>
         <span className="cpath-count num">
           <b>{done}</b>/{COUNT_LEVELS.length}
@@ -99,7 +99,7 @@ function CountPathCard() {
             >
               <Icon name="book" size={18} />
               <span>
-                <b>¿Primera vez contando?</b> Mirá antes la lección de 3 minutos
+                <b>¿Primera vez contando?</b> Mira antes la lección de 3 minutos
                 sobre los valores de las cartas.
               </span>
               <Icon name="chev" size={16} />
@@ -117,8 +117,8 @@ function CountPathCard() {
         <div className="cpath-done">
           <Icon name="trophy" size={30} />
           <p>
-            <b>Terminaste la ruta.</b> Ya sabés contar un zapato entero. Seguí
-            practicando en el simulador con el conteo oculto, o rendí el examen
+            <b>Terminaste la ruta.</b> Ya sabes contar un zapato entero. Sigue
+            practicando en el simulador con el conteo oculto, o haz el examen
             final en Aprender.
           </p>
         </div>
@@ -225,7 +225,7 @@ function CountLevel({ level: n }) {
         </div>
         {passed ? (
           <p className="good small" style={{ marginTop: 10, fontWeight: 700 }}>
-            Ya lo aprobaste. Podés repetirlo cuando quieras.
+            Ya lo aprobaste. Puedes repetirlo cuando quieras.
           </p>
         ) : tries ? (
           <p className="muted small" style={{ marginTop: 10 }}>
@@ -269,10 +269,10 @@ function CountLevel({ level: n }) {
           </span>
           <span className="li-text">
             <span className="li-title" style={{ fontSize: 16 }}>
-              ¿Querés repasar antes?
+              ¿Quieres repasar antes?
             </span>
             <span className="li-sub" style={{ display: "block" }}>
-              Abrí la lección sobre este tema
+              Abre la lección sobre este tema
             </span>
           </span>
           <Icon name="chev" className="li-chev" />
@@ -324,7 +324,7 @@ function LevelOutcome({ level, passed, detail, practice = false }) {
         </div>
         <p className="muted small" style={{ marginTop: 8 }}>
           {detail ||
-            "No cuenta como intento. Cuando te sientas listo, rendí el nivel sin ayuda."}
+            "No cuenta como intento. Cuando te sientas listo, haz el nivel sin ayuda."}
         </p>
       </div>
     );
@@ -352,7 +352,7 @@ function LevelOutcome({ level, passed, detail, practice = false }) {
           (passed
             ? next
               ? `Se desbloqueó el nivel ${next.n}: ${next.title}.`
-              : "Ya sabés contar un zapato entero."
+              : "Ya sabes contar un zapato entero."
             : `Para aprobar: ${level.goal}`)}
       </p>
     </div>
@@ -544,7 +544,7 @@ function DrillPairs({ level: levelN, practice = false }) {
         ) : null}
         <p className="center muted" style={{ margin: "18px 0" }}>
           {done.ok === pairs.length
-            ? "Perfecto. Cuando cuentes una mesa, buscá estas parejas y las cancelás de un vistazo."
+            ? "Perfecto. Cuando cuentes una mesa, busca estas parejas y las cancelas de un vistazo."
             : "La clave: una alta y una baja juntas no mueven el conteo. Solo cuentan las que sobran."}
         </p>
         {level ? (

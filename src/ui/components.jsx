@@ -527,7 +527,7 @@ function StrategyChart({
         onChange={n}
       />
       <p className="chart-cap-top">
-        {CHART_TAB_NOTES[s]} Buscá tu mano en las filas y la carta del crupier
+        {CHART_TAB_NOTES[s]} Busca tu mano en las filas y la carta del crupier
         en las columnas.
       </p>
       <div
@@ -578,16 +578,16 @@ function StrategyChart({
       />
       <p className="chart-note">
         Letra chica: qué hacer si esa jugada no se permite. <b>D</b> sola: si no
-        podés doblar, pedí.{" "}
+        puedes doblar, pide.{" "}
         <b>
           D<sub>s</sub>
         </b>
-        : si no podés doblar, plantate.
+        : si no puedes doblar, plántate.
         {a.surrender ? (
           <>
             {" "}
-            <b>R</b> con h, s o p: si no te podés rendir, pedí (h), plantate (s)
-            o separá (p).
+            <b>R</b> con h, s o p: si no te puedes rendir, pide (h), plántate (s)
+            o separa (p).
           </>
         ) : null}
       </p>

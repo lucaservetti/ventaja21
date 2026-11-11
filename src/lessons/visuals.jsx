@@ -133,11 +133,11 @@ function Visual({ v: a }) {
         <div className="vis tiles two">
           <div className="tile">
             <div className="tile-v t-good">$15</div>
-            <div className="tile-l">cobrás con $10 en una mesa 3:2</div>
+            <div className="tile-l">cobras con $10 en una mesa 3:2</div>
           </div>
           <div className="tile">
             <div className="tile-v t-bad">$12</div>
-            <div className="tile-l">cobrás con $10 en una mesa 6:5</div>
+            <div className="tile-l">cobras con $10 en una mesa 6:5</div>
           </div>
         </div>
       );
@@ -214,7 +214,7 @@ function HandsVisual({ dealer: a, player: e, caption: t }) {
         <b className="num">{handValue(s).total}</b>
       </div>
       <div className="hv-row">
-        <span className="eyebrow acc">Vos</span>
+        <span className="eyebrow acc">Tú</span>
         <div className="card-row">
           {n.map((l) => (
             <PlayingCard card={l} size="sm" deal={true} key={l.id} />
@@ -441,12 +441,12 @@ function BetRamp({ highlight: a = null }) {
   );
 }
 const DEV_VERBS = {
-  S: "Plantate",
-  D: "Doblá",
-  P: "Separá",
-  H: "Pedí",
-  R: "Rendite",
-  I: "Tomá el seguro",
+  S: "Plántate",
+  D: "Dobla",
+  P: "Separa",
+  H: "Pide",
+  R: "Ríndete",
+  I: "Toma el seguro",
 };
 function DevList({ which: a = "top" }) {
   let e = useRules(),

@@ -1,4 +1,4 @@
-// Diario de casino real: anotás cada sesión que jugás de verdad y ves tu resultado acumulado.
+// Diario de casino real: anotas cada sesión que juegas de verdad y ves tu resultado acumulado.
 import { useState } from "react";
 import { dayKey, setState, useStore } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
@@ -206,15 +206,15 @@ function Journal() {
         onClose={() => nav.pop()}
         closeIcon="back"
         title="Diario de casino real"
-        sub="Lo que jugás de verdad"
+        sub="Lo que juegas de verdad"
       />
       <div className="field jr-cur">
         <span>Moneda</span>
         <CurrencyPills />
         {others ? (
           <span className="muted small" style={{ fontWeight: 400 }}>
-            Tenés {others} {others === 1 ? "sesión" : "sesiones"} en otra
-            moneda: cambiala para verlas.
+            Tienes {others} {others === 1 ? "sesión" : "sesiones"} en otra
+            moneda: cámbiala para verlas.
           </span>
         ) : null}
       </div>
@@ -258,8 +258,8 @@ function Journal() {
             {entries.length} {entries.length === 1 ? "sesión" : "sesiones"},{" "}
             {wins} {wins === 1 ? "ganada" : "ganadas"}.{" "}
             {hours < 100
-              ? "Con pocas horas, el resultado es casi todo suerte: lo que importa es jugar bien. Compará con lo que espera el simulador de banca."
-              : "Ya tenés horas suficientes para que el resultado empiece a mostrar tu ventaja."}
+              ? "Con pocas horas, el resultado es casi todo suerte: lo que importa es jugar bien. Compara con lo que espera el simulador de banca."
+              : "Ya tienes horas suficientes para que el resultado empiece a mostrar tu ventaja."}
           </p>
           <div className="section-title">
             <h2>Sesiones</h2>
@@ -300,9 +300,9 @@ function Journal() {
         <div className="card flat center jr-empty">
           <Icon name="book" size={34} />
           <p style={{ marginTop: 10 }}>
-            Anotá cada vez que jugás en un casino de verdad: cuántas horas y
-            cuánto ganaste o perdiste. Acá vas a ver tu resultado acumulado y
-            cuánto ganás por hora.
+            Anota cada vez que juegas en un casino de verdad: cuántas horas y
+            cuánto ganaste o perdiste. Aquí vas a ver tu resultado acumulado y
+            cuánto ganas por hora.
           </p>
           <p className="muted small" style={{ marginTop: 8 }}>
             Se guarda solo en este celular, como el resto de tu progreso.

@@ -3,8 +3,8 @@
 //   firebase emulators:start --project demo-edge21 --only auth,firestore   (con firestore.rules)
 // y armar la app apuntando a ellos:
 //   FIREBASE_API_KEY=x FIREBASE_PROJECT_ID=demo-edge21 GOOGLE_WEB_CLIENT_ID=x FIREBASE_EMULATOR=127.0.0.1 PREMIOS_API=http://127.0.0.1:8787 npm run build
-// (el servidor de premios corre acá mismo, en el puerto 8787, contra los emuladores)
-// Uso: node tests/e2e/nube.mjs   (al terminar, volvé a correr npm run build sin esas variables)
+// (el servidor de premios corre aquí mismo, en el puerto 8787, contra los emuladores)
+// Uso: node tests/e2e/nube.mjs   (al terminar, vuelve a correr npm run build sin esas variables)
 import { chromium } from "playwright";
 import http from "node:http";
 import fs from "node:fs";
@@ -38,7 +38,7 @@ const srv = http.createServer((req, res) => {
   fs.readFile(path.join(ROOT, p), (e, d) => (e ? res.writeHead(404).end() : res.writeHead(200, { "content-type": p.endsWith(".html") ? "text/html; charset=utf-8" : "application/octet-stream" }).end(d)));
 });
 await new Promise((ok) => srv.listen(0, ok));
-// Sin límite de pedidos (acá la misma cuenta entra desde varios "celulares"; los límites se prueban
+// Sin límite de pedidos (aquí la misma cuenta entra desde varios "celulares"; los límites se prueban
 // en tests/servidor.mjs).
 const sinLimite = { limit: async () => ({ success: true }) };
 // El servidor de premios (el mismo código que corre en Cloudflare), apuntando a los emuladores.
@@ -168,7 +168,7 @@ await paso("con progreso en los dos lados pregunta, y elegir el de la cuenta lo 
   await c.getByText("Tu cuenta", { exact: true }).click();
   await c.waitForTimeout(400);
   c.evaluate((t) => window.__cloudTest.finishSignIn(t), fakeGoogle("g-ana", "Ana Pérez", "ana@ejemplo.com"));
-  await c.getByText("¿Con qué progreso te quedás?").waitFor({ timeout: 8000 });
+  await c.getByText("¿Con qué progreso te quedas?").waitFor({ timeout: 8000 });
   await c.getByText("Usar el de la cuenta").click();
   await c.waitForTimeout(600);
   const st = await state(c);
@@ -194,7 +194,7 @@ await paso("premios: terminar las lecciones da 3 días de Premium, con aviso y e
   await a.locator('nav.tabbar button:has-text("Progreso")').click();
   await a.getByText("Premios", { exact: true }).filter({ visible: true }).first().click();
   await a.locator(".pz-item.done").filter({ hasText: "Graduación" }).waitFor({ timeout: 5000 });
-  await a.getByText("Tenés Premium de regalo hasta el").first().waitFor({ timeout: 5000 });
+  await a.getByText("Tienes Premium de regalo hasta el").first().waitFor({ timeout: 5000 });
   await a.goBack();
 });
 
@@ -225,7 +225,7 @@ await paso("borrar la cuenta borra la nube y el ranking", async () => {
   await a.getByText("Tu cuenta", { exact: true }).click();
   await a.getByText("Borrar mi cuenta y mis datos de la nube").click();
   await a.getByText("Sí, borrar todo").click();
-  await a.getByText("Guardá tu progreso en tu cuenta de Google").waitFor({ timeout: 8000 });
+  await a.getByText("Guarda tu progreso en tu cuenta de Google").waitFor({ timeout: 8000 });
   check(!(await owner(`${FS}/users/${uid}`)), "quedó el progreso en la nube");
   check(!(await owner(`${FS}/daily/${today}/scores/${uid}`)), "quedó el puntaje");
   check(!(await owner(`${FS}/premios/${uid}`)), "quedaron los premios");

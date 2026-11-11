@@ -94,7 +94,7 @@ function Backup() {
         mark();
         setMsg({
           ok: true,
-          text: "Listo. Guardalo donde puedas encontrarlo (Archivos, WhatsApp, mail).",
+          text: "Listo. Guárdalo donde puedas encontrarlo (Archivos, WhatsApp, mail).",
         });
         return;
       }
@@ -117,10 +117,10 @@ function Backup() {
       mark();
       setMsg({
         ok: true,
-        text: "Código copiado. Pegalo en una nota o mandátelo por mensaje.",
+        text: "Código copiado. Pégalo en una nota o mandátelo por mensaje.",
       });
     } catch {
-      setMsg({ ok: true, text: "Seleccioná el código de abajo y copialo." });
+      setMsg({ ok: true, text: "Selecciona el código de abajo y cópialo." });
     }
   };
   const download = () => {
@@ -135,7 +135,7 @@ function Backup() {
       setTimeout(() => URL.revokeObjectURL(a.href), 2000);
       mark();
     } catch {
-      setMsg({ ok: false, text: "No se pudo descargar. Usá «Copiar código»." });
+      setMsg({ ok: false, text: "No se pudo descargar. Usa «Copiar código»." });
     }
   };
   const check = (text) => {
@@ -179,7 +179,7 @@ function Backup() {
       {canPersist() ? null : (
         <p className="note-box casino-warn" style={{ marginBottom: 12 }}>
           Este navegador no deja guardar datos: tu progreso se pierde al cerrar.
-          Instalá la app o usá otro navegador.
+          Instala la app o usa otro navegador.
         </p>
       )}
       <div className="card">
@@ -221,19 +221,19 @@ function Backup() {
         <li>
           <span className="how-n">1</span>
           <span className="small">
-            Compartí el archivo (por WhatsApp, AirDrop o mail) o copiá el
+            Comparte el archivo (por WhatsApp, AirDrop o mail) o copia el
             código.
           </span>
         </li>
         <li>
           <span className="how-n">2</span>
           <span className="small">
-            En el otro celular, abrí Edge 21 y entrá a Ajustes → Respaldo.
+            En el otro celular, abre Edge 21 y entra a Ajustes → Respaldo.
           </span>
         </li>
         <li>
           <span className="how-n">3</span>
-          <span className="small">Abrí el archivo o pegá el código.</span>
+          <span className="small">Abre el archivo o pega el código.</span>
         </li>
       </ol>
 
@@ -257,7 +257,7 @@ function Backup() {
         htmlFor="bk-in"
         style={{ display: "block", marginTop: 14 }}
       >
-        O pegá el código
+        O pega el código
       </label>
       <textarea
         id="bk-in"
@@ -291,7 +291,7 @@ function Backup() {
         <p className="muted small" style={{ margin: "12px 0 18px" }}>
           Reemplaza el progreso de este celular
           {getState().train.totalHands || getState().train.sessions.length
-            ? " (el que tenés ahora se pierde)"
+            ? " (el que tienes ahora se pierde)"
             : ""}
           .
         </p>
@@ -308,7 +308,7 @@ function Backup() {
   );
 }
 
-// Aviso en Progreso si hace mucho que no hacés un respaldo y ya tenés progreso para perder.
+// Aviso en Progreso si hace mucho que no haces un respaldo y ya tienes progreso para perder.
 function BackupNudge({ st, nav }) {
   const last = st.settings.lastBackup;
   const progress =
@@ -325,11 +325,11 @@ function BackupNudge({ st, nav }) {
         <Icon name="shield" />
       </span>
       <span className="li-text">
-        <span className="li-title">Hacé un respaldo</span>
+        <span className="li-title">Haz un respaldo</span>
         <span className="li-sub" style={{ display: "block" }}>
           {last
-            ? "Hace más de 3 semanas que no guardás tu progreso."
-            : "Tu progreso vive solo en este celular. Guardalo por si lo cambiás."}
+            ? "Hace más de 3 semanas que no guardas tu progreso."
+            : "Tu progreso vive solo en este celular. Guárdalo por si lo cambias."}
         </span>
       </span>
       <Icon name="chev" className="li-chev" />

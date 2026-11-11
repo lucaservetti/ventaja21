@@ -74,7 +74,7 @@ function SettingsSheet({ open: a, onClose: e }) {
         >
           <span className="li-text">
             <span className="li-title" style={{ fontSize: 17 }}>
-              {hasPremium(t) ? "Sos Premium" : "Edge 21 Premium"}
+              {hasPremium(t) ? "Eres Premium" : "Edge 21 Premium"}
             </span>
             <span className="li-sub" style={{ display: "block" }}>
               {hasPremium(t)
@@ -101,7 +101,7 @@ function SettingsSheet({ open: a, onClose: e }) {
             <span className="li-sub" style={{ display: "block" }}>
               {acct
                 ? `Guardando tu progreso en ${acct.email || "tu cuenta de Google"}`
-                : "Guardá tu progreso con Google (opcional)"}
+                : "Guarda tu progreso con Google (opcional)"}
             </span>
           </span>
           <Icon name="chev" className="li-chev" />
@@ -121,7 +121,7 @@ function SettingsSheet({ open: a, onClose: e }) {
               Estadísticas
             </span>
             <span className="li-sub" style={{ display: "block" }}>
-              Cuánta gente entra, hasta dónde llega y si vuelve (solo vos)
+              Cuánta gente entra, hasta dónde llega y si vuelve (solo tú)
             </span>
           </span>
           <Icon name="chev" className="li-chev" />
@@ -321,7 +321,7 @@ function SettingsSheet({ open: a, onClose: e }) {
       {canPersist() ? null : (
         <p className="note-box" style={{ marginBottom: 10 }}>
           Este navegador no deja guardar datos: tu progreso se pierde al cerrar.
-          Instalá la app o usá otro navegador.
+          Instala la app o usa otro navegador.
         </p>
       )}
       <button
@@ -337,7 +337,7 @@ function SettingsSheet({ open: a, onClose: e }) {
             Respaldo y otro celular
           </span>
           <span className="li-sub" style={{ display: "block" }}>
-            Guardá tu progreso o pasalo a otro celular
+            Guarda tu progreso o pásalo a otro celular
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
@@ -386,12 +386,12 @@ function SettingsSheet({ open: a, onClose: e }) {
           <div className="note-box">
             <p>
               <b>iPhone:</b>
-              {" abrí la app en Safari, tocá Compartir y elegí "}
+              {" abre la app en Safari, toca Compartir y elige "}
               <b>Agregar a inicio</b>.
             </p>
             <p style={{ marginTop: 6 }}>
               <b>Android:</b>
-              {" en Chrome, abrí el menú ⋮ y tocá "}
+              {" en Chrome, abre el menú ⋮ y toca "}
               <b>Instalar app</b>.
             </p>
             <p style={{ marginTop: 6 }}>
@@ -404,8 +404,8 @@ function SettingsSheet({ open: a, onClose: e }) {
       <p className="muted small">
         Edge 21 es para aprender. Contar cartas mentalmente es legal, pero los
         casinos pueden pedirte que no juegues, y usar el celular en la mesa está
-        prohibido. Jugá solo plata que no necesitás. Si el juego deja de ser
-        entretenimiento, frená y pedí ayuda.
+        prohibido. Juega solo dinero que no necesitas. Si el juego deja de ser
+        entretenimiento, frena y pide ayuda.
       </p>
       <p className="small legal-links" style={{ marginTop: 18 }}>
         <a
@@ -501,7 +501,7 @@ function SystemSheet({ open: a, onClose: e }) {
           }
           {n.short || n.name}
           {
-            " practicás los valores, el conteo corrido y los chequeos en la mesa."
+            " practicas los valores, el conteo corrido y los chequeos en la mesa."
           }
           {n.balanced
             ? ""

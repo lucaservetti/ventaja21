@@ -67,7 +67,7 @@ const TABLE_PRESETS = [
   {
     id: "rng",
     name: "Online automático (RNG)",
-    desc: "Se mezcla después de cada mano. Contar no sirve: probalo.",
+    desc: "Se mezcla después de cada mano. Contar no sirve: pruébalo.",
     rules: {
       decks: 6,
       h17: false,
@@ -139,19 +139,19 @@ const LEVELS = [
     min: 950,
     name: "Ficha roja",
     chip: "#d23b3b",
-    note: "Ya jugás la mayoría de las manos bien.",
+    note: "Ya juegas la mayoría de las manos bien.",
   },
   {
     min: 1100,
     name: "Ficha verde",
     chip: "#2f9e5b",
-    note: "Dominás la estrategia básica.",
+    note: "Dominas la estrategia básica.",
   },
   {
     min: 1250,
     name: "Ficha negra",
     chip: "#1b1b1b",
-    note: "Casi no cometés errores.",
+    note: "Casi no cometes errores.",
   },
   {
     min: 1400,
@@ -543,7 +543,7 @@ function recordLevel(id, ok, score) {
   });
 }
 // Errores para repetir: una mano fallada entra a la lista (o suma un fallo si ya estaba);
-// sale cuando la acertás dos veces seguidas, en cualquier lado.
+// sale cuando la aciertas dos veces seguidas, en cualquier lado.
 const MAX_MISTAKES = 40;
 function recordHandResult(hand, ok) {
   setState((st) => {
@@ -584,7 +584,7 @@ function recordHandResult(hand, ok) {
     return { ...st, train: { ...st.train, mistakes: next } };
   });
 }
-// Tarjetas de la tabla: cada casilla sube de caja cuando la acertás y vuelve a la primera si fallás.
+// Tarjetas de la tabla: cada casilla sube de caja cuando la aciertas y vuelve a la primera si fallas.
 const SRS_DAYS = [0, 1, 3, 7, 14, 30, 60];
 function recordSrs(key, ok) {
   setState((st) => {
@@ -708,7 +708,7 @@ function setGoalMinutes(minutes) {
     };
   });
 }
-// Repaso: una pregunta fallada entra a la lista; sale cuando la acertás dos veces en el repaso.
+// Repaso: una pregunta fallada entra a la lista; sale cuando la aciertas dos veces en el repaso.
 const DAY_MS = 86400000;
 function recordReviewAnswer(lessonId, step, ok, sig, fromReview = false) {
   setState((st) => {

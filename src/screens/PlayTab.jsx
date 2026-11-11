@@ -1,4 +1,4 @@
-// Pestaña Jugar: el simulador libre, con la mesa y las ayudas que elegís en "Mesa".
+// Pestaña Jugar: el simulador libre, con la mesa y las ayudas que eliges en "Mesa".
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   TABLE_PRESETS,
@@ -75,7 +75,7 @@ function PlayTab({ active }) {
   const sys = systemFor(st.settings.system);
   const optionsKey = JSON.stringify(tableOptions(st));
 
-  // Las opciones de "Mesa" y de Ajustes viven en el estado guardado; acá se pasan a la mesa.
+  // Las opciones de "Mesa" y de Ajustes viven en el estado guardado; aquí se pasan a la mesa.
   useEffect(() => {
     const opts = tableOptions(st);
     const rulesChanged =
@@ -445,7 +445,7 @@ function TableSheet({ open, onClose, table }) {
             Modo casino real <PremiumTag st={st} />
           </span>
           <span className="li-sub" style={{ display: "block" }}>
-            Tu plata, límites de mesa, tiempo para decidir y vigilancia
+            Tu dinero, límites de mesa, tiempo para decidir y vigilancia
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
@@ -648,7 +648,7 @@ function TableSheet({ open, onClose, table }) {
       <Toggle
         id="t-count"
         label="Mostrar el conteo"
-        sub="Apagalo para practicar de verdad"
+        sub="Apágalo para practicar de verdad"
         checked={t.showCount}
         onChange={(showCount) => setTable({ showCount })}
       />

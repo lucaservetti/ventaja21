@@ -313,7 +313,7 @@ await paso("errores: se guardan recortados, sin cuenta, y con límite por conexi
   const q = await fetch(`${FS}:runQuery`, { method: "POST", headers: { Authorization: "Bearer owner", "Content-Type": "application/json" }, body: JSON.stringify({ structuredQuery: { from: [{ collectionId: "errores" }], where: { fieldFilter: { field: { fieldPath: "where" }, op: "EQUAL", value: { stringValue: "w" } } } } }) }).then((x) => x.json());
   const doc = q.find((x) => x.document).document;
   check(doc.fields.msg.stringValue.length === 300, "el mensaje no se recortó");
-  check(doc.fields.plataforma.stringValue === "web", "la plataforma no se limpió");
+  check(doc.fields.plataforma.stringValue === "web", "el dineroforma no se limpió");
   check(!doc.fields.extra, "guardó un campo de más");
   const n = [];
   for (let i = 0; i < 12; i++) n.push((await mandar({ msg: "y" + i }, "9.9.9.9")).status);

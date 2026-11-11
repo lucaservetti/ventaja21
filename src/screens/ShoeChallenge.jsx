@@ -165,7 +165,7 @@ function ShoeChallenge({
         top={top}
         showCount={practice ? showCount : false}
         onToggleCount={practice ? () => setShowCount(!showCount) : undefined}
-        countLabel="Contá vos"
+        countLabel="Cuenta tú"
         betHint={false}
         unitBets={true}
         onShoeEnd={finish}
@@ -175,7 +175,7 @@ function ShoeChallenge({
           {exam ? "¿Dejar el examen?" : "¿Salir del nivel?"}
         </h2>
         <p className="muted" style={{ margin: "10px 0 20px" }}>
-          El intento no se va a contar. Podés empezarlo de nuevo cuando quieras.
+          El intento no se va a contar. Puedes empezarlo de nuevo cuando quieras.
         </p>
         <div className="btns">
           <Button kind="secondary" onClick={() => setExitOpen(false)}>
@@ -348,10 +348,10 @@ function ChallengeResult({ result, exam, level, practice = false }) {
         {exam
           ? passed
             ? "Jugaste un zapato entero como un contador: estrategia, conteo y apuestas. Lo que sigue es práctica para sostenerlo con presión de casino."
-            : "Repasá lo que falló y volvé a intentarlo. En Jugar podés practicar con el conteo oculto y el mentor prendido."
+            : "Repasa lo que falló y vuelve a intentarlo. En Jugar puedes practicar con el conteo oculto y el mentor prendido."
           : passed
             ? "Llevaste el conteo de un zapato completo mientras jugabas. Eso es contar cartas."
-            : "Cuando un chequeo falla, el error suele venir de una mano con muchas cartas. Contá cada carta apenas cae."}
+            : "Cuando un chequeo falla, el error suele venir de una mano con muchas cartas. Cuenta cada carta apenas cae."}
       </p>
       {level ? (
         <LevelActions level={level} passed={passed} practice={practice} />

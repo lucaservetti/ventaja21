@@ -1,5 +1,5 @@
-// "Saltar hasta acá": un examen con preguntas de todas las secciones anteriores.
-// Si lo aprobás, esas lecciones quedan hechas y se abre la sección elegida.
+// "Saltar hasta aquí": un examen con preguntas de todas las secciones anteriores.
+// Si lo apruebas, esas lecciones quedan hechas y se abre la sección elegida.
 import { useEffect, useState } from "react";
 import { markActive, recordReviewAnswer, setState } from "../state.js";
 import { Icon, SuitIcon } from "../ui/icons.jsx";
@@ -107,7 +107,7 @@ function JumpTest({ section: sectionId }) {
           {prev.length === 1
             ? "la sección 1"
             : `las secciones 1 a ${prev.length}`}
-          . Si lo aprobás, esas lecciones quedan hechas y arrancás directo acá.
+          . Si lo apruebas, esas lecciones quedan hechas y empiezas directo aquí.
         </p>
         <div className="card jump-rules">
           <div className="jump-lives" aria-label={`${LIVES} vidas`}>
@@ -116,7 +116,7 @@ function JumpTest({ section: sectionId }) {
             ))}
           </div>
           <p>
-            Tenés <b>{LIVES} vidas</b>: cada error te saca una. Si te equivocás
+            Tienes <b>{LIVES} vidas</b>: cada error te saca una. Si te equivocas
             una cuarta vez, el examen termina y te conviene hacer las lecciones.
           </p>
         </div>
@@ -181,7 +181,7 @@ function JumpTest({ section: sectionId }) {
             <p className="muted small" style={{ marginTop: 10 }}>
               {passed
                 ? "Las preguntas que fallaste quedaron en tu Repaso."
-                : "Hacé esas lecciones y volvé a intentarlo cuando quieras."}
+                : "Haz esas lecciones y vuelve a intentarlo cuando quieras."}
             </p>
           </div>
         ) : null}
@@ -266,7 +266,7 @@ function JumpTest({ section: sectionId }) {
       <Modal open={exitOpen} onClose={() => setExitOpen(false)}>
         <h2 style={{ fontSize: 24 }}>¿Dejar el examen?</h2>
         <p className="muted" style={{ margin: "10px 0 20px" }}>
-          No se guarda nada: podés volver a rendirlo cuando quieras.
+          No se guarda nada: puedes volver a rendirlo cuando quieras.
         </p>
         <div className="btns">
           <Button kind="secondary" onClick={() => setExitOpen(false)}>

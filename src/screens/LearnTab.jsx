@@ -18,7 +18,7 @@ import { reviewCount } from "../lessons/Review.jsx";
 import { APP_MODE, NATIVE, WEB_DEMO, hasPremium, shop } from "../platform.js";
 
 // Para que se sepa que existe Premium, sin insistir: aparece desde el segundo día y con 3 lecciones
-// hechas, y si la cerrás no vuelve por 2 semanas.
+// hechas, y si la cierras no vuelve por 2 semanas.
 const PREM_CARD_PAUSE = 14 * 24 * 60 * 60 * 1000;
 function PremiumCard({ st, lessonsDone }) {
   const nav = useNav();
@@ -55,8 +55,8 @@ function PremiumCard({ st, lessonsDone }) {
           </span>
           <span className="li-sub" style={{ display: "block" }}>
             {trialDays
-              ? `Probalo ${trialDays} días gratis con el plan anual`
-              : "Mirá todo lo que incluye"}
+              ? `Pruébalo ${trialDays} días gratis con el plan anual`
+              : "Mira todo lo que incluye"}
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
@@ -171,7 +171,7 @@ function NextStepsCard({ st, done }) {
             <span className="li-title">Examen final</span>
             <span className="li-sub">
               {examPassed
-                ? "Aprobado. Podés rendirlo otra vez cuando quieras."
+                ? "Aprobado. Puedes rendirlo otra vez cuando quieras."
                 : "Un zapato entero jugando bien, contando y apostando según el conteo"}
             </span>
           </span>
@@ -201,7 +201,7 @@ function AmigoCard() {
       <div className="eyebrow acc">Te invitó un amigo</div>
       <h2>Ganen Premium los dos</h2>
       <p className="muted">
-        Entrá con Google y jugá el desafío diario 5 días distintos en tus
+        Entra con Google y juega el desafío diario 5 días distintos en tus
         primeras dos semanas: ganan 3 días de Premium cada uno.
       </p>
       <div className="test-card-btns">
@@ -210,7 +210,7 @@ function AmigoCard() {
     </div>
   );
 }
-// Al empezar: el test de nivel (opcional) para saltear lo que ya sabés. Desaparece al hacerlo, al
+// Al empezar: el test de nivel (opcional) para saltear lo que ya sabes. Desaparece al hacerlo, al
 // elegir empezar de cero o al terminar la primera lección.
 function TestCard({ st, lessonsDone }) {
   const nav = useNav();
@@ -224,10 +224,10 @@ function TestCard({ st, lessonsDone }) {
   return (
     <div className="card test-card">
       <div className="eyebrow acc">Test de nivel · 2 minutos</div>
-      <h2>¿Ya sabés algo de blackjack?</h2>
+      <h2>¿Ya sabes algo de blackjack?</h2>
       <p className="muted">
-        Contestá unas preguntas y salteá lo que ya sabés. Si recién empezás,
-        arrancá directo con la primera lección.
+        Contesta unas preguntas y salta lo que ya sabes. Si apenas empiezas,
+        empieza directo con la primera lección.
       </p>
       <div className="test-card-btns">
         <Button onClick={() => nav.push("placement")}>Hacer el test</Button>
@@ -271,7 +271,7 @@ function InstalarIphone({ st, lessonsDone }) {
     <div className="demo-note install-note" role="note">
       <Icon name="sparkle" />
       <span className="grow">
-        <b>Tenela como app en tu iPhone.</b> En Safari, tocá Compartir y
+        <b>Tenla como app en tu iPhone.</b> En Safari, toca Compartir y
         después <b>Agregar a inicio</b>.
       </span>
       <IconButton
@@ -294,7 +294,7 @@ function LearnTab() {
       if (!u) {
         o({
           id: Date.now(),
-          msg: "Completá la lección anterior para desbloquear esta.",
+          msg: "Completa la lección anterior para desbloquear esta.",
           kind: "info",
         });
         setTimeout(() => o(null), 2200);
@@ -472,7 +472,7 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
               }
             >
               <Icon name="bolt" size={16} />
-              Saltar hasta acá
+              Saltar hasta aquí
             </button>
           ) : null}
           {full ? (

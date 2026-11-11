@@ -28,24 +28,24 @@ const INFO = {
   racha7: {
     icon: "bolt",
     title: "Racha de 7 días",
-    sub: "Jugá el desafío diario 7 días seguidos.",
+    sub: "Juega el desafío diario 7 días seguidos.",
     unit: "días seguidos",
   },
   racha30: {
     icon: "calendar",
     title: "Racha de 30 días",
-    sub: "Jugá el desafío diario 30 días seguidos.",
+    sub: "Juega el desafío diario 30 días seguidos.",
     unit: "días seguidos",
   },
   podio: {
     icon: "podium",
     title: "Podio de la semana",
-    sub: "Terminá la semana entre los 3 primeros del ranking (con 10 jugadores o más). Se puede ganar todas las semanas.",
+    sub: "Termina la semana entre los 3 primeros del ranking (con 10 jugadores o más). Se puede ganar todas las semanas.",
   },
   graduacion: {
     icon: "trophy",
     title: "Graduación",
-    sub: "Terminá todas las lecciones.",
+    sub: "Termina todas las lecciones.",
     unit: "lecciones",
   },
 };
@@ -54,14 +54,14 @@ function diasText(n) {
   return n === 1 ? "1 día" : n === 7 ? "1 semana" : `${n} días`;
 }
 
-// Si a vos te invitaron: cuánto te falta para que ganen los dos.
+// Si a ti te invitaron: cuánto te falta para que ganen los dos.
 function Invitado({ inv }) {
   const ok = inv.estado === "nuevo" || inv.estado === "ganado";
   return (
     <div className={cx("card pz-invitado", ok && "done")}>
       <b>
         {ok
-          ? `¡Ganaron ${diasText(AMIGO_DIAS)} de Premium vos y tu amigo!`
+          ? `¡Ganaron ${diasText(AMIGO_DIAS)} de Premium tú y tu amigo!`
           : "Te invitó un amigo"}
       </b>
       {ok ? null : inv.estado === "vencido" ? (
@@ -71,7 +71,7 @@ function Invitado({ inv }) {
       ) : (
         <>
           <p className="muted small">
-            {`Jugá el desafío diario ${AMIGO_META} días distintos en tus primeras dos semanas y ganan ${diasText(AMIGO_DIAS)} de Premium los dos.`}
+            {`Juega el desafío diario ${AMIGO_META} días distintos en tus primeras dos semanas y ganan ${diasText(AMIGO_DIAS)} de Premium los dos.`}
           </p>
           <div className="pz-progress">
             <span className="pz-bar">
@@ -92,7 +92,7 @@ function Invitar({ acct, inv, nav }) {
   const [copiado, setCopiado] = useState(false);
   const enlace = inv && inv.codigo ? `https://edge21.app/?amigo=${inv.codigo}` : null;
   const compartir = async () => {
-    const texto = `Estoy aprendiendo blackjack con Edge 21. Entrá con mi enlace y, si jugás el desafío diario ${AMIGO_META} días, ganamos ${diasText(AMIGO_DIAS)} de Premium los dos:`;
+    const texto = `Estoy aprendiendo blackjack con Edge 21. Entra con mi enlace y, si juegas el desafío diario ${AMIGO_META} días, ganamos ${diasText(AMIGO_DIAS)} de Premium los dos:`;
     try {
       if (navigator.share) {
         await navigator.share({ title: "Edge 21", text: texto, url: enlace });
@@ -112,7 +112,7 @@ function Invitar({ acct, inv, nav }) {
   return (
     <div className="card pz-invitar">
       <div className="pz-head">
-        <b>Invitá amigos</b>
+        <b>Invita amigos</b>
         <span className="pz-days">+{diasText(AMIGO_DIAS)} c/u</span>
       </div>
       <p className="muted small">
@@ -120,7 +120,7 @@ function Invitar({ acct, inv, nav }) {
       </p>
       {!acct ? (
         <Button kind="secondary" onClick={() => nav.push("account")}>
-          Entrá con Google para tener tu enlace
+          Entra con Google para tener tu enlace
         </Button>
       ) : enlace ? (
         <>
@@ -151,7 +151,7 @@ function Invitar({ acct, inv, nav }) {
           ) : null}
         </>
       ) : (
-        <p className="muted small">Revisá tus premios para ver tu enlace.</p>
+        <p className="muted small">Revisa tus premios para ver tu enlace.</p>
       )}
     </div>
   );
@@ -174,7 +174,7 @@ function Premios() {
         <span className="cert-seal" aria-hidden="true">
           <Icon name="sparkle" size={32} stroke={2.2} />
         </span>
-        <h1 className="prem-title">Ganá Premium jugando</h1>
+        <h1 className="prem-title">Gana Premium jugando</h1>
         <p className="muted">
           {PODIO_ACTIVO
             ? "Días de Premium de regalo por jugar seguido, quedar en el podio o terminar las lecciones."
@@ -185,7 +185,7 @@ function Premios() {
         <div className="card pz-signin">
           <p>
             Los premios se guardan en tu cuenta de Google, así valen en el
-            celular y en la web. Entrá para empezar a sumar.
+            celular y en la web. Entra para empezar a sumar.
           </p>
           <Button onClick={() => nav.push("account")}>Entrar con Google</Button>
         </div>
@@ -194,7 +194,7 @@ function Premios() {
         <p className="pz-gift">
           <Icon name="crown" size={16} />
           <span>
-            Tenés Premium de regalo hasta el{" "}
+            Tienes Premium de regalo hasta el{" "}
             <b>
               {new Date(gift).toLocaleDateString(LOCALE, {
                 day: "numeric",
@@ -249,7 +249,7 @@ function Premios() {
                   {estado === "proximamente"
                     ? "Se activa cuando haya más jugadores en el ranking."
                     : estado === "pronto"
-                    ? "Ya lo tenés guardado: se activa cuando la app salga en Google Play."
+                    ? "Ya lo tienes guardado: se activa cuando la app salga en Google Play."
                     : estado === "nuevo"
                       ? `¡Ganaste ${diasText(p.dias)} de Premium!`
                       : estado === "ganado"
@@ -275,11 +275,11 @@ function Premios() {
               ? `Este mes usaste ${mine.usados} de ${TOPE_DIAS} días de regalo. `
               : ""}
             La racha cuenta los días que jugaste el desafío diario con tu cuenta
-            (así aparecés en el ranking).
+            (así apareces en el ranking).
           </p>
           {error ? (
             <p className="small bad">
-              No se pudo revisar los premios. Revisá la conexión.
+              No se pudo revisar los premios. Revisa la conexión.
             </p>
           ) : null}
           <Button

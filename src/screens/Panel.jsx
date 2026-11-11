@@ -23,8 +23,8 @@ const PLATAFORMAS = {
   android: "App de Android",
   "iphone-app": "iPhone (instalada)",
   iphone: "iPhone (Safari)",
-  "compu-app": "Compu (instalada)",
-  compu: "Compu (navegador)",
+  "compu-app": "Computadora (instalada)",
+  compu: "Computadora (navegador)",
   celu: "Celular (navegador)",
   otra: "Otra",
 };
@@ -72,7 +72,7 @@ function Panel() {
         onClose={() => nav.pop()}
         closeIcon="back"
         title="Estadísticas"
-        sub="Anónimas · solo las ves vos"
+        sub="Anónimas · solo las ves tú"
       />
       <Pills
         options={[
@@ -169,7 +169,7 @@ function Panel() {
               </p>
             )}
             <p className="muted small" style={{ marginTop: 10 }}>
-              Para saber qué video trae gente, usá enlaces con nombre: por
+              Para saber qué video trae gente, usa enlaces con nombre: por
               ejemplo, edge21.app/?ref=tiktok_video3.
             </p>
           </div>

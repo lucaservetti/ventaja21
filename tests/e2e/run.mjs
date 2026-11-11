@@ -152,11 +152,11 @@ const PRUEBAS = {
     check(st.profile && st.profile.onboarded, "el perfil no quedó marcado como listo");
   },
 
-  // Test de nivel desde Aprender: corto, termina en la primera que no sabés y saltea lo anterior.
+  // Test de nivel desde Aprender: corto, termina en la primera que no sabes y saltea lo anterior.
   async testNivel(h) {
     const { page } = h;
     await h.tab("Aprender", "Learn");
-    await h.see("¿Ya sabés algo de blackjack?", "Do you already know some blackjack?");
+    await h.see("¿Ya sabes algo de blackjack?", "Do you already know some blackjack?");
     await h.foto("tarjeta");
     await h.click("Hacer el test", "Take the test", { wait: 600 });
     await h.click("Empezar el test", "Start the test", { wait: 600 });
@@ -170,7 +170,7 @@ const PRUEBAS = {
     const st = await h.state();
     check(st.profile.startSection === 2, `empieza en la sección ${st.profile.startSection}`);
     check(st.lessons.l1 && st.lessons.l1.viaTest, "la sección 1 no quedó superada");
-    check(!(await page.getByText(h.T("¿Ya sabés algo de blackjack?", "Do you already know some blackjack?")).filter({ visible: true }).count()), "la tarjeta del test sigue");
+    check(!(await page.getByText(h.T("¿Ya sabes algo de blackjack?", "Do you already know some blackjack?")).filter({ visible: true }).count()), "la tarjeta del test sigue");
   },
 
   // Una lección completa de la primera sección.
@@ -206,7 +206,7 @@ const PRUEBAS = {
       const s = JSON.parse(localStorage.getItem(k));
       s.settings = { ...(s.settings || {}), unlockAll: true };
       // El examen final es una mesa de verdad (apostar y contar un zapato entero): lo cubren las
-      // pruebas de la mesa, acá se da por aprobado para seguir con las lecciones que vienen después.
+      // pruebas de la mesa, aquí se da por aprobado para seguir con las lecciones que vienen después.
       s.lessons = { ...(s.lessons || {}), exam: { done: true, stars: 3 } };
       s.finalExam = { ...(s.finalExam || {}), passed: true };
       localStorage.setItem(k, JSON.stringify(s));
@@ -341,7 +341,7 @@ const PRUEBAS = {
   // la frecuencia y la hora; en Ajustes se ve el resumen.
   async recordatorios(h) {
     const { page, T } = h;
-    // Fuera de la app (si no, al recargar guarda su estado y pisa el que se escribe acá).
+    // Fuera de la app (si no, al recargar guarda su estado y pisa el que se escribe aquí).
     const app = page.url();
     await page.goto(new URL("../privacidad.html", app).href);
     await page.evaluate(() => {
@@ -391,7 +391,7 @@ const PRUEBAS = {
     check(!(await page.locator(".update-card").count()), "el aviso cerrado volvió a aparecer");
     version = { ultima: "99.0.0", minima: "98.0.0" };
     await page.reload();
-    await h.see("Actualizá la app", "Update the app", 8000);
+    await h.see("Actualiza la app", "Update the app", 8000);
     check(!(await page.locator(".update-close").count()), "el aviso obligatorio se puede cerrar");
     await page.evaluate(() => localStorage.removeItem("v21.sim"));
   },
@@ -430,7 +430,7 @@ const PRUEBAS = {
     // Contrarreloj: una por día. La primera abre; la segunda manda a la app.
     await h.tab("Entrenar", "Train");
     await h.click("Contrarreloj", "Beat the clock", { wait: 600 });
-    await h.see("¿Cuántas manos acertás", "How many hands");
+    await h.see("¿Cuántas manos aciertas", "How many hands");
     await page.goBack();
     await page.waitForTimeout(500);
     await h.click("Contrarreloj", "Beat the clock", { wait: 600 });
@@ -461,7 +461,7 @@ const PRUEBAS = {
     await page.reload();
     await page.waitForTimeout(1200);
     await h.tab("Aprender", "Learn");
-    await h.see("Tenela como app en tu iPhone.", "Keep it as an app on your iPhone.");
+    await h.see("Tenla como app en tu iPhone.", "Keep it as an app on your iPhone.");
     check(!(await page.getByText(h.T("Versión web de prueba", "Web trial version")).count()), "la web sigue siendo de prueba");
     await h.foto("instalar");
     await h.css('.install-note [aria-label="Cerrar"], .install-note [aria-label="Close"]', 500);
@@ -575,7 +575,7 @@ const PRUEBAS = {
     check((await badge().innerText()).trim() === "1", "un día salteado no cortó la racha");
   },
   async edad(h) {
-    // Control de edad (src/edad.js): en las pruebas está salteado; acá se pide con v21.edad.
+    // Control de edad (src/edad.js): en las pruebas está salteado; aquí se pide con v21.edad.
     const { page } = h;
     const anio = new Date().getFullYear();
     const pantalla = async () => (await page.locator("input.edad-inp").count()) > 0;
@@ -703,12 +703,12 @@ const PRUEBAS = {
     const ajustes = 'section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]';
     await h.tab("Progreso", "Progress");
     await h.click("Análisis de tus errores", "Mistake analysis", { wait: 700 });
-    await h.see("¿La querés probar primero?", "Want to try it first?");
+    await h.see("¿La quieres probar primero?", "Want to try it first?");
     await h.foto("oferta");
     await h.click("Probar 20 minutos (ver un anuncio)", "Try it for 20 minutes (watch an ad)", { wait: 900 });
     let st = await h.state();
     check(st.settings.prueba && st.settings.prueba.grupo === "mistakes", `prueba: ${JSON.stringify(st.settings.prueba)}`);
-    check(!(await page.getByText(h.T("¿La querés probar primero?", "Want to try it first?")).filter({ visible: true }).count()), "no se abrió la función");
+    check(!(await page.getByText(h.T("¿La quieres probar primero?", "Want to try it first?")).filter({ visible: true }).count()), "no se abrió la función");
     await page.locator(".layer.full button").filter({ visible: true }).first().click();
     await page.waitForTimeout(500);
     // Otra función: no se puede probar.
@@ -818,7 +818,7 @@ const PRUEBAS = {
     check(!(await page.getByText(h.T("Probarlo 30 minutos", "Try it for 30 minutes")).count()), "todavía aparece la prueba de 30 minutos");
     await page.locator(".layer.full button").filter({ visible: true }).first().click();
     await page.waitForTimeout(500);
-    check(!(await page.getByText(h.T("Tu plata", "Your money")).filter({ visible: true }).count()), "el modo casino se abrió sin Premium");
+    check(!(await page.getByText(h.T("Tu dinero", "Your money")).filter({ visible: true }).count()), "el modo casino se abrió sin Premium");
   },
 
   // Con 3 lecciones hechas aparece la tarjeta de Premium en Aprender y lleva a la pantalla de Premium.
@@ -967,7 +967,7 @@ const PRUEBAS = {
     await page.waitForTimeout(1200);
     await h.tab("Jugar", "Play");
     await h.css("section:not([hidden]) button", 700);
-    await h.see("Tu plata", "Your money");
+    await h.see("Tu dinero", "Your money");
   },
 };
 

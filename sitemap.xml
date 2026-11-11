@@ -2,41 +2,41 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://edge21.app/</loc>
-    <lastmod>2026-11-04</lastmod>
+    <lastmod>2026-11-11</lastmod>
   </url>
   <url>
     <loc>https://edge21.app/guias/</loc>
-    <lastmod>2026-11-04</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/"/>
   </url>
   <url>
     <loc>https://edge21.app/en/guides/</loc>
-    <lastmod>2026-11-04</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/"/>
   </url>
   <url>
     <loc>https://edge21.app/guias/estrategia-basica/</loc>
-    <lastmod>2026-11-04</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/estrategia-basica/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/basic-strategy/"/>
   </url>
   <url>
     <loc>https://edge21.app/en/guides/basic-strategy/</loc>
-    <lastmod>2026-11-04</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/estrategia-basica/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/basic-strategy/"/>
   </url>
   <url>
     <loc>https://edge21.app/guias/contar-cartas/</loc>
-    <lastmod>2026-11-04</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/contar-cartas/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/card-counting/"/>
   </url>
   <url>
     <loc>https://edge21.app/en/guides/card-counting/</loc>
-    <lastmod>2026-11-04</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/contar-cartas/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/card-counting/"/>
   </url>

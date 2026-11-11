@@ -1,5 +1,5 @@
-// Simulador de banca: con tu forma de apostar y las reglas de tu mesa, cuánto ganás por hora en promedio,
-// cuánto se mueve el resultado y qué tan probable es quedarte sin plata.
+// Simulador de banca: con tu forma de apostar y las reglas de tu mesa, cuánto ganas por hora en promedio,
+// cuánto se mueve el resultado y qué tan probable es quedarte sin dinero.
 // Modelo: el conteo real se mide jugando zapatos simulados (Hi-Lo); cada +1 de conteo real suma ≈ 0,5 %
 // de ventaja y cada mano tiene una varianza de ≈ 1,3 apuestas al cuadrado.
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -205,7 +205,7 @@ function FanChart({ bands, bank, cur }) {
               className="fan-lbl"
               textAnchor="end"
             >
-              sin plata
+              sin dinero
             </text>
           </>
         ) : null}
@@ -238,7 +238,7 @@ function FanChart({ bands, bank, cur }) {
           </>
         ) : (
           <span className="muted">
-            Tocá el gráfico para ver cada hora. La franja es donde terminás 8 de
+            Toca el gráfico para ver cada hora. La franja es donde terminas 8 de
             cada 10 veces; la línea, la mitad de las veces.
           </span>
         )}
@@ -302,7 +302,7 @@ function BankrollSim({ unit: unit0, bank: bank0 }) {
         <CurrencyPills />
       </div>
       <div className="field">
-        <span>Tu banca (toda la plata para jugar)</span>
+        <span>Tu banca (todo el dinero para jugar)</span>
         <AmountPills
           cur={cur}
           title="Tu banca"
@@ -331,7 +331,7 @@ function BankrollSim({ unit: unit0, bank: bank0 }) {
         />
         <p className="muted small" style={{ marginTop: 8 }}>
           {rampId === "flat"
-            ? "Apostás siempre la mínima, sin importar el conteo."
+            ? "Apuestas siempre la mínima, sin importar el conteo."
             : `Conteo real +1 o menos: 1 u. · ${[2, 3, 4, 5].map((tc) => `+${tc}: ${ramp.units(tc)} u.`).join(" · ")}`}
         </p>
       </div>
@@ -391,7 +391,7 @@ function BankrollSim({ unit: unit0, bank: bank0 }) {
 
       <div className="card br-read">
         <p>
-          Después de {hours} horas, la mitad de las veces terminás{" "}
+          Después de {hours} horas, la mitad de las veces terminas{" "}
           <b className={last.mid >= 0 ? "good" : "bad"}>{sm(last.mid, cur)}</b>.
           8 de cada 10 veces, entre <b>{sm(last.lo, cur)}</b> y{" "}
           <b>{sm(last.hi, cur)}</b>.
@@ -399,15 +399,15 @@ function BankrollSim({ unit: unit0, bank: bank0 }) {
         <p>
           Cada hora el resultado se mueve ± <b>{fmtMoney(sim.sd, cur)}</b>:
           {sim.sd > Math.abs(sim.mu) * 5
-            ? " muchísimo más que lo que ganás en promedio. Por eso hay días y semanas malas aunque juegues perfecto."
-            : " más que lo que ganás en promedio."}
+            ? " muchísimo más que lo que ganas en promedio. Por eso hay días y semanas malas aunque juegues perfecto."
+            : " más que lo que ganas en promedio."}
         </p>
         {muHand > 0 ? (
           <>
             <p>
-              En estas {hours} horas te quedaste sin plata{" "}
+              En estas {hours} horas te quedaste sin dinero{" "}
               <b>{pctText(sim.ruin, 0)}</b> de las veces. Para bajar el riesgo
-              total a 5 %, necesitás una banca de unos{" "}
+              total a 5 %, necesitas una banca de unos{" "}
               <b>{fmtMoney(Math.ceil(bank5 / 100) * 100, cur)}</b>.
             </p>
             <p className="muted small">
@@ -417,14 +417,14 @@ function BankrollSim({ unit: unit0, bank: bank0 }) {
           </>
         ) : (
           <p>
-            Con esta escala <b>no tenés ventaja</b>: la casa gana a la larga y,
-            jugando suficiente, cualquier banca se termina. Probá una escala más
+            Con esta escala <b>no tienes ventaja</b>: la casa gana a la larga y,
+            jugando suficiente, cualquier banca se termina. Prueba una escala más
             amplia (la ventaja sale de apostar más con el conteo alto).
           </p>
         )}
         {rules.pen <= 0 ? (
           <p className="muted small">
-            Tu mesa mezcla cada mano: el conteo no sirve. Cambialo en Jugar →
+            Tu mesa mezcla cada mano: el conteo no sirve. Cámbialo en Jugar →
             Mesa.
           </p>
         ) : null}

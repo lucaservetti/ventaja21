@@ -64,24 +64,24 @@ function cellCode(tab, row, col, rules) {
 
 const COLS = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "A"];
 const VERB = {
-  H: "pedí",
-  S: "plantate",
-  D: "doblá",
-  Ds: "doblá",
-  P: "separá",
-  Rh: "rendite",
-  Rs: "rendite",
-  Rp: "rendite",
+  H: "pide",
+  S: "plántate",
+  D: "dobla",
+  Ds: "dobla",
+  P: "separa",
+  Rh: "ríndete",
+  Rs: "ríndete",
+  Rp: "ríndete",
 };
 const FALLBACK = {
-  D: "si no podés doblar, pedí",
-  Ds: "si no podés doblar, plantate",
-  Rh: "si no te podés rendir, pedí",
-  Rs: "si no te podés rendir, plantate",
-  Rp: "si no te podés rendir, separá",
+  D: "si no puedes doblar, pide",
+  Ds: "si no puedes doblar, plántate",
+  Rh: "si no te puedes rendir, pide",
+  Rs: "si no te puedes rendir, plántate",
+  Rp: "si no te puedes rendir, separa",
 };
 
-// "Plantate contra 2–6; pedí contra 7–A."
+// "Plántate contra 2–6; pide contra 7–A."
 function rowWords(codes) {
   const runs = [];
   codes.forEach((code, i) => {
@@ -106,7 +106,7 @@ function rowFallbacks(codes) {
   return [...new Set(codes.filter((c) => FALLBACK[c]))].map((c) => FALLBACK[c]);
 }
 
-// Agrupa filas seguidas que se juegan igual: "13 a 16: plantate contra 2–6; pedí contra 7–A."
+// Agrupa filas seguidas que se juegan igual: "13 a 16: plántate contra 2–6; pide contra 7–A."
 function chartRules(tab, rows, rules) {
   const groups = [];
   for (const r of rows) {

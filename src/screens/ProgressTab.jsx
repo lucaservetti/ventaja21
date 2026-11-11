@@ -51,7 +51,7 @@ function ProgressTab() {
     <div className="fade-up">
       <PageHeader
         title="Progreso"
-        sub="Cómo venís y qué te conviene practicar"
+        sub="Cómo vienes y qué te conviene practicar"
         actions={
           <>
             <GoalBadge />
@@ -80,12 +80,12 @@ function ProgressTab() {
       <Sheet
         open={n === "leaks"}
         onClose={() => l(null)}
-        title="Dónde más fallás"
+        title="Dónde más fallas"
       >
         <p className="muted">
           Son las situaciones donde más fallaste en tus últimos intentos (por
           debajo de 75 %). Cada una vuelve más seguido en las tandas mezcladas
-          hasta que la domines. Tocá "Practicar" para entrenarla ahora.
+          hasta que la domines. Toca "Practicar" para entrenarla ahora.
         </p>
       </Sheet>
       <Sheet
@@ -96,7 +96,7 @@ function ProgressTab() {
         <p className="muted">
           Tu precisión real en cada situación que te tocó, por total y carta del
           crupier. Los cuadros grises son situaciones que todavía no viste: se
-          van llenando a medida que entrenás.
+          van llenando a medida que entrenas.
         </p>
         <p className="muted" style={{ marginTop: 10 }}>
           <b style={{ color: "var(--good)" }}>Verde</b>
@@ -113,7 +113,7 @@ function Sparkline({ points: a }) {
   if (a.length < 2)
     return (
       <div className="spark-empty muted small">
-        Hacé un par de tandas para ver tu curva.
+        Haz un par de tandas para ver tu curva.
       </div>
     );
   let e = 320,
@@ -245,7 +245,7 @@ function ProgressOverview({ st: a, nav: e }) {
             {s
               ? `Te faltan ${s.min - a.rating.value} puntos para ${s.name}.`
               : "Llegaste al nivel más alto."}
-            {" Tu puntaje sube cuando acertás manos en Entrenar."}
+            {" Tu puntaje sube cuando aciertas manos en Entrenar."}
           </p>
         </div>
       ) : (
@@ -266,7 +266,7 @@ function ProgressOverview({ st: a, nav: e }) {
               Todavía sin medir
             </span>
             <span className="li-sub" style={{ display: "block" }}>
-              Hacé tu primera tanda de 10 manos en Entrenar y vas a ver tu nivel
+              Haz tu primera tanda de 10 manos en Entrenar y vas a ver tu nivel
               y cómo crece.
             </span>
           </span>
@@ -366,7 +366,7 @@ function ProgressOverview({ st: a, nav: e }) {
           <span className="li-text">
             <span className="li-title">Premios</span>
             <span className="li-sub" style={{ display: "block" }}>
-              Ganá días de Premium jugando el desafío diario
+              Gana días de Premium jugando el desafío diario
             </span>
           </span>
           <Icon name="chev" className="li-chev" />
@@ -386,7 +386,7 @@ function ProgressOverview({ st: a, nav: e }) {
             Análisis de tus errores <PremiumTag st={a} />
           </span>
           <span className="li-sub" style={{ display: "block" }}>
-            Tu tabla pintada según dónde fallás y lo que más te cuesta
+            Tu tabla pintada según dónde fallas y lo que más te cuesta
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
@@ -405,7 +405,7 @@ function ProgressOverview({ st: a, nav: e }) {
             Simulador de banca <PremiumTag st={a} />
           </span>
           <span className="li-sub" style={{ display: "block" }}>
-            Cuánta plata necesitás y cuánto podés perder en una mala racha
+            Cuánto dinero necesitas y cuánto puedes perder en una mala racha
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
@@ -426,7 +426,7 @@ function ProgressOverview({ st: a, nav: e }) {
           <span className="li-sub" style={{ display: "block" }}>
             {a.journal.entries.length
               ? `${a.journal.entries.length} ${a.journal.entries.length === 1 ? "sesión anotada" : "sesiones anotadas"}`
-              : "Anotá lo que jugás de verdad y mirá tu resultado"}
+              : "Anota lo que juegas de verdad y mira tu resultado"}
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
@@ -470,7 +470,7 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
     <>
       <div className="card">
         <div className="eyebrow row" style={{ gap: 6 }}>
-          {"Dónde más fallás "}
+          {"Dónde más fallas "}
           <InfoDot onClick={() => t("leaks")} />
         </div>
         {l.length ? (
@@ -502,7 +502,7 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
           </div>
         ) : (
           <p className="muted" style={{ marginTop: 10 }}>
-            Jugá más manos para encontrar tus puntos débiles.
+            Juega más manos para encontrar tus puntos débiles.
           </p>
         )}
         <button
@@ -534,7 +534,7 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
         {o.length ? null : (
           <p className="muted small" style={{ marginTop: 8 }}>
             Todavía no hiciste ninguna tanda en Entrenar. Cuando hagas la
-            primera, acá ves cómo vas mejorando.
+            primera, aquí ves cómo vas mejorando.
           </p>
         )}
         {o.length ? (
@@ -626,7 +626,7 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
           </div>
         ) : (
           <p className="muted" style={{ marginTop: 10 }}>
-            Jugá más manos para ver tus fortalezas.
+            Juega más manos para ver tus fortalezas.
           </p>
         )}
       </div>
@@ -814,7 +814,7 @@ function Records({ st: a }) {
       </div>
       <p className="muted small center" style={{ margin: "18px 10px" }}>
         Todos estos números son tuyos y salen de tu juego real. Se guardan solo
-        en este dispositivo: hacé un respaldo desde Ajustes si cambiás de
+        en este dispositivo: haz un respaldo desde Ajustes si cambias de
         celular.
       </p>
     </>

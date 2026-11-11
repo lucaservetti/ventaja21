@@ -64,7 +64,7 @@ function stepSig(step) {
     (step.player ? step.player.join(",") + "|" + step.dealer : "");
   return `${step.t}|${text}`.slice(0, 90);
 }
-// Pasos que entran al repaso si los fallás: preguntas, "¿qué hacés?" y las preguntas de la mesa narrada.
+// Pasos que entran al repaso si los fallas: preguntas, "¿qué haces?" y las preguntas de la mesa narrada.
 function reviewable(step) {
   return (
     step.t === "quiz" ||
@@ -335,7 +335,7 @@ function DoneStep({ step: a, saved: e }) {
       <Feedback
         ok={e.ok === e.n}
         title={`Ya lo hiciste: ${e.ok} de ${e.n}`}
-        text="Seguí con el próximo paso."
+        text="Sigue con el próximo paso."
       />
     </div>
   );
@@ -441,7 +441,7 @@ function DecideStep({ step: a, saved: e, onPicked: t }) {
   return (
     <div className="step fade-up">
       <h2 className="quiz-q" style={{ marginTop: 0 }}>
-        ¿Qué hacés?
+        ¿Qué haces?
       </h2>
       <div className="deal-card compact">
         {r ? (
@@ -556,8 +556,8 @@ function TagsStep({ step: a, report: e }) {
           </div>
           <p className="muted" style={{ marginTop: 10 }}>
             {o === t.length
-              ? "Sabés los valores."
-              : "Repasá los valores: bajas +1, medias 0, altas −1."}
+              ? "Sabes los valores."
+              : "Repasa los valores: bajas +1, medias 0, altas −1."}
           </p>
         </div>
       ) : (
@@ -868,8 +868,8 @@ function UseCountStep({ step: a }) {
       </h1>
       <p className="step-lead">
         {a.earlier
-          ? `Ahora el conteo corrido es otra vez +${a.rc}, pero recién salió ${a.played === 1 ? "un mazo" : `${a.played} mazos`}.`
-          : `Tu conteo corrido es +${a.rc}. Antes de apostar, pasalo a conteo real: dividilo por los mazos que quedan en el zapato.`}
+          ? `Ahora el conteo corrido es otra vez +${a.rc}, pero apenas salió ${a.played === 1 ? "un mazo" : `${a.played} mazos`}.`
+          : `Tu conteo corrido es +${a.rc}. Antes de apostar, pásalo a conteo real: divídelo por los mazos que quedan en el zapato.`}
       </p>
       <div className="rc-panel" style={{ marginTop: 16 }}>
         <span className="eyebrow">Conteo corrido</span>
@@ -923,14 +923,14 @@ function UseCountStep({ step: a }) {
         <span className="how-n">2</span>
         <div style={{ minWidth: 0, flex: 1 }}>
           <b style={{ fontSize: 20 }}>
-            {"Apostá "}
+            {"Apuesta "}
             {s} {s === 1 ? "unidad" : "unidades"}
           </b>
           <BetRamp highlight={n} />
           <p className="muted small" style={{ marginTop: 8 }}>
             {a.earlier
-              ? "El mismo +6 al principio del zapato vale mucho menos: seguí con la apuesta mínima."
-              : "Si tu apuesta normal es $10, apostá $20. Y una jugada cambia: tu 12 contra un 3 pasa a ser plantarse."}
+              ? "El mismo +6 al principio del zapato vale mucho menos: sigue con la apuesta mínima."
+              : "Si tu apuesta normal es $10, apuesta $20. Y una jugada cambia: tu 12 contra un 3 pasa a ser plantarse."}
           </p>
         </div>
       </div>
@@ -977,7 +977,7 @@ function ChartUnlocked({ lessonId }) {
         </span>
         <span className="li-sub" style={{ display: "block" }}>
           {all
-            ? "Mirala cuando quieras desde Aprender."
+            ? "Mírala cuando quieras desde Aprender."
             : groups
                 .map(
                   (g) =>
@@ -999,25 +999,25 @@ const LESSON_TOOLS = {
     screen: "devLevel",
     icon: "target",
     title: "Ruta de desviaciones",
-    sub: "Aprendelas de a pocas, en 10 niveles",
+    sub: "Apréndelas de a pocas, en 10 niveles",
   },
   l25: {
     screen: "bankroll",
     icon: "stats",
     title: "Simulador de banca",
-    sub: "Mirá cuánta plata necesitás con tu forma de apostar",
+    sub: "Mira cuánto dinero necesitas con tu forma de apostar",
   },
   l26: {
     screen: "casino",
     icon: "crown",
     title: "Modo casino real",
-    sub: "Jugá con la vigilancia prendida y fijate si te descubren",
+    sub: "Juega con la vigilancia prendida y fíjate si te descubren",
   },
   l29: {
     screen: "casino",
     icon: "users",
     title: "Modo casino real",
-    sub: "Elegí 3 o 4 jugadores y contá la mesa llena a ritmo de casino",
+    sub: "Elige 3 o 4 jugadores y cuenta la mesa llena a ritmo de casino",
   },
 };
 function LessonTool({ lessonId }) {
@@ -1035,7 +1035,7 @@ function LessonTool({ lessonId }) {
         <Icon name={tool.icon} />
       </span>
       <span className="li-text">
-        <span className="eyebrow acc">Ponelo en práctica</span>
+        <span className="eyebrow acc">Ponlo en práctica</span>
         <span className="li-title" style={{ display: "block", marginTop: 2 }}>
           {tool.title}{" "}
           {needsPremium(tool.screen, {}, st) ? <PremiumTag st={st} /> : null}
@@ -1145,7 +1145,7 @@ function LessonResult({ lesson: a, score: e, then: t }) {
           </button>
         ) : a.section > 0 ? (
           <p className="muted center" style={{ marginTop: 16 }}>
-            Terminaste todas las lecciones. Seguí con el repaso, la ruta de
+            Terminaste todas las lecciones. Sigue con el repaso, la ruta de
             conteo y el simulador.
           </p>
         ) : null}

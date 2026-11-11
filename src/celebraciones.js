@@ -55,7 +55,7 @@ function nuevos(prev, st) {
           : `Sección ${id} completa`,
         titulo: sec.title,
         sub: todas
-          ? `${SECTIONS.reduce((a, s) => a + s.lessons.length, 0)} lecciones. Ya sabés lo mismo que un contador de verdad.`
+          ? `${SECTIONS.reduce((a, s) => a + s.lessons.length, 0)} lecciones. Ya sabes lo mismo que un contador de verdad.`
           : `${sec.lessons.length} lecciones terminadas. La sección ${id + 1} te espera.`,
       });
     }
@@ -68,7 +68,7 @@ function nuevos(prev, st) {
         eyebrow: fin ? "¡Completaste la ruta de conteo!" : "Ruta de conteo",
         titulo: `Nivel ${n} aprobado`,
         sub: fin
-          ? "Ya llevás el conteo real de un zapato entero con la mesa llena."
+          ? "Ya llevas el conteo real de un zapato entero con la mesa llena."
           : nivel.title,
       });
     }

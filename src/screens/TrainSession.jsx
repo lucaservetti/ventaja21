@@ -43,14 +43,14 @@ import { ChartRowHint } from "../lessons/visuals.jsx";
 import { cardsQueue } from "./chartCards.jsx";
 
 const SESSION_TITLES = {
-  level: "Encontrá tu nivel",
+  level: "Encuentra tu nivel",
   mixed: "Tanda mezclada",
   skill: "Tanda por habilidad",
   spot: "Práctica puntual",
   count: "Con conteo",
   exam: "Examen de nivel",
   mistakes: "Tus errores",
-  foryou: "Tanda para vos",
+  foryou: "Tanda para ti",
   replay: "Repaso de una tanda",
   cards: "Tarjetas de la tabla",
 };
@@ -82,7 +82,7 @@ function TrainSession({ mode: a = "mixed", focus: e = null, hands = null }) {
       const deck = a === "cards" ? cardsQueue(st) : [];
       if (deck.length)
         return deck.map((key) => ({ spot: makeSpot(key, { nCards: 2 }) }));
-      // Tus errores: las manos exactas que fallaste. Tanda para vos: algunos errores y el resto
+      // Tus errores: las manos exactas que fallaste. Tanda para ti: algunos errores y el resto
       // apuntado a tus puntos débiles.
       const replays =
         a === "replay" && hands
@@ -152,7 +152,7 @@ function TrainSession({ mode: a = "mixed", focus: e = null, hands = null }) {
         Ja = getState().rating.value,
         Ga = o ? 0 : eloDelta(Ja, ye, J.correct);
       recordSpot(ba, J.correct);
-      // Tarjetas: la que fallás vuelve al final de la tanda (esa repetición no mueve su caja).
+      // Tarjetas: la que fallas vuelve al final de la tanda (esa repetición no mueve su caja).
       if (a === "cards" && !V.again) {
         recordSrs(B.key, J.correct);
         if (!J.correct)
@@ -328,7 +328,7 @@ function TrainSession({ mode: a = "mixed", focus: e = null, hands = null }) {
       </div>
       {!d || o ? (
         <div className="choose">
-          <h3 className="choose-title">Elegí tu jugada</h3>
+          <h3 className="choose-title">Elige tu jugada</h3>
           <div className="action-grid">
             <ActionButton a="H" allowed={ta} onClick={ha} notes={ca} />
             <ActionButton a="S" allowed={ta} onClick={ha} notes={ca} />
