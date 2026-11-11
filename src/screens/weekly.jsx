@@ -51,12 +51,11 @@ const WEEKLY = [
     id: "goal5",
     icon: "target",
     title: "Constancia",
-    desc: "Cumplí tu meta diaria 5 días de esta semana.",
+    desc: "Practica 5 días de esta semana.",
     goal: 5,
     value: (st, m) =>
-      Object.entries(st.dailyGoal.days || {}).filter(
-        ([k, d]) => inWeek(k, m) && d.s >= d.g,
-      ).length,
+      Object.keys(st.activity || {}).filter((k) => st.activity[k] && inWeek(k, m))
+        .length,
   },
   {
     id: "perfect3",

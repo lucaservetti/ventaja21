@@ -128,7 +128,7 @@ function SettingsSheet({ open: a, onClose: e }) {
         </button>
       ) : null}
       <h3 className="sheet-sub" style={{ marginTop: 4 }}>
-        Meta diaria
+        Racha y meta
       </h3>
       <button
         type="button"
@@ -137,10 +137,10 @@ function SettingsSheet({ open: a, onClose: e }) {
       >
         <span className="li-text">
           <span className="li-title" style={{ fontSize: 17 }}>
-            {t.dailyGoal.minutes} minutos por día
+            {`Meta: ${t.dailyGoal.minutes} minutos por día`}
           </span>
           <span className="li-sub" style={{ display: "block" }}>
-            Cambiala y mirá tu racha
+            Cambia la meta y mira tu racha
           </span>
         </span>
         <Icon name="chev" className="li-chev" />

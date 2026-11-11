@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Icon, SuitIcon } from "./icons.jsx";
 import { SUIT_NAMES, isRedSuit } from "../engine/cards.js";
@@ -657,6 +657,9 @@ function Badge({ icon: a, children: e, tone: t, onClick: s, label: n }) {
   });
 }
 function Flame({ size: a = 22, lit: e = true }) {
+  // Un id propio por llama: si se repite y la primera está en una pestaña oculta, el degradé
+  // no se dibuja en las demás.
+  const id = `flg${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   return (
     <svg
       width={a}
@@ -666,14 +669,14 @@ function Flame({ size: a = 22, lit: e = true }) {
       className={cx("flame", !e && "off")}
     >
       <defs>
-        <linearGradient id="flg" x1="0" y1="1" x2="0" y2="0">
+        <linearGradient id={id} x1="0" y1="1" x2="0" y2="0">
           <stop offset="0" stopColor="#ff5a1f" />
           <stop offset="1" stopColor="#ffb21e" />
         </linearGradient>
       </defs>
       <path
         d="M12 2.5c.6 3-1.8 4.6-3.3 6.6-1.3 1.7-2.2 3.4-2.2 5.6A5.5 5.5 0 0 0 12 20.5a5.5 5.5 0 0 0 5.5-5.8c0-2.6-1.4-4.4-2.6-5.6-.2 1.5-.9 2.6-2 3 .7-2.9-.1-6.2-.9-9.6z"
-        fill={e ? "url(#flg)" : "currentColor"}
+        fill={e ? `url(#${id})` : "currentColor"}
       />
       <path
         d="M12 20.5a3 3 0 0 1-3-3c0-1.7 1.4-2.6 2.2-3.9.4 1 1.2 1.5 1.9 1.6-.1-.6 0-1.3.4-2 .9 1 1.5 2.2 1.5 3.6a3 3 0 0 1-3 3.7z"

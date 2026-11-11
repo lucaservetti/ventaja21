@@ -7,8 +7,7 @@ import { NATIVE } from "./platform.js";
 import {
   dayKey,
   getState,
-  goalMet,
-  goalStreak,
+  activityStreak,
   setSettings,
   subscribe,
 } from "./state.js";
@@ -32,9 +31,9 @@ function ajustes(st = getState()) {
 function infoHoy(st = getState()) {
   const hoy = dayKey();
   const hoyHecho =
-    goalMet(st, hoy) ||
+    !!(st.activity && st.activity[hoy]) ||
     !!(st.daily && st.daily.results && st.daily.results[hoy]);
-  return { hoyHecho, racha: goalStreak(st) };
+  return { hoyHecho, racha: activityStreak(st.activity || {}) };
 }
 const nuestros = (id) => id >= ID_PRACTICA && id < ID_RACHA + 100;
 

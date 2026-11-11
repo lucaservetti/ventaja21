@@ -23,9 +23,9 @@ import { Panel } from "./screens/Panel.jsx";
 import { instalarEscritorio, useEscritorio, usePuedeInstalar } from "./escritorio.js";
 import { jsx as _jsx } from "react/jsx-runtime";
 import {
+  activityStreak,
   getState,
   goalDay,
-  goalStreak,
   levelFor,
   resetAll,
   setSettings,
@@ -102,6 +102,7 @@ import {
   GoalSheet,
   PRACTICE_SCREENS,
   useGoalCelebration,
+  useStreakCelebration,
   usePracticeClock,
 } from "./screens/goal.jsx";
 
@@ -505,12 +506,21 @@ function App() {
     [],
   );
   const [goalToast, setGoalToast] = useState(null);
-  useGoalCelebration((streak) => {
+  // La racha suma el día con la primera actividad que terminás; la meta de minutos es aparte.
+  useStreakCelebration((streak) => {
     const msg =
       streak > 1
-        ? `¡Meta del día cumplida! Llevás ${streak} días seguidos.`
-        : "¡Meta del día cumplida! Es el primer día de tu racha.";
+        ? `🔥 ¡Racha de ${streak} días! Sumaste el día de hoy.`
+        : "🔥 ¡Empezaste tu racha! Vuelve mañana para sumar otro día.";
     setGoalToast({ id: Date.now(), msg, kind: "good" });
+    setTimeout(() => setGoalToast(null), 3600);
+  });
+  useGoalCelebration(() => {
+    setGoalToast({
+      id: Date.now(),
+      msg: "¡Cumpliste tu meta de minutos de hoy!",
+      kind: "good",
+    });
     setTimeout(() => setGoalToast(null), 3600);
   });
   const [achToast, setAchToast] = useState(null);
@@ -652,7 +662,7 @@ function AvisoVersion() {
 function Resumen({ onTab }) {
   const st = useStore();
   const lv = levelFor(st.rating.value);
-  const racha = goalStreak(st);
+  const racha = activityStreak(st.activity);
   const hoy = goalDay(st);
   const pct = Math.min(1, hoy.s / Math.max(1, hoy.g));
   return (

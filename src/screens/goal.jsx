@@ -1,9 +1,13 @@
-// Meta diaria: elegís 5, 10, 15 o 20 minutos; un anillo se llena con lo que practicás
-// y la racha cuenta solo los días en que cumpliste la meta.
+// Racha y meta diaria.
+// - La racha (como en Duolingo) suma un día cuando terminas al menos una actividad: una lección,
+//   una tanda de Entrenar, un ejercicio de conteo, el desafío o manos en la mesa (st.activity).
+// - La meta de minutos (5, 10, 15 o 20) es un extra: un anillo que se llena con lo que practicas.
 import { useEffect, useRef } from "react";
 import {
+  activityStreak,
   addDays,
   addPracticeTime,
+  bestActivityStreak,
   dayKey,
   goalDay,
   goalMet,
@@ -80,38 +84,44 @@ function useGoalCelebration(onCelebrate) {
       dailyGoal: { ...s.dailyGoal, celebrated: today },
     }));
     sfx.win();
-    onCelebrate(goalStreak({ ...st }));
+    onCelebrate();
   }, [met]);
+}
+
+// Avisa una sola vez por día cuando la racha suma el día de hoy.
+function useStreakCelebration(onCelebrate) {
+  const st = useStore();
+  const today = dayKey();
+  const done = !!st.activity[today];
+  useEffect(() => {
+    if (!done || st.dailyGoal.rachaFestejada === today) return;
+    setState((s) => ({
+      ...s,
+      dailyGoal: { ...s.dailyGoal, rachaFestejada: today },
+    }));
+    sfx.good();
+    onCelebrate(activityStreak(st.activity));
+  }, [done]);
 }
 
 function minutesText(seconds) {
   return Math.floor(seconds / 60);
 }
 
-// Anillo chico con la racha, para los encabezados. Abre la hoja de la meta.
+// La racha en los encabezados: la llama (encendida si hoy ya sumaste) y los días. Abre la hoja.
 function GoalBadge() {
   const st = useStore();
   const nav = useNav();
-  const d = goalDay(st);
-  const streak = goalStreak(st);
-  const met = d.s >= d.g;
+  const streak = activityStreak(st.activity);
+  const hoy = !!st.activity[dayKey()];
   return (
     <button
       type="button"
-      className={cx("badge goal-badge", met && "met")}
+      className={cx("badge goal-badge", hoy && "met")}
       onClick={() => nav.openSheet("goal")}
-      aria-label={`Meta diaria: ${minutesText(d.s)} de ${Math.round(d.g / 60)} minutos. Racha de ${streak} ${streak === 1 ? "día" : "días"}.`}
+      aria-label={`Racha de ${streak} ${streak === 1 ? "día" : "días"}. ${hoy ? "Hoy ya sumaste." : "Hoy todavía no sumaste."}`}
     >
-      <span className="goal-mini">
-        <Ring
-          value={d.s / d.g}
-          size={30}
-          stroke={4}
-          tone={met ? "var(--good)" : "var(--accent)"}
-        >
-          <Flame size={14} lit={streak > 0 || met} />
-        </Ring>
-      </span>
+      <Flame size={20} lit={hoy} />
       <span className="num">{streak}</span>
     </button>
   );
@@ -138,92 +148,76 @@ function bestGoalStreak(st) {
 function GoalSheet({ open, onClose }) {
   const st = useStore();
   const today = dayKey();
+  const streak = activityStreak(st.activity);
+  const best = bestActivityStreak(st.activity);
+  const hoy = !!st.activity[today];
   const d = goalDay(st, today);
-  const streak = goalStreak(st);
-  const best = bestGoalStreak(st);
   const met = d.s >= d.g;
-  const left = Math.max(0, Math.ceil((d.g - d.s) / 60));
   const week = Array.from({ length: 7 }, (_, i) => addDays(today, i - 6));
   return (
-    <Sheet open={open} onClose={onClose} title="Meta diaria">
-      <div className="goal-hero">
-        <Ring
-          value={d.s / d.g}
-          size={170}
-          stroke={15}
-          tone={met ? "var(--good)" : "var(--accent)"}
-        >
-          <div className="mid-num num" style={{ fontSize: 42 }}>
-            {minutesText(d.s)}
-            <span className="muted" style={{ fontSize: 20 }}>
-              /{Math.round(d.g / 60)}
-            </span>
-          </div>
-          <div className="muted small" style={{ fontWeight: 700 }}>
-            minutos hoy
-          </div>
-        </Ring>
-        <p className={cx("goal-status", met && "good")}>
-          {met
-            ? "¡Cumpliste la meta de hoy!"
-            : d.s === 0
-              ? "Todavía no practicaste hoy."
-              : `Te ${left === 1 ? "falta 1 minuto" : `faltan ${left} minutos`}.`}
+    <Sheet open={open} onClose={onClose} title="Tu racha">
+      <div className="racha-hero">
+        <Flame size={64} lit={hoy} />
+        <b className="num racha-num">
+          {streak} {streak === 1 ? "día" : "días"}
+        </b>
+        <p className={cx("goal-status", hoy && "good")}>
+          {hoy
+            ? "¡Ya sumaste el día de hoy!"
+            : streak > 0
+              ? "Termina una actividad hoy para no perderla."
+              : "Termina una actividad para empezar tu racha."}
         </p>
-      </div>
-      <NextSteps
-        st={st}
-        limit={3}
-        title="Para hoy"
-        onGo={onClose}
-        className="flat goal-plan"
-      />
-      <div className="goal-streak card flat">
-        <Flame size={30} lit={streak > 0} />
-        <div className="grow">
-          <b className="num" style={{ fontSize: 22 }}>
-            {streak} {streak === 1 ? "día seguido" : "días seguidos"}
-          </b>
-          <div className="muted small">
-            La racha suma un día solo cuando cumplís la meta.
-            {best > streak ? ` Tu récord: ${best}.` : ""}
-          </div>
-        </div>
+        {best > streak ? (
+          <p className="muted small">{`Tu récord: ${best} días.`}</p>
+        ) : null}
       </div>
       <div className="goal-week">
         {week.map((day) => {
-          const x = goalDay(st, day);
           const [y, m, dd] = day.split("-").map(Number);
           const wd = new Date(y, m - 1, dd).getDay();
           return (
             <div className={cx("goal-day", day === today && "today")} key={day}>
-              <Ring
-                value={x.s / x.g}
-                size={34}
-                stroke={4}
-                tone={x.s >= x.g ? "var(--good)" : "var(--accent)"}
-              >
-                {x.s >= x.g ? (
-                  <Icon name="check" size={14} stroke={3} className="good" />
-                ) : null}
-              </Ring>
+              <Flame size={26} lit={!!st.activity[day]} />
               <span>{WEEKDAYS[wd]}</span>
             </div>
           );
         })}
       </div>
-      <h3 className="sheet-sub">Tu meta</h3>
+      {!hoy ? (
+        <NextSteps
+          st={st}
+          limit={2}
+          title="Para sumar hoy"
+          onGo={onClose}
+          className="flat goal-plan"
+        />
+      ) : null}
+      <p className="muted small" style={{ marginTop: 12 }}>
+        Suma cualquier cosa que termines: una lección, una tanda de Entrenar,
+        un ejercicio de conteo, el desafío o manos en la mesa.
+      </p>
+      <h3 className="sheet-sub">Meta de minutos (opcional)</h3>
+      <div className="meta-min card flat">
+        <Ring
+          value={d.s / d.g}
+          size={56}
+          stroke={6}
+          tone={met ? "var(--good)" : "var(--accent)"}
+        >
+          {met ? <Icon name="check" size={18} stroke={3} className="good" /> : null}
+        </Ring>
+        <div className="grow">
+          <b className="num">{`${minutesText(d.s)} de ${Math.round(d.g / 60)} minutos`}</b>
+          <div className="muted small">{met ? "¡Meta cumplida!" : "Practicando hoy"}</div>
+        </div>
+      </div>
       <Pills
         className="left"
         options={GOAL_OPTIONS.map((m) => ({ value: m, label: `${m} min` }))}
         value={st.dailyGoal.minutes}
         onChange={(m) => setGoalMinutes(m)}
       />
-      <p className="muted small" style={{ marginTop: 12 }}>
-        Cuenta el tiempo que practicás: lecciones, tandas de Entrenar,
-        ejercicios de conteo y manos en el simulador. Si dejás la app quieta más
-        de un minuto y medio, el reloj se frena.
-      </p>
     </Sheet>
   );
 }
@@ -236,4 +230,5 @@ export {
   bestGoalStreak,
   useGoalCelebration,
   usePracticeClock,
+  useStreakCelebration,
 };

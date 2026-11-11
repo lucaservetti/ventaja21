@@ -403,6 +403,21 @@ let activityTick = 0;
 function getActivityTick() {
   return activityTick;
 }
+// La mejor racha de días seguidos con alguna actividad terminada.
+function bestActivityStreak(a) {
+  const days = Object.keys(a || {})
+    .filter((d) => a[d])
+    .sort();
+  let best = 0;
+  let run = 0;
+  let prev = null;
+  for (const d of days) {
+    run = prev && addDays(prev, 1) === d ? run + 1 : 1;
+    best = Math.max(best, run);
+    prev = d;
+  }
+  return best;
+}
 function markActive(a) {
   activityTick++;
   let e = dayKey();
@@ -800,6 +815,7 @@ export {
   recordLevelPractice,
   setGoalMinutes,
   activityStreak,
+  bestActivityStreak,
   addDays,
   applyRating,
   canPersist,

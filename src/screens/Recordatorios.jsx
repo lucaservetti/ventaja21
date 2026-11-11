@@ -17,7 +17,7 @@ import {
   probarRecordatorio,
   setRecordatorios,
 } from "../recordatorios.js";
-import { dayKey, goalMet, goalStreak } from "../state.js";
+import { activityStreak, dayKey } from "../state.js";
 import { LOCALE } from "../i18n/index.js";
 
 // La semana empieza el lunes (0 = domingo en JavaScript). Las letras y los nombres salen del
@@ -78,8 +78,8 @@ function Recordatorios() {
   const hoy = dayKey();
   const proximo = rec.on
     ? planRecordatorios(rec, {
-        hoyHecho: goalMet(st, hoy) || !!st.daily.results[hoy],
-        racha: goalStreak(st),
+        hoyHecho: !!st.activity[hoy] || !!st.daily.results[hoy],
+        racha: activityStreak(st.activity),
       }).find((n) => n.id < 2000)
     : null;
 

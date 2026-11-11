@@ -14,7 +14,7 @@ import { rowLearned } from "../lessons/chartMap.js";
 import { COUNT_LEVELS, passedCount } from "../engine/countPath.js";
 import { devPassedCount } from "../engine/devPath.js";
 import { TopBar } from "../ui/common.jsx";
-import { bestGoalStreak } from "./goal.jsx";
+import { bestActivityStreak } from "../state.js";
 import { MASTERED_BOX } from "./chartCards.jsx";
 import { useNav } from "../nav.js";
 
@@ -81,9 +81,9 @@ const GROUPS = [
         id: "streak-3",
         icon: "calendar",
         title: "Tres al hilo",
-        desc: "Cumplí la meta diaria 3 días seguidos.",
+        desc: "Mantén la racha 3 días seguidos.",
         goal: 3,
-        value: (st) => bestGoalStreak(st),
+        value: (st) => bestActivityStreak(st.activity),
       },
       {
         id: "weekly-1",
@@ -105,17 +105,17 @@ const GROUPS = [
         id: "streak-7",
         icon: "calendar",
         title: "Una semana entera",
-        desc: "Cumplí la meta diaria 7 días seguidos.",
+        desc: "Mantén la racha 7 días seguidos.",
         goal: 7,
-        value: (st) => bestGoalStreak(st),
+        value: (st) => bestActivityStreak(st.activity),
       },
       {
         id: "streak-30",
         icon: "calendar",
         title: "Un mes sin fallar",
-        desc: "Cumplí la meta diaria 30 días seguidos.",
+        desc: "Mantén la racha 30 días seguidos.",
         goal: 30,
-        value: (st) => bestGoalStreak(st),
+        value: (st) => bestActivityStreak(st.activity),
       },
     ],
   },

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import {
+  activityStreak,
+  bestActivityStreak,
   goalDay,
-  goalStreak,
   addDays,
   dayKey,
   levelFor,
@@ -38,7 +39,7 @@ import { BackupNudge } from "./Backup.jsx";
 import { useNav } from "../nav.js";
 import { ShareIconButton } from "../ui/ShareButton.jsx";
 import { WeeklyCard } from "./weekly.jsx";
-import { GoalBadge, bestGoalStreak } from "./goal.jsx";
+import { GoalBadge } from "./goal.jsx";
 import { NextSteps, ProfileCard } from "./profile.jsx";
 
 function ProgressTab() {
@@ -162,7 +163,7 @@ function ProgressOverview({ st: a, nav: e }) {
       0,
     ),
     i = a.train.totalHands ? a.train.totalOk / a.train.totalHands : null,
-    o = goalStreak(a),
+    o = activityStreak(a.activity),
     today = goalDay(a),
     c = [{ v: 1000 }, ...a.rating.history].slice(-40),
     r = [],
@@ -186,21 +187,18 @@ function ProgressOverview({ st: a, nav: e }) {
         style={{ marginTop: 14 }}
         onClick={() => e.openSheet("goal")}
       >
-        <Ring
-          value={today.s / today.g}
-          size={58}
-          stroke={7}
-          tone={today.s >= today.g ? "var(--good)" : "var(--accent)"}
-        >
-          <Flame size={20} lit={o > 0} />
-        </Ring>
+        <span className="prog-racha">
+          <Flame size={34} lit={!!a.activity[u]} />
+        </span>
         <span className="li-text">
-          <span className="eyebrow">Meta de hoy</span>
+          <span className="eyebrow">Racha</span>
           <span className="li-title" style={{ display: "block", fontSize: 19 }}>
-            {Math.floor(today.s / 60)} de {Math.round(today.g / 60)} min
+            {o} {o === 1 ? "día seguido" : "días seguidos"}
           </span>
           <span className="li-sub">
-            {o} {o === 1 ? "día seguido" : "días seguidos"} cumpliendo la meta
+            {a.activity[u]
+              ? `Hoy ya sumaste · ${Math.floor(today.s / 60)} de ${Math.round(today.g / 60)} min`
+              : "Termina una actividad hoy para sumar"}
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
@@ -294,7 +292,7 @@ function ProgressOverview({ st: a, nav: e }) {
         <div className="tile">
           <div className="tile-v num">{o}</div>
           <div className="tile-l">
-            {o === 1 ? "día con la meta" : "días con la meta"}
+            {o === 1 ? "día de racha" : "días de racha"}
           </div>
         </div>
         <div className="tile">
@@ -794,8 +792,8 @@ function Records({ st: a }) {
           : "todavía no",
       ],
       [
-        "Racha de meta diaria",
-        `${goalStreak(a)} ${goalStreak(a) === 1 ? "día" : "días"} (récord ${bestGoalStreak(a)})`,
+        "Racha",
+        `${activityStreak(a.activity)} ${activityStreak(a.activity) === 1 ? "día" : "días"} (récord ${bestActivityStreak(a.activity)})`,
       ],
       [
         "Desafío diario",

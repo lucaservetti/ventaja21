@@ -534,6 +534,46 @@ const PRUEBAS = {
 
   // Medición anónima: "nuevo" con de dónde vino, los hitos una sola vez, se apaga en Ajustes; y el
   // panel del dueño (con el servidor simulado).
+  async racha(h) {
+    // Racha estilo Duolingo: suma el día con cualquier actividad terminada (no hace falta la meta).
+    const { page } = h;
+    const dia = (n) => {
+      const d = new Date();
+      d.setDate(d.getDate() + n);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    };
+    const cargar = async (activity) => {
+      await page.evaluate((a) => {
+        const k = "ventaja21.state.v1";
+        const s = JSON.parse(localStorage.getItem(k));
+        s.activity = a;
+        localStorage.setItem(k, JSON.stringify(s));
+        // Que la app no pise este estado al recargar.
+        Storage.prototype.setItem = () => {};
+      }, activity);
+      await page.reload();
+      await page.waitForTimeout(900);
+    };
+    const badge = () => page.locator('button.goal-badge:visible').first();
+    // Dos días seguidos hasta ayer, hoy nada: muestra 2 y la llama apagada.
+    await cargar({ [dia(-2)]: true, [dia(-1)]: true });
+    check((await badge().innerText()).trim() === "2", `la racha no es 2: ${await badge().innerText()}`);
+    check(!(await badge().getAttribute("class")).includes("met"), "la llama está encendida sin actividad hoy");
+    await badge().click();
+    await page.waitForTimeout(500);
+    check(await page.getByText(/Termina una actividad hoy|Finish an activity today/).first().isVisible(), "no dice que falta hoy");
+    await page.keyboard.press("Escape");
+    // Una actividad hoy (sin cumplir la meta de minutos): suma y festeja una vez.
+    await cargar({ [dia(-2)]: true, [dia(-1)]: true, [dia(0)]: true });
+    check((await badge().innerText()).trim() === "3", `no sumó el día: ${await badge().innerText()}`);
+    check(await page.getByText(/Racha de 3 días|3-day streak/).first().isVisible(), "no festejó la racha");
+    await page.reload();
+    await page.waitForTimeout(900);
+    check((await page.getByText(/Racha de 3 días|3-day streak/).count()) === 0, "festejó dos veces el mismo día");
+    // Un día salteado corta la racha.
+    await cargar({ [dia(-3)]: true, [dia(-1)]: true });
+    check((await badge().innerText()).trim() === "1", "un día salteado no cortó la racha");
+  },
   async edad(h) {
     // Control de edad (src/edad.js): en las pruebas está salteado; acá se pide con v21.edad.
     const { page } = h;
