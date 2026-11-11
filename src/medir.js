@@ -3,10 +3,12 @@
 // - "nuevo" la primera vez, "activo" una vez por día, y cada hito una sola vez por aparato.
 // - Sin cookies ni servicios de afuera: va a nuestro servidor (servidor/index.js → /m), que solo suma
 //   contadores por día. Se apaga en Ajustes ("Estadísticas anónimas").
+// - El número del aparato se renueva cada 13 meses, y no se mide a quien dijo que es menor.
 // - En las pruebas (localhost) no manda nada.
 import { getState, subscribe } from "./state.js";
 import { NATIVE } from "./platform.js";
 import { LANG } from "./i18n/index.js";
+import { esMenor } from "./edad.js";
 
 const CFG = typeof __FIREBASE__ !== "undefined" ? __FIREBASE__ : null;
 const API = CFG && CFG.api;
@@ -17,6 +19,9 @@ const K_ID = "edge21.mid";
 const K_HITOS = "edge21.mhitos";
 const K_DIA = "edge21.mdia";
 const K_ORIGEN = "edge21.origen";
+const K_ID_DESDE = "edge21.midt";
+// El número del aparato se renueva cada 13 meses, como piden en Europa para medir sin cookies.
+const VIDA_ID = 395 * 864e5;
 
 function leer(k) {
   try {
@@ -33,7 +38,10 @@ function guardar(k, v) {
   }
 }
 const apagada = () =>
-  !API || (LOCAL && !window.__medirTest) || !!getState().settings.sinEstadisticas;
+  !API ||
+  (LOCAL && !window.__medirTest) ||
+  !!getState().settings.sinEstadisticas ||
+  esMenor();
 
 function plataforma() {
   if (NATIVE) return "android";
@@ -92,7 +100,11 @@ function origen() {
 }
 function idAparato() {
   let id = leer(K_ID);
+  const desde = Number(leer(K_ID_DESDE)) || 0;
+  if (id && !desde) guardar(K_ID_DESDE, String(Date.now()));
+  else if (id && Date.now() - desde > VIDA_ID) id = "";
   if (!id || !/^[a-z0-9]{8,24}$/.test(id)) {
+    guardar(K_ID_DESDE, String(Date.now()));
     id = "";
     const a = new Uint8Array(12);
     crypto.getRandomValues(a);

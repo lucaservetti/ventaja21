@@ -534,6 +534,47 @@ const PRUEBAS = {
 
   // Medición anónima: "nuevo" con de dónde vino, los hitos una sola vez, se apaga en Ajustes; y el
   // panel del dueño (con el servidor simulado).
+  async edad(h) {
+    // Control de edad (src/edad.js): en las pruebas está salteado; acá se pide con v21.edad.
+    const { page } = h;
+    const anio = new Date().getFullYear();
+    const pantalla = async () => (await page.locator("input.edad-inp").count()) > 0;
+    await page.evaluate(() => localStorage.setItem("v21.edad", "1"));
+    await page.reload();
+    await page.waitForTimeout(700);
+    check(await pantalla(), "no pregunta la edad");
+    // Menor: la app queda cerrada, aunque recargue.
+    await page.locator("input.edad-inp").fill(String(anio - 16));
+    await h.click("Seguir", "Continue", { exact: true, wait: 500 });
+    const cerrada = () => page.getByText(/Edge 21 es para mayores de 18|Edge 21 is for adults 18 and over/).count();
+    check((await cerrada()) === 1, "no cierra la app a un menor");
+    await page.reload();
+    await page.waitForTimeout(700);
+    check((await cerrada()) === 1 && !(await pantalla()), "al recargar, un menor puede volver a contestar");
+    check((await page.evaluate(() => localStorage.getItem("edge21.edad"))) === "menor", "no quedó anotado");
+    // Justo 18 por el año: pregunta si ya cumplió. "Todavía no" = 17.
+    await page.evaluate(() => localStorage.removeItem("edge21.edad"));
+    await page.reload();
+    await page.waitForTimeout(700);
+    await page.locator("input.edad-inp").fill(String(anio - 18));
+    await h.click("Seguir", "Continue", { exact: true, wait: 400 });
+    await h.click("Todavía no", "Not yet", { exact: true, wait: 400 });
+    check((await cerrada()) === 1, "con 17 no la cierra");
+    // Mayor: entra a la app y no se vuelve a preguntar.
+    await page.evaluate(() => localStorage.removeItem("edge21.edad"));
+    await page.reload();
+    await page.waitForTimeout(700);
+    await page.locator("input.edad-inp").fill(String(anio - 18));
+    await h.click("Seguir", "Continue", { exact: true, wait: 400 });
+    await h.click("Sí", "Yes", { exact: true, wait: 700 });
+    check(!(await pantalla()) && (await cerrada()) === 0, "un mayor no entra");
+    await page.reload();
+    await page.waitForTimeout(700);
+    check(!(await pantalla()), "vuelve a preguntar");
+    // El año no se guarda en ningún lado.
+    const todo = await page.evaluate(() => JSON.stringify({ ...localStorage }));
+    check(!new RegExp(`(^|[^0-9])${anio - 18}([^0-9]|$)`).test(todo), "el año de nacimiento quedó guardado");
+  },
   async medicion(h) {
     const { page } = h;
     const eventos = [];
