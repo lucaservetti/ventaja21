@@ -54,7 +54,7 @@ const session = (i) => ({ kind: "mixed", title: "Tanda mezclada", n: 10, ok: 9, 
 const STATE = (extra = {}) => ({
   v: 1,
   profile: { onboarded: true, experience: "rules", goal: "casino", startSection: 1, createdAt: today - 30 * DAY },
-  dailyGoal: { minutes: 10, chosen: true, days, celebrated: key(today) },
+  dailyGoal: { minutes: 10, chosen: true, days, celebrated: key(today), rachaFestejada: key(today) },
   lessons,
   activity,
   train: { sessions: Array.from({ length: 6 }, (_, i) => session(i)), totalHands: 340, totalOk: 300, longestStreak: 18, cells, mistakes: [], exams: [] },
@@ -73,7 +73,7 @@ const tab = async (p, name) => {
 // Cada captura: título, subtítulo, cómo llegar y datos.
 const CAPTURAS = [
   {
-    t: ["Aprendé <em>blackjack</em>", "Learn <em>blackjack</em>"],
+    t: ["Aprende <em>blackjack</em>", "Learn <em>blackjack</em>"],
     s: ["paso a paso, con lecciones cortas", "step by step, in short lessons"],
     // A mitad de la sección 1, para que se vea el camino de fichas.
     data: { lessons: Object.fromEntries(["l1", "l2", "l3"].map((l) => [l, { done: true, at: today - DAY }])) },
@@ -89,13 +89,13 @@ const CAPTURAS = [
     },
   },
   {
-    t: ["Aprendé a <em>contar cartas</em>", "Learn to <em>count cards</em>"],
+    t: ["Aprende a <em>contar cartas</em>", "Learn to <em>count cards</em>"],
     s: ["una ruta de 10 niveles", "a 10-level path"],
     go: async (p, l) => tab(p, L(l, "Conteo", "Count")),
   },
   {
     t: ["Un casino <em>en tu mano</em>", "A casino <em>in your pocket</em>"],
-    s: ["jugá, contá y apostá con el conteo", "play, count and bet with the count"],
+    s: ["juega y cuenta con fichas de mentira", "play and count with play chips"],
     go: async (p, l) => {
       await tab(p, L(l, "Jugar", "Play"));
       await p.locator("section:not([hidden]) .chip-rack .chip").nth(2).click();
@@ -105,8 +105,8 @@ const CAPTURAS = [
     },
   },
   {
-    t: ["Encontrá <em>tus errores</em>", "Find <em>your mistakes</em>"],
-    s: ["tu tabla, pintada según cómo jugás", "your chart, colored by how you play"],
+    t: ["Encuentra <em>tus errores</em>", "Find <em>your mistakes</em>"],
+    s: ["tu tabla, pintada según cómo juegas", "your chart, colored by how you play"],
     go: async (p, l) => {
       await tab(p, L(l, "Progreso", "Progress"));
       await p.getByText(L(l, "Análisis de tus errores", "Mistake analysis")).first().click();
@@ -126,17 +126,17 @@ const CAPTURAS = [
     },
   },
   {
-    t: ["Mirá cómo <em>mejorás</em>", "Watch yourself <em>improve</em>"],
-    s: ["tu semana, tu rango y tus logros", "your week, your rank and achievements"],
+    t: ["Mira cómo <em>mejoras</em>", "Watch yourself <em>improve</em>"],
+    s: ["tu racha, tu rango y tus logros", "your streak, your rank and achievements"],
     go: async (p, l) => {
       await tab(p, L(l, "Progreso", "Progress"));
-      await p.evaluate(() => document.querySelector("section:not([hidden]) .week-card").scrollIntoView({ block: "start" }));
+      await p.evaluate(() => document.querySelector("section:not([hidden]) .goal-card").scrollIntoView({ block: "start" }));
       await p.waitForTimeout(500);
     },
   },
   {
     t: ["Modo <em>casino real</em>", "Real <em>casino</em> mode"],
-    s: ["tu plata, límites de mesa y vigilancia", "your money, table limits and surveillance"],
+    s: ["presupuesto simulado, límites y vigilancia", "simulated budget, table limits and surveillance"],
     go: async (p, l) => {
       await tab(p, L(l, "Jugar", "Play"));
       await p.locator(".casino-ib").first().click();
@@ -194,7 +194,7 @@ for (const lang of ["es", "en"]) {
   }
   // Gráfico destacado (1024×500).
   const g = await browser.newPage({ viewport: { width: 1024, height: 500 } });
-  const [t1, t2] = lang === "es" ? ["Edge 21", "Aprendé a contar cartas<br>en blackjack"] : ["Edge 21", "Learn to count cards<br>at blackjack"];
+  const [t1, t2] = lang === "es" ? ["Edge 21", "Aprende a contar cartas<br>en blackjack"] : ["Edge 21", "Learn to count cards<br>at blackjack"];
   const gf = `fg-${lang}.html`;
   fs.writeFileSync(
     path.join(TMP, gf),
