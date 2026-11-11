@@ -134,7 +134,11 @@ La app también está en inglés (sale en inglés en los celulares que no están
    - Play convierte los precios solo a pesos y a las demás monedas, y los podés ajustar por país. Ver la sección de precios en `store/monetizacion.md`.
 3. Para cobrar, Play te va a pedir completar el **perfil de pagos** (cuenta bancaria). Hacelo.
 4. Para probar la compra sin pagar: **Configuración → Pruebas de licencias** y agregá tu mail. Las compras de prueba no cobran, y en las suscripciones de prueba un mes dura 5 minutos y un año 30 minutos, así ves la renovación enseguida.
-5. Anotate en el programa de **comisión del 15 %**. En Play Console aparece como el nivel de tarifa de servicio del 15 %; si no lo encontrás, buscalo en la ayuda. Así Google se queda con el 15 % de los pagos únicos en vez del 30 %, hasta el primer millón de dólares por año. Las suscripciones ya pagan 15 % desde el primer día.
+5. **Que el servidor confirme cada compra con Google** (contra las apps truchas que "compran" Premium sin pagar). La app ya manda cada compra a `api.edge21.app/play/verificar`, y el servidor le pregunta a Google con la misma cuenta de servicio de Firebase. Falta darle permiso:
+   - En [Google Cloud Console](https://console.cloud.google.com/apis/library/androidpublisher.googleapis.com), con el proyecto de Firebase elegido, **habilitá** la *Google Play Android Developer API*.
+   - En Play Console → **Usuarios y permisos → Invitar usuarios**, pegá el mail de la cuenta de servicio (el `client_email` del archivo de la cuenta de servicio de Firebase, termina en `iam.gserviceaccount.com`). Permisos de la app Edge 21: **Ver información financiera** y **Administrar pedidos y suscripciones**. Nada más.
+   - Puede tardar hasta un día en activarse. Mientras tanto el servidor acepta las compras igual (no se le niega Premium a nadie que pagó); cuando el permiso está, rechaza las que Google no reconoce.
+6. Anotate en el programa de **comisión del 15 %**. En Play Console aparece como el nivel de tarifa de servicio del 15 %; si no lo encontrás, buscalo en la ayuda. Así Google se queda con el 15 % de los pagos únicos en vez del 30 %, hasta el primer millón de dólares por año. Las suscripciones ya pagan 15 % desde el primer día.
 
 ## Paso 7 · Prueba cerrada (12 personas, 14 días)
 

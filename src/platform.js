@@ -478,6 +478,10 @@ async function initShop() {
       platform: Platform.GOOGLE_PLAY,
     },
   ]);
+  // Cada compra la confirma nuestro servidor con Google antes de dar Premium (servidor/index.js,
+  // /play/verificar). Si el servidor no puede preguntarle a Google, la acepta igual.
+  const cfg = typeof __FIREBASE__ !== "undefined" ? __FIREBASE__ : null;
+  store.validator = `${(cfg && cfg.api) || "https://api.edge21.app"}/play/verificar`;
   const sync = () => {
     const life = store.owned(LIFETIME_ID);
     const sub = store.owned(SUB_ID);
@@ -495,6 +499,11 @@ async function initShop() {
     .productUpdated(sync)
     .approved((t) => t.verify())
     .verified((r) => r.finish())
+    .unverified(() => {
+      shop.error = "No se pudo confirmar la compra con Google Play.";
+      shop.busy = false;
+      emitShop();
+    })
     .finished(() => {
       sync();
       if (getState().settings.premium) shop.busy = false;
