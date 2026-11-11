@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { setSettings, useStore } from "../state.js";
+import { dayKey, setSettings, useStore } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
 import { Button, IconButton, Toasts, cx } from "../ui/components.jsx";
-import { PageHeader } from "../ui/common.jsx";
+import { PageHeader, PrimeraVez } from "../ui/common.jsx";
 import {
   LESSONS,
   SECTIONS,
@@ -212,15 +212,52 @@ function AmigoCard() {
 }
 // Al empezar: el test de nivel (opcional) para saltear lo que ya sabes. Desaparece al hacerlo, al
 // elegir empezar de cero o al terminar la primera lección.
-function TestCard({ st, lessonsDone }) {
-  const nav = useNav();
-  if (
+// La tarjeta del test de nivel se ve hasta que empiezas (o lo haces o lo descartas).
+function testOculto(st, lessonsDone) {
+  return !!(
     lessonsDone > 0 ||
     st.profile.testHecho ||
     st.profile.placement ||
     st.settings.testVisto
-  )
-    return null;
+  );
+}
+// "Tu próximo paso": la lección que sigue, con un botón grande. Así nadie tiene que buscar por
+// dónde seguir. No sale si hay repaso pendiente o si ya terminaste las lecciones principales (para
+// eso está NextStepsCard).
+function ContinueCard({ st, done, currentId }) {
+  const nav = useNav();
+  if (!currentId || reviewCount(st)) return null;
+  const core = SECTIONS.filter((sec) => sec.id <= 5).flatMap(
+    (sec) => sec.lessons,
+  );
+  if (core.every((x) => done(x.id))) return null;
+  const lesson = LESSONS.find((x) => x.id === currentId);
+  if (!lesson) return null;
+  const n = LESSONS.indexOf(lesson) + 1;
+  const hoy = !!st.activity[dayKey()];
+  const nueva = !LESSONS.some((x) => done(x.id));
+  return (
+    <div className="card continue-card">
+      <div className="eyebrow acc">
+        {hoy ? "Ya sumaste hoy · sigue si quieres" : "Tu próximo paso"}
+      </div>
+      <div className="continue-row">
+        <span className="grow">
+          <b className="continue-title">{lesson.title}</b>
+          <span className="muted small" style={{ display: "block" }}>
+            {`Lección ${n} · ${lessonMinutes(lesson)} min`}
+          </span>
+        </span>
+        <Button small={true} onClick={() => openLesson(nav, lesson)}>
+          {nueva ? "Empezar" : "Seguir"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+function TestCard({ st, lessonsDone }) {
+  const nav = useNav();
+  if (testOculto(st, lessonsDone)) return null;
   return (
     <div className="card test-card">
       <div className="eyebrow acc">Test de nivel · 2 minutos</div>
@@ -322,7 +359,14 @@ function LearnTab() {
       />
       <AmigoCard />
       <TestCard st={a} lessonsDone={l} />
+      {testOculto(a, l) ? (
+        <PrimeraVez id="aprender">
+          Aquí aprendes con lecciones cortas, una por vez. Arriba a la derecha
+          tienes tu tabla de estrategia y la guía.
+        </PrimeraVez>
+      ) : null}
       <NextStepsCard st={a} done={t} />
+      {testOculto(a, l) ? <ContinueCard st={a} done={t} currentId={s} /> : null}
       {WEB_DEMO ? (
         <button
           type="button"

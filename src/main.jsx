@@ -18,6 +18,7 @@ import {
 } from "react";
 import { createRoot } from "react-dom/client";
 import { Logo } from "./ui/common.jsx";
+import { TerminoSheet } from "./ui/termino.jsx";
 import { initMedir } from "./medir.js";
 import { Panel } from "./screens/Panel.jsx";
 import {
@@ -652,6 +653,7 @@ function App() {
           <C open={true} onClose={() => y.closeSheet()} {...o.props} />
         ) : null}
         <Toasts items={[goalToast, achToast, premToast].filter(Boolean)} />
+        <TerminoSheet />
       </div>
     </NavContext.Provider>
   );

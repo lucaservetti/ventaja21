@@ -33,6 +33,8 @@ import { TableView } from "./TableView.jsx";
 import { useNav } from "../nav.js";
 import { PremiumTag } from "./Premium.jsx";
 import { puedeUsar } from "../platform.js";
+import { sabeContar } from "../lessons/content.js";
+import { PrimeraVez } from "../ui/common.jsx";
 
 let tableInstance = null;
 function tableOptions(st) {
@@ -47,7 +49,8 @@ function tableOptions(st) {
     coach: t.coach,
     betCoach: t.betCoach,
     deviations: t.deviations,
-    countCheck: t.countCheck,
+    // Hasta que aprendas a contar, la mesa no te pregunta el conteo.
+    countCheck: sabeContar(st) ? t.countCheck : "off",
     pressure: t.pressure,
     // Dos manos por ronda es de Premium (si se vence, vuelve a una).
     spots: t.spots === 2 && puedeUsar("hands", st) ? 2 : 1,
@@ -134,8 +137,13 @@ function PlayTab({ active }) {
     }));
 
   const net = table.session.net;
+  const contar = sabeContar(st);
   const top = (
     <div className="sim-top-wrap">
+      <PrimeraVez id="jugar">
+        Una mesa de casino con fichas de mentira: apuesta, juega y mira cómo te
+        va. Cuando aprendas a contar, aquí arriba vas a ver el conteo.
+      </PrimeraVez>
       <div className="sim-top">
         <IconButton
           icon="crown"
@@ -189,10 +197,12 @@ function PlayTab({ active }) {
         table={table}
         active={active}
         top={top}
-        showCount={st.table.showCount}
+        showCount={contar ? st.table.showCount : null}
         onToggleCount={() => setTable({ showCount: !st.table.showCount })}
         xray={st.table.xray}
-        betHint={st.table.betCoach && sys.id === "hilo" && rules.pen > 0}
+        betHint={
+          contar && st.table.betCoach && sys.id === "hilo" && rules.pen > 0
+        }
         onCheck={onCheck}
         onShoeEnd={(stats) => setShoeSummary(stats)}
       />
@@ -445,7 +455,8 @@ function TableSheet({ open, onClose, table }) {
             Modo casino real <PremiumTag st={st} />
           </span>
           <span className="li-sub" style={{ display: "block" }}>
-            Presupuesto simulado, límites de mesa, tiempo para decidir y vigilancia
+            Presupuesto simulado, límites de mesa, tiempo para decidir y
+            vigilancia
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
@@ -558,9 +569,7 @@ function TableSheet({ open, onClose, table }) {
           options={[1, 2].map((n) => ({ value: n, label: String(n) }))}
           value={t.spots === 2 && premManos ? 2 : 1}
           onChange={(spots) =>
-            spots === 2 && !premManos
-              ? aPremium("hands")
-              : setTable({ spots })
+            spots === 2 && !premManos ? aPremium("hands") : setTable({ spots })
           }
         />
       </div>
@@ -650,7 +659,7 @@ function TableSheet({ open, onClose, table }) {
         label="Mostrar el conteo"
         sub="Apágalo para practicar de verdad"
         checked={t.showCount}
-        onChange={(showCount) => setTable({ showCount })}
+        onChange={(showCount) => setTable({ showCount, countSeen: true })}
       />
       <Toggle
         id="t-xray"

@@ -259,6 +259,8 @@ const DEFAULT_STATE = {
   // Protectores de racha: cuántos tienes (hasta 2), si ya ganaste el primero (a los 3 días), el día
   // que ganaste el último y el aviso de que uno salvó tu racha ({ dias, dia }).
   racha: { protectores: 0, primero: false, nuevo: null, aviso: null },
+  // Frases de "primera vez" que ya cerraste ({ [id]: fecha }).
+  tips: {},
   // Tarjetas de la tabla (repaso espaciado): { [spotKey]: { box, due, n, ok } } y cuántas nuevas hoy.
   srs: { cards: {}, newDay: null, newToday: 0 },
   // Modo casino real: lo último que elegiste y tus visitas al casino.

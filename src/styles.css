@@ -10096,3 +10096,60 @@ html[data-theme="light"] .app.escritorio .tabbar {
   height: 26px;
   color: var(--ice);
 }
+
+/* Frase de primera vez en cada pestaña. */
+.primera-vez {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 10px 6px 10px 14px;
+  border: 1px solid var(--accent-line);
+  background: var(--accent-soft);
+}
+.primera-vez p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+}
+.primera-vez .pv-ic {
+  flex: none;
+  color: var(--accent-text);
+}
+
+/* "Tu próximo paso" (Aprender) y secciones plegadas (Conteo, Entrenar). */
+.continue-card {
+  margin-bottom: 14px;
+  border: 1px solid var(--accent-line);
+}
+.continue-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+.continue-title {
+  font-size: 19px;
+  line-height: 1.25;
+}
+.mas-plegado .li-sub {
+  margin-top: 2px;
+}
+
+/* Palabra técnica que se puede tocar (lecciones). */
+.termino {
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  border-radius: 4px;
+}
+.termino:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.termino-def {
+  font-size: 17px;
+  line-height: 1.5;
+}

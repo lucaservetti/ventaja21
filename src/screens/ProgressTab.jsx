@@ -24,6 +24,7 @@ import { UPS, skillSpots } from "../engine/trainer.js";
 import {
   InfoDot,
   PageHeader,
+  PrimeraVez,
   SettingsButton,
   spotTitle,
   useRules,
@@ -59,6 +60,10 @@ function ProgressTab() {
           </>
         }
       />
+      <PrimeraVez id="progreso">
+        Aquí ves cómo vienes: tu racha, tu rango y qué te conviene practicar. El
+        detalle está en Desglose.
+      </PrimeraVez>
       <Segmented
         options={[
           { value: "overview", label: "Resumen" },

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { Fragment, useEffect, useMemo, useRef } from "react";
 import { HARD_ROWS, PAIR_ROWS, SOFT_ROWS } from "../ui/components.jsx";
 import { chartRules, chartSpot } from "./chartMap.js";
 import { useNav } from "../nav.js";
@@ -16,21 +16,28 @@ import { ChartLegend, PlayingCard, chartCode, cx } from "../ui/components.jsx";
 import { bustChances } from "../engine/ev.js";
 import { BET_RAMP, SYSTEMS, fmtTag } from "../engine/systems.js";
 import { useRules } from "../ui/common.jsx";
+import { marcarTerminos } from "../ui/termino.jsx";
 
-function rich(a) {
-  return typeof a != "string"
-    ? a
-    : a.split(/(\*\*[^*]+\*\*|\*[^*\s][^*]*\*)/g).map((t, s) =>
-        t.startsWith("**") && t.endsWith("**") ? (
-          <b key={s}>{t.slice(2, -2)}</b>
-        ) : t.length > 2 && t.startsWith("*") && t.endsWith("*") ? (
-          <i className="en" key={s}>
-            {t.slice(1, -1)}
-          </i>
-        ) : (
-          t
-        ),
-      );
+// Texto con **negrita** y *palabras en inglés*. Con `terminos`, las palabras técnicas (zapato, conteo
+// real…) se pueden tocar para ver qué significan (la primera vez que aparecen en el texto).
+function rich(a, terminos = false) {
+  if (typeof a != "string") return a;
+  const usados = new Set();
+  return a.split(/(\*\*[^*]+\*\*|\*[^*\s][^*]*\*)/g).map((t, s) =>
+    t.startsWith("**") && t.endsWith("**") ? (
+      <b key={s}>
+        {terminos ? marcarTerminos(t.slice(2, -2), usados, s) : t.slice(2, -2)}
+      </b>
+    ) : t.length > 2 && t.startsWith("*") && t.endsWith("*") ? (
+      <i className="en" key={s}>
+        {t.slice(1, -1)}
+      </i>
+    ) : terminos ? (
+      <Fragment key={s}>{marcarTerminos(t, usados, s)}</Fragment>
+    ) : (
+      t
+    ),
+  );
 }
 function useCards(a) {
   return useMemo(

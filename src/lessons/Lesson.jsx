@@ -300,7 +300,7 @@ function InfoStep({ step: a }) {
   const text = (
     <div className={cx("step-text", textFirst && "text-first")}>
       {a.body.map((e, t) => (
-        <p key={t}>{rich(e)}</p>
+        <p key={t}>{rich(e, true)}</p>
       ))}
     </div>
   );
@@ -679,7 +679,7 @@ function DealStep({ step: a, onDone: e }) {
       {o ? (
         <div className="step-text fade-up">
           {a.after.map((u, d) => (
-            <p key={d}>{rich(u)}</p>
+            <p key={d}>{rich(u, true)}</p>
           ))}
         </div>
       ) : (
