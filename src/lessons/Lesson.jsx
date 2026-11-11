@@ -32,11 +32,14 @@ import {
   nextLessonId,
 } from "./content.js";
 import {
+  SYSTEMS,
   betUnits,
+  countValue,
   floorTC,
   fmtSigned,
   fmtTag,
   hiloValue,
+  systemTags,
 } from "../engine/systems.js";
 import { useRules } from "../ui/common.jsx";
 import { ActionButton } from "../screens/TrainSession.jsx";
@@ -508,7 +511,11 @@ function DecideStep({ step: a, saved: e, onPicked: t }) {
     </div>
   );
 }
+// Cuánto vale cada carta. Con `sys` se practica otro sistema (si no, Hi-Lo).
 function TagsStep({ step: a, report: e }) {
+  const sys = a.sys ? SYSTEMS[a.sys] : null;
+  const valor = (c) => (sys ? countValue(c, sys) : hiloValue(c));
+  const botones = sys ? systemTags(sys) : [-1, 0, 1];
   let t = useCards(a.cards),
     [s, n] = useState(0),
     [l, i] = useState(null),
@@ -517,7 +524,7 @@ function TagsStep({ step: a, report: e }) {
     u = t[Math.min(s, t.length - 1)],
     d = (f) => {
       if (l || r) return;
-      let y = hiloValue(u),
+      let y = valor(u),
         C = f === y;
       if (C) {
         sfx.good();
@@ -557,7 +564,9 @@ function TagsStep({ step: a, report: e }) {
           <p className="muted" style={{ marginTop: 10 }}>
             {o === t.length
               ? "Sabes los valores."
-              : "Repasa los valores: bajas +1, medias 0, altas −1."}
+              : sys
+                ? "Repasa la tabla de valores de este sistema."
+                : "Repasa los valores: bajas +1, medias 0, altas −1."}
           </p>
         </div>
       ) : (
@@ -587,8 +596,8 @@ function TagsStep({ step: a, report: e }) {
                 : `${p} vale ${fmtTag(l.val)}.`
               : "¿Cuánto vale esta carta?"}
           </p>
-          <div className="tag-btns">
-            {[-1, 0, 1].map((f) => (
+          <div className={cx("tag-btns", botones.length > 3 && "many")}>
+            {botones.map((f) => (
               <button
                 type="button"
                 className={cx(

@@ -34,7 +34,8 @@ FRASES = [
     ("la plata", "el dinero"), ("La plata", "El dinero"),
     # Vos como pronombre.
     ("con vos", "contigo"), ("Con vos", "Contigo"),
-    ("para vos", "para ti"), ("a vos", "a ti"), ("de vos", "de ti"),
+    ("para vos", "para ti"), ("Para vos", "Para ti"), ("contra vos", "contra ti"),
+    ("a vos", "a ti"), ("de vos", "de ti"),
     # Charla de la mesa.
     ("Dale, dale, que viene el As.", "¡Vamos, vamos, que viene el As!"),
     # Recién (en el sentido rioplatense).
@@ -139,7 +140,11 @@ PATRON = re.compile(
 
 def neutro(texto):
     for a, b in FRASES:
-        texto = texto.replace(a, b)
+        # Las frases que empiezan con letra tienen que empezar una palabra ("Ahora vos" no es "a vos").
+        if a[0].isalpha():
+            texto = re.sub(rf"(?<![{LETRA}]){re.escape(a)}", lambda m, b=b: b, texto)
+        else:
+            texto = texto.replace(a, b)
     texto = PATRON.sub(lambda m: con_mayusculas(m.group(0), PALABRAS[m.group(0).lower()]), texto)
     return texto.replace("\u0000SUBI\u0000", "Subí a ${").replace("\u0000SUBI0\u0000", "Subí a {0}")
 

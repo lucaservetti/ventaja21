@@ -1,3 +1,6 @@
+import { SYSTEMS, fmtSigned } from "../engine/systems.js";
+import { rankKey } from "../engine/cards.js";
+
 const info = (a, e, t) => ({
   t: "info",
   title: a,
@@ -84,6 +87,14 @@ function scene(a) {
       bustcards: !!s.bustcards,
     };
   });
+}
+// Sección 8: la tabla de valores de un sistema, y un ejercicio de conteo con ese sistema.
+const sv = (id) => ({ v: "sysvalues", sys: id });
+function contarCon(sys, cartas, title, intro) {
+  const vals = SYSTEMS[sys].values;
+  const total = cartas.reduce((a, c) => a + vals[rankKey(c.slice(0, -1))], 0);
+  const opciones = [total - 2, total - 1, total, total + 1].map((n) => fmtSigned(n));
+  return { t: "count", title, intro, cards: cartas, ms: 1400, options: opciones, answer: 2 };
 }
 const SECTIONS = [
   {
@@ -1716,7 +1727,7 @@ const SECTIONS = [
           },
           {
             t: "count",
-            title: "Ahora ti",
+            title: "Ahora tú",
             intro: "Mira las 8 cartas y después di el conteo.",
             cards: ["6s", "Kd", "3h", "9c", "2d", "Qs", "5c", "4h"],
             ms: 1300,
@@ -2883,6 +2894,277 @@ const SECTIONS = [
             ["Sí, igual", "No del todo: tiene su propia tabla"],
             1,
             "Sin los 10 cambian las probabilidades, y con ellas varias jugadas.",
+          ),
+        ],
+      },
+    ],
+  },
+  {
+    id: 8,
+    title: "Otros sistemas de conteo",
+    desc: "KO, Hi-Opt, Zen, Omega II y Wong Halves",
+    icon: "crown",
+    lessons: [
+      {
+        id: "sis1",
+        title: "Más allá de Hi-Lo",
+        sum: [
+          "Todos los sistemas suman las cartas chicas y restan las altas.",
+          "Cambia cuánto vale cada carta: más detalle, más trabajo.",
+          "Hi-Lo ya te da casi toda la ventaja posible.",
+        ],
+        steps: [
+          info("Hay muchos sistemas", [
+            "Todos hacen lo mismo que Hi-Lo: **suman las cartas chicas y restan las altas**.",
+            "Lo que cambia es cuánto vale cada carta. Más detalle da más precisión, pero cuesta más llevar la cuenta.",
+          ]),
+          info("Tres ideas para compararlos", [
+            "**Nivel:** si las cartas valen solo ±1 (nivel 1) o también ±2 (nivel 2).",
+            "**Balanceado:** si un mazo completo suma 0. Si no suma 0, no hace falta pasar al conteo real.",
+            "**El As:** algunos sistemas lo cuentan aparte, porque ayuda mucho a decidir cuánto apostar.",
+          ]),
+          info("¿Vale la pena cambiar?", [
+            "Hi-Lo ya te da casi toda la ventaja que se puede sacar.",
+            "Los sistemas avanzados ganan un poco más, pero es más fácil equivocarse. **Un error cuesta más de lo que ganas en precisión.**",
+          ]),
+          quiz(
+            "¿Qué tiene de distinto un sistema de nivel 2?",
+            ["Algunas cartas valen ±2", "Se juega con dos mazos", "Se cuenta dos veces"],
+            0,
+            "En nivel 2 hay cartas que valen +2 o −2: es más preciso, pero más difícil de llevar.",
+          ),
+          quiz(
+            "Un sistema es «balanceado» cuando…",
+            ["Un mazo completo suma 0", "El As vale 0", "Tiene dos niveles"],
+            0,
+            "Si sumas todas las cartas de un mazo da 0. Por eso, para apostar, pasas el conteo corrido a conteo real.",
+          ),
+        ],
+      },
+      {
+        id: "sis2",
+        title: "KO: contar sin dividir",
+        sum: [
+          "Es Hi-Lo con el 7 en +1.",
+          "Empiezas en 4 − 4 × mazos, no en 0.",
+          "No hace falta pasar al conteo real.",
+        ],
+        steps: [
+          info(
+            "KO: casi igual a Hi-Lo",
+            [
+              "La única diferencia: **el 7 también suma +1**.",
+              "Así un mazo completo suma +4: es un sistema **no balanceado**.",
+            ],
+            sv("ko"),
+          ),
+          info("Empiezas en otro número", [
+            "En vez de empezar en 0, empiezas en **4 − 4 × mazos**. Con 6 mazos: 4 − 24 = **−20**.",
+            "Así no tienes que dividir por los mazos que quedan: cuanto más sube el número, mejor. En **+4**, el zapato está claramente a tu favor.",
+          ]),
+          { t: "tags", title: "Pruébalo con KO", sys: "ko", cards: ["7h", "5c", "Kd", "8s", "Ac", "3h"] },
+          quiz(
+            "Con KO y 6 mazos, ¿en qué número empiezas a contar?",
+            ["0", "−20", "+4", "−24"],
+            1,
+            "4 − 4 × 6 = 4 − 24 = −20.",
+          ),
+          quiz(
+            "¿Qué carta vale distinto en KO que en Hi-Lo?",
+            ["El 7", "El As", "El 2"],
+            0,
+            "En KO el 7 suma +1. En Hi-Lo vale 0.",
+          ),
+          info("¿Para quién es?", [
+            "Para quien quiere contar **sin hacer divisiones**. Es tan fácil como Hi-Lo.",
+            "Puedes elegirlo en **Conteo → Sistema**.",
+          ]),
+        ],
+      },
+      {
+        id: "sis3",
+        title: "Hi-Opt I: el As aparte",
+        sum: [
+          "Solo suman del 3 al 6 y solo restan los dieces.",
+          "El 2 y el As valen 0.",
+          "El As se cuenta aparte para apostar mejor.",
+        ],
+        steps: [
+          info(
+            "Hi-Opt I",
+            [
+              "Solo suman **3, 4, 5 y 6** (+1) y solo restan los **dieces** (−1).",
+              "El **2 y el As valen 0**. Es balanceado y de nivel 1.",
+            ],
+            sv("hiopt1"),
+          ),
+          info("¿Por qué el As vale 0?", [
+            "El As ayuda mucho cuando apuestas, pero poco para decidir cómo jugar la mano.",
+            "Por eso quienes usan Hi-Opt I lo cuentan **aparte**: juegan más fino y apuestan bien.",
+          ]),
+          { t: "tags", title: "Pruébalo con Hi-Opt I", sys: "hiopt1", cards: ["2d", "Ah", "4c", "Qs", "6h", "9d"] },
+          quiz(
+            "En Hi-Opt I, ¿cuánto vale el 2?",
+            ["+1", "0", "−1"],
+            1,
+            "En Hi-Opt I el 2 es neutro: solo cuentan del 3 al 6.",
+          ),
+          info("Practícalo", [
+            "Elígelo en **Conteo → Sistema**. Practicar los sistemas avanzados es parte de Premium.",
+          ]),
+        ],
+      },
+      {
+        id: "sis4",
+        title: "Hi-Opt II: dos niveles",
+        sum: [
+          "El 4 y el 5 valen +2; los dieces, −2.",
+          "Más preciso que Hi-Lo, pero cuesta más.",
+          "Para cuando Hi-Lo te sale sin pensar.",
+        ],
+        steps: [
+          info(
+            "Hi-Opt II",
+            [
+              "**4 y 5 valen +2**; 2, 3, 6 y 7 valen +1; los **dieces valen −2**.",
+              "El As vale 0 y, como en Hi-Opt I, se cuenta aparte.",
+            ],
+            sv("hiopt2"),
+          ),
+          info("Más preciso, más trabajo", [
+            "Con valores de ±2, el número refleja mejor lo que queda en el zapato.",
+            "Pero sumar de a dos en una mesa rápida cuesta más: es para cuando Hi-Lo ya te sale sin pensar.",
+          ]),
+          { t: "tags", title: "Pruébalo con Hi-Opt II", sys: "hiopt2", cards: ["4h", "Kc", "7s", "5d", "9c", "2h"] },
+          contarCon("hiopt2", ["5h", "Kd", "4c", "7s", "Qh", "3d"], "Cuenta con Hi-Opt II", "Mira las 6 cartas y suma con los valores de Hi-Opt II."),
+          quiz(
+            "En Hi-Opt II, ¿cuánto vale una K?",
+            ["−1", "−2", "0"],
+            1,
+            "Todas las cartas que valen 10 (10, J, Q y K) valen −2.",
+          ),
+        ],
+      },
+      {
+        id: "sis5",
+        title: "Zen: el As adentro",
+        sum: [
+          "Dos niveles, con el As en −1.",
+          "No hace falta contar el As aparte.",
+          "Muy bueno para decidir cuánto apostar.",
+        ],
+        steps: [
+          info(
+            "Zen Count",
+            [
+              "Es de nivel 2, pero **el As vale −1**, así no hace falta contarlo aparte.",
+              "2, 3 y 7 valen +1; 4, 5 y 6 valen +2; los dieces valen −2.",
+            ],
+            sv("zen"),
+          ),
+          info("¿Para quién es?", [
+            "Es **muy bueno para decidir cuánto apostar**.",
+            "Como es de nivel 2, practícalo cuando ya domines Hi-Lo.",
+          ]),
+          { t: "tags", title: "Pruébalo con Zen", sys: "zen", cards: ["6c", "Ad", "3s", "Jh", "8d", "4s"] },
+          quiz(
+            "En Zen, ¿cuánto vale el As?",
+            ["0", "−1", "−2"],
+            1,
+            "En Zen el As vale −1, así no hace falta llevarlo aparte.",
+          ),
+        ],
+      },
+      {
+        id: "sis6",
+        title: "Omega II: el más fino",
+        sum: [
+          "Como Zen, pero el 9 vale −1 y el As, 0.",
+          "Decide muy bien cómo jugar cada mano.",
+          "Es fácil equivocarse si la mesa va rápido.",
+        ],
+        steps: [
+          info(
+            "Omega II",
+            [
+              "Parecido a Zen, pero **el 9 vale −1** y **el As vale 0** (se cuenta aparte).",
+              "2, 3 y 7 valen +1; 4, 5 y 6 valen +2; los dieces valen −2.",
+            ],
+            sv("omega2"),
+          ),
+          info("El más preciso de nivel 2", [
+            "Es de los sistemas que mejor deciden cómo jugar cada mano.",
+            "A cambio, es el más fácil de equivocar si la mesa va rápido.",
+          ]),
+          { t: "tags", title: "Pruébalo con Omega II", sys: "omega2", cards: ["9h", "5s", "Qd", "2c", "Ac", "6d"] },
+          quiz(
+            "En Omega II, ¿qué carta vale −1?",
+            ["El 9", "El As", "El 8"],
+            0,
+            "El 9 vale −1. El As y el 8 valen 0.",
+          ),
+        ],
+      },
+      {
+        id: "sis7",
+        title: "Wong Halves: con medios puntos",
+        sum: [
+          "Usa medios puntos: el 5 vale +1½.",
+          "Uno de los sistemas más precisos que existen.",
+          "Truco: cuenta todo por 2 y divide al final.",
+        ],
+        steps: [
+          info(
+            "Wong Halves",
+            [
+              "Usa **medios puntos**: el 5 vale **+1½**; el 2 y el 7, **+½**; el 9, **−½**.",
+              "3, 4 y 6 valen +1; los dieces y el As, −1; el 8 vale 0.",
+            ],
+            sv("halves"),
+          ),
+          info("Un truco para no sumar medios", [
+            "Muchos cuentan **todo por 2** (el 5 vale +3, el 2 vale +1…) y dividen al final.",
+            "Es de los sistemas más precisos que existen, y también el más exigente.",
+          ]),
+          { t: "tags", title: "Pruébalo con Wong Halves", sys: "halves", cards: ["5d", "9s", "2h", "Kc", "7d", "3c"] },
+          quiz(
+            "En Wong Halves, ¿cuánto vale el 5?",
+            ["+1", "+1½", "+2"],
+            1,
+            "El 5 es la carta que más ayuda al crupier, por eso vale +1½.",
+          ),
+        ],
+      },
+      {
+        id: "sis8",
+        title: "¿Qué sistema te conviene?",
+        sum: [
+          "Si estás empezando: Hi-Lo o KO.",
+          "Si Hi-Lo te sale sin pensar: Zen, Hi-Opt II u Omega II.",
+          "Un sistema simple sin errores gana más que uno difícil con errores.",
+        ],
+        steps: [
+          info("Uno para cada momento", [
+            "**Hi-Lo o KO:** para empezar y para mesas rápidas.",
+            "**Hi-Opt I:** si quieres practicar llevar el As aparte.",
+            "**Zen, Hi-Opt II u Omega II:** si Hi-Lo ya te sale sin pensar y quieres más precisión.",
+            "**Wong Halves:** la máxima precisión, para expertos.",
+          ]),
+          info("Lo más importante", [
+            "**Un sistema simple sin errores gana más que uno difícil con errores.**",
+            "Elige uno y quédate con él: cambiar de sistema todo el tiempo confunde.",
+          ]),
+          quiz(
+            "Estás empezando a contar. ¿Qué sistema te conviene?",
+            ["Hi-Lo o KO", "Omega II", "Wong Halves"],
+            0,
+            "Hi-Lo y KO son los más fáciles y ya te dan casi toda la ventaja posible.",
+          ),
+          quiz(
+            "¿Qué gana más a la larga?",
+            ["Un sistema simple sin errores", "Uno complicado con algunos errores"],
+            0,
+            "Los errores cuestan más que la precisión que gana un sistema difícil.",
           ),
         ],
       },

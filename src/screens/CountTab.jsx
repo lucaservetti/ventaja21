@@ -15,7 +15,7 @@ import {
 } from "../ui/components.jsx";
 import { countValue, fmtTag, systemFor } from "../engine/systems.js";
 import { InfoDot, PageHeader, SettingsButton } from "../ui/common.jsx";
-import { HiLoValues } from "../lessons/visuals.jsx";
+import { HiLoValues, SystemValues } from "../lessons/visuals.jsx";
 import { dailyFormat } from "./drills.jsx";
 import { useNav } from "../nav.js";
 import { GoalBadge } from "./goal.jsx";
@@ -423,34 +423,6 @@ function DrillRow({ icon: a, title: e, sub: t, onClick: s, n }) {
       {n ? <span className="li-side num">{n}×</span> : null}
       <Icon name="chev" className="li-chev" />
     </button>
-  );
-}
-function SystemValues({ sys: a }) {
-  return (
-    <div className="sys-values">
-      {[
-        ["A", "A"],
-        ["2", "2"],
-        ["3", "3"],
-        ["4", "4"],
-        ["5", "5"],
-        ["6", "6"],
-        ["7", "7"],
-        ["8", "8"],
-        ["9", "9"],
-        ["T", "10–K"],
-      ].map(([t, s]) => {
-        let n = a.values[t];
-        return (
-          <div className="sv" key={t}>
-            <span className="sv-r">{s}</span>
-            <b className={cx("num", n > 0 ? "good" : n < 0 ? "bad" : "muted")}>
-              {fmtTag(n)}
-            </b>
-          </div>
-        );
-      })}
-    </div>
   );
 }
 function ValuesDetail({ st: a, sys: e }) {
