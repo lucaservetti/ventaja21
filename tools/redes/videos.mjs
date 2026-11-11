@@ -1,5 +1,5 @@
 // Videos cortos para TikTok, Reels y Shorts: 1080×1920 a 60 FPS, con efectos de sonido propios.
-// Las piezas animadas están en motor.mjs y los guiones en guiones.mjs. Cada cuadro se dibuja con
+// Las piezas animadas están en motor.mjs y los guiones en guiones-<semana>.mjs. Cada cuadro se dibuja con
 // todas las animaciones congeladas en su tiempo exacto, así sale perfecto aunque la compu sea lenta.
 // El sonido se sintetiza en Chromium (sonidos.js) con los tiempos que anotó cada pieza.
 //
@@ -17,7 +17,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawn, execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { VIDEOS } from "./guiones.mjs";
 import { CSS, construir, suit } from "./motor.mjs";
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
@@ -26,6 +25,9 @@ const args = process.argv.slice(2);
 const opt = Object.fromEntries(args.filter((a) => a.startsWith("--")).map((a) => { const [k, ...v] = a.slice(2).split("="); return [k, v.length ? v.join("=") : "1"]; }));
 const [SEMANA = "semana-2", ...SOLO] = args.filter((a) => !a.startsWith("--"));
 const FPS = Number(opt.fps || 60);
+// Se dibuja al doble (2160×3840) y se achica a 1080×1920: bordes y letras más nítidos.
+const ESCALA = Number(opt.escala || 2);
+const { VIDEOS } = await import(`./guiones-${SEMANA}.mjs`);
 const W = 1080;
 const H = 1920;
 
@@ -76,7 +78,7 @@ async function congelar(page, seg) {
 
 const SONIDO = fs.readFileSync(path.join(AQUI, "sonidos.js"), "utf8");
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
+const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: ESCALA });
 const lista = Object.entries(VIDEOS).filter(([k]) => !SOLO.length || SOLO.includes(k));
 if (!lista.length) throw new Error(`No hay videos con ese nombre. Hay: ${Object.keys(VIDEOS).join(", ")}`);
 
@@ -105,7 +107,7 @@ for (const [nombre, v] of lista) {
 
   // 1) Sonido, con el volumen parejo de las redes (-16 LUFS, picos de -1,5 dB).
   await page.addScriptTag({ content: SONIDO });
-  const cues = [{ t: 0, n: "ambiente", d: v.dur }, ...hecho.cues];
+  const cues = [{ t: 0, n: "ambiente", d: v.dur }, ...(v.musica ? [{ t: 0, n: "musica", d: v.dur, v: v.musica === true ? 1 : v.musica }] : []), ...hecho.cues];
   const wav64 = await page.evaluate(([c, d]) => window.pistaDeSonido(c, d), [cues, v.dur]);
   const crudo = path.join(tmp, "sonido-crudo.wav");
   fs.writeFileSync(crudo, Buffer.from(wav64, "base64"));
@@ -128,7 +130,8 @@ for (const [nombre, v] of lista) {
     "-y", "-loglevel", "error",
     "-f", "image2pipe", "-framerate", String(FPS), "-c:v", "mjpeg", "-i", "-",
     "-i", wav,
-    "-c:v", "libx264", "-preset", "slow", "-crf", "17", "-pix_fmt", "yuv420p", "-r", String(FPS),
+    "-vf", `scale=${W}:${H}:flags=lanczos`,
+    "-c:v", "libx264", "-preset", "slow", "-tune", "animation", "-crf", "14", "-pix_fmt", "yuv420p", "-r", String(FPS),
     "-profile:v", "high", "-level", "4.2", "-g", String(FPS),
     "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
     "-shortest", "-movflags", "+faststart", mp4,
@@ -138,7 +141,7 @@ for (const [nombre, v] of lista) {
   const t0 = Date.now();
   for (let f = 0; f < total; f++) {
     await congelar(page, f / FPS);
-    const jpg = await page.screenshot({ type: "jpeg", quality: 94 });
+    const jpg = await page.screenshot({ type: "jpeg", quality: 95 });
     if (!ff.stdin.write(jpg)) await new Promise((ok) => ff.stdin.once("drain", ok));
     if (f % (FPS * 5) === 0) process.stdout.write(`  ${nombre}: ${Math.round((f / total) * 100)}% (${((Date.now() - t0) / 1000).toFixed(0)} s)\n`);
   }
@@ -147,7 +150,7 @@ for (const [nombre, v] of lista) {
 
   // 3) Portada: el cuadro del gancho.
   await congelar(page, v.portada ?? 1.5);
-  await page.screenshot({ path: path.join(dir, "portada.png") });
+  await page.screenshot({ path: path.join(dir, "portada.png"), scale: "css" });
   console.log(`✓ ${nombre} · ${v.dur} s a ${FPS} FPS → ${path.relative(ROOT, mp4)}`);
 }
 await browser.close();

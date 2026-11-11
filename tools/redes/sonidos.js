@@ -203,6 +203,97 @@ async function pistaDeSonido(cues, dur) {
         ruidoF(0.02, { t: tt, vol: (0.05 + 0.06 * Math.sin((Math.PI * i) / n)) * v, bp: vary(3000, 0.2), q: 1.2 });
       }
     },
+    // Base musical original (sintetizada acá, sin derechos de autor): 100 BPM, La menor – Fa – Do – Sol.
+    // Bombo, palmas, platillo cerrado, bajo y un acorde suave. Termina con el cierre.
+    musica(t, v, p, d) {
+      const bpm = 100;
+      const b = 60 / bpm;
+      const acordes = [
+        [110, [220, 261.63, 329.63]],
+        [87.31, [174.61, 220, 261.63]],
+        [130.81, [261.63, 329.63, 392]],
+        [98, [196, 246.94, 293.66]],
+      ];
+      const fin = t + d - 0.2;
+      const bus2 = ctx.createGain();
+      bus2.gain.setValueAtTime(1e-4, t);
+      bus2.gain.linearRampToValueAtTime(0.9 * v, t + 0.25);
+      bus2.gain.setValueAtTime(0.9 * v, fin - 1.2);
+      bus2.gain.linearRampToValueAtTime(1e-4, fin);
+      bus2.connect(bus);
+      const nota = (f, tt, dur, vol, type = "sine", destino = bus2) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = type;
+        o.frequency.setValueAtTime(f, tt);
+        g.gain.setValueAtTime(1e-4, tt);
+        g.gain.exponentialRampToValueAtTime(vol, tt + 0.01);
+        g.gain.exponentialRampToValueAtTime(1e-4, tt + dur);
+        o.connect(g).connect(destino);
+        o.start(tt);
+        o.stop(tt + dur + 0.05);
+      };
+      const lpBajo = ctx.createBiquadFilter();
+      lpBajo.type = "lowpass";
+      lpBajo.frequency.value = 700;
+      lpBajo.connect(bus2);
+      for (let k = 0, tt = t; tt < fin; k++, tt += b) {
+        const beat = k % 4;
+        const [raiz, triada] = acordes[Math.floor(k / 4) % 4];
+        // Bombo en 1 y 3, y uno chico antes del 3.
+        if (beat === 0 || beat === 2) {
+          const o = ctx.createOscillator();
+          const g = ctx.createGain();
+          o.frequency.setValueAtTime(130, tt);
+          o.frequency.exponentialRampToValueAtTime(42, tt + 0.16);
+          g.gain.setValueAtTime(1e-4, tt);
+          g.gain.exponentialRampToValueAtTime(0.42, tt + 0.004);
+          g.gain.exponentialRampToValueAtTime(1e-4, tt + 0.3);
+          o.connect(g).connect(bus2);
+          o.start(tt);
+          o.stop(tt + 0.35);
+        }
+        if (beat === 1 && k % 8 === 5) nota(55, tt + b * 0.5, 0.18, 0.18);
+        // Palmas en 2 y 4.
+        if (beat === 1 || beat === 3) {
+          for (const dt of [0, 0.012, 0.022]) {
+            const src = ctx.createBufferSource();
+            src.buffer = ruido;
+            const f = ctx.createBiquadFilter();
+            f.type = "bandpass";
+            f.frequency.value = 1500;
+            f.Q.value = 0.9;
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(1e-4, tt + dt);
+            g.gain.exponentialRampToValueAtTime(0.11, tt + dt + 0.002);
+            g.gain.exponentialRampToValueAtTime(1e-4, tt + dt + 0.12);
+            src.connect(f).connect(g).connect(bus2);
+            src.start(tt + dt, rnd() * 2, 0.15);
+          }
+        }
+        // Platillo cerrado en corcheas (el de contratiempo, más fuerte).
+        for (const [dt, vol] of [[0, 0.025], [b / 2, 0.045]]) {
+          const src = ctx.createBufferSource();
+          src.buffer = ruido;
+          const f = ctx.createBiquadFilter();
+          f.type = "highpass";
+          f.frequency.value = 7500;
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(1e-4, tt + dt);
+          g.gain.exponentialRampToValueAtTime(vol, tt + dt + 0.002);
+          g.gain.exponentialRampToValueAtTime(1e-4, tt + dt + 0.045);
+          src.connect(f).connect(g).connect(bus2);
+          src.start(tt + dt, rnd() * 2, 0.06);
+        }
+        // Bajo: raíz en 1 y en el "y" del 2.
+        if (beat === 0) nota(raiz, tt, b * 1.2, 0.2, "triangle", lpBajo);
+        if (beat === 1) nota(raiz, tt + b / 2, b * 0.8, 0.14, "triangle", lpBajo);
+        if (beat === 3 && k % 8 === 7) nota(raiz * 1.5, tt, b * 0.7, 0.12, "triangle", lpBajo);
+        // Acorde suave al empezar cada compás, y una campanita arriba cada dos.
+        if (beat === 0) for (const f of triada) nota(f, tt, b * 3.6, 0.022);
+        if (beat === 0 && k % 8 === 0) nota(triada[2] * 2, tt + b * 1.5, 0.5, 0.018);
+      }
+    },
     // Murmullo de salón muy suave de fondo, para que no haya silencios muertos.
     ambiente(t, v, p, d) {
       const n = Math.floor(SR * d);

@@ -45,16 +45,17 @@ function construir(def) {
 
 // Una escena: aparece en `de` y se va (borrosa, hacia arriba) en `hasta`, con un whoosh.
 // Mientras está, la "cámara" se acerca de a poco.
-function escena(de, hasta, html, { zoom = true, gap = null, whoosh = true } = {}) {
+function escena(de, hasta, html, { zoom = true, gap = null, whoosh = true, estilo = "" } = {}) {
   const fin = hasta ?? C.dur;
   if (hasta != null && whoosh) sfx(hasta - 0.04, "whoosh");
-  const st = an(A("ver", de, 0.001, E.lin), hasta != null && A("salida", hasta, 0.38, E.in, "forwards"));
+  // "ver" termina 1 ms antes de `de`: así una escena que arranca en 0 ya se ve en el primer cuadro.
+  const st = an(A("ver", de - 0.001, 0.001, E.lin), hasta != null && A("salida", hasta, 0.38, E.in, "forwards"));
   const zi = zoom ? an(`zoomlento ${(fin - de).toFixed(2)}s linear ${de.toFixed(3)}s both`) : "";
-  return `<div class="esc" style="${st}"><div class="esc-in" style="${zi}${gap != null ? `gap:${gap}px;` : ""}">${html}</div></div>`;
+  return `<div class="esc" style="${st}"><div class="esc-in" style="${zi}${gap != null ? `gap:${gap}px;` : ""}${estilo}">${html}</div></div>`;
 }
 
 // Título que entra palabra por palabra. *palabra* va en dorado y subrayada; "/" corta el renglón.
-function titulo(de, texto, { tag = "h1", paso = 0.07, clase = "", sonido = true, st = "" } = {}) {
+function titulo(de, texto, { tag = "h1", paso = 0.07, clase = "", sonido = true, st = "", ya = false } = {}) {
   if (sonido) sfx(de, "pop", { v: 0.55 });
   let enEm = false;
   let i = 0;
@@ -80,12 +81,13 @@ function titulo(de, texto, { tag = "h1", paso = 0.07, clase = "", sonido = true,
       enEm = false;
     }
     const d = de + i++ * paso;
+    // ya: visible desde el primer cuadro, con un golpe chico (el gancho no puede esperar).
     const inner = esEm
-      ? `<em>${t}<i class="mk" style="${an(A("subraya", d + 0.3, 0.45))}"></i></em>${cola}`
+      ? `<em>${t}<i class="mk" style="${an(A("subraya", ya ? de + 0.15 : d + 0.3, ya ? 0.3 : 0.45))}"></i></em>${cola}`
       : t;
-    return `<span class="w" style="${an(A("palabra", d, 0.55))}">${inner}</span>`;
+    return `<span class="w" style="${ya ? "" : an(A("palabra", d, 0.55))}">${inner}</span>`;
   });
-  return `<${tag} class="${clase}" style="${st}">${partes.join(" ").replace(/ <br> /g, "<br>")}</${tag}>`;
+  return `<${tag} class="${clase}" style="${ya ? an(A("golpe", de, 0.45, E.out)) : ""}${st}">${partes.join(" ").replace(/ <br> /g, "<br>")}</${tag}>`;
 }
 const parr = (de, html, st = "") => `<p style="${an(A("entra", de, 0.5))}${st}">${html}</p>`;
 const chico = (de, html) => `<p class="chico" style="${an(A("entra", de, 0.5))}">${html}</p>`;
@@ -102,6 +104,20 @@ function icono(de, emoji, st = "") {
   sfx(de, "pop");
   return `<div class="icono" style="${an(A("pop", de, 0.55, E.back))}${st}">${emoji}</div>`;
 }
+// Una opción (PEDIR, PLANTARTE…): entra en `de`; en `marca` se pone verde (ok) o se apaga.
+function opcion(de, texto, marca = null, ok = false, st = "") {
+  sfx(de, "blip", { v: 0.6 });
+  return `<span class="op2" style="${an(A("pop", de, 0.45, E.back), marca != null && A(ok ? "enverdece" : "apaga", marca, 0.3, E.out, "forwards"), marca != null && ok && A("late", marca + 0.3, 0.5, E.io, "none"))}${st}">${texto}</span>`;
+}
+// Barra de tiempo que se vacía en `dur` segundos, con un tic por segundo.
+function barraTiempo(de, dur, st = "") {
+  for (let k = 0; k < Math.round(dur); k++) sfx(de + k, "tick", { p: k === Math.round(dur) - 1 ? 0.8 : 1, v: 0.8 });
+  return `<div class="tiempo" style="${an(A("entra", de - 0.3, 0.3))}${st}"><i style="${an(`achica ${dur}s linear ${de.toFixed(3)}s both`)}"></i></div>`;
+}
+// Captura de la app en un teléfono (para mostrar Edge 21).
+const telefono = (de, src, w = 250, r = 0, st = "") =>
+  `<div class="tel" style="width:${w}px;transform:rotate(${r}deg);${st}"><img src="${src}" style="${an(A("entra", de, 0.55, E.back))}width:${w}px;height:${Math.round(w * 16 / 9)}px"></div>`;
+
 // Número que cuenta de 0 a `hasta`.
 function numero(de, hasta, dur = 0.9) {
   const k = `n${hasta < 0 ? "m" + -hasta : hasta}`;
@@ -163,8 +179,10 @@ function carta(c, w = 170, o = {}) {
   const h = Math.round(w * 1.4);
   let interior;
   if (c && o.voltea != null) {
-    interior = `<div class="cf" style="${an(A("voltea", o.voltea, 0.6, E.out))}">${cara(c, w)}${atras(w, true)}</div>`;
-    sfx(o.voltea, "flip");
+    const vs = [].concat(o.voltea);
+    const lista = vs.map((t, i) => A(i % 2 ? "tapa" : "voltea", t, o.vdur || 0.5, E.out, i ? "forwards" : "both"));
+    vs.forEach((t) => sfx(t, "flip", { v: o.vvol ?? 1 }));
+    interior = `<div class="cf" style="${an(...lista)}">${cara(c, w)}${atras(w, true)}</div>`;
   } else interior = c ? cara(c, w) : atras(w);
   let cd = "";
   if (o.de != null) {
@@ -253,15 +271,16 @@ function confeti(de, n = 30, st = "") {
 
 // ---------- Cierre (el mismo en todos) ----------
 function final(de) {
+  // Rápido: en 0,6 s ya está todo (si es lento, la gente se va justo antes del final).
   sfx(de, "outro");
-  sfx(de + 0.8, "pop");
+  sfx(de + 0.35, "pop");
   return escena(
     de,
     null,
-    `<div class="fin-logo" style="${an(A("pop", de, 0.65, E.back))}"><div class="halo" style="${an(`gira ${(C.dur - de).toFixed(2)}s linear ${de}s both`)}"></div><img src="/img/ficha.svg"></div>
-     ${titulo(de + 0.3, "Practicalo gratis en *Edge 21*", { tag: "h2", sonido: false })}
-     <div class="cta" style="${an(A("pop", de + 0.8, 0.5, E.back))}">Link en el perfil<i class="brillo" style="${an(A("brilla", de + 1.4, 0.9, E.io))}"></i></div>
-     <p class="chico" style="${an(A("entra", de + 1.1, 0.5))}">Lecciones, desafío diario y práctica sin dinero</p>`,
+    `<div class="fin-logo" style="${an(A("pop", de, 0.5, E.back))}"><div class="halo" style="${an(`gira ${(C.dur - de).toFixed(2)}s linear ${de}s both`)}"></div><img src="/img/ficha.svg"></div>
+     ${titulo(de + 0.1, "Practicalo gratis en *Edge\u00a021*", { tag: "h2", sonido: false, paso: 0.04 })}
+     <div class="cta" style="${an(A("pop", de + 0.35, 0.45, E.back))}">Link en el perfil<i class="brillo" style="${an(A("brilla", de + 0.8, 0.8, E.io))}"></i></div>
+     <p class="chico" style="${an(A("entra", de + 0.5, 0.4))}">Lecciones, desafío diario y práctica sin dinero</p>`,
     { zoom: false },
   );
 }
@@ -278,15 +297,15 @@ body{font-family:DM,"Noto Color Emoji",sans-serif;color:#f3efe2;position:relativ
 .palo{position:absolute;color:#e9b949}
 .vineta{position:absolute;inset:0;background:radial-gradient(130% 90% at 50% 42%,rgba(0,0,0,0) 55%,rgba(0,0,0,.5))}
 .borde{position:absolute;inset:26px;border:3px dashed rgba(233,185,73,.2);border-radius:44px}
-.marca{position:absolute;left:90px;right:150px;top:176px;display:flex;align-items:center;gap:16px;font-size:32px;font-weight:700;color:#cfdcd2}
+.marca{position:absolute;left:100px;right:100px;top:176px;display:flex;align-items:center;gap:16px;font-size:32px;font-weight:700;color:#cfdcd2}
 .marca img{width:58px;height:58px}
 .serie{margin-left:auto;font-size:28px;color:#e9b949;font-weight:800;letter-spacing:.06em}
-.prog{position:absolute;left:90px;right:150px;top:256px;height:8px;border-radius:8px;background:rgba(255,255,255,.1);overflow:hidden}
+.prog{position:absolute;left:100px;right:100px;top:256px;height:8px;border-radius:8px;background:rgba(255,255,255,.1);overflow:hidden}
 .prog i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#c9971f,#f8dc8f);transform-origin:left}
-#cam{position:absolute;left:70px;right:130px;top:300px;bottom:440px}
+#cam{position:absolute;left:100px;right:100px;top:300px;bottom:440px}
 .esc{position:absolute;inset:0}
 .esc-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px;text-align:center}
-.pie{position:absolute;left:90px;right:150px;bottom:372px;text-align:center;font-size:26px;color:#9fb3a6;font-weight:700}
+.pie{position:absolute;left:100px;right:100px;bottom:372px;text-align:center;font-size:26px;color:#9fb3a6;font-weight:700}
 .flash{position:absolute;inset:0;background:#fff8e6;opacity:0;pointer-events:none}
 h1{font-size:112px;line-height:1.02;font-weight:800;letter-spacing:-2.5px;text-shadow:0 8px 30px rgba(0,0,0,.35)}
 h1.xl{font-size:170px;letter-spacing:-4px}
@@ -294,7 +313,7 @@ h2{font-size:80px;line-height:1.07;font-weight:800;letter-spacing:-1.5px;text-sh
 h3{font-size:58px;line-height:1.1;font-weight:800}
 p{font-size:50px;line-height:1.26;color:#cfdcd2;font-weight:500}
 p b{color:#f3efe2;font-weight:800}
-p em,h3 em{font-style:normal;color:#e9b949}
+p em,h1 em,h2 em,h3 em{font-style:normal;color:#e9b949}
 .chico{font-size:32px;color:#9fb3a6}
 .w{display:inline-block;isolation:isolate}
 .w em{font-style:normal;color:#e9b949;position:relative;white-space:nowrap}
@@ -375,6 +394,17 @@ p em,h3 em{font-style:normal;color:#e9b949}
 .eje{position:absolute;left:0;top:262px;font-size:28px;color:#9fb3a6;font-weight:700}
 @keyframes enciende{to{background:#e9b949;box-shadow:0 0 18px rgba(233,185,73,.8)}}
 @keyframes sigue{from{offset-distance:0%}to{offset-distance:100%}}
+.tiempo{width:100%;height:16px;border-radius:16px;background:rgba(255,255,255,.12);overflow:hidden}
+.tiempo i{display:block;height:100%;border-radius:16px;background:linear-gradient(90deg,#e9b949,#ff7a6b);transform-origin:left}
+.duelo{display:grid;grid-template-columns:1fr 90px 1fr;gap:0;width:100%;align-items:center}
+.lado{position:relative;height:430px;padding:28px 18px;border-radius:32px;background:rgba(6,17,12,.62);border:4px solid rgba(255,255,255,.14);display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:14px}
+.lado h3{font-size:46px;line-height:1.12}
+.lado .pct{font-size:76px;font-weight:800;line-height:1}
+.vs-b{width:90px;height:90px;border-radius:50%;display:grid;place-items:center;background:#e9b949;color:#1d1405;font-size:38px;font-weight:800;z-index:2;justify-self:center;box-shadow:0 8px 0 #8f6a17}
+.tel{flex:none;border-radius:34px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 0 6px #0b2318,0 0 0 8px rgba(233,185,73,.5)}
+.tel img{display:block;object-fit:cover}
+@keyframes tapa{0%{transform:rotateY(0)}50%{transform:rotateY(90deg) scale(1.08)}100%{transform:rotateY(180deg)}}
+@keyframes achica{from{transform:scaleX(1)}to{transform:scaleX(0)}}
 /* Cierre */
 .fin-logo{position:relative;width:300px;height:300px;display:grid;place-items:center}
 .fin-logo img{position:relative;width:250px;height:250px;filter:drop-shadow(0 24px 50px rgba(0,0,0,.55))}
@@ -386,6 +416,7 @@ p em,h3 em{font-style:normal;color:#e9b949}
 @keyframes oculta{from{visibility:visible}to{visibility:hidden}}
 @keyframes salida{from{opacity:1;transform:none;filter:blur(0)}to{opacity:0;transform:translateY(-70px) scale(.94);filter:blur(10px);visibility:hidden}}
 @keyframes zoomlento{from{transform:scale(1)}to{transform:scale(1.045)}}
+@keyframes golpe{from{transform:scale(1.07)}to{transform:none}}
 @keyframes palabra{from{opacity:0;transform:translateY(46px) scale(.9);filter:blur(8px)}to{opacity:1;transform:none;filter:blur(0)}}
 @keyframes entra{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:none}}
 @keyframes izq{from{opacity:0;transform:translateX(-90px)}to{opacity:1;transform:none}}
@@ -416,4 +447,5 @@ p em,h3 em{font-style:normal;color:#e9b949}
 export {
   A, an, E, CSS, construir, escena, titulo, parr, chico, tag, punto, icono, numero, ventana,
   carta, cuentaAtras, votacion, sello, confeti, final, sfx, sacudir, destello, rnd, suit,
+  opcion, barraTiempo, telefono,
 };
