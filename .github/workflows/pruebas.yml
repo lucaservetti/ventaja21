@@ -28,7 +28,11 @@ jobs:
         run: npm ci
 
       - name: Instalar Chromium
-        run: npx playwright install --with-deps chromium
+        # El navegador viene de Playwright. Las librerías del sistema ya están casi todas en la
+        # máquina de GitHub; si el espejo de Ubuntu falla (pasa a veces), se reintenta y se sigue.
+        run: |
+          npx playwright install chromium
+          for i in 1 2 3; do npx playwright install-deps chromium && break; echo "Reintento $i"; sleep 20; done || true
 
       - name: Armar la app
         run: npm run build
