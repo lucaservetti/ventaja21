@@ -298,7 +298,9 @@ Un video con tu cara genera mucha más confianza que una animación. Lo grabás 
 
 ## La narración con voz
 
-Cada video tiene escrito lo que diría la voz y en qué segundo (en `tools/redes/guiones-semana-3.mjs`, en `voz`). Cuando elijamos la voz, se agrega a los 8 videos sin volver a grabar la imagen. Si tenés referencias de TikTok de la voz que te gusta, pasámelas.
+Lo más fácil es usar la **voz viral de TikTok** (Texto a voz), directo en la app. Las frases de cada video, con el segundo en que entra cada una, están al final de este archivo.
+
+Si preferís que la voz venga ya metida en el archivo (por ejemplo, para que sea la misma en TikTok, Instagram y YouTube), avisame y la genero con otra voz de IA.
 
 ---
 
@@ -339,3 +341,92 @@ node tools/redes/videos.mjs semana-3                       # todos
 node tools/redes/videos.mjs semana-3 5-pausa-si-podes      # uno solo
 node tools/redes/videos.mjs semana-3 5-pausa-si-podes --solo-sonido   # cambia solo el sonido
 ```
+
+---
+
+## Narración con la voz viral de TikTok (Texto a voz)
+
+Las voces virales son las de **Texto a voz** de TikTok. Se ponen en la app, al editar:
+
+1. Subí el video y tocá **Texto** (Aa). Pegá la primera frase.
+2. Tocá el texto → **Texto a voz** → elegí la voz. Las más usadas en español son las de narrador: probá dos o tres.
+3. Tocá el texto → **Duración** y hacé que empiece en el segundo que dice abajo. La voz arranca cuando aparece el texto.
+4. Para que el texto no tape el video, achicalo al mínimo y llevalo a un borde, o dejá que dure muy poco: la voz se escucha entera igual.
+5. Repetí con cada frase.
+6. Bajá un poco el **sonido original** (Sonidos → Volumen: 60–70 %) para que la voz se entienda bien.
+
+Instagram también tiene **Texto a voz** en el editor de Reels: se hace igual.
+
+**Jue 12 · Desafío de memoria #2**
+
+| Segundo | Frase |
+|---|---|
+| 0,1 | ¿Podés llevar la cuenta? Sumá uno del dos al seis, y restá uno del diez al As. |
+| 8,2 | ¿Cuánto te dio? Comentalo antes de ver la respuesta. |
+| 12,2 | ¡Más tres! ¿Acertaste? |
+| 15,9 | Practicalo gratis en Edge 21. |
+
+**Vie 13 · POV: 11 contra un 6**
+
+| Segundo | Frase |
+|---|---|
+| 0,1 | Tenés once y el crupier muestra un seis. ¿Qué hacés? |
+| 6,3 | ¡Doblás! Con once, cualquier diez o figura te da veintiuno. |
+| 12,7 | ¿Acertaste? Comentá. |
+| 14,9 | Practicalo gratis en Edge 21. |
+
+**Sáb 14 · Busco testers**
+
+| Segundo | Frase |
+|---|---|
+| 0,1 | Hice una app y necesito veinte personas que la prueben antes que nadie. |
+| 4,6 | Es gratis y son dos minutos: tenés que tener Android, entrar a edge21 punto app y tocar Quiero ser tester. |
+| 11,8 | ¿Te sumás? Comentá yo. |
+| 14,5 | Edge 21. |
+
+**Dom 15 · ¿Qué es más probable?**
+
+| Segundo | Frase |
+|---|---|
+| 0,1 | ¿Qué es más probable? Una figura, o un As. |
+| 4,4 | ¿Una carta roja, o una del dos al seis? |
+| 8,7 | ¿Sacar veintiuno con las dos primeras cartas, o que salga el siete de corazones? |
+| 13,6 | ¿Cuántas acertaste? |
+
+**Lun 16 · Pausá si podés**
+
+| Segundo | Frase |
+|---|---|
+| 0,1 | Pausá el video y contá. Si podés. |
+| 6,7 | ¿Cuánto te dio? |
+| 9,3 | ¡Menos dos! Si no pausaste, volvé a mirarlo. |
+| 13,5 | Edge 21. |
+
+**Mar 17 · A+6**
+
+| Segundo | Frase |
+|---|---|
+| 0,1 | Tenés As y seis. ¿Te plantás con diecisiete? |
+| 4,8 | ¡No! Pedí: con As y seis no te podés pasar. |
+| 12,0 | Guardalo y mandáselo a quien siempre se planta. |
+| 14,3 | Practicalo gratis en Edge 21. |
+
+**Mié 18 · Desafío de memoria #3**
+
+| Segundo | Frase |
+|---|---|
+| 0,1 | Desafío difícil: doce cartas, y tienen trampa. |
+| 7,9 | ¿Cuánto te dio? |
+| 11,7 | ¡Más uno! Los sietes, ochos y nueves valen cero. |
+| 15,7 | Edge 21. |
+
+**Jue 19 · ¿Qué nivel tenés?**
+
+| Segundo | Frase |
+|---|---|
+| 0,1 | ¿Qué nivel tenés? Tres preguntas. |
+| 2,1 | Uno: ¿cuánto vale un As? |
+| 6,7 | Dos: tenés doce contra un cuatro. ¿Qué hacés? |
+| 11,3 | Tres: con Hi-Lo, ¿cuánto suman estas cinco cartas? |
+| 16,0 | ¿Cuántas acertaste? Comentá tu nivel. |
+
