@@ -68,7 +68,7 @@ function giftUntil(st = getState()) {
 }
 
 // ---- La web como prueba (apagada) ----
-// La web es la app completa: es como se usa Edge 21 en iPhone y en la computadoratadora. Lo gratis es
+// La web es la app completa: es como se usa Edge 21 en iPhone y en la computadora. Lo gratis es
 // igual que en Android, y Premium va por la cuenta de Google. Si algún día se quiere volver a una
 // web de prueba (las secciones 1 y 2 de Aprender, los niveles 1 a 3 de Conteo, una tanda de
 // Entrenar y 20 manos por día; lo demás invita a la app), alcanza con poner WEB_DEMO_ON en true.

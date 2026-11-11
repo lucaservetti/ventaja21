@@ -826,7 +826,7 @@ const PRUEBAS = {
     check(!(await page.getByText(h.T("Probarlo 30 minutos", "Try it for 30 minutes")).count()), "todavía aparece la prueba de 30 minutos");
     await page.locator(".layer.full button").filter({ visible: true }).first().click();
     await page.waitForTimeout(500);
-    check(!(await page.getByText(h.T("Tu dinero", "Your money")).filter({ visible: true }).count()), "el modo casino se abrió sin Premium");
+    check(!(await page.getByText(h.T("Tu presupuesto (de mentira)", "Your budget (play money)")).filter({ visible: true }).count()), "el modo casino se abrió sin Premium");
   },
 
   // Con 3 lecciones hechas aparece la tarjeta de Premium en Aprender y lleva a la pantalla de Premium.
@@ -975,7 +975,7 @@ const PRUEBAS = {
     await page.waitForTimeout(1200);
     await h.tab("Jugar", "Play");
     await h.css("section:not([hidden]) button", 700);
-    await h.see("Tu dinero", "Your money");
+    await h.see("Tu presupuesto (de mentira)", "Your budget (play money)");
   },
 };
 

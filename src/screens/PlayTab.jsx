@@ -445,7 +445,7 @@ function TableSheet({ open, onClose, table }) {
             Modo casino real <PremiumTag st={st} />
           </span>
           <span className="li-sub" style={{ display: "block" }}>
-            Tu dinero, límites de mesa, tiempo para decidir y vigilancia
+            Presupuesto simulado, límites de mesa, tiempo para decidir y vigilancia
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
