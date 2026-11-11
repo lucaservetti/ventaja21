@@ -39,18 +39,23 @@ const SKILLS = [
     icon: ["A", "7"],
   },
   { id: "pairs", name: "Pares", sub: "Cuándo separar", icon: ["8", "8"] },
-  { id: "doubles", name: "Dobles", sub: "9, 10 y 11", icon: ["6", "5"] },
+  {
+    id: "doubles",
+    name: "Dobles",
+    sub: "Cuándo doblar con 9, 10 y 11",
+    icon: ["6", "5"],
+  },
   {
     id: "surrender",
     name: "Rendición",
-    sub: "Cuándo devolver media apuesta",
+    sub: "Cuándo conviene abandonar la mano",
     icon: ["10", "6"],
     needs: "surrender",
   },
   {
     id: "count",
     name: "Con conteo",
-    sub: "Desviaciones del Illustrious 18",
+    sub: "Jugadas que cambian según el conteo",
     icon: ["10", "10"],
   },
 ];

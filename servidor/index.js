@@ -120,9 +120,11 @@ async function verifyIdToken(token, env) {
 }
 
 // ---- Acceso a Firestore con la cuenta de servicio ----
-let access = { token: null, exp: 0 };
-async function serviceToken(env) {
-  if (env.EMULATOR) return "owner";
+// Un token por permiso (Firestore, Google Play), guardado mientras dure.
+const accesos = {};
+async function serviceToken(env, scope = "https://www.googleapis.com/auth/datastore") {
+  if (env.EMULATOR && scope.endsWith("/datastore")) return "owner";
+  const access = accesos[scope] || { token: null, exp: 0 };
   if (access.token && access.exp > Date.now() + 60e3) return access.token;
   const sa = JSON.parse(env.FIREBASE_SA);
   const now = Math.floor(Date.now() / 1000);
@@ -130,7 +132,7 @@ async function serviceToken(env) {
   const body = strToB64url(
     JSON.stringify({
       iss: sa.client_email,
-      scope: "https://www.googleapis.com/auth/datastore",
+      scope,
       aud: "https://oauth2.googleapis.com/token",
       iat: now,
       exp: now + 3600,
@@ -155,12 +157,109 @@ async function serviceToken(env) {
     body: `grant_type=${encodeURIComponent("urn:ietf:params:oauth:grant-type:jwt-bearer")}&assertion=${head}.${body}.${bytesToB64url(sig)}`,
   });
   const data = await r.json();
-  if (!data.access_token) throw new Error("sin acceso a Firestore");
-  access = {
+  if (!data.access_token) throw new Error("sin acceso a Google");
+  accesos[scope] = {
     token: data.access_token,
     exp: Date.now() + (data.expires_in || 3600) * 1000,
   };
-  return access.token;
+  return data.access_token;
+}
+
+// ---- Compras de Google Play: el servidor le pregunta a Google si son de verdad ----
+// La app (cordova-plugin-purchase, store.validator) manda cada compra aquí antes de dar Premium.
+// Usa la misma cuenta de servicio (FIREBASE_SA), que hay que invitar en Play Console con permiso
+// para ver pedidos y suscripciones (ver PLAY_STORE.md).
+// Si Google todavía no da acceso o no responde, se acepta la compra igual (no se le puede negar
+// Premium a quien pagó por un problema nuestro); solo se rechaza cuando Google dice que no existe
+// o que está cancelada.
+const APP_ID = "com.lucaservetti.ventaja21";
+const PRODUCTOS_PLAY = { edge21_premium: "sub", premium: "unico" };
+const COMPRA_INVALIDA = 6777017; // CdvPurchase.ErrorCode.VERIFICATION_FAILED
+async function consultarPlay(env, tipo, productId, token) {
+  const base = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${APP_ID}/purchases`;
+  const u =
+    tipo === "sub"
+      ? `${base}/subscriptionsv2/tokens/${encodeURIComponent(token)}`
+      : `${base}/products/${encodeURIComponent(productId)}/tokens/${encodeURIComponent(token)}`;
+  const r = await fetch(u, {
+    headers: {
+      Authorization: `Bearer ${await serviceToken(env, "https://www.googleapis.com/auth/androidpublisher")}`,
+    },
+  });
+  return { status: r.status, data: r.ok ? await r.json() : null };
+}
+// Lo que dice Google, en el formato que espera la app ({ id, isExpired, expiryDate... }).
+function compraDePlay(tipo, productId, d, now) {
+  if (tipo === "unico") {
+    // purchaseState: 0 comprada, 1 cancelada, 2 pendiente.
+    if (d.purchaseState !== 0) return null;
+    return { id: productId, purchaseDate: Number(d.purchaseTimeMillis) || undefined, isExpired: false };
+  }
+  const vence = Math.max(
+    0,
+    ...(d.lineItems || []).map((x) => Date.parse(x.expiryTime) || 0),
+  );
+  const estado = d.subscriptionState || "";
+  if (estado === "SUBSCRIPTION_STATE_PENDING") return null;
+  const activa = [
+    "SUBSCRIPTION_STATE_ACTIVE",
+    "SUBSCRIPTION_STATE_IN_GRACE_PERIOD",
+    "SUBSCRIPTION_STATE_CANCELED", // cancelada: sigue hasta que vence
+  ].includes(estado);
+  return {
+    id: productId,
+    expiryDate: vence || undefined,
+    isExpired: !activa || (vence > 0 && vence < now),
+    isBillingRetryPeriod: estado === "SUBSCRIPTION_STATE_IN_GRACE_PERIOD",
+  };
+}
+async function verificarPlay(req, env, now = Date.now()) {
+  const body = await req.json().catch(() => null);
+  const t = body && body.transaction;
+  if (
+    !t ||
+    t.type !== "android-playstore" ||
+    typeof t.purchaseToken !== "string" ||
+    !t.purchaseToken ||
+    t.purchaseToken.length > 2048
+  )
+    return json(req, 400, { ok: false, code: COMPRA_INVALIDA, message: "Pedido inválido" });
+  let recibo = {};
+  try {
+    recibo = JSON.parse(t.receipt || "{}") || {};
+  } catch {
+    recibo = {};
+  }
+  const productId =
+    recibo.productId || (recibo.productIds || [])[0] || body.id;
+  const tipo = PRODUCTOS_PLAY[productId];
+  if (!tipo || (recibo.packageName && recibo.packageName !== APP_ID))
+    return json(req, 200, { ok: false, code: COMPRA_INVALIDA, message: "Producto desconocido" });
+  const base = {
+    id: productId,
+    latest_receipt: true,
+    transaction: { type: "android-playstore", ...recibo },
+    date: new Date(now).toISOString(),
+  };
+  const aceptar = (warning) =>
+    json(req, 200, {
+      ok: true,
+      data: { ...base, warning, collection: [{ id: productId, isExpired: false }] },
+    });
+  let r;
+  try {
+    r = await consultarPlay(env, tipo, productId, t.purchaseToken);
+  } catch {
+    return aceptar("No se pudo consultar a Google Play");
+  }
+  // 400/404/410: Google no conoce esa compra (o ya no existe).
+  if ([400, 404, 410].includes(r.status))
+    return json(req, 200, { ok: false, code: COMPRA_INVALIDA, message: "Compra no válida" });
+  if (!r.data) return aceptar(`Google Play respondió ${r.status}`);
+  const compra = compraDePlay(tipo, productId, r.data, now);
+  if (!compra)
+    return json(req, 200, { ok: false, code: COMPRA_INVALIDA, message: "Compra cancelada o pendiente" });
+  return json(req, 200, { ok: true, data: { ...base, collection: [compra] } });
 }
 
 function db(env) {
@@ -1179,6 +1278,13 @@ export default {
     // Avisos de pago de Paddle (los firma Paddle; no pasan por la sesión ni por CORS).
     if (route === "/pagos/paddle" && req.method === "POST")
       return avisoPaddle(req, env);
+    // Compras de Google Play (la app las manda antes de dar Premium).
+    if (route === "/play/verificar" && req.method === "POST") {
+      const ip = req.headers.get("CF-Connecting-IP") || "local";
+      if (!(await dentroDelLimite(env, "LIMITE_IP", `play:${ip}`, 10)))
+        return muchos(req);
+      return verificarPlay(req, env);
+    }
     // Medición anónima (la app la manda con sendBeacon: no espera respuesta).
     if (route === "/m" && req.method === "POST") {
       const ip = req.headers.get("CF-Connecting-IP") || "local";
@@ -1280,5 +1386,7 @@ export {
   limpiar,
   premios,
   serviceToken,
+  compraDePlay,
+  verificarPlay,
   verifyIdToken,
 };

@@ -14,12 +14,18 @@ import {
   cx,
 } from "../ui/components.jsx";
 import { countValue, fmtTag, systemFor } from "../engine/systems.js";
-import { InfoDot, PageHeader, SettingsButton } from "../ui/common.jsx";
+import {
+  InfoDot,
+  PageHeader,
+  PrimeraVez,
+  SettingsButton,
+} from "../ui/common.jsx";
 import { HiLoValues, SystemValues } from "../lessons/visuals.jsx";
 import { dailyFormat } from "./drills.jsx";
 import { useNav } from "../nav.js";
 import { GoalBadge } from "./goal.jsx";
 import { CountPathCard } from "./countPath.jsx";
+import { passedCount } from "../engine/countPath.js";
 
 const SAMPLE_CARD = makeCard("5", "h");
 function CountTab() {
@@ -29,6 +35,13 @@ function CountTab() {
   const [practice, setPractice] = useState("values");
   const [helpOpen, setHelpOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
+  // "Más ejercicios" son de conteo avanzado: quedan plegados hasta el nivel 3 de la ruta (o hasta
+  // que hayas hecho alguno), para no mostrar todo el primer día.
+  const [verMas, setVerMas] = useState(false);
+  const usoAvanzado = ["pairs", "true", "decks", "bet", "deck", "count"].some(
+    (k) => ((st.drills[k] && st.drills[k].sessions) || []).length,
+  );
+  const masAbierto = verMas || usoAvanzado || passedCount(st) >= 3;
   const daily = st.daily;
   const today = dayKey();
   const y = new Date();
@@ -58,6 +71,10 @@ function CountTab() {
           </>
         }
       />
+      <PrimeraVez id="conteo">
+        Aquí aprendes a contar cartas, un nivel por vez. Empieza por la ruta:
+        cada nivel te prepara para el siguiente.
+      </PrimeraVez>
 
       <CountPathCard />
 
@@ -256,52 +273,70 @@ function CountTab() {
       <div className="section-title">
         <h2>Más ejercicios</h2>
       </div>
-      <div className="list">
-        <DrillRow
-          icon="layers"
-          title="Cancelar de a pares"
-          sub="Una alta y una baja juntas suman 0"
-          onClick={() => nav.push("drillPairs", { confirmExit: true })}
-          n={((st.drills.pairs && st.drills.pairs.sessions) || []).length}
-        />
-        <DrillRow
-          icon="target"
-          title="Conteo real"
-          sub="Pasa el conteo corrido a conteo real (true count)"
-          onClick={() => nav.push("drillTrue", { confirmExit: true })}
-          n={st.drills.true.sessions.length}
-        />
-        <DrillRow
-          icon="shoe"
-          title="Estimar mazos"
-          sub="Lee la bandeja de descarte"
-          onClick={() => nav.push("drillDecks", { confirmExit: true })}
-          n={st.drills.decks.sessions.length}
-        />
-        <DrillRow
-          icon="bolt"
-          title="Apuesta según el conteo"
-          sub="La escala de 1 a 8 unidades"
-          onClick={() => nav.push("drillBet", { confirmExit: true })}
-          n={st.drills.bet.sessions.length}
-        />
-        <DrillRow
-          icon="clock"
-          title="Mazo completo"
-          sub="Cuenta 51 cartas contra reloj"
-          onClick={() => nav.push("deckCountdown", { confirmExit: true })}
-          n={(st.drills.deck.sessions || []).length}
-        />
-        <DrillRow
-          icon="sparkle"
-          title="Desviaciones"
-          sub="Jugadas que cambian con el conteo"
-          onClick={() =>
-            nav.push("trainSession", { mode: "count", confirmExit: true })
-          }
-          n={(st.drills.count.sessions || []).length}
-        />
-      </div>
+      {!masAbierto ? (
+        <button
+          type="button"
+          className="card list-item mas-plegado"
+          onClick={() => setVerMas(true)}
+          aria-expanded={false}
+        >
+          <span className="li-text">
+            <span className="li-title">Ver 6 ejercicios más</span>
+            <span className="li-sub" style={{ display: "block" }}>
+              Conteo real, mazos, apuestas y más. Se abren solos cuando pases el
+              nivel 3 de la ruta.
+            </span>
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+      ) : (
+        <div className="list">
+          <DrillRow
+            icon="layers"
+            title="Cancelar de a pares"
+            sub="Una alta y una baja juntas suman 0"
+            onClick={() => nav.push("drillPairs", { confirmExit: true })}
+            n={((st.drills.pairs && st.drills.pairs.sessions) || []).length}
+          />
+          <DrillRow
+            icon="target"
+            title="Conteo real"
+            sub="Divide el conteo por los mazos que quedan"
+            onClick={() => nav.push("drillTrue", { confirmExit: true })}
+            n={st.drills.true.sessions.length}
+          />
+          <DrillRow
+            icon="shoe"
+            title="Estimar mazos"
+            sub="Calcula cuántos mazos quedan mirando las cartas jugadas"
+            onClick={() => nav.push("drillDecks", { confirmExit: true })}
+            n={st.drills.decks.sessions.length}
+          />
+          <DrillRow
+            icon="bolt"
+            title="Apuesta según el conteo"
+            sub="Cuánto apostar según el conteo"
+            onClick={() => nav.push("drillBet", { confirmExit: true })}
+            n={st.drills.bet.sessions.length}
+          />
+          <DrillRow
+            icon="clock"
+            title="Mazo completo"
+            sub="Cuenta 51 cartas contra reloj"
+            onClick={() => nav.push("deckCountdown", { confirmExit: true })}
+            n={(st.drills.deck.sessions || []).length}
+          />
+          <DrillRow
+            icon="sparkle"
+            title="Desviaciones"
+            sub="Jugadas que cambian según el conteo"
+            onClick={() =>
+              nav.push("trainSession", { mode: "count", confirmExit: true })
+            }
+            n={(st.drills.count.sessions || []).length}
+          />
+        </div>
+      )}
 
       {/* Sin ejercicios hechos no hay nada que mostrar todavía. */}
       {valueSessions.length || running.length ? (

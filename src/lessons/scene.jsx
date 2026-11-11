@@ -698,7 +698,7 @@ function Scene({ step: a, picked: e, onPick: t }) {
           <Logo size={18} />
           {" Mentor"}
         </div>
-        <p className="say-text">{rich(r)}</p>
+        <p className="say-text">{rich(r, true)}</p>
         {l && a.say ? <p className="say-text say-q">{rich(l.q)}</p> : null}
         {l && !o ? (
           <div

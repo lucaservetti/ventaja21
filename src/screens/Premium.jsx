@@ -50,7 +50,7 @@ const PERKS = [
   {
     icon: "crown",
     title: "Modo casino real",
-    sub: "Tu dinero, límites de mesa, tiempo para decidir, vigilancia, modo turista y el examen con certificado.",
+    sub: "Presupuesto simulado, límites de mesa, tiempo para decidir, vigilancia, modo turista y el examen con certificado.",
   },
   {
     icon: "target",

@@ -819,14 +819,14 @@ const PRUEBAS = {
   async webPremium(h) {
     const { page } = h;
     await h.tab("Jugar", "Play");
-    await h.css("section:not([hidden]) button", 700);
+    await h.css("section:not([hidden]) .casino-ib", 700);
     await h.see("Edge 21 Premium", "Edge 21 Premium");
     await h.see("Por ahora Premium se compra en la app de Android", "For now Premium is bought in the Android app");
     // Ya no hay prueba de 30 minutos: sin Premium, el modo casino no se abre.
     check(!(await page.getByText(h.T("Probarlo 30 minutos", "Try it for 30 minutes")).count()), "todavía aparece la prueba de 30 minutos");
     await page.locator(".layer.full button").filter({ visible: true }).first().click();
     await page.waitForTimeout(500);
-    check(!(await page.getByText(h.T("Tu dinero", "Your money")).filter({ visible: true }).count()), "el modo casino se abrió sin Premium");
+    check(!(await page.getByText(h.T("Tu presupuesto (de mentira)", "Your budget (play money)")).filter({ visible: true }).count()), "el modo casino se abrió sin Premium");
   },
 
   // Con 3 lecciones hechas aparece la tarjeta de Premium en Aprender y lleva a la pantalla de Premium.
@@ -957,7 +957,7 @@ const PRUEBAS = {
     await page.reload();
     await page.waitForTimeout(1200);
     await h.tab("Jugar", "Play");
-    await h.css("section:not([hidden]) button", 700);
+    await h.css("section:not([hidden]) .casino-ib", 700);
     await h.see("Edge 21 Premium", "Edge 21 Premium");
     await h.see("5 días gratis", "5 days free");
     await h.see("Para siempre", "Lifetime");
@@ -974,8 +974,8 @@ const PRUEBAS = {
     await page.reload();
     await page.waitForTimeout(1200);
     await h.tab("Jugar", "Play");
-    await h.css("section:not([hidden]) button", 700);
-    await h.see("Tu dinero", "Your money");
+    await h.css("section:not([hidden]) .casino-ib", 700);
+    await h.see("Tu presupuesto (de mentira)", "Your budget (play money)");
   },
 };
 

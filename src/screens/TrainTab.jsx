@@ -7,6 +7,7 @@ import {
   InfoDot,
   MiniCards,
   PageHeader,
+  PrimeraVez,
   SettingsButton,
   pct,
   useRules,
@@ -17,6 +18,7 @@ import { DevPathCard } from "./DevPath.jsx";
 import { useNav } from "../nav.js";
 import { GoalBadge } from "./goal.jsx";
 import { ProfileChips } from "./profile.jsx";
+import { sabeContar } from "../lessons/content.js";
 
 const SKILL_SUITS = {
   stiff: ["s", "h"],
@@ -31,6 +33,7 @@ function TrainTab() {
     e = useNav(),
     t = useRules(),
     [s, n] = useState(null),
+    [verDev, setVerDev] = useState(false),
     l = a.train.sessions.filter((u) => u.kind !== "exam"),
     i = l.length === 0,
     o = levelFor(a.rating.value),
@@ -49,6 +52,10 @@ function TrainTab() {
           </>
         }
       />
+      <PrimeraVez id="entrenar">
+        Aquí practicas la jugada correcta: tandas de 10 manos. Las que fallas
+        vuelven hasta que las aciertas.
+      </PrimeraVez>
       {i ? (
         <button
           type="button"
@@ -100,43 +107,6 @@ function TrainTab() {
         </div>
       )}
       {!i ? <ForYou st={a} nav={e} /> : null}
-      {i ? (
-        <>
-          <div className="section-title">
-            <h2>Cómo funciona</h2>
-          </div>
-          <ol className="how">
-            <li>
-              <span className="how-n">1</span>
-              <span>
-                <b>Juega la mano</b>
-                <span className="muted">
-                  Pedir, plantarte, doblar o separar. Tómate tu tiempo.
-                </span>
-              </span>
-            </li>
-            <li>
-              <span className="how-n">2</span>
-              <span>
-                <b>Entiende por qué</b>
-                <span className="muted">
-                  Cada respuesta trae la jugada correcta y la razón en una nota.
-                </span>
-              </span>
-            </li>
-            <li>
-              <span className="how-n">3</span>
-              <span>
-                <b>Recibe las próximas diez manos</b>
-                <span className="muted">
-                  La siguiente tanda insiste en las manos que fallaste, así
-                  practicas donde importa.
-                </span>
-              </span>
-            </li>
-          </ol>
-        </>
-      ) : null}
       <div className="section-title">
         <h2>
           Habilidades
@@ -145,43 +115,37 @@ function TrainTab() {
         <span className="side">10 manos por tanda</span>
       </div>
       <div className="list">
-        {SKILLS.filter((u) => u.id !== "surrender" || t.surrender || true).map(
-          (u) => {
-            let d = skillStats(a.train.cells, u.id, t),
-              p = skillGrade(d.acc);
-            return (
-              <button
-                type="button"
-                className="list-item skill-item"
-                onClick={() => r(u.id === "count" ? "count" : "skill", u.id)}
-                key={u.id}
-              >
-                <MiniCards ranks={u.icon} suits={SKILL_SUITS[u.id]} />
-                <span className="li-text">
-                  <span className="li-title">{u.name}</span>
-                  <span className="li-sub" style={{ display: "block" }}>
-                    {u.sub}
-                  </span>
-                  <span className="skill-meter">
-                    <ProgressBar
-                      value={
-                        d.acc === null ? 0 : d.coverage * 0.4 + d.acc * 0.6
-                      }
-                      tone={p.tone}
-                      className="skill-bar"
-                    />
-                    <span
-                      className={cx("skill-grade", p.tone && `t-${p.tone}`)}
-                    >
-                      {d.acc === null ? p.label : `${pct(d.acc)} · ${p.label}`}
-                    </span>
+        {SKILLS.filter((u) => u.id !== "count" || sabeContar(a)).map((u) => {
+          let d = skillStats(a.train.cells, u.id, t),
+            p = skillGrade(d.acc);
+          return (
+            <button
+              type="button"
+              className="list-item skill-item"
+              onClick={() => r(u.id === "count" ? "count" : "skill", u.id)}
+              key={u.id}
+            >
+              <MiniCards ranks={u.icon} suits={SKILL_SUITS[u.id]} />
+              <span className="li-text">
+                <span className="li-title">{u.name}</span>
+                <span className="li-sub" style={{ display: "block" }}>
+                  {u.sub}
+                </span>
+                <span className="skill-meter">
+                  <ProgressBar
+                    value={d.acc === null ? 0 : d.coverage * 0.4 + d.acc * 0.6}
+                    tone={p.tone}
+                    className="skill-bar"
+                  />
+                  <span className={cx("skill-grade", p.tone && `t-${p.tone}`)}>
+                    {d.acc === null ? p.label : `${pct(d.acc)} · ${p.label}`}
                   </span>
                 </span>
-                <Icon name="chev" className="li-chev" />
-              </button>
-            );
-          },
-        )}
+              </span>
+              <Icon name="chev" className="li-chev" />
+            </button>
+          );
+        })}
       </div>
       <div className="section-title">
         <h2>Memoriza la tabla</h2>
@@ -253,7 +217,29 @@ function TrainTab() {
       <div className="section-title">
         <h2>Desviaciones</h2>
       </div>
-      <DevPathCard st={a} nav={e} />
+      {sabeContar(a) || verDev || Object.keys(a.devPath.tries || {}).length ? (
+        <DevPathCard st={a} nav={e} />
+      ) : (
+        <button
+          type="button"
+          className="card list-item mas-plegado"
+          onClick={() => setVerDev(true)}
+          aria-expanded={false}
+        >
+          <span className="li-icon">
+            <Icon name="lock" />
+          </span>
+          <span className="li-text">
+            <span className="li-title">Primero aprende a contar</span>
+            <span className="li-sub" style={{ display: "block" }}>
+              Son jugadas que cambian según el conteo. Se abren cuando hagas la
+              lección de los valores de las cartas (sección 4). Toca para verlas
+              igual.
+            </span>
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+      )}
       <div className="section-title">
         <h2>
           Historial

@@ -45,7 +45,7 @@ const INFO = {
   graduacion: {
     icon: "trophy",
     title: "Graduación",
-    sub: "Termina todas las lecciones.",
+    sub: "Termina 36 lecciones (las secciones 1 a 7).",
     unit: "lecciones",
   },
 };

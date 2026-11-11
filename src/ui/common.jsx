@@ -1,4 +1,4 @@
-import { useStore, withRules } from "../state.js";
+import { setState, useStore, withRules } from "../state.js";
 import { Icon } from "./icons.jsx";
 import { makeCard } from "../engine/cards.js";
 import { Badge, IconButton, PlayingCard, RatingGem } from "./components.jsx";
@@ -178,7 +178,23 @@ function InfoDot({ onClick: a, label: e = "Más información" }) {
 function pct(a) {
   return `${Math.round(a * 100)} %`;
 }
+// Una frase que explica para qué sirve una pestaña. Sale solo la primera vez: al cerrarla no vuelve
+// (queda en st.tips).
+function PrimeraVez({ id, children }) {
+  const st = useStore();
+  if (st.tips && st.tips[id]) return null;
+  const cerrar = () =>
+    setState((s) => ({ ...s, tips: { ...(s.tips || {}), [id]: Date.now() } }));
+  return (
+    <div className="card flat primera-vez" role="note">
+      <Icon name="sparkle" size={18} className="pv-ic" />
+      <p className="grow">{children}</p>
+      <IconButton icon="close" label="Entendido" onClick={cerrar} />
+    </div>
+  );
+}
 export {
+  PrimeraVez,
   LOGO_21,
   LOGO_SPADE,
   BrandBar,

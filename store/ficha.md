@@ -12,7 +12,7 @@ Entrenador de blackjack: estrategia básica y contar cartas. Sin apuestas.
 Edge 21 es un entrenador de blackjack para aprender a jugar bien: primero la estrategia básica, después a contar cartas con Hi-Lo y, al final, a usar el conteo en una mesa de casino de verdad.
 
 APRENDE PASO A PASO
-• 36 lecciones cortas con una mesa narrada: juegas cada mano mientras te explican por qué.
+• 44 lecciones cortas con una mesa narrada: juegas cada mano mientras te explican por qué.
 • Tu tabla de estrategia básica se va encendiendo a medida que aprendes, con la razón de cada jugada.
 • Si ya sabes, haz un examen y salta directo al nivel que te toca.
 
@@ -20,7 +20,8 @@ APRENDE A CONTAR CARTAS
 • Ruta de conteo de 10 niveles: de los valores de las cartas a contar un zapato entero.
 • Conteo corrido y conteo real, con práctica guiada antes de cada nivel.
 • Desafío diario con un formato distinto cada día, ranking semanal y velocidad de conteo: ¿llegas al ritmo del casino?
-• Hi-Lo y KO gratis; Hi-Opt I y II, Zen, Omega II y Wong Halves con Premium.
+• Lecciones de otros sistemas: KO, Hi-Opt I y II, Zen, Omega II y Wong Halves.
+• Practica con Hi-Lo y KO gratis; los demás sistemas, con Premium.
 
 ENTRENA DONDE FALLAS
 • Tandas de manos apuntadas a tus puntos débiles: duras, blandas y pares.
@@ -33,7 +34,7 @@ UN CASINO EN TU MANO
 
 PREMIUM (MENSUAL, ANUAL CON PRUEBA GRATIS, O UN SOLO PAGO)
 • Sin anuncios.
-• Modo casino real: tu dinero (dólares, pesos o euros), límites de mesa, tiempo para decidir, vigilancia del casino, modo turista y examen con certificado.
+• Modo casino real (simulado, con fichas de mentira): el presupuesto que llevarías en dólares, pesos o euros, límites de mesa, tiempo para decidir, vigilancia del casino, modo turista y examen con certificado.
 • Ruta de desviaciones completa: los Illustrious 18 y el Fab 4.
 • Simulador de banca: cuánto dinero necesitas y tu riesgo de quebrar.
 • Análisis de tus errores: tu tabla pintada según dónde fallas y cómo vas mejorando.
@@ -41,10 +42,10 @@ PREMIUM (MENSUAL, ANUAL CON PRUEBA GRATIS, O UN SOLO PAGO)
 • La mesa a tu medida: cada regla a mano (mazos, corte, 3:2 o 6:5, H17, rendición y más) y dos manos por ronda.
 • Guía y progreso completos: desviaciones, el valor de cada regla y tu historial con todas tus tandas.
 • Sistemas de conteo avanzados y diario de casino real.
-• O gánalo jugando: días de Premium de regalo por racha y por terminar las lecciones.
+• O gánalo practicando: días de Premium de regalo por constancia y por terminar las lecciones.
 
 TU PROGRESO, TUYO
-• Meta diaria, racha, logros y tu perfil de jugador con puntos fuertes y débiles.
+• Racha diaria con protectores, meta de minutos, logros y tu perfil de jugador con puntos fuertes y débiles.
 • Funciona sin internet y sin crear cuentas. Si quieres, entras con Google para guardar tu progreso en la nube, aparecer en el ranking y ganar premios.
 • Tema claro, letra grande y lector de pantalla.
 
@@ -52,7 +53,7 @@ IMPORTANTE
 Edge 21 es para aprender: no se apuesta ni se gana dinero real. Ningún método garantiza ganar. Contar cartas mentalmente es legal, pero los casinos pueden pedirte que dejes de jugar, y usar el celular en la mesa está prohibido. Si juegas, hazlo solo con dinero que no necesitas.
 
 ## Novedades de la primera versión (máx. 500 caracteres)
-Primera versión de Edge 21: 36 lecciones, ruta de conteo de 10 niveles, desafío diario con ranking, simulador de blackjack y Premium con prueba gratis. ¡Gracias por probarla! Si encuentras algo raro, escríbenos a soporte@edge21.app.
+Primera versión de Edge 21: 44 lecciones (también KO, Hi-Opt, Zen, Omega II y Wong Halves), ruta de conteo de 10 niveles, desafío diario con ranking, simulador de blackjack y Premium con prueba gratis. ¡Gracias por probarla! Si encuentras algo raro, escríbenos a soporte@edge21.app.
 
 ## Categoría
 **Educación** (recomendado). En Juegos → Cartas compite con cientos de casinos de fichas y la gente que busca aprender no la encuentra. En el cuestionario de clasificación igual hay que decir que tiene "apuestas simuladas" (fichas de mentira).

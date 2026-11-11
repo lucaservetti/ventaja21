@@ -148,13 +148,14 @@ function CasinoSetup() {
           <Icon name="crown" size={26} />
         </span>
         <p>
-          Llevas tu dinero, cambias fichas en la mesa y juegas <b>sin ayudas</b>:
-          sin coach, sin el conteo a la vista, con el crupier rápido y tiempo
-          para decidir. Al irte ves cuánto ganaste y cómo jugaste.
+          Llevas un presupuesto de mentira, cambias fichas en la mesa y juegas{" "}
+          <b>sin ayudas</b>: sin coach, sin el conteo a la vista, con el crupier
+          rápido y tiempo para decidir. Al irte ves cuánto ganaste y cómo
+          jugaste.
         </p>
       </div>
 
-      <h3 className="sheet-sub">Tu dinero</h3>
+      <h3 className="sheet-sub">Tu presupuesto (de mentira)</h3>
       <div className="field">
         <span>Moneda</span>
         <CurrencyPills />

@@ -12,7 +12,7 @@ Learn blackjack basic strategy and card counting, step by step. No gambling.
 Edge 21 is a blackjack trainer for learning to play right: basic strategy first, then counting cards with Hi-Lo and, finally, using the count at a real casino table.
 
 LEARN STEP BY STEP
-• 36 short lessons with a narrated table: you play every hand while the mentor explains why.
+• 44 short lessons with a narrated table: you play every hand while the mentor explains why.
 • Your basic strategy chart lights up as you learn, with the reason behind every play.
 • Already know the basics? Take a test and skip straight to your level.
 
@@ -20,7 +20,8 @@ LEARN TO COUNT CARDS
 • A 10-level counting path: from card values to counting a whole shoe.
 • Running count and true count, with guided practice before every level.
 • A daily challenge with a different format every day, a weekly leaderboard and a counting speed drill: can you keep up with casino speed?
-• Hi-Lo and KO free; Hi-Opt I and II, Zen, Omega II and Wong Halves with Premium.
+• Lessons on other systems: KO, Hi-Opt I and II, Zen, Omega II and Wong Halves.
+• Practice with Hi-Lo and KO for free; the other systems with Premium.
 
 TRAIN WHERE YOU MISS
 • Rounds of hands aimed at your weak spots: hard totals, soft totals and pairs.
@@ -33,7 +34,7 @@ A CASINO IN YOUR POCKET
 
 PREMIUM (MONTHLY, YEARLY WITH A FREE TRIAL, OR ONE-TIME)
 • No ads.
-• Real casino mode: your money (dollars, pesos or euros), table limits, a decision timer, casino surveillance, tourist mode and an exam with a certificate.
+• Real casino mode (simulated, with play chips): the budget you'd bring in dollars, pesos or euros, table limits, a decision timer, casino surveillance, tourist mode and an exam with a certificate.
 • The full deviations path: the Illustrious 18 and the Fab 4.
 • Bankroll simulator: how much money you need and your risk of ruin.
 • Mistake analysis: your chart colored by where you miss and how you're improving.
@@ -41,10 +42,10 @@ PREMIUM (MONTHLY, YEARLY WITH A FREE TRIAL, OR ONE-TIME)
 • Your table, your way: every rule by hand (decks, penetration, 3:2 or 6:5, H17, surrender and more) and two hands per round.
 • Full guide and progress: deviations, what each rule is worth, and your history with every session.
 • Advanced counting systems and a real casino journal.
-• Or earn it by playing: free days of Premium for streaks and for finishing the lessons.
+• Or earn it by practicing: free days of Premium for consistency and for finishing the lessons.
 
 YOUR PROGRESS, YOURS
-• Daily goal, streak, achievements and a player profile with your strengths and weak spots.
+• A daily streak with streak shields, a minutes goal, achievements and a player profile with your strengths and weak spots.
 • Works offline, no sign-up needed. If you want, sign in with Google to save your progress in the cloud, join the leaderboard and earn rewards.
 • Light theme, large text and screen reader support.
 
@@ -52,7 +53,7 @@ IMPORTANT
 Edge 21 is for learning: there's no real-money gambling and you can't win real money. No method guarantees winning. Counting cards in your head is legal, but casinos can ask you to stop playing, and using your phone at the table is prohibited. If you gamble, only use money you don't need.
 
 ## What's new in the first version (max. 500 characters)
-The first version of Edge 21: 36 lessons, a 10-level card counting path, a daily challenge with a leaderboard, a blackjack simulator and Premium with a free trial. Thanks for trying it! If anything looks off, write to us at soporte@edge21.app.
+The first version of Edge 21: 44 lessons (KO, Hi-Opt, Zen, Omega II and Wong Halves too), a 10-level card counting path, a daily challenge with a leaderboard, a blackjack simulator and Premium with a free trial. Thanks for trying it! If anything looks off, write to us at soporte@edge21.app.
 
 ## Images
 - Feature graphic: store/grafico-destacado-en.png (1024×500)

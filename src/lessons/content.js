@@ -93,8 +93,18 @@ const sv = (id) => ({ v: "sysvalues", sys: id });
 function contarCon(sys, cartas, title, intro) {
   const vals = SYSTEMS[sys].values;
   const total = cartas.reduce((a, c) => a + vals[rankKey(c.slice(0, -1))], 0);
-  const opciones = [total - 2, total - 1, total, total + 1].map((n) => fmtSigned(n));
-  return { t: "count", title, intro, cards: cartas, ms: 1400, options: opciones, answer: 2 };
+  const opciones = [total - 2, total - 1, total, total + 1].map((n) =>
+    fmtSigned(n),
+  );
+  return {
+    t: "count",
+    title,
+    intro,
+    cards: cartas,
+    ms: 1400,
+    options: opciones,
+    answer: 2,
+  };
 }
 const SECTIONS = [
   {
@@ -2929,7 +2939,11 @@ const SECTIONS = [
           ]),
           quiz(
             "¿Qué tiene de distinto un sistema de nivel 2?",
-            ["Algunas cartas valen ±2", "Se juega con dos mazos", "Se cuenta dos veces"],
+            [
+              "Algunas cartas valen ±2",
+              "Se juega con dos mazos",
+              "Se cuenta dos veces",
+            ],
             0,
             "En nivel 2 hay cartas que valen +2 o −2: es más preciso, pero más difícil de llevar.",
           ),
@@ -2962,7 +2976,12 @@ const SECTIONS = [
             "En vez de empezar en 0, empiezas en **4 − 4 × mazos**. Con 6 mazos: 4 − 24 = **−20**.",
             "Así no tienes que dividir por los mazos que quedan: cuanto más sube el número, mejor. En **+4**, el zapato está claramente a tu favor.",
           ]),
-          { t: "tags", title: "Pruébalo con KO", sys: "ko", cards: ["7h", "5c", "Kd", "8s", "Ac", "3h"] },
+          {
+            t: "tags",
+            title: "Pruébalo con KO",
+            sys: "ko",
+            cards: ["7h", "5c", "Kd", "8s", "Ac", "3h"],
+          },
           quiz(
             "Con KO y 6 mazos, ¿en qué número empiezas a contar?",
             ["0", "−20", "+4", "−24"],
@@ -3002,7 +3021,12 @@ const SECTIONS = [
             "El As ayuda mucho cuando apuestas, pero poco para decidir cómo jugar la mano.",
             "Por eso quienes usan Hi-Opt I lo cuentan **aparte**: juegan más fino y apuestan bien.",
           ]),
-          { t: "tags", title: "Pruébalo con Hi-Opt I", sys: "hiopt1", cards: ["2d", "Ah", "4c", "Qs", "6h", "9d"] },
+          {
+            t: "tags",
+            title: "Pruébalo con Hi-Opt I",
+            sys: "hiopt1",
+            cards: ["2d", "Ah", "4c", "Qs", "6h", "9d"],
+          },
           quiz(
             "En Hi-Opt I, ¿cuánto vale el 2?",
             ["+1", "0", "−1"],
@@ -3035,8 +3059,18 @@ const SECTIONS = [
             "Con valores de ±2, el número refleja mejor lo que queda en el zapato.",
             "Pero sumar de a dos en una mesa rápida cuesta más: es para cuando Hi-Lo ya te sale sin pensar.",
           ]),
-          { t: "tags", title: "Pruébalo con Hi-Opt II", sys: "hiopt2", cards: ["4h", "Kc", "7s", "5d", "9c", "2h"] },
-          contarCon("hiopt2", ["5h", "Kd", "4c", "7s", "Qh", "3d"], "Cuenta con Hi-Opt II", "Mira las 6 cartas y suma con los valores de Hi-Opt II."),
+          {
+            t: "tags",
+            title: "Pruébalo con Hi-Opt II",
+            sys: "hiopt2",
+            cards: ["4h", "Kc", "7s", "5d", "9c", "2h"],
+          },
+          contarCon(
+            "hiopt2",
+            ["5h", "Kd", "4c", "7s", "Qh", "3d"],
+            "Cuenta con Hi-Opt II",
+            "Mira las 6 cartas y suma con los valores de Hi-Opt II.",
+          ),
           quiz(
             "En Hi-Opt II, ¿cuánto vale una K?",
             ["−1", "−2", "0"],
@@ -3066,7 +3100,12 @@ const SECTIONS = [
             "Es **muy bueno para decidir cuánto apostar**.",
             "Como es de nivel 2, practícalo cuando ya domines Hi-Lo.",
           ]),
-          { t: "tags", title: "Pruébalo con Zen", sys: "zen", cards: ["6c", "Ad", "3s", "Jh", "8d", "4s"] },
+          {
+            t: "tags",
+            title: "Pruébalo con Zen",
+            sys: "zen",
+            cards: ["6c", "Ad", "3s", "Jh", "8d", "4s"],
+          },
           quiz(
             "En Zen, ¿cuánto vale el As?",
             ["0", "−1", "−2"],
@@ -3096,7 +3135,12 @@ const SECTIONS = [
             "Es de los sistemas que mejor deciden cómo jugar cada mano.",
             "A cambio, es el más fácil de equivocar si la mesa va rápido.",
           ]),
-          { t: "tags", title: "Pruébalo con Omega II", sys: "omega2", cards: ["9h", "5s", "Qd", "2c", "Ac", "6d"] },
+          {
+            t: "tags",
+            title: "Pruébalo con Omega II",
+            sys: "omega2",
+            cards: ["9h", "5s", "Qd", "2c", "Ac", "6d"],
+          },
           quiz(
             "En Omega II, ¿qué carta vale −1?",
             ["El 9", "El As", "El 8"],
@@ -3126,7 +3170,12 @@ const SECTIONS = [
             "Muchos cuentan **todo por 2** (el 5 vale +3, el 2 vale +1…) y dividen al final.",
             "Es de los sistemas más precisos que existen, y también el más exigente.",
           ]),
-          { t: "tags", title: "Pruébalo con Wong Halves", sys: "halves", cards: ["5d", "9s", "2h", "Kc", "7d", "3c"] },
+          {
+            t: "tags",
+            title: "Pruébalo con Wong Halves",
+            sys: "halves",
+            cards: ["5d", "9s", "2h", "Kc", "7d", "3c"],
+          },
           quiz(
             "En Wong Halves, ¿cuánto vale el 5?",
             ["+1", "+1½", "+2"],
@@ -3162,7 +3211,10 @@ const SECTIONS = [
           ),
           quiz(
             "¿Qué gana más a la larga?",
-            ["Un sistema simple sin errores", "Uno complicado con algunos errores"],
+            [
+              "Un sistema simple sin errores",
+              "Uno complicado con algunos errores",
+            ],
             0,
             "Los errores cuestan más que la precisión que gana un sistema difícil.",
           ),
@@ -3226,7 +3278,21 @@ function openLesson(nav, lesson, replace = false) {
   if (replace) nav.replace(name, params);
   else nav.push(name, params);
 }
+// ¿Ya aprendió a contar? (la lección de los valores de las cartas, algún ejercicio de valores o un
+// nivel de la ruta de conteo). Hasta entonces se esconde lo que usa el conteo: el CC/CR de la mesa,
+// la apuesta sugerida y la ruta de desviaciones. table.countSeen: lo pidió a mano en Mesa.
+function sabeContar(st) {
+  const sec = SECTIONS.find((s) => s.id === 4);
+  const valores = sec && sec.lessons[1];
+  return (
+    !!(valores && st.lessons[valores.id] && st.lessons[valores.id].done) ||
+    ((st.drills.values && st.drills.values.sessions) || []).length > 0 ||
+    Object.keys((st.countPath && st.countPath.passed) || {}).length > 0 ||
+    !!st.table.countSeen
+  );
+}
 export {
+  sabeContar,
   LESSONS,
   SECTIONS,
   getLesson,
