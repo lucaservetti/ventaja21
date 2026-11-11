@@ -136,7 +136,7 @@ function AmountPills({ value, options, onChange, cur, title, min = 1 }) {
           style={{ marginTop: 8 }}
         >
           {ok || !text
-            ? "Escribí el monto que quieras."
+            ? "Escribe el monto que quieras."
             : `Tiene que ser al menos ${fmtMoney(min, cur)}.`}
         </p>
         <div className="btns" style={{ marginTop: 16 }}>

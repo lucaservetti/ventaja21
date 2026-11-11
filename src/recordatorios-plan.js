@@ -14,22 +14,22 @@ const ID_PRACTICA = 1000;
 const ID_RACHA = 2000;
 
 const MENSAJES = [
-  ["Tu desafío de hoy te espera 🃏", "Un formato nuevo cada día. ¿Lo jugás?"],
+  ["Tu desafío de hoy te espera 🃏", "Un formato nuevo cada día. ¿Lo juegas?"],
   [
     "Cinco minutos de práctica 🎯",
     "Una tanda corta y tu estrategia queda más firme.",
   ],
   [
     "¿Cuánto da la cuenta? 🧠",
-    "Practicá el conteo un rato y seguí subiendo de nivel.",
+    "Practica el conteo un rato y sigue subiendo de nivel.",
   ],
   [
     "La mesa está abierta ♠",
-    "Seguí donde quedaste: una lección corta o unas manos.",
+    "Sigue donde quedaste: una lección corta o unas manos.",
   ],
   [
     "Un rato de blackjack 🂡",
-    "Lo que practicás seguido es lo que te sale sin pensar.",
+    "Lo que practicas seguido es lo que te sale sin pensar.",
   ],
 ];
 
@@ -97,7 +97,7 @@ function planRecordatorios(rec, info, now = new Date()) {
         id: ID_RACHA + d,
         at,
         title: `🔥 Tu racha de ${racha} días`,
-        body: "Se corta hoy si no practicás. Con unos minutos la salvás.",
+        body: "Se corta hoy si no practicas. Con unos minutos la salvas.",
         extra: { ir: "conteo", dia: clave(at) },
       });
   }

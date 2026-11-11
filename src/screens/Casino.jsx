@@ -1,6 +1,6 @@
-// Modo casino real: llevás tu plata, cambiás fichas al sentarte y jugás sin ayudas, con los límites
-// de la mesa, tiempo para decidir y la vigilancia del casino mirando cómo apostás.
-// También el examen de casino: 40 manos en esas condiciones; si lo aprobás, te llevás el certificado.
+// Modo casino real: llevas tu dinero, cambias fichas al sentarte y juegas sin ayudas, con los límites
+// de la mesa, tiempo para decidir y la vigilancia del casino mirando cómo apuestas.
+// También el examen de casino: 40 manos en esas condiciones; si lo apruebas, te llevas el certificado.
 import { useEffect, useRef, useState } from "react";
 import {
   describeRules,
@@ -46,7 +46,7 @@ const TIMES = [
 const HANDS_PER_HOUR = [200, 140, 110, 85, 70];
 const END_TEXT = {
   left: "Te retiraste",
-  broke: "Te quedaste sin plata",
+  broke: "Te quedaste sin dinero",
   backoff: "Te pidieron que te retires",
   exam: "Examen de casino",
 };
@@ -148,22 +148,22 @@ function CasinoSetup() {
           <Icon name="crown" size={26} />
         </span>
         <p>
-          Llevás tu plata, cambiás fichas en la mesa y jugás <b>sin ayudas</b>:
+          Llevas tu dinero, cambias fichas en la mesa y juegas <b>sin ayudas</b>:
           sin coach, sin el conteo a la vista, con el crupier rápido y tiempo
           para decidir. Al irte ves cuánto ganaste y cómo jugaste.
         </p>
       </div>
 
-      <h3 className="sheet-sub">Tu plata</h3>
+      <h3 className="sheet-sub">Tu dinero</h3>
       <div className="field">
         <span>Moneda</span>
         <CurrencyPills />
       </div>
       <div className="field">
-        <span>Plata que llevás al casino</span>
+        <span>Dinero que llevas al casino</span>
         <AmountPills
           cur={cur}
-          title="Plata que llevás"
+          title="Dinero que llevas"
           options={cur.wallet}
           value={s.wallet}
           min={s.minBet}
@@ -171,7 +171,7 @@ function CasinoSetup() {
         />
       </div>
       <div className="field">
-        <span>Fichas que cambiás al sentarte (entrada)</span>
+        <span>Fichas que cambias al sentarte (entrada)</span>
         <AmountPills
           cur={cur}
           title="Fichas al sentarte"
@@ -232,26 +232,26 @@ function CasinoSetup() {
       <Toggle
         id="c-heat"
         label="Vigilancia del casino"
-        sub="Si subís mucho la apuesta cuando el conteo está alto, el jefe de mesa sospecha. Si se calienta del todo, te piden que te retires."
+        sub="Si subes mucho la apuesta cuando el conteo está alto, el jefe de mesa sospecha. Si se calienta del todo, te piden que te retires."
         checked={s.heat || !!s.tourist}
         onChange={(heat) => setSetup({ heat, tourist: heat && s.tourist })}
       />
       <Toggle
         id="c-tourist"
         label="Modo turista"
-        sub="Practicá el camuflaje: te avisa qué apuesta pareció natural y cuál te delató, y al final te da un puntaje de cuánto parecés un jugador común."
+        sub="Practica el camuflaje: te avisa qué apuesta pareció natural y cuál te delató, y al final te da un puntaje de cuánto pareces un jugador común."
         checked={!!s.tourist}
         onChange={(tourist) => setSetup({ tourist, heat: tourist || s.heat })}
       />
       <div className="note-box" style={{ marginTop: 12 }}>
-        <b>Reglas:</b> {describeRules(rules).join(" · ")}. Las cambiás en Jugar
+        <b>Reglas:</b> {describeRules(rules).join(" · ")}. Las cambias en Jugar
         → Mesa.
       </div>
       {minBets < 30 ? (
         <div className="note-box casino-warn" style={{ marginTop: 10 }}>
           Con {fmtMoney(s.wallet, cur)} y mínima de {fmtMoney(s.minBet, cur)} te
           alcanza para {minBets} apuestas mínimas: una mala racha te deja sin
-          plata enseguida.
+          dinero enseguida.
         </div>
       ) : null}
       <button
@@ -264,9 +264,9 @@ function CasinoSetup() {
           <Icon name="stats" />
         </span>
         <span className="li-text">
-          <span className="li-title">¿Cuánta plata llevar?</span>
+          <span className="li-title">¿Cuánto dinero llevar?</span>
           <span className="li-sub" style={{ display: "block" }}>
-            Simulá tu banca con esta mesa
+            Simula tu banca con esta mesa
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
@@ -293,13 +293,13 @@ function CasinoSetup() {
         <span className="li-text">
           <span className="li-title">
             {exam.passed
-              ? "Aprobado: tenés el certificado"
-              : "Ganate el certificado"}
+              ? "Aprobado: tienes el certificado"
+              : "Gánate el certificado"}
           </span>
           <span className="li-sub" style={{ display: "block" }}>
             {EXAM.hands} manos con {EXAM.bots} jugadores más,{" "}
             {EXAM.decisionTime} s para decidir, vigilancia y chequeos de conteo.
-            Necesitás 90 % de jugadas bien y 80 % de apuestas según el conteo,
+            Necesitas 90 % de jugadas bien y 80 % de apuestas según el conteo,
             sin que te echen.
           </span>
           {exam.attempts.length ? (
@@ -597,20 +597,20 @@ function CasinoPlay({ setup, exam = false }) {
         table={table}
         top={top}
         showCount={false}
-        countLabel="Contá vos"
+        countLabel="Cuenta tú"
         betHint={false}
         onRefill={() => setModal(canBuy ? "buy" : "broke")}
         refillLabel={canBuy ? "Comprar fichas" : "Te quedaste sin fichas"}
       />
       <Modal open={modal === "leave"} onClose={() => setModal(null)}>
         <h2 style={{ fontSize: 24 }}>
-          {exam ? "¿Dejar el examen?" : "¿Te retirás de la mesa?"}
+          {exam ? "¿Dejar el examen?" : "¿Te retiras de la mesa?"}
         </h2>
         <p className="muted" style={{ margin: "10px 0 20px" }}>
           {exam
-            ? "No cuenta como intento: podés rendirlo de nuevo cuando quieras."
+            ? "No cuenta como intento: puedes rendirlo de nuevo cuando quieras."
             : table.running
-              ? "Terminá la mano que está en juego y después te retirás."
+              ? "Termina la mano que está en juego y después te retiras."
               : `Te vas con ${fmtMoney(table.bankroll + pocket.current, cur)} (llegaste con ${fmtMoney(setup.wallet, cur)}).`}
         </p>
         <div className="btns">
@@ -630,7 +630,7 @@ function CasinoPlay({ setup, exam = false }) {
         <h2 style={{ fontSize: 24 }}>Comprar fichas</h2>
         <p className="muted" style={{ margin: "10px 0 16px" }}>
           Te quedan {fmtMoney(pocket.current, cur)} en el bolsillo. ¿Cuánto
-          cambiás?
+          cambias?
         </p>
         <div className="btns">
           {buyOptions.map((v) => (
@@ -645,10 +645,10 @@ function CasinoPlay({ setup, exam = false }) {
         </div>
       </Modal>
       <Modal open={modal === "broke"} onClose={() => finish("broke")}>
-        <h2 style={{ fontSize: 24 }}>Te quedaste sin plata</h2>
+        <h2 style={{ fontSize: 24 }}>Te quedaste sin dinero</h2>
         <p className="muted" style={{ margin: "10px 0 20px" }}>
           No te alcanza para la apuesta mínima de {fmtMoney(setup.minBet, cur)}.
-          Pasa hasta jugando perfecto: por eso importa cuánta plata llevás.
+          Pasa hasta jugando perfecto: por eso importa cuánto dinero llevas.
         </p>
         <Button onClick={() => finish("broke")}>Ver cómo te fue</Button>
       </Modal>
@@ -658,7 +658,7 @@ function CasinoPlay({ setup, exam = false }) {
         </span>
         <h2 style={{ fontSize: 24 }}>Te pidieron que te retires</h2>
         <p className="muted" style={{ margin: "10px 0 20px" }}>
-          «Podés jugar a cualquier otra cosa, pero al blackjack no.» Tus
+          «Puedes jugar a cualquier otra cosa, pero al blackjack no.» Tus
           apuestas subían demasiado con el conteo alto y el jefe de mesa se dio
           cuenta.
         </p>
@@ -685,7 +685,7 @@ function Certificate({ trip }) {
   const text = `Aprobé el examen de casino de Edge 21 (${date}): ${pct(trip.decisionsOk, trip.decisions)} de jugadas correctas y ${pct(trip.betsOk, trip.bets)} de apuestas según el conteo, sin que me descubran.`;
   const share = async () => {
     const r = await shareText(text);
-    if (r === "copied") setMsg("Copiado. Pegalo donde quieras.");
+    if (r === "copied") setMsg("Copiado. Pégalo donde quieras.");
   };
   return (
     <div className="cert fade-up">
@@ -737,11 +737,11 @@ function CasinoResult({ trip }) {
   const grade = trip.exam ? gradeExam(trip) : null;
   const tip =
     trip.end === "backoff"
-      ? "Para durar más en un casino: subí la apuesta de a poco (no de 1 a 8 de golpe), no la bajes a la mínima justo después de mezclar y cada tanto hacé una apuesta que no siga el conteo."
+      ? "Para durar más en un casino: sube la apuesta de a poco (no de 1 a 8 de golpe), no la bajes a la mínima justo después de mezclar y cada tanto haz una apuesta que no siga el conteo."
       : decisions < 0.9
-        ? "Las jugadas te costaron plata: repasá la tabla y las desviaciones en Entrenar antes de volver."
+        ? "Las jugadas te costaron dinero: repasa la tabla y las desviaciones en Entrenar antes de volver."
         : bets < 0.7
-          ? "Tus apuestas no siguieron bien el conteo: sin eso, contar no te da ventaja. Practicá «Apostar según el conteo» en Conteo."
+          ? "Tus apuestas no siguieron bien el conteo: sin eso, contar no te da ventaja. Practica «Apostar según el conteo» en Conteo."
           : trip.net < 0
             ? "Jugaste bien y aun así perdiste: es la varianza. Con ventaja, la diferencia aparece después de muchas horas."
             : "Buena visita. Así se juega: tabla bien, apuestas con el conteo y sin llamar la atención.";
@@ -771,7 +771,7 @@ function CasinoResult({ trip }) {
           )}
           <p className="muted">
             {grade
-              ? "Mirá qué te faltó y volvé a intentarlo."
+              ? "Mira qué te faltó y vuelve a intentarlo."
               : `Llegaste con ${fmtMoney(trip.wallet, cur)} y te vas con ${fmtMoney(trip.cashOut, cur)}.`}
           </p>
         </div>
@@ -856,7 +856,7 @@ function CasinoResult({ trip }) {
               >
                 {trip.camo}/100 ·{" "}
                 {trip.camo >= 75
-                  ? "parecés turista"
+                  ? "pareces turista"
                   : trip.camo >= 50
                     ? "algo sospechoso"
                     : "contador evidente"}

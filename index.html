@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Edge 21 · Blackjack y conteo de cartas</title>
-<meta name="description" content="Aprendé estrategia básica y conteo de cartas en blackjack, paso a paso. Gratis, en español y en inglés.">
+<meta name="description" content="Aprende estrategia básica y conteo de cartas en blackjack, paso a paso. Gratis, en español y en inglés.">
 <meta name="theme-color" content="#06110c">
 <link rel="icon" href="app/favicon.svg" type="image/svg+xml">
 <meta property="og:title" content="Edge 21 · Blackjack y conteo de cartas">
-<meta property="og:description" content="Aprendé estrategia básica y conteo de cartas, paso a paso.">
+<meta property="og:description" content="Aprende estrategia básica y conteo de cartas, paso a paso.">
 <meta property="og:image" content="https://edge21.app/img/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://edge21.app/">
 <link rel="apple-touch-icon" href="app/apple-touch-icon.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Edge 21","applicationCategory":"EducationalApplication","operatingSystem":"Android, Web","inLanguage":["es","en"],"url":"https://edge21.app/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Aprendé estrategia básica y conteo de cartas en blackjack, paso a paso. Sin plata real."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Edge 21","applicationCategory":"EducationalApplication","operatingSystem":"Android, Web","inLanguage":["es","en"],"url":"https://edge21.app/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Aprende estrategia básica y conteo de cartas en blackjack, paso a paso. Sin dinero real."}</script>
 <style>
   @font-face { font-family: "DM Sans"; font-weight: 400 800; font-display: swap; src: url(app/fonts/DMSans-latin-400-800.woff2) format("woff2"); }
   @font-face { font-family: "Oswald"; font-weight: 600; font-display: swap; src: url(app/fonts/Oswald-latin-600.woff2) format("woff2"); }
@@ -566,64 +566,64 @@
   try{if(!localStorage.getItem("edge21.origen")){var u=new URLSearchParams(location.search),o=u.get("ref")||u.get("utm_source")||"";if(!o&&document.referrer){var h=new URL(document.referrer).hostname;if(h.slice(-location.hostname.length)!==location.hostname)o=h}localStorage.setItem("edge21.origen",o||"directo")}}catch(e){}
   // Si vino con el enlace de un amigo (?amigo=CÓDIGO), queda guardado para la app.
   try{var am=(new URLSearchParams(location.search).get("amigo")||"").toUpperCase();if(/^[A-HJ-NP-Z2-9]{6}$/.test(am))localStorage.setItem("edge21.amigo",am)}catch(e){}
-  // Cuando la app esté publicada en Google Play, cambiá PUBLISHED a true.
+  // Cuando la app esté publicada en Google Play, cambia PUBLISHED a true.
   const PUBLISHED = false;
   const PLAY_URL = "https://play.google.com/store/apps/details?id=com.lucaservetti.ventaja21";
   const T = {
     es: {
-      "qz-title": "¿Sabés jugar esta mano?", "qz-sub": "Probá acá mismo: elegí la jugada correcta según la estrategia básica.",
+      "qz-title": "¿Sabes jugar esta mano?", "qz-sub": "Prueba aquí mismo: elige la jugada correcta según la estrategia básica.",
       "qz-dealer": "Crupier", "qz-you": "Tu mano", "qz-h": "Pedir", "qz-s": "Plantarse", "qz-d": "Doblar",
       "qz-again": "Otra mano", "qz-ok": "¡Correcto!", "qz-bad": "No era esa: la jugada es {0}.", "qz-score": "{0} de {1} bien",
       "qz-more": "¿Te gustó? En la app hay miles de manos, la tabla completa y el conteo de cartas.",
       "qz-left": "Te quedan {0} de prueba", "qz-left1": "Te queda 1 de prueba", "qz-end-t": "¡Jugaste tus 4 manos de prueba!",
-      "qz-end-p": "En la app seguís con miles de manos, la tabla completa, lecciones y el conteo de cartas. Gratis y sin plata real.", "qz-end-btn": "Seguir jugando gratis", dock: "Aprendé blackjack gratis",
+      "qz-end-p": "En la app sigues con miles de manos, la tabla completa, lecciones y el conteo de cartas. Gratis y sin dinero real.", "qz-end-btn": "Seguir jugando gratis", dock: "Aprende blackjack gratis",
       n1: "Funciones", n2: "Premium", n3: "Preguntas", n4: "Guías", go: "Jugar ahora", rail: "El blackjack paga 3 a 2 · El crupier se planta en 17",
-      t1: "36 lecciones", t2: "10 niveles de conteo", t3: "Español e inglés", t4: "Sin plata real",
-      "v-title": "Mirala en acción", "v-sub": "Así se ve por dentro: cada mano, cada carta y cada apuesta.",
-      v1: "La jugada correcta, con el porqué", v2: "Bajas +1, del 7 al 9 nada, altas −1", v3: "Contá y apostá con el conteo",
+      t1: "36 lecciones", t2: "10 niveles de conteo", t3: "Español e inglés", t4: "Sin dinero real",
+      "v-title": "Mírala en acción", "v-sub": "Así se ve por dentro: cada mano, cada carta y cada apuesta.",
+      v1: "La jugada correcta, con el porqué", v2: "Bajas +1, del 7 al 9 nada, altas −1", v3: "Cuenta y apuesta con el conteo",
       "p-soon": "Llega con la app de Android",
-      "l-pill": "Muy pronto en Google Play", "l-title": "Sé de los primeros", "l-sub": "La app de Android está por salir. Probala antes que nadie o enterate el día que sale.",
-      l1t: "Probala antes que nadie", l1p: "Buscamos personas con Android para probar la app completa antes del lanzamiento, gratis.",
-      l1a: "Escribinos con el mail de tu cuenta de Google Play.", l1b: "Te mandamos la invitación para instalarla.", l1c: "La usás como siempre y nos contás qué mejorarías.", l1btn: "Quiero ser tester",
-      l2t: "Enterate el día que sale", l2p: "Avisamos el lanzamiento en Instagram y TikTok, y subimos un tip de blackjack por día.",
-      q9: "¿Cuándo sale la app?", a9: "La app de Android sale muy pronto en Google Play. Mientras tanto, la podés usar gratis desde la web, y si tenés Android, podés <a href=\"#lanzamiento\">sumarte como tester</a>.",
-      q10: "¿La web es la app completa?", a10: "Sí. En la web tenés lo mismo que en la app, gratis: lecciones, ruta de conteo, Entrenar, desafíos y la mesa. Si entrás con Google, tu progreso pasa a la app cuando salga.",
+      "l-pill": "Muy pronto en Google Play", "l-title": "Sé de los primeros", "l-sub": "La app de Android está por salir. Pruébala antes que nadie o entérate el día que sale.",
+      l1t: "Pruébala antes que nadie", l1p: "Buscamos personas con Android para probar la app completa antes del lanzamiento, gratis.",
+      l1a: "Escríbenos con el mail de tu cuenta de Google Play.", l1b: "Te mandamos la invitación para instalarla.", l1c: "La usas como siempre y nos cuentas qué mejorarías.", l1btn: "Quiero ser tester",
+      l2t: "Entérate el día que sale", l2p: "Avisamos el lanzamiento en Instagram y TikTok, y subimos un tip de blackjack por día.",
+      q9: "¿Cuándo sale la app?", a9: "La app de Android sale muy pronto en Google Play. Mientras tanto, la puedes usar gratis desde la web, y si tienes Android, puedes <a href=\"#lanzamiento\">sumarte como tester</a>.",
+      q10: "¿La web es la app completa?", a10: "Sí. En la web tienes lo mismo que en la app, gratis: lecciones, ruta de conteo, Entrenar, desafíos y la mesa. Si entras con Google, tu progreso pasa a la app cuando salga.",
       "h-title": "Cómo funciona", "h-sub": "Tres pasos, a tu ritmo, unos minutos por día.",
       h1a: "Lecciones de 2 a 5 minutos", h1b: "Un mentor te explica cada jugada",
       h2a: "Tandas que apuntan a tus errores", h2b: "Tu rango sube con cada acierto",
       h3a: "Del valor de cada carta al conteo real", h3b: "Hi-Lo, KO, Zen y más sistemas",
       st1: "lecciones", st2: "niveles de conteo", st3: "sistemas de conteo", st4: "idiomas",
-      h1t: "Aprendé", h1p: "Lecciones cortas en una mesa narrada: las reglas, la estrategia básica y por qué funciona.",
-      h2t: "Practicá", h2p: "Manos elegidas según tus errores, un contrarreloj y un desafío nuevo cada día.",
-      h3t: "Contá", h3p: "Una ruta de 10 niveles hasta llevar el conteo real de un zapato entero, con la mesa llena.",
-      "r-title": "Competí con tus amigos", "r-sub": "Desafiá a un amigo con las mismas cartas y mirá quién cuenta mejor. Entrá con tu cuenta de Google, si querés, y aparecé en el ranking del desafío diario.", "r-cta": "Jugar el desafío de hoy", "r-eyebrow": "Ranking de hoy", "r-you": "Vos",
-      pm: "Mensual", "pm-d": "Cancelás cuando quieras", pa: "Anual", "pa-tag": "5 días gratis", "pa-d": "US$1,67 por mes · ahorrás 44 %", pl: "Para siempre", "pl-d": "Un solo pago, sin suscripción",
+      h1t: "Aprende", h1p: "Lecciones cortas en una mesa narrada: las reglas, la estrategia básica y por qué funciona.",
+      h2t: "Practica", h2p: "Manos elegidas según tus errores, un contrarreloj y un desafío nuevo cada día.",
+      h3t: "Cuenta", h3p: "Una ruta de 10 niveles hasta llevar el conteo real de un zapato entero, con la mesa llena.",
+      "r-title": "Compite con tus amigos", "r-sub": "Desafía a un amigo con las mismas cartas y mira quién cuenta mejor. Entra con tu cuenta de Google, si quieres, y aparece en el ranking del desafío diario.", "r-cta": "Jugar el desafío de hoy", "r-eyebrow": "Ranking de hoy", "r-you": "Tú",
+      pm: "Mensual", "pm-d": "Cancelas cuando quieras", pa: "Anual", "pa-tag": "5 días gratis", "pa-d": "US$1,67 por mes · ahorras 44 %", pl: "Para siempre", "pl-d": "Un solo pago, sin suscripción",
       "p-note": "Precios en dólares; Google Play los muestra en tu moneda. La prueba gratis es una sola vez por cuenta.",
-      q5: "¿Necesito crear una cuenta?", a5: "No. Tu progreso se guarda en tu celular. Si querés, entrás con Google para guardarlo en la nube, pasarlo a otro celular y aparecer en el ranking.",
+      q5: "¿Necesito crear una cuenta?", a5: "No. Tu progreso se guarda en tu celular. Si quieres, entras con Google para guardarlo en la nube, pasarlo a otro celular y aparecer en el ranking.",
       q6: "¿Cuánto cuesta?", a6: "Aprender, practicar, la ruta de conteo y el simulador son gratis, con algunos anuncios. Premium suma las funciones avanzadas y saca los anuncios.",
-      q8: "¿Puedo tener Premium gratis?", a8: "Sí, ganándolo: con tu cuenta de Google sumás días de Premium por jugar el desafío diario 7 o 30 días seguidos o por terminar todas las lecciones.",
-      q7: "¿Y en iPhone o en la computadora?", a7: "Entrá a edge21.app/app: es la app completa y gratis, desde cualquier navegador. En el iPhone, en Safari tocá Compartir y Agregar a inicio, y queda como una app. Si entrás con Google, tu progreso te sigue en todos tus aparatos.",
-      "z-title": "Empezá hoy, gratis", "z-sub": "La primera lección dura 4 minutos.",
-      h1: "Jugá blackjack como un <em>profesional</em>",
+      q8: "¿Puedo tener Premium gratis?", a8: "Sí, ganándolo: con tu cuenta de Google sumas días de Premium por jugar el desafío diario 7 o 30 días seguidos o por terminar todas las lecciones.",
+      q7: "¿Y en iPhone o en la computadoratadora?", a7: "Entra a edge21.app/app: es la app completa y gratis, desde cualquier navegador. En el iPhone, en Safari toca Compartir y Agregar a inicio, y queda como una app. Si entras con Google, tu progreso te sigue en todos tus aparatos.",
+      "z-title": "Empieza hoy, gratis", "z-sub": "La primera lección dura 4 minutos.",
+      h1: "Juega blackjack como un <em>profesional</em>",
       lead: "Estrategia básica y conteo de cartas, paso a paso: lecciones cortas, ejercicios y un casino de práctica en tu celular.",
       play: "Descargar en Google Play", soon: "Muy pronto en Google Play", web: "Jugar gratis ahora",
       "f-title": "Todo lo que necesita un contador", "f-sub": "De no saber las reglas a contar un zapato entero en una mesa llena.",
-      f1t: "Lecciones narradas", f1p: "36 lecciones cortas con una mesa de verdad: jugás cada mano mientras el mentor te explica por qué.",
-      f2t: "Tu tabla, casilla por casilla", f2p: "La tabla de estrategia se va encendiendo a medida que aprendés, y repasás con tarjetas que vuelven justo antes de olvidarlas.",
+      f1t: "Lecciones narradas", f1p: "36 lecciones cortas con una mesa de verdad: juegas cada mano mientras el mentor te explica por qué.",
+      f2t: "Tu tabla, casilla por casilla", f2p: "La tabla de estrategia se va encendiendo a medida que aprendes, y repasas con tarjetas que vuelven justo antes de olvidarlas.",
       f3t: "Ruta de conteo de 10 niveles", f3p: "De los valores de las cartas a contar un zapato completo. Hi-Lo, KO, Zen, Omega II y más.",
       f4t: "Entrenamiento a medida", f4p: "Tandas de manos apuntadas a tus puntos débiles, un rango por color de ficha y tus errores guardados hasta que los domines.",
       f5t: "Un casino en tu mano", f5p: "Simulador con otros jugadores, chequeos sorpresa del conteo, seis tipos de mesa y presión de mesa.",
-      f6t: "Desafío diario y semanal", f6p: "Un formato distinto cada día, un reto por semana con insignia y un contrarreloj: ¿llegás al ritmo del casino?",
+      f6t: "Desafío diario y semanal", f6p: "Un formato distinto cada día, un reto por semana con insignia y un contrarreloj: ¿llegas al ritmo del casino?",
       "s-title": "Así se ve",
       c1: "Aprender", c2: "La jugada correcta", c3: "La ruta de conteo", c4: "La mesa", c5: "Modo casino real", c6: "Tu progreso",
       "p-title": "Premium, a tu manera", "p-sub": "Por mes, por año con 5 días gratis, o un solo pago para siempre. Lo básico sigue siendo gratis.",
-      p1: "Sin anuncios", p2: "Modo casino real con tu plata, límites, vigilancia y examen con certificado", p3: "La ruta de desviaciones completa: Illustrious 18 y Fab 4", p4: "Simulador de banca y riesgo de quebrar", p5: "Diario para anotar lo que jugás de verdad", p6: "Análisis de tus errores: tu tabla pintada según dónde fallás", p7: "Paños y mazos a elección, sistemas de conteo avanzados y la mesa a tu medida: cada regla a mano y dos manos por ronda",
+      p1: "Sin anuncios", p2: "Modo casino real con tu dinero, límites, vigilancia y examen con certificado", p3: "La ruta de desviaciones completa: Illustrious 18 y Fab 4", p4: "Simulador de banca y riesgo de quebrar", p5: "Diario para anotar lo que juegas de verdad", p6: "Análisis de tus errores: tu tabla pintada según dónde fallas", p7: "Paños y mazos a elección, sistemas de conteo avanzados y la mesa a tu medida: cada regla a mano y dos manos por ronda",
       "q-title": "Preguntas",
       q1: "¿Contar cartas es legal?", a1: "Contar con la cabeza es legal. Lo prohibido es usar aparatos en la mesa, y el casino puede pedirte que no juegues al blackjack.",
-      q2: "¿Se juega con plata real?", a2: "No. Edge 21 es para aprender: no se apuesta ni se gana plata real.",
-      q3: "¿En qué idiomas está?", a3: "En español y en inglés. Sale en el idioma de tu celular y lo podés cambiar en Ajustes.",
+      q2: "¿Se juega con dinero real?", a2: "No. Edge 21 es para aprender: no se apuesta ni se gana dinero real.",
+      q3: "¿En qué idiomas está?", a3: "En español y en inglés. Sale en el idioma de tu celular y lo puedes cambiar en Ajustes.",
       q4: "¿Funciona sin internet?", a4: "Sí. Una vez instalada, la app funciona sin conexión.",
-      foot: "Edge 21 ♠ · Es para aprender: jugá solo plata que no necesitás.", privacy: "Política de privacidad", terms: "Términos de uso", delacc: "Borrar la cuenta",
+      foot: "Edge 21 ♠ · Es para aprender: juega solo dinero que no necesitas.", privacy: "Política de privacidad", terms: "Términos de uso", delacc: "Borrar la cuenta",
     },
     en: {
       "qz-title": "Can you play this hand?", "qz-sub": "Try it right here: pick the correct play by basic strategy.",
@@ -727,18 +727,18 @@
 
   // ---- Mini juego: manos de la estrategia básica (6 mazos, el crupier se planta con 17 blando) ----
   const HANDS = [
-    { d: "10", p: ["10", "6"], a: "H", es: "Con 16 contra un 10 perdés seguido igual, pero plantarte pierde más: el crupier llega a 17 o más muy seguido.", en: "16 against a 10 loses often either way, but standing loses more: the dealer reaches 17+ very often." },
-    { d: "4", p: ["10", "2"], a: "S", es: "Contra un 4 el crupier se pasa mucho. Con 12 no te arriesgues: dejá que pida él.", en: "Against a 4 the dealer busts a lot. With 12 don't risk it: let them draw." },
+    { d: "10", p: ["10", "6"], a: "H", es: "Con 16 contra un 10 pierdes seguido igual, pero plantarte pierde más: el crupier llega a 17 o más muy seguido.", en: "16 against a 10 loses often either way, but standing loses more: the dealer reaches 17+ very often." },
+    { d: "4", p: ["10", "2"], a: "S", es: "Contra un 4 el crupier se pasa mucho. Con 12 no te arriesgues: deja que pida él.", en: "Against a 4 the dealer busts a lot. With 12 don't risk it: let them draw." },
     { d: "6", p: ["5", "6"], a: "D", es: "11 contra un 6 es la mejor mano para doblar: hay muchas cartas de 10 y el 6 es la peor carta del crupier.", en: "11 against a 6 is the best double: lots of 10s and the 6 is the dealer's worst card." },
-    { d: "9", p: ["A", "7"], a: "H", es: "El 18 blando no alcanza contra un 9: el crupier suele llegar a 19. Pedí, que no te podés pasar.", en: "Soft 18 isn't enough against a 9: the dealer often makes 19. Hit, you can't bust." },
-    { d: "5", p: ["A", "7"], a: "D", es: "Contra un 5 el crupier está débil: doblá el 18 blando para ganar más cuando se pase.", en: "Against a 5 the dealer is weak: double soft 18 to win more when they bust." },
-    { d: "9", p: ["6", "4"], a: "D", es: "Con 10 contra un 9 doblás: tenés más chances que el crupier de llegar a una mano alta.", en: "With 10 against a 9 you double: you're more likely than the dealer to end up with a strong hand." },
-    { d: "2", p: ["7", "5"], a: "H", es: "12 contra un 2 es la excepción: el 2 no es tan débil, así que pedís una carta.", en: "12 against a 2 is the exception: the 2 isn't that weak, so you hit." },
-    { d: "2", p: ["9", "4"], a: "S", es: "Con 13 o más contra un 2 al 6 te plantás: que se arriesgue el crupier.", en: "With 13 or more against a 2 through 6 you stand: let the dealer take the risk." },
-    { d: "7", p: ["A", "6"], a: "H", es: "17 blando nunca se planta: pedís sin miedo, ninguna carta te pasa.", en: "Never stand on soft 17: hit without fear, no card can bust you." },
-    { d: "10", p: ["10", "7"], a: "S", es: "Con 17 duro siempre te plantás, incluso contra un 10.", en: "Always stand on hard 17, even against a 10." },
-    { d: "3", p: ["5", "4"], a: "D", es: "9 contra un 3 al 6: doblás, porque el crupier está débil.", en: "9 against a 3 through 6: double, the dealer is weak." },
-    { d: "7", p: ["9", "6"], a: "H", es: "15 contra un 7: el crupier tiene buena carta, así que pedís aunque te puedas pasar.", en: "15 against a 7: the dealer has a good card, so you hit even though you might bust." },
+    { d: "9", p: ["A", "7"], a: "H", es: "El 18 blando no alcanza contra un 9: el crupier suele llegar a 19. Pide, que no te puedes pasar.", en: "Soft 18 isn't enough against a 9: the dealer often makes 19. Hit, you can't bust." },
+    { d: "5", p: ["A", "7"], a: "D", es: "Contra un 5 el crupier está débil: dobla el 18 blando para ganar más cuando se pase.", en: "Against a 5 the dealer is weak: double soft 18 to win more when they bust." },
+    { d: "9", p: ["6", "4"], a: "D", es: "Con 10 contra un 9 doblas: tienes más chances que el crupier de llegar a una mano alta.", en: "With 10 against a 9 you double: you're more likely than the dealer to end up with a strong hand." },
+    { d: "2", p: ["7", "5"], a: "H", es: "12 contra un 2 es la excepción: el 2 no es tan débil, así que pides una carta.", en: "12 against a 2 is the exception: the 2 isn't that weak, so you hit." },
+    { d: "2", p: ["9", "4"], a: "S", es: "Con 13 o más contra un 2 al 6 te plantas: que se arriesgue el crupier.", en: "With 13 or more against a 2 through 6 you stand: let the dealer take the risk." },
+    { d: "7", p: ["A", "6"], a: "H", es: "17 blando nunca se planta: pides sin miedo, ninguna carta te pasa.", en: "Never stand on soft 17: hit without fear, no card can bust you." },
+    { d: "10", p: ["10", "7"], a: "S", es: "Con 17 duro siempre te plantas, incluso contra un 10.", en: "Always stand on hard 17, even against a 10." },
+    { d: "3", p: ["5", "4"], a: "D", es: "9 contra un 3 al 6: doblas, porque el crupier está débil.", en: "9 against a 3 through 6: double, the dealer is weak." },
+    { d: "7", p: ["9", "6"], a: "H", es: "15 contra un 7: el crupier tiene buena carta, así que pides aunque te puedas pasar.", en: "15 against a 7: the dealer has a good card, so you hit even though you might bust." },
   ];
   const SUITS = ["s", "h", "d", "c"];
   // Los palos de la app (mismos dibujos que src/ui/icons.jsx).

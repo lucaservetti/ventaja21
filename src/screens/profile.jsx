@@ -123,7 +123,7 @@ function recommendations(st, rules) {
     out.push({
       id: "review",
       icon: "refresh",
-      title: "Repasá lo que fallaste en las lecciones",
+      title: "Repasa lo que fallaste en las lecciones",
       sub:
         pending === 1
           ? "1 pregunta pendiente"
@@ -135,7 +135,7 @@ function recommendations(st, rules) {
     out.push({
       id: "mistakes",
       icon: "target",
-      title: "Repetí las manos que fallaste",
+      title: "Repite las manos que fallaste",
       sub: `${mistakes} ${mistakes === 1 ? "mano" : "manos"}, con las mismas cartas`,
       go: { screen: "trainSession", params: { mode: "mistakes" } },
     });
@@ -144,7 +144,7 @@ function recommendations(st, rules) {
     out.push({
       id: "weak-" + w.id,
       icon: w.area === "conteo" ? "drills" : "train",
-      title: `Practicá ${w.name.toLowerCase()}`,
+      title: `Practica ${w.name.toLowerCase()}`,
       sub: `Vas ${Math.round(w.acc * 100)} %: es tu punto más flojo${w.area === "conteo" ? " de conteo" : ""}`,
       go: w.go,
     });
@@ -156,7 +156,7 @@ function recommendations(st, rules) {
       id: "lesson",
       icon: "learn",
       title: nextLesson.exam
-        ? "Rendí el examen final"
+        ? "Haz el examen final"
         : `Lección: ${nextLesson.title}`,
       sub: `Sección ${nextLesson.section} · ${LESSONS.indexOf(nextLesson) + 1} de ${LESSONS.length}`,
       go: nextLesson.exam
@@ -176,14 +176,14 @@ function recommendations(st, rules) {
     out.push({
       id: "first",
       icon: "train",
-      title: "Hacé tu primera tanda en Entrenar",
+      title: "Haz tu primera tanda en Entrenar",
       sub: "Diez manos para encontrar tu nivel",
       go: { screen: "trainSession", params: { mode: "level" } },
     });
   out.push({
     id: "sim",
     icon: "play",
-    title: "Jugá un zapato en el simulador",
+    title: "Juega un zapato en el simulador",
     sub: "Contando y apostando como en un casino",
     go: { tab: "jugar" },
   });
@@ -295,8 +295,8 @@ function ProfileCard({ st }) {
         </div>
       ) : (
         <p className="muted small" style={{ marginTop: 8 }}>
-          Entrená unas manos y hacé un par de ejercicios de conteo: tu perfil se
-          arma solo con lo que practicás.
+          Entrena unas manos y haz un par de ejercicios de conteo: tu perfil se
+          arma solo con lo que practicas.
         </p>
       )}
       <h3 className="pf-area">Estrategia</h3>
@@ -312,7 +312,7 @@ function ProfileCard({ st }) {
           <SkillRow s={s} nav={nav} key={s.id} />
         ))}
       <p className="muted tiny" style={{ marginTop: 10 }}>
-        Precisión reciente. Tocá una habilidad para practicarla.
+        Precisión reciente. Toca una habilidad para practicarla.
       </p>
     </div>
   );
@@ -342,7 +342,7 @@ function ProfileChips({ st, onMore }) {
         ))}
         {!p.strong.length && !p.weak.length ? (
           <span className="muted small">
-            Vas parejo en todo. Seguí sumando manos.
+            Vas parejo en todo. Sigue sumando manos.
           </span>
         ) : null}
       </span>

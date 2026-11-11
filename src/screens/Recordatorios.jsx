@@ -1,5 +1,5 @@
 // Ajustes → Recordatorios: cuándo avisar para practicar (solo en la app de Android). La persona
-// decide todo desde acá: prenderlos o apagarlos, qué días, a qué hora y el aviso de racha.
+// decide todo desde aquí: prenderlos o apagarlos, qué días, a qué hora y el aviso de racha.
 import { useEffect, useState } from "react";
 import { useStore } from "../state.js";
 import { Button, Pills, Toggle, cx } from "../ui/components.jsx";
@@ -17,7 +17,7 @@ import {
   probarRecordatorio,
   setRecordatorios,
 } from "../recordatorios.js";
-import { dayKey, goalMet, goalStreak } from "../state.js";
+import { activityStreak, dayKey } from "../state.js";
 import { LOCALE } from "../i18n/index.js";
 
 // La semana empieza el lunes (0 = domingo en JavaScript). Las letras y los nombres salen del
@@ -56,7 +56,7 @@ function Recordatorios() {
     if (r === "denied") {
       setEstado("denied");
       setAviso(
-        "Android no dejó mostrar notificaciones. Mirá cómo activarlas acá abajo.",
+        "Android no dejó mostrar notificaciones. Mira cómo activarlas aquí abajo.",
       );
     } else if (NATIVE) setEstado(await permiso());
   };
@@ -78,8 +78,8 @@ function Recordatorios() {
   const hoy = dayKey();
   const proximo = rec.on
     ? planRecordatorios(rec, {
-        hoyHecho: goalMet(st, hoy) || !!st.daily.results[hoy],
-        racha: goalStreak(st),
+        hoyHecho: !!st.activity[hoy] || !!st.daily.results[hoy],
+        racha: activityStreak(st.activity),
       }).find((n) => n.id < 2000)
     : null;
 
@@ -193,7 +193,7 @@ function Recordatorios() {
           <b>Las notificaciones de Edge 21 están apagadas en Android</b>
           <p className="muted small">
             Para activarlas: Ajustes del celular → Apps → Edge 21 →
-            Notificaciones. Después volvé acá y prendé los recordatorios.
+            Notificaciones. Después vuelve aquí y prende los recordatorios.
           </p>
         </div>
       ) : null}

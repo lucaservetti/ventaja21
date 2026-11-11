@@ -1,4 +1,4 @@
-// La web en la compu: con pantalla ancha, el menú pasa al costado y el contenido se ensancha (ver
+// La web en la computadora: con pantalla ancha, el menú pasa al costado y el contenido se ensancha (ver
 // .app.escritorio en styles.css). En Android no aplica.
 // También guarda el aviso del navegador para instalar Edge 21 como app de escritorio (Chrome y
 // Edge lo ofrecen): así se abre en su propia ventana, con su ícono, sin la barra del navegador.
@@ -35,7 +35,7 @@ if (!NATIVE && typeof window !== "undefined") {
     avisar();
   });
 }
-// ¿Se puede ofrecer instalarla? Solo en la compu (en el celular hay otro aviso, en Aprender).
+// ¿Se puede ofrecer instalarla? Solo en la computadora (en el celular hay otro aviso, en Aprender).
 function usePuedeInstalar() {
   const desk = useEscritorio();
   const hay = useSyncExternalStore(
@@ -59,7 +59,7 @@ async function instalarEscritorio() {
   }
 }
 
-// Atajos de teclado en la compu: H, S, D, P y R toman esa jugada (pedir, plantarse, doblar,
+// Atajos de teclado en la computadora: H, S, D, P y R toman esa jugada (pedir, plantarse, doblar,
 // separar, rendirse) en la mesa y en Entrenar. Solo si el botón está a la vista y habilitado, y no
 // mientras se escribe en un campo.
 if (!NATIVE && typeof window !== "undefined") {

@@ -48,7 +48,7 @@ function Edad({ onListo }) {
             </label>
             <p id="edad-ayuda" className="muted small">
               No guardamos tu año de nacimiento: solo lo usamos para saber si
-              podés usar la app.
+              puedes usar la app.
             </p>
             <div className="bottom-actions">
               <Button type="submit" disabled={!valido}>
@@ -79,7 +79,7 @@ function SoloMayores() {
         <Logo size={80} />
         <h1>Edge 21 es para mayores de 18</h1>
         <p className="muted">
-          Trata sobre un juego de casino, aunque no se juegue con plata real.
+          Trata sobre un juego de casino, aunque no se juegue con dinero real.
           ¡Te esperamos cuando cumplas 18!
         </p>
         <p className="small">

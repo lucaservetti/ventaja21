@@ -26,8 +26,8 @@ const visibleCards = (a) => a.filter((e) => !e.hidden).map((e) => e.card);
 const STAMPS = {
   bust: { t: "Se pasó", tone: "bad" },
   pbust: { t: "Te pasaste", tone: "bad" },
-  win: { t: "Ganás", tone: "acc" },
-  lose: { t: "Perdés", tone: "bad" },
+  win: { t: "Ganas", tone: "acc" },
+  lose: { t: "Pierdes", tone: "bad" },
   push: { t: "Empate", tone: "mute" },
   bj: { t: "Blackjack", tone: "acc" },
   surrender: { t: "Te rendiste", tone: "mute" },
@@ -498,7 +498,7 @@ function SceneTable({ step: a }) {
       ) : null}
       <div className="scn-seat">
         <div className="scn-you">
-          <span className="eyebrow">Vos</span>
+          <span className="eyebrow">Tú</span>
           {s ? null : <BetChip v={a.bet} />}
         </div>
         {s ? (

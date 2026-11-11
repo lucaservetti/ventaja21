@@ -16,7 +16,7 @@ const TOPE_VENTANA = 30;
 // El podio solo cuenta en semanas con al menos esta cantidad de jugadores.
 const PODIO_MIN = 10;
 // El premio del podio está en pausa hasta que haya más gente en el ranking (al principio lo
-// ganarían siempre los mismos). Para activarlo: true acá y PODIO = "1" en servidor/wrangler.toml.
+// ganarían siempre los mismos). Para activarlo: true aquí y PODIO = "1" en servidor/wrangler.toml.
 const PODIO_ACTIVO = false;
 const DAY = 24 * 60 * 60 * 1000;
 // Invitar amigos: el amigo entra con tu enlace y una cuenta de Google nueva, y vale cuando juega el

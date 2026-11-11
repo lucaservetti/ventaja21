@@ -1,7 +1,8 @@
 import { useState } from "react";
 import {
+  activityStreak,
+  bestActivityStreak,
   goalDay,
-  goalStreak,
   addDays,
   dayKey,
   levelFor,
@@ -38,7 +39,7 @@ import { BackupNudge } from "./Backup.jsx";
 import { useNav } from "../nav.js";
 import { ShareIconButton } from "../ui/ShareButton.jsx";
 import { WeeklyCard } from "./weekly.jsx";
-import { GoalBadge, bestGoalStreak } from "./goal.jsx";
+import { GoalBadge } from "./goal.jsx";
 import { NextSteps, ProfileCard } from "./profile.jsx";
 
 function ProgressTab() {
@@ -50,7 +51,7 @@ function ProgressTab() {
     <div className="fade-up">
       <PageHeader
         title="Progreso"
-        sub="Cómo venís y qué te conviene practicar"
+        sub="Cómo vienes y qué te conviene practicar"
         actions={
           <>
             <GoalBadge />
@@ -79,12 +80,12 @@ function ProgressTab() {
       <Sheet
         open={n === "leaks"}
         onClose={() => l(null)}
-        title="Dónde más fallás"
+        title="Dónde más fallas"
       >
         <p className="muted">
           Son las situaciones donde más fallaste en tus últimos intentos (por
           debajo de 75 %). Cada una vuelve más seguido en las tandas mezcladas
-          hasta que la domines. Tocá "Practicar" para entrenarla ahora.
+          hasta que la domines. Toca "Practicar" para entrenarla ahora.
         </p>
       </Sheet>
       <Sheet
@@ -95,7 +96,7 @@ function ProgressTab() {
         <p className="muted">
           Tu precisión real en cada situación que te tocó, por total y carta del
           crupier. Los cuadros grises son situaciones que todavía no viste: se
-          van llenando a medida que entrenás.
+          van llenando a medida que entrenas.
         </p>
         <p className="muted" style={{ marginTop: 10 }}>
           <b style={{ color: "var(--good)" }}>Verde</b>
@@ -112,7 +113,7 @@ function Sparkline({ points: a }) {
   if (a.length < 2)
     return (
       <div className="spark-empty muted small">
-        Hacé un par de tandas para ver tu curva.
+        Haz un par de tandas para ver tu curva.
       </div>
     );
   let e = 320,
@@ -157,50 +158,34 @@ function ProgressOverview({ st: a, nav: e }) {
   let t = levelFor(a.rating.value),
     s = nextLevel(a.rating.value),
     n = LESSONS.filter((C) => a.lessons[C.id] && a.lessons[C.id].done).length,
-    l = Object.values(a.drills).reduce(
-      (C, k) => C + ((k.sessions && k.sessions.length) || 0),
-      0,
-    ),
     i = a.train.totalHands ? a.train.totalOk / a.train.totalHands : null,
-    o = goalStreak(a),
+    o = activityStreak(a.activity),
     today = goalDay(a),
     c = [{ v: 1000 }, ...a.rating.history].slice(-40),
-    r = [],
     u = dayKey();
-  for (let C = 34; C >= 0; C--) {
-    r.push(addDays(u, -C));
-  }
-  let d = a.drills.running.sessions,
-    p = d.length ? d.filter((C) => C.ok).length / d.length : null,
-    f = a.drills.values.sessions,
-    y = f.length ? f.reduce((C, k) => C + k.ok / k.n, 0) / f.length : null;
   return (
     <>
       <NextSteps st={a} />
-      <div style={{ marginTop: 14 }}>
-        <WeeklyCard st={a} />
-      </div>
       <button
         type="button"
         className="card goal-card"
         style={{ marginTop: 14 }}
         onClick={() => e.openSheet("goal")}
       >
-        <Ring
-          value={today.s / today.g}
-          size={58}
-          stroke={7}
-          tone={today.s >= today.g ? "var(--good)" : "var(--accent)"}
-        >
-          <Flame size={20} lit={o > 0} />
-        </Ring>
+        <span className="prog-racha">
+          <Flame size={34} lit={!!a.activity[u]} />
+        </span>
         <span className="li-text">
-          <span className="eyebrow">Meta de hoy</span>
+          <span className="eyebrow">Racha</span>
           <span className="li-title" style={{ display: "block", fontSize: 19 }}>
-            {Math.floor(today.s / 60)} de {Math.round(today.g / 60)} min
+            {o === 0
+              ? "Empieza tu racha"
+              : `${o} ${o === 1 ? "día seguido" : "días seguidos"}`}
           </span>
           <span className="li-sub">
-            {o} {o === 1 ? "día seguido" : "días seguidos"} cumpliendo la meta
+            {a.activity[u]
+              ? `Hoy ya sumaste · ${Math.floor(today.s / 60)} de ${Math.round(today.g / 60)} min`
+              : "Termina una actividad hoy para sumar"}
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
@@ -247,7 +232,7 @@ function ProgressOverview({ st: a, nav: e }) {
             {s
               ? `Te faltan ${s.min - a.rating.value} puntos para ${s.name}.`
               : "Llegaste al nivel más alto."}
-            {" Tu puntaje sube cuando acertás manos en Entrenar."}
+            {" Tu puntaje sube cuando aciertas manos en Entrenar."}
           </p>
         </div>
       ) : (
@@ -268,7 +253,7 @@ function ProgressOverview({ st: a, nav: e }) {
               Todavía sin medir
             </span>
             <span className="li-sub" style={{ display: "block" }}>
-              Hacé tu primera tanda de 10 manos en Entrenar y vas a ver tu nivel
+              Haz tu primera tanda de 10 manos en Entrenar y vas a ver tu nivel
               y cómo crece.
             </span>
           </span>
@@ -292,12 +277,6 @@ function ProgressOverview({ st: a, nav: e }) {
           <div className="tile-l">precisión</div>
         </div>
         <div className="tile">
-          <div className="tile-v num">{o}</div>
-          <div className="tile-l">
-            {o === 1 ? "día con la meta" : "días con la meta"}
-          </div>
-        </div>
-        <div className="tile">
           <div className="tile-v num">
             {n}
             <span className="muted" style={{ fontSize: 18 }}>
@@ -306,140 +285,143 @@ function ProgressOverview({ st: a, nav: e }) {
           </div>
           <div className="tile-l">lecciones</div>
         </div>
-        <div className="tile">
-          <div className="tile-v num">{l}</div>
-          <div className="tile-l">ejercicios de conteo</div>
-        </div>
-        <div className="tile">
-          <div className="tile-v num">{a.play.hands}</div>
-          <div className="tile-l">manos en la mesa</div>
-        </div>
-      </div>
-      <div className="card" style={{ marginTop: 14 }}>
-        <div className="eyebrow" style={{ marginBottom: 12 }}>
-          Últimas 5 semanas
-        </div>
-        <div className="cal">
-          {r.map((C) => {
-            const g = goalDay(a, C);
-            return (
-              <span
-                className={cx(
-                  "cal-d",
-                  g.s >= g.g ? "on" : (g.s > 0 || a.activity[C]) && "part",
-                  C === u && "today",
-                )}
-                title={C}
-                key={C}
-              />
-            );
-          })}
-        </div>
-        <div className="legend" style={{ marginTop: 12 }}>
-          <span>
-            <i style={{ background: "var(--accent)" }} />
-            meta cumplida
-          </span>
-          <span>
-            <i style={{ background: "#5c5d33" }} />
-            practicaste un rato
-          </span>
-        </div>
       </div>
       <div style={{ marginTop: 14 }}>
-        <WeekCard st={a} />
+        <WeeklyCard st={a} />
       </div>
       <div style={{ marginTop: 14 }}>
         <AchievementsCard st={a} />
       </div>
-      <div style={{ marginTop: 14 }}>
-        <ProfileCard st={a} />
+      <div className="section-title">
+        <h2>Herramientas</h2>
       </div>
-      {ACCOUNTS ? (
+      <div className="list">
+        {ACCOUNTS ? (
+          <button
+            type="button"
+            className="list-item pz-entry"
+            onClick={() => e.push("premios")}
+          >
+            <span className="li-icon">
+              <Icon name="sparkle" />
+            </span>
+            <span className="li-text">
+              <span className="li-title">Premios</span>
+              <span className="li-sub" style={{ display: "block" }}>
+                Gana días de Premium jugando el desafío diario
+              </span>
+            </span>
+            <Icon name="chev" className="li-chev" />
+          </button>
+        ) : null}
         <button
           type="button"
-          className="card list-item pz-entry"
-          style={{ marginTop: 14 }}
-          onClick={() => e.push("premios")}
+          className="list-item"
+          onClick={() => e.push("mistakes")}
         >
           <span className="li-icon">
-            <Icon name="sparkle" />
+            <Icon name="eye" />
           </span>
           <span className="li-text">
-            <span className="li-title">Premios</span>
+            <span className="li-title">
+              Análisis de tus errores <PremiumTag st={a} />
+            </span>
             <span className="li-sub" style={{ display: "block" }}>
-              Ganá días de Premium jugando el desafío diario
+              Tu tabla pintada según dónde fallas y lo que más te cuesta
             </span>
           </span>
           <Icon name="chev" className="li-chev" />
         </button>
-      ) : null}
-      <button
-        type="button"
-        className="card list-item"
-        style={{ marginTop: ACCOUNTS ? 10 : 14 }}
-        onClick={() => e.push("mistakes")}
-      >
-        <span className="li-icon">
-          <Icon name="eye" />
-        </span>
-        <span className="li-text">
-          <span className="li-title">
-            Análisis de tus errores <PremiumTag st={a} />
+        <button
+          type="button"
+          className="list-item"
+          onClick={() => e.push("bankroll")}
+        >
+          <span className="li-icon">
+            <Icon name="stats" />
           </span>
-          <span className="li-sub" style={{ display: "block" }}>
-            Tu tabla pintada según dónde fallás y lo que más te cuesta
+          <span className="li-text">
+            <span className="li-title">
+              Simulador de banca <PremiumTag st={a} />
+            </span>
+            <span className="li-sub" style={{ display: "block" }}>
+              Cuánto dinero necesitas y cuánto puedes perder en una mala racha
+            </span>
           </span>
-        </span>
-        <Icon name="chev" className="li-chev" />
-      </button>
-      <button
-        type="button"
-        className="card list-item"
-        style={{ marginTop: 10 }}
-        onClick={() => e.push("bankroll")}
-      >
-        <span className="li-icon">
-          <Icon name="stats" />
-        </span>
-        <span className="li-text">
-          <span className="li-title">
-            Simulador de banca <PremiumTag st={a} />
+          <Icon name="chev" className="li-chev" />
+        </button>
+        <button
+          type="button"
+          className="list-item"
+          onClick={() => e.push("journal")}
+        >
+          <span className="li-icon">
+            <Icon name="book" />
           </span>
-          <span className="li-sub" style={{ display: "block" }}>
-            Cuánta plata necesitás y cuánto podés perder en una mala racha
+          <span className="li-text">
+            <span className="li-title">
+              Diario de casino real <PremiumTag st={a} />
+            </span>
+            <span className="li-sub" style={{ display: "block" }}>
+              {a.journal.entries.length
+                ? `${a.journal.entries.length} ${a.journal.entries.length === 1 ? "sesión anotada" : "sesiones anotadas"}`
+                : "Anota lo que juegas de verdad y mira tu resultado"}
+            </span>
           </span>
-        </span>
-        <Icon name="chev" className="li-chev" />
-      </button>
-      <button
-        type="button"
-        className="card list-item"
-        style={{ marginTop: 10 }}
-        onClick={() => e.push("journal")}
-      >
-        <span className="li-icon">
-          <Icon name="book" />
-        </span>
-        <span className="li-text">
-          <span className="li-title">
-            Diario de casino real <PremiumTag st={a} />
-          </span>
-          <span className="li-sub" style={{ display: "block" }}>
-            {a.journal.entries.length
-              ? `${a.journal.entries.length} ${a.journal.entries.length === 1 ? "sesión anotada" : "sesiones anotadas"}`
-              : "Anotá lo que jugás de verdad y mirá tu resultado"}
-          </span>
-        </span>
-        <Icon name="chev" className="li-chev" />
-      </button>
+          <Icon name="chev" className="li-chev" />
+        </button>
+      </div>
       <BackupNudge st={a} nav={e} />
-      {a.train.totalHands === 0 ? (
-        <Button onClick={() => e.setTab("entrenar")} style={{ marginTop: 16 }}>
-          Hacer mi primera tanda
-        </Button>
-      ) : null}
     </>
+  );
+}
+// Las últimas 5 semanas, día por día (en Desglose).
+function Calendario({ st: a }) {
+  const u = dayKey();
+  const r = [];
+  for (let C = 34; C >= 0; C--) r.push(addDays(u, -C));
+  return (
+    <div className="card" style={{ marginTop: 14 }}>
+      <div className="eyebrow" style={{ marginBottom: 12 }}>
+        Últimas 5 semanas
+      </div>
+      <div className="cal">
+        {r.map((C) => {
+          const g = goalDay(a, C);
+          return (
+            <span
+              className={cx(
+                "cal-d",
+                g.s >= g.g
+                  ? "on"
+                  : a.activity[C] === "p"
+                    ? "ice"
+                    : (g.s > 0 || a.activity[C]) && "part",
+                C === u && "today",
+              )}
+              title={C}
+              key={C}
+            />
+          );
+        })}
+      </div>
+      <div className="legend" style={{ marginTop: 12 }}>
+        <span>
+          <i style={{ background: "var(--accent)" }} />
+          meta cumplida
+        </span>
+        <span>
+          <i style={{ background: "#5e5132" }} />
+          practicaste un rato
+        </span>
+        {r.some((C) => a.activity[C] === "p") ? (
+          <span>
+            <i style={{ background: "var(--ice)" }} />
+            protector de racha
+          </span>
+        ) : null}
+      </div>
+    </div>
   );
 }
 const BREAKDOWN_GROUPS = [
@@ -470,9 +452,10 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
     });
   return (
     <>
-      <div className="card">
+      <ProfileCard st={a} />
+      <div className="card" style={{ marginTop: 14 }}>
         <div className="eyebrow row" style={{ gap: 6 }}>
-          {"Dónde más fallás "}
+          {"Dónde más fallas "}
           <InfoDot onClick={() => t("leaks")} />
         </div>
         {l.length ? (
@@ -504,7 +487,7 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
           </div>
         ) : (
           <p className="muted" style={{ marginTop: 10 }}>
-            Jugá más manos para encontrar tus puntos débiles.
+            Juega más manos para encontrar tus puntos débiles.
           </p>
         )}
         <button
@@ -515,6 +498,10 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
           Ver el análisis completo <PremiumTag st={a} />
         </button>
       </div>
+      <div style={{ marginTop: 14 }}>
+        <WeekCard st={a} />
+      </div>
+      <Calendario st={a} />
       <div className="card" style={{ marginTop: 14 }}>
         <div className="eyebrow">Precisión en el tiempo</div>
         {todas.length > 7 ? (
@@ -536,7 +523,7 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
         {o.length ? null : (
           <p className="muted small" style={{ marginTop: 8 }}>
             Todavía no hiciste ninguna tanda en Entrenar. Cuando hagas la
-            primera, acá ves cómo vas mejorando.
+            primera, aquí ves cómo vas mejorando.
           </p>
         )}
         {o.length ? (
@@ -588,33 +575,40 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
       </div>
       <div className="card" style={{ marginTop: 14 }}>
         <div className="eyebrow">Por tipo de mano</div>
-        {c.map((r) => (
-          <div style={{ marginTop: 16 }} key={r.id}>
-            <h3 style={{ fontSize: 18, marginBottom: 8 }}>{r.name}</h3>
-            <div className="tiles">
-              <div className="tile">
-                <div className="tile-v num">{r.n}</div>
-                <div className="tile-l">jugadas</div>
-              </div>
-              <div className="tile">
-                <div className="tile-v num">{r.ok}</div>
-                <div className="tile-l">correctas</div>
-              </div>
-              <div className="tile">
-                <div
-                  className={cx(
-                    "tile-v num",
-                    r.acc !== null &&
-                      (r.acc >= 0.9 ? "good" : r.acc >= 0.7 ? "acc" : "bad"),
-                  )}
-                >
-                  {r.acc === null ? "—" : `${Math.round(r.acc * 100)}%`}
+        {c[0].n ? null : (
+          <p className="muted" style={{ marginTop: 10 }}>
+            Cuando entrenes, aquí ves cómo te va con cada tipo de mano.
+          </p>
+        )}
+        {c
+          .filter((r) => r.n)
+          .map((r) => (
+            <div style={{ marginTop: 16 }} key={r.id}>
+              <h3 style={{ fontSize: 18, marginBottom: 8 }}>{r.name}</h3>
+              <div className="tiles">
+                <div className="tile">
+                  <div className="tile-v num">{r.n}</div>
+                  <div className="tile-l">jugadas</div>
                 </div>
-                <div className="tile-l">precisión</div>
+                <div className="tile">
+                  <div className="tile-v num">{r.ok}</div>
+                  <div className="tile-l">correctas</div>
+                </div>
+                <div className="tile">
+                  <div
+                    className={cx(
+                      "tile-v num",
+                      r.acc !== null &&
+                        (r.acc >= 0.9 ? "good" : r.acc >= 0.7 ? "acc" : "bad"),
+                    )}
+                  >
+                    {r.acc === null ? "—" : `${Math.round(r.acc * 100)}%`}
+                  </div>
+                  <div className="tile-l">precisión</div>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
       <div className="card" style={{ marginTop: 14 }}>
         <div className="eyebrow">Tus manos más fuertes</div>
@@ -628,7 +622,7 @@ function ProgressBreakdown({ st: a, nav: e, setInfo: t }) {
           </div>
         ) : (
           <p className="muted" style={{ marginTop: 10 }}>
-            Jugá más manos para ver tus fortalezas.
+            Juega más manos para ver tus fortalezas.
           </p>
         )}
       </div>
@@ -794,8 +788,8 @@ function Records({ st: a }) {
           : "todavía no",
       ],
       [
-        "Racha de meta diaria",
-        `${goalStreak(a)} ${goalStreak(a) === 1 ? "día" : "días"} (récord ${bestGoalStreak(a)})`,
+        "Racha",
+        `${activityStreak(a.activity)} ${activityStreak(a.activity) === 1 ? "día" : "días"} (récord ${bestActivityStreak(a.activity)})`,
       ],
       [
         "Desafío diario",
@@ -816,7 +810,7 @@ function Records({ st: a }) {
       </div>
       <p className="muted small center" style={{ margin: "18px 10px" }}>
         Todos estos números son tuyos y salen de tu juego real. Se guardan solo
-        en este dispositivo: hacé un respaldo desde Ajustes si cambiás de
+        en este dispositivo: haz un respaldo desde Ajustes si cambias de
         celular.
       </p>
     </>

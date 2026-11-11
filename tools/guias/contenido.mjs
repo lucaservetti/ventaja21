@@ -11,11 +11,11 @@ export const COMUN = {
   es: {
     nav: { inicio: "Inicio", guias: "Guías", jugar: "Jugar ahora" },
     otro: "EN",
-    pie: "Edge 21 ♠ · Es para aprender: jugá solo plata que no necesitás.",
+    pie: "Edge 21 ♠ · Es para aprender: juega solo dinero que no necesitas.",
     privacidad: "Política de privacidad",
     terminos: "Términos de uso",
-    ctaTitulo: "Practicalo gratis en Edge 21",
-    ctaTexto: "Lecciones cortas, una mesa que te corrige cada jugada y una ruta de 10 niveles para aprender a contar. Sin plata real.",
+    ctaTitulo: "Practícalo gratis en Edge 21",
+    ctaTexto: "Lecciones cortas, una mesa que te corrige cada jugada y una ruta de 10 niveles para aprender a contar. Sin dinero real.",
     ctaBoton: "Jugar gratis ahora",
     migas: "Guías",
     leer: "Leer la guía",
@@ -47,7 +47,7 @@ export const INDICE = {
     titulo: "Guías de blackjack gratis | Edge 21",
     descripcion: "Guías claras para jugar blackjack mejor: la tabla de estrategia básica interactiva y cómo contar cartas con el método Hi-Lo, paso a paso.",
     h1: "Guías de blackjack",
-    intro: "Todo lo que necesitás para jugar cada mano bien y entender cómo se cuentan cartas, explicado simple y con ejemplos que podés tocar.",
+    intro: "Todo lo que necesitas para jugar cada mano bien y entender cómo se cuentan cartas, explicado simple y con ejemplos que puedes tocar.",
   },
   en: {
     titulo: "Free blackjack guides | Edge 21",
@@ -60,49 +60,49 @@ export const INDICE = {
 export const ESTRATEGIA = {
   es: {
     titulo: "Tabla de estrategia básica de blackjack (interactiva) | Edge 21",
-    descripcion: "La tabla de estrategia básica completa para 6 mazos: tocá cualquier casilla y mirá qué jugada conviene y por qué. Manos duras, blandas y pares.",
+    descripcion: "La tabla de estrategia básica completa para 6 mazos: toca cualquier casilla y mira qué jugada conviene y por qué. Manos duras, blandas y pares.",
     h1: "Tabla de estrategia básica de blackjack",
     tarjeta: "La jugada correcta para cada mano, casilla por casilla, con el porqué.",
     minutos: 6,
-    intro: "La estrategia básica es la forma matemáticamente correcta de jugar cada mano: para cada combinación de tus cartas y la carta visible del crupier, hay una jugada que pierde menos (o gana más) a la larga. Jugándola perfecto, la ventaja de la casa baja a alrededor de <b>0,5 %</b>. Tocá cualquier casilla para ver la jugada y por qué.",
+    intro: "La estrategia básica es la forma matemáticamente correcta de jugar cada mano: para cada combinación de tus cartas y la carta visible del crupier, hay una jugada que pierde menos (o gana más) a la larga. Jugándola perfecto, la ventaja de la casa baja a alrededor de <b>0,5 %</b>. Toca cualquier casilla para ver la jugada y por qué.",
     reglas: "Reglas de la tabla",
     reglaS17: "El crupier se planta con 17 blando",
     reglaH17: "El crupier pide con 17 blando",
-    reglasNota: "6 mazos, doblar con cualquier mano y doblar después de separar. Si en tu mesa el crupier pide con 17 blando, elegí esa opción: cambian unas pocas casillas.",
+    reglasNota: "6 mazos, doblar con cualquier mano y doblar después de separar. Si en tu mesa el crupier pide con 17 blando, elige esa opción: cambian unas pocas casillas.",
     tabs: { hard: "Manos duras", soft: "Manos blandas", pairs: "Pares" },
     crupier: "Carta del crupier",
     tuMano: "Tu mano",
-    elegi: "Tocá una casilla para ver la jugada y por qué.",
+    elegi: "Toca una casilla para ver la jugada y por qué.",
     contra: "contra",
     acciones: { H: "Pedir", S: "Plantarse", D: "Doblar", P: "Separar", R: "Rendirse" },
-    chicas: { s: "si no se puede doblar, plantate", h: "si no se puede rendirse, pedí", p: "si no se puede rendirse, separá" },
+    chicas: { s: "si no se puede doblar, plántate", h: "si no se puede rendirse, pide", p: "si no se puede rendirse, separa" },
     leyenda: "Las letras son las de todo el mundo: <b>H</b> pedir (<em>hit</em>), <b>S</b> plantarse (<em>stand</em>), <b>D</b> doblar (<em>double</em>), <b>P</b> separar (<em>split</em>). Una letra chica dice qué hacer si la jugada no se permite.",
     filas: { hard: (r) => (r === 17 ? "17+" : r === 8 ? "5–8" : String(r)), soft: (r) => `A,${r - 11}`, pairs: (r) => (r === "T" ? "10,10" : `${r},${r}`) },
     secciones: [
       {
         h: "Cómo se lee",
         p: [
-          "<b>1. Mirá qué tipo de mano tenés.</b> Si tenés un As que puede valer 11 sin pasarte, es una mano <em>blanda</em> (por ejemplo, A,6 es 17 blando). Si tenés dos cartas iguales, es un <em>par</em>. Todo lo demás es una mano <em>dura</em>.",
-          "<b>2. Buscá tu fila y la columna de la carta visible del crupier.</b> Las figuras (J, Q, K) cuentan como 10.",
-          "<b>3. Jugá lo que dice la casilla.</b> Siempre, aunque la intuición te diga otra cosa: la tabla ya hizo la cuenta de millones de manos por vos.",
+          "<b>1. Mira qué tipo de mano tienes.</b> Si tienes un As que puede valer 11 sin pasarte, es una mano <em>blanda</em> (por ejemplo, A,6 es 17 blando). Si tienes dos cartas iguales, es un <em>par</em>. Todo lo demás es una mano <em>dura</em>.",
+          "<b>2. Busca tu fila y la columna de la carta visible del crupier.</b> Las figuras (J, Q, K) cuentan como 10.",
+          "<b>3. Juega lo que dice la casilla.</b> Siempre, aunque la intuición te diga otra cosa: la tabla ya hizo la cuenta de millones de manos por tú.",
         ],
       },
       {
-        h: "Las 6 jugadas que más plata ahorran",
+        h: "Las 6 jugadas que más dinero ahorran",
         lista: [
-          "<b>Separá siempre los ases y los ochos.</b> Dos ases juntos son un 12 flojo; 8,8 es un 16, la peor mano del juego.",
+          "<b>Separa siempre los ases y los ochos.</b> Dos ases juntos son un 12 flojo; 8,8 es un 16, la peor mano del juego.",
           "<b>Nunca separes los dieces ni los cincos.</b> 20 gana casi siempre, y 5,5 es un 10: mejor doblarlo.",
-          "<b>Doblá el 11 contra casi todo.</b> Hay tantas cartas de 10 que es la mejor oportunidad para meter más plata.",
-          "<b>Plantate con 12 contra 4, 5 o 6.</b> El crupier está débil: dejá que se arriesgue él.",
-          "<b>Pedí con 16 contra 10.</b> Duele, pero plantarse pierde todavía más.",
+          "<b>Dobla el 11 contra casi todo.</b> Hay tantas cartas de 10 que es la mejor oportunidad para meter más dinero.",
+          "<b>Plántate con 12 contra 4, 5 o 6.</b> El crupier está débil: deja que se arriesgue él.",
+          "<b>Pide con 16 contra 10.</b> Duele, pero plantarse pierde todavía más.",
           "<b>No tomes el seguro.</b> Sin contar cartas, es una apuesta que pierde a la larga.",
         ],
       },
       {
         h: "¿Por qué funciona?",
         p: [
-          "La ventaja de la casa viene de una sola regla: <b>si te pasás, perdés aunque el crupier también se pase después</b>. La estrategia básica no la elimina, pero la achica al mínimo: te dice cuándo arriesgar (doblar, separar) y cuándo dejar que el crupier corra el riesgo.",
-          "Es pura matemática: cada casilla compara cuánto ganás o perdés en promedio con cada jugada posible y se queda con la mejor. Por eso, aunque una mano puntual salga mal, a la larga jugarla siempre así es lo que más rinde.",
+          "La ventaja de la casa viene de una sola regla: <b>si te pasas, pierdes aunque el crupier también se pase después</b>. La estrategia básica no la elimina, pero la achica al mínimo: te dice cuándo arriesgar (doblar, separar) y cuándo dejar que el crupier corra el riesgo.",
+          "Es pura matemática: cada casilla compara cuánto ganas o pierdes en promedio con cada jugada posible y se queda con la mejor. Por eso, aunque una mano puntual salga mal, a la larga jugarla siempre así es lo que más rinde.",
         ],
       },
     ],
@@ -110,16 +110,16 @@ export const ESTRATEGIA = {
       h: "Lo que sigue: de la tabla a la mesa",
       intro: "Leer la tabla es el primer paso. Lo que hace la diferencia es jugarla sin pensar, y después saber cuándo conviene salirse de ella.",
       items: [
-        { t: "Sabértela de memoria", p: "Tandas de manos que apuntan justo a las que fallás y tarjetas con repaso espaciado, hasta que cada jugada te salga sola.", tag: "gratis" },
-        { t: "Jugar con la mesa de verdad", p: "Un simulador con otros jugadores que te corrige cada decisión mientras jugás, como en un casino.", tag: "gratis" },
-        { t: "Las 18 desviaciones", p: "Con el conteo, algunas jugadas cambian: por ejemplo, 16 contra 10 te plantás si el conteo es positivo. Los Illustrious 18 y el Fab 4, practicados nivel por nivel.", tag: "premium" },
-        { t: "Tu tabla, tu mesa", p: "Ajustá cada regla (8 mazos, el crupier que pide con 17 blando, rendición) y practicá con la tabla exacta de la mesa donde jugás.", tag: "premium" },
+        { t: "Sabértela de memoria", p: "Tandas de manos que apuntan justo a las que fallas y tarjetas con repaso espaciado, hasta que cada jugada te salga sola.", tag: "gratis" },
+        { t: "Jugar con la mesa de verdad", p: "Un simulador con otros jugadores que te corrige cada decisión mientras juegas, como en un casino.", tag: "gratis" },
+        { t: "Las 18 desviaciones", p: "Con el conteo, algunas jugadas cambian: por ejemplo, 16 contra 10 te plantas si el conteo es positivo. Los Illustrious 18 y el Fab 4, practicados nivel por nivel.", tag: "premium" },
+        { t: "Tu tabla, tu mesa", p: "Ajusta cada regla (8 mazos, el crupier que pide con 17 blando, rendición) y practica con la tabla exacta de la mesa donde juegas.", tag: "premium" },
       ],
     },
     faq: [
       ["¿La estrategia básica garantiza ganar?", "No. Baja la ventaja de la casa al mínimo (alrededor de 0,5 %), pero la casa sigue teniendo ventaja. Es la base para jugar bien, y la base para contar cartas."],
-      ["¿Sirve para cualquier casino?", "Sirve para mesas de 4 a 8 mazos. Lo único que cambia algunas casillas es si el crupier pide o se planta con 17 blando: elegí la opción de tu mesa arriba de la tabla."],
-      ["¿Hay que memorizarla?", "Sí, para usarla en una mesa de verdad (no se puede usar el celular en la mesa). Se aprende rápido por partes: primero los pares, después las blandas y al final las duras. En Edge 21 la tabla se va encendiendo a medida que la aprendés."],
+      ["¿Sirve para cualquier casino?", "Sirve para mesas de 4 a 8 mazos. Lo único que cambia algunas casillas es si el crupier pide o se planta con 17 blando: elige la opción de tu mesa arriba de la tabla."],
+      ["¿Hay que memorizarla?", "Sí, para usarla en una mesa de verdad (no se puede usar el celular en la mesa). Se aprende rápido por partes: primero los pares, después las blandas y al final las duras. En Edge 21 la tabla se va encendiendo a medida que la aprendes."],
     ],
   },
   en: {
@@ -191,11 +191,11 @@ export const ESTRATEGIA = {
 export const CONTEO = {
   es: {
     titulo: "Cómo contar cartas en blackjack: método Hi-Lo paso a paso | Edge 21",
-    descripcion: "Aprendé a contar cartas con el método Hi-Lo: los valores de cada carta, el conteo corrido, el conteo real y cuánto apostar. Con un ejercicio para practicar acá mismo.",
+    descripcion: "Aprende a contar cartas con el método Hi-Lo: los valores de cada carta, el conteo corrido, el conteo real y cuánto apostar. Con un ejercicio para practicar aquí mismo.",
     h1: "Cómo contar cartas en blackjack",
     tarjeta: "El método Hi-Lo en 4 pasos, con un ejercicio para probarte.",
     minutos: 7,
-    intro: "Contar cartas no es memorizar el mazo ni tener una mente prodigiosa: es llevar <b>un solo número</b> en la cabeza, que sube y baja con las cartas que salen. Ese número te dice cuándo quedan más cartas altas en el zapato, que es cuando el jugador tiene ventaja. Acá va el método más usado del mundo, <b>Hi-Lo</b>, en 4 pasos.",
+    intro: "Contar cartas no es memorizar el mazo ni tener una mente prodigiosa: es llevar <b>un solo número</b> en la cabeza, que sube y baja con las cartas que salen. Ese número te dice cuándo quedan más cartas altas en el zapato, que es cuando el jugador tiene ventaja. Aquí va el método más usado del mundo, <b>Hi-Lo</b>, en 4 pasos.",
     porque: {
       h: "Por qué funciona",
       p: "Las cartas altas (10, J, Q, K y As) te favorecen: hay más blackjacks (que pagan 3 a 2), tus dobles salen mejor y el crupier, que está obligado a pedir hasta 17, se pasa más seguido. Las bajas (2 a 6) lo favorecen a él. Cuando ya salieron muchas bajas, en el zapato quedan más altas, y ahí conviene apostar más.",
@@ -203,12 +203,12 @@ export const CONTEO = {
     pasos: [
       {
         h: "Paso 1 · El valor de cada carta",
-        p: "Cada carta que ves sumá o restá así. Nada más.",
+        p: "Cada carta que ves suma o resta así. Nada más.",
         valores: true,
       },
       {
         h: "Paso 2 · El conteo corrido",
-        p: "Arrancás en 0 cuando mezclan y vas sumando el valor de cada carta que aparece en la mesa, la tuya, la de los demás y la del crupier. Ese total es el <b>conteo corrido</b>. Por ejemplo: sale un 5 (+1), un K (−1), un 3 (+1) y un 6 (+1): el conteo corrido es <b>+2</b>.",
+        p: "Empiezas en 0 cuando mezclan y vas sumando el valor de cada carta que aparece en la mesa, la tuya, la de los demás y la del crupier. Ese total es el <b>conteo corrido</b>. Por ejemplo: sale un 5 (+1), un K (−1), un 3 (+1) y un 6 (+1): el conteo corrido es <b>+2</b>.",
         practica: true,
       },
       {
@@ -224,7 +224,7 @@ export const CONTEO = {
       },
       {
         h: "Paso 4 · Cuánto apostar",
-        p: "Con conteo real de +1 o menos, apostás lo mínimo (1 unidad). Desde +2, subís de a poco. Un ejemplo prudente:",
+        p: "Con conteo real de +1 o menos, apuestas lo mínimo (1 unidad). Desde +2, subes de a poco. Un ejemplo prudente:",
         tabla: [
           ["Conteo real", "Apuesta"],
           ["+1 o menos", "1 unidad"],
@@ -236,8 +236,8 @@ export const CONTEO = {
       },
     ],
     practica: {
-      h: "Probalo: contá estas cartas",
-      p: "Van a salir 10 cartas, una por una. Llevá la cuenta Hi-Lo y al final escribí el conteo corrido.",
+      h: "Pruébalo: cuenta estas cartas",
+      p: "Van a salir 10 cartas, una por una. Lleva la cuenta Hi-Lo y al final escribe el conteo corrido.",
       empezar: "Empezar",
       otra: "Otra vez",
       pregunta: "¿Cuál es el conteo corrido?",
@@ -250,9 +250,9 @@ export const CONTEO = {
       h: "4 mitos sobre contar cartas",
       lista: [
         "<b>“Es ilegal.”</b> Contar con la cabeza es legal en la mayoría de los lugares. Lo que está prohibido es usar aparatos en la mesa, y el casino puede pedirte que no juegues al blackjack.",
-        "<b>“Hay que memorizar todas las cartas.”</b> Llevás un solo número.",
+        "<b>“Hay que memorizar todas las cartas.”</b> Llevas un solo número.",
         "<b>“Hay que ser un genio.”</b> Es sumar y restar de a uno. Lo difícil es hacerlo rápido, con la mesa llena: eso se entrena.",
-        "<b>“Contando ganás siempre.”</b> La ventaja es chica y a la larga. Por eso es para aprender y entender el juego, no para hacerse rico.",
+        "<b>“Contando ganas siempre.”</b> La ventaja es chica y a la larga. Por eso es para aprender y entender el juego, no para hacerse rico.",
       ],
     },
     sigue: {
@@ -262,7 +262,7 @@ export const CONTEO = {
         { t: "La ruta de conteo", p: "10 niveles, del valor de cada carta a contar un zapato entero al ritmo del casino, con Hi-Lo o KO.", tag: "gratis" },
         { t: "El desafío diario", p: "Un formato distinto cada día y un ranking para compararte con los demás.", tag: "gratis" },
         { t: "Las desviaciones", p: "Usar el conteo también para jugar: los Illustrious 18 y el Fab 4, que suman la mayor parte de la ventaja extra.", tag: "premium" },
-        { t: "Sistemas avanzados y casino real", p: "Hi-Opt I y II, Zen, Omega II y Wong Halves, el modo casino con tu plata y vigilancia, y el simulador de banca para saber cuánto necesitás.", tag: "premium" },
+        { t: "Sistemas avanzados y casino real", p: "Hi-Opt I y II, Zen, Omega II y Wong Halves, el modo casino con tu dinero y vigilancia, y el simulador de banca para saber cuánto necesitas.", tag: "premium" },
       ],
     },
     faq: [

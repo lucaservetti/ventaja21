@@ -29,7 +29,7 @@ const SKILLS = [
   {
     id: "stiff",
     name: "Duras 12–16",
-    sub: "Las manos con las que te podés pasar",
+    sub: "Las manos con las que te puedes pasar",
     icon: ["K", "6"],
   },
   {

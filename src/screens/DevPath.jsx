@@ -1,4 +1,4 @@
-// Ruta de desviaciones: la tarjeta de Entrenar y la pantalla de cada nivel (qué aprendés, práctica y resultado).
+// Ruta de desviaciones: la tarjeta de Entrenar y la pantalla de cada nivel (qué aprendes, práctica y resultado).
 import { useEffect, useState } from "react";
 import { recordDevLevel, useStore } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
@@ -55,7 +55,7 @@ function DevPathCard({ st, nav }) {
       <p className="muted small">
         {cur
           ? cur.sub
-          : "Sabés todas las desviaciones. Repasalas en la mesa con el modo casino."}
+          : "Sabes todas las desviaciones. Repásalas en la mesa con el modo casino."}
       </p>
       <div className="dpath-dots" aria-hidden="true">
         {DEV_LEVELS.map((l) => (
@@ -157,7 +157,7 @@ function DevLevel({ level: n }) {
         </div>
         <div className="card" style={{ marginTop: 18 }}>
           <div className="eyebrow">
-            {devs.length > 6 ? "Las reglas" : "Lo que tenés que saber"}
+            {devs.length > 6 ? "Las reglas" : "Lo que tienes que saber"}
           </div>
           <div className="dev-rules">
             {devs.map((d) => (
@@ -172,8 +172,8 @@ function DevLevel({ level: n }) {
           <Icon name="info" size={20} />
           <span className="small">
             {level.rc
-              ? "Te damos el conteo corrido y los mazos que quedan: dividí y redondeá para abajo para sacar el conteo real (por ejemplo, +7 con 2 mazos es +3)."
-              : "Cada mano trae el conteo real. Si está en el número de la regla o más, jugás la desviación; si está abajo, la jugada normal."}{" "}
+              ? "Te damos el conteo corrido y los mazos que quedan: divide y redondea para abajo para sacar el conteo real (por ejemplo, +7 con 2 mazos es +3)."
+              : "Cada mano trae el conteo real. Si está en el número de la regla o más, juegas la desviación; si está abajo, la jugada normal."}{" "}
             Para aprobar: {Math.ceil(level.size * level.need)} de {level.size}{" "}
             bien.
             {tries ? ` Intentos: ${tries}.` : ""}
@@ -349,7 +349,7 @@ function DevLevel({ level: n }) {
       {!saved ? (
         <div className="choose">
           <h3 className="choose-title">
-            {ins ? "¿Tomás el seguro?" : "Elegí tu jugada"}
+            {ins ? "¿Tomas el seguro?" : "Elige tu jugada"}
           </h3>
           {ins ? (
             <div className="ins-choices">
@@ -391,7 +391,7 @@ function DevLevel({ level: n }) {
           <p className="small" style={{ marginTop: 10 }}>
             <b>{devLabel(q.dev)}:</b> {ruleText(q.dev, rules)}
             {q.rc !== null
-              ? ` Acá: ${fmtSigned(q.rc)} dividido ${String(q.decks).replace(".", ",")} ${q.decks === 1 ? "mazo" : "mazos"} da ${(q.rc / q.decks).toFixed(1).replace(".", ",").replace("-", "−")}, o sea ${fmtSigned(q.tc)} de conteo real.`
+              ? ` Aquí: ${fmtSigned(q.rc)} dividido ${String(q.decks).replace(".", ",")} ${q.decks === 1 ? "mazo" : "mazos"} da ${(q.rc / q.decks).toFixed(1).replace(".", ",").replace("-", "−")}, o sea ${fmtSigned(q.tc)} de conteo real.`
               : ""}
           </p>
           <div className="bottom-actions">
@@ -404,7 +404,7 @@ function DevLevel({ level: n }) {
       <Modal open={exitOpen} onClose={() => setExitOpen(false)}>
         <h2 style={{ fontSize: 24 }}>¿Salir del nivel?</h2>
         <p className="muted" style={{ margin: "10px 0 20px" }}>
-          El intento no se cuenta. Podés empezarlo de nuevo cuando quieras.
+          El intento no se cuenta. Puedes empezarlo de nuevo cuando quieras.
         </p>
         <div className="btns">
           <Button kind="secondary" onClick={() => setExitOpen(false)}>

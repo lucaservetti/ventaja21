@@ -153,15 +153,15 @@ function Blitz({ challenge = null }) {
           <h1>
             {challenge
               ? `El desafío de ${challenge.nm || "tu amigo"}`
-              : "¿Cuántas manos acertás en 60 segundos?"}
+              : "¿Cuántas manos aciertas en 60 segundos?"}
           </h1>
           <p className="muted">
-            Elegí la jugada de la tabla lo más rápido que puedas. Cada acierto
+            Elige la jugada de la tabla lo más rápido que puedas. Cada acierto
             suma 1; cada error te saca 3 segundos.
           </p>
           {challenge ? (
             <p className="blitz-best">
-              {`Acertó ${challenge.sc} manos con estas mismas cartas. ¿Le ganás?`}
+              {`Acertó ${challenge.sc} manos con estas mismas cartas. ¿Le ganas?`}
             </p>
           ) : best ? (
             <p className="blitz-best">
@@ -204,13 +204,13 @@ function Blitz({ challenge = null }) {
             challenge={challenge}
             score={score}
             data={{ k: "b", s: seed.current, sc: score }}
-            text={`Acerté ${score} manos en 60 segundos en Edge 21. ¿Me ganás con las mismas manos? 🃏`}
+            text={`Acerté ${score} manos en 60 segundos en Edge 21. ¿Me ganas con las mismas manos? 🃏`}
           />
         ) : (
           <div className="chal-cta">
             <ChallengeButton
               data={{ k: "b", s: seed.current, sc: score }}
-              text={`Acerté ${score} manos en 60 segundos en Edge 21. ¿Me ganás con las mismas manos? 🃏`}
+              text={`Acerté ${score} manos en 60 segundos en Edge 21. ¿Me ganas con las mismas manos? 🃏`}
             />
           </div>
         )}
@@ -220,7 +220,7 @@ function Blitz({ challenge = null }) {
             <ShareButton
               make={() => ({
                 title: "Edge 21",
-                text: `Acerté ${score} manos en 60 segundos en Edge 21 🃏 ¿Me ganás?`,
+                text: `Acerté ${score} manos en 60 segundos en Edge 21 🃏 ¿Me ganas?`,
                 card: {
                   eyebrow: "Contrarreloj",
                   big: `${score} manos`,

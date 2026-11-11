@@ -1,5 +1,5 @@
 // Repaso automático: vuelve a hacerte las preguntas de las lecciones que fallaste.
-// Cada pregunta sale de la lista cuando la acertás dos veces en el repaso.
+// Cada pregunta sale de la lista cuando la aciertas dos veces en el repaso.
 import { useEffect, useState } from "react";
 import {
   dropReviewItem,
@@ -93,14 +93,14 @@ function Review() {
           <p className="muted" style={{ marginTop: 8 }}>
             {queue.length
               ? left
-                ? `Te ${left === 1 ? "queda 1 pregunta" : `quedan ${left} preguntas`} en la lista. Cada una sale cuando la acertás dos veces, en días distintos.`
+                ? `Te ${left === 1 ? "queda 1 pregunta" : `quedan ${left} preguntas`} en la lista. Cada una sale cuando la aciertas dos veces, en días distintos.`
                 : "No te queda nada pendiente de las lecciones."
-              : "Cuando falles una pregunta en una lección, va a aparecer acá para que la repases."}
+              : "Cuando falles una pregunta en una lección, va a aparecer aquí para que la repases."}
           </p>
         </div>
         {weak.length ? (
           <div className="card" style={{ marginTop: 18 }}>
-            <div className="eyebrow">Manos que más fallás en Entrenar</div>
+            <div className="eyebrow">Manos que más fallas en Entrenar</div>
             {weak.map((w) => (
               <div className="kv" style={{ alignItems: "center" }} key={w.key}>
                 <span>

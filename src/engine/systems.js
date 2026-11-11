@@ -20,7 +20,7 @@ const SYSTEMS = {
     irc: (a) => 4 - 4 * a,
     pivot: 4,
     blurb:
-      "Como Hi-Lo pero el 7 suma. No se divide por los mazos: arrancás en 4 − 4 × mazos.",
+      "Como Hi-Lo pero el 7 suma. No se divide por los mazos: empiezas en 4 − 4 × mazos.",
   },
   hiopt1: {
     id: "hiopt1",

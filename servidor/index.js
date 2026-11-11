@@ -549,7 +549,7 @@ async function premios(uid, env, now = Date.now(), opts = {}) {
 
 
 // ---- Pagos en la web (Paddle) ----
-// Premium comprado en la web (iPhone, computadora): Paddle cobra y avisa acá (webhook). Se anota en
+// Premium comprado en la web (iPhone, computadora): Paddle cobra y avisa aquí (webhook). Se anota en
 // premium/{uid}, el mismo documento que leen la app y la web, así que vale en todos lados.
 // - Pago único ("para siempre"): activo, sin fecha de vencimiento.
 // - Suscripción: activo hasta el fin del período pagado, más 3 días de margen por si el cobro
@@ -933,7 +933,7 @@ async function limpiar(env, now = Date.now()) {
 // ---- Medición anónima ----
 // La app manda eventos sueltos (abrió la app hoy, terminó su primera lección, entró con Google…)
 // con un identificador al azar del aparato, que no se une a la cuenta ni a nada personal. No se
-// guarda la IP. Acá solo se suman contadores por día (metricas/{día}) y, por aparato, el día que
+// guarda la IP. Aquí solo se suman contadores por día (metricas/{día}) y, por aparato, el día que
 // llegó y el último que abrió (instalaciones/{id}, se borra a los 60 días sin abrir), para saber
 // cuántos vuelven al día siguiente y a la semana. Ver la sección "Estadísticas" en privacidad.html.
 const HITOS = [
@@ -1097,10 +1097,10 @@ async function dentroDelLimite(env, nombre, clave, porMinuto) {
   return v.n <= porMinuto;
 }
 const muchos = (req) =>
-  json(req, 429, { error: "Demasiados pedidos: probá en un minuto" });
+  json(req, 429, { error: "Demasiados pedidos: prueba en un minuto" });
 
 // ---- Errores de la app ----
-// La app manda acá sus errores (sin datos de la persona) y el servidor los guarda en errores/,
+// La app manda aquí sus errores (sin datos de la persona) y el servidor los guarda en errores/,
 // recortados, con un límite por conexión. Vencen a los 90 días (los borra limpiar()).
 const txt = (v, max) => String(v == null ? "" : v).slice(0, max);
 async function guardarError(req, env) {
@@ -1197,7 +1197,7 @@ export default {
         const auth = req.headers.get("Authorization") || "";
         quien = await verifyIdToken(auth.replace(/^Bearer\s+/i, ""), env);
       } catch {
-        return json(req, 401, { error: "Entrá con tu cuenta de Google" });
+        return json(req, 401, { error: "Entra con tu cuenta de Google" });
       }
       try {
         const r = await panel(quien, env, Date.now(), Number(url.searchParams.get("dias")) || 30);
@@ -1228,7 +1228,7 @@ export default {
       const auth = req.headers.get("Authorization") || "";
       uid = await verifyIdToken(auth.replace(/^Bearer\s+/i, ""), env);
     } catch {
-      return json(req, 401, { error: "Entrá con tu cuenta de Google" });
+      return json(req, 401, { error: "Entra con tu cuenta de Google" });
     }
     if (!(await dentroDelLimite(env, "LIMITE_CUENTA", uid, 6)))
       return muchos(req);

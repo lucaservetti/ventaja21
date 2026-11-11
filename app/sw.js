@@ -1,5 +1,5 @@
-// Edge 21 · service worker 1.13.0 (61d1a0f8ba)
-const CACHE = "v21-1.13.0-61d1a0f8ba";
+// Edge 21 · service worker 1.13.0 (7c6a5d1bea)
+const CACHE = "v21-1.13.0-7c6a5d1bea";
 const CORE = [
   "./",
   "./index.html",
@@ -46,7 +46,7 @@ self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
-  // Solo la app pasa por acá. Las otras páginas (la política de privacidad, la página web)
+  // Solo la app pasa por aquí. Las otras páginas (la política de privacidad, la página web)
   // van directo a la red, y nunca se guardan como si fueran la app.
   const scope = new URL(self.registration.scope).pathname;
   const isApp = url.pathname === scope || url.pathname === scope + "index.html";

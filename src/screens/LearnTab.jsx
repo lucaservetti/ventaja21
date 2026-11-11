@@ -18,7 +18,7 @@ import { reviewCount } from "../lessons/Review.jsx";
 import { APP_MODE, NATIVE, WEB_DEMO, hasPremium, shop } from "../platform.js";
 
 // Para que se sepa que existe Premium, sin insistir: aparece desde el segundo día y con 3 lecciones
-// hechas, y si la cerrás no vuelve por 2 semanas.
+// hechas, y si la cierras no vuelve por 2 semanas.
 const PREM_CARD_PAUSE = 14 * 24 * 60 * 60 * 1000;
 function PremiumCard({ st, lessonsDone }) {
   const nav = useNav();
@@ -55,8 +55,8 @@ function PremiumCard({ st, lessonsDone }) {
           </span>
           <span className="li-sub" style={{ display: "block" }}>
             {trialDays
-              ? `Probalo ${trialDays} días gratis con el plan anual`
-              : "Mirá todo lo que incluye"}
+              ? `Pruébalo ${trialDays} días gratis con el plan anual`
+              : "Mira todo lo que incluye"}
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
@@ -171,7 +171,7 @@ function NextStepsCard({ st, done }) {
             <span className="li-title">Examen final</span>
             <span className="li-sub">
               {examPassed
-                ? "Aprobado. Podés rendirlo otra vez cuando quieras."
+                ? "Aprobado. Puedes rendirlo otra vez cuando quieras."
                 : "Un zapato entero jugando bien, contando y apostando según el conteo"}
             </span>
           </span>
@@ -201,7 +201,7 @@ function AmigoCard() {
       <div className="eyebrow acc">Te invitó un amigo</div>
       <h2>Ganen Premium los dos</h2>
       <p className="muted">
-        Entrá con Google y jugá el desafío diario 5 días distintos en tus
+        Entra con Google y juega el desafío diario 5 días distintos en tus
         primeras dos semanas: ganan 3 días de Premium cada uno.
       </p>
       <div className="test-card-btns">
@@ -210,7 +210,7 @@ function AmigoCard() {
     </div>
   );
 }
-// Al empezar: el test de nivel (opcional) para saltear lo que ya sabés. Desaparece al hacerlo, al
+// Al empezar: el test de nivel (opcional) para saltear lo que ya sabes. Desaparece al hacerlo, al
 // elegir empezar de cero o al terminar la primera lección.
 function TestCard({ st, lessonsDone }) {
   const nav = useNav();
@@ -224,17 +224,14 @@ function TestCard({ st, lessonsDone }) {
   return (
     <div className="card test-card">
       <div className="eyebrow acc">Test de nivel · 2 minutos</div>
-      <h2>¿Ya sabés algo de blackjack?</h2>
+      <h2>¿Ya sabes algo de blackjack?</h2>
       <p className="muted">
-        Contestá unas preguntas y salteá lo que ya sabés. Si recién empezás,
-        arrancá directo con la primera lección.
+        Contesta unas preguntas y salta lo que ya sabes. Si apenas empiezas,
+        empieza directo con la primera lección.
       </p>
       <div className="test-card-btns">
         <Button onClick={() => nav.push("placement")}>Hacer el test</Button>
-        <Button
-          kind="ghost"
-          onClick={() => setSettings({ testVisto: true })}
-        >
+        <Button kind="ghost" onClick={() => setSettings({ testVisto: true })}>
           Empiezo de cero
         </Button>
       </div>
@@ -271,8 +268,8 @@ function InstalarIphone({ st, lessonsDone }) {
     <div className="demo-note install-note" role="note">
       <Icon name="sparkle" />
       <span className="grow">
-        <b>Tenela como app en tu iPhone.</b> En Safari, tocá Compartir y
-        después <b>Agregar a inicio</b>.
+        <b>Tenla como app en tu iPhone.</b> En Safari, toca Compartir y después{" "}
+        <b>Agregar a inicio</b>.
       </span>
       <IconButton
         icon="close"
@@ -294,7 +291,7 @@ function LearnTab() {
       if (!u) {
         o({
           id: Date.now(),
-          msg: "Completá la lección anterior para desbloquear esta.",
+          msg: "Completa la lección anterior para desbloquear esta.",
           kind: "info",
         });
         setTimeout(() => o(null), 2200);
@@ -411,7 +408,12 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
     nav = useNav(),
     locked = !u && a.id > 1 && d(o[0].id) > p,
     full = c === o.length;
+  // Las secciones bloqueadas que no son la siguiente muestran solo su cartel (menos camino que
+  // recorrer con el dedo); sus lecciones se ven tocando "Ver las lecciones".
+  const curSec = SECTIONS.findIndex((x) => x.lessons.some((k) => k.id === s));
+  const lejos = locked && curSec >= 0 && SECTIONS.indexOf(a) > curSec + 1;
   const [open, setOpen] = useState(false);
+  const [ver, setVer] = useState(false);
   if (full && !open)
     return (
       <div className="section-block">
@@ -472,7 +474,7 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
               }
             >
               <Icon name="bolt" size={16} />
-              Saltar hasta acá
+              Saltar hasta aquí
             </button>
           ) : null}
           {full ? (
@@ -484,93 +486,108 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
               Achicar
             </button>
           ) : null}
-        </div>
-      </div>
-      <div className="trail" style={{ height: xs.length * ROW }}>
-        <svg
-          className="trail-line"
-          width={TRAIL_W}
-          height={xs.length * ROW}
-          aria-hidden="true"
-        >
-          <path className="trail-rest" d={trailPath(xs)} />
-          {goldTo > 0 ? (
-            <path className="trail-gold" d={trailPath(xs, 0, goldTo)} />
+          {lejos && !ver ? (
+            <button
+              type="button"
+              className="link small sec-fold"
+              onClick={() => setVer(true)}
+              aria-expanded={false}
+            >
+              {`Ver las ${o.length} lecciones`}
+            </button>
           ) : null}
-        </svg>
-        <ol className="rail">
-          {o.map((k, v) => {
-            const b = t(k.id),
-              S = k.id === s,
-              D = d(k.id),
-              _ = u || b || D <= p,
-              M = e.lessons[k.id] && e.lessons[k.id].viaTest,
-              R = S ? "cur" : b ? "done" : _ ? "open" : "locked";
-            return (
-              <li
-                className={cx("rail-row", `rr-${R}`)}
-                style={{ "--i": v, "--x": `${xs[v]}px` }}
-                key={k.id}
-              >
-                <button
-                  type="button"
-                  className="rail-btn"
-                  onClick={() => n(k, _)}
-                  aria-label={`Lección ${D + 1}: ${k.title}${b ? ", completa" : _ ? "" : ", bloqueada"}`}
-                >
-                  <span className={cx("node", `node-${R}`)} aria-hidden="true">
-                    <span className="node-face">
-                      {S ? (
-                        <Icon name="play" size={24} stroke={2.4} />
-                      ) : b ? (
-                        <Icon name="check" size={20} stroke={3} />
-                      ) : k.exam ? (
-                        <Icon name="trophy" size={20} />
-                      ) : (
-                        <span className="num">{D + 1}</span>
-                      )}
-                    </span>
-                  </span>
-                  <span className="rail-text">
-                    <b>{k.title}</b>
-                    <span className="muted small">
-                      {R === "locked" ? (
-                        <Icon name="lock" size={12} className="rail-lock" />
-                      ) : null}
-                      {M ? "Superada en el test" : `${lessonMinutes(k)} min`}
-                      {b && e.lessons[k.id].best !== undefined && !M
-                        ? ` · ${Math.round(e.lessons[k.id].best * 100)} %`
-                        : ""}
-                    </span>
-                    {S ? (
-                      <span className="rail-go">
-                        {e.lessons[k.id] ? "Repetir" : "Empezar"}
-                      </span>
-                    ) : null}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ol>
-        <div
-          className={cx("rail-end", full && "full")}
-          style={{ "--x": `${xs[o.length]}px`, "--i": o.length }}
-        >
-          <span
-            className={cx("node node-s", full ? "node-done" : "node-locked")}
-          >
-            <span className="node-face">
-              <Icon name="trophy" size={18} />
-            </span>
-          </span>
-          <span className={cx("num end-label", full ? "acc" : "muted")}>
-            {full
-              ? `Sección ${a.id} completa`
-              : `${c} de ${o.length} lecciones`}
-          </span>
         </div>
       </div>
+      {lejos && !ver ? null : (
+        <div className="trail" style={{ height: xs.length * ROW }}>
+          <svg
+            className="trail-line"
+            width={TRAIL_W}
+            height={xs.length * ROW}
+            aria-hidden="true"
+          >
+            <path className="trail-rest" d={trailPath(xs)} />
+            {goldTo > 0 ? (
+              <path className="trail-gold" d={trailPath(xs, 0, goldTo)} />
+            ) : null}
+          </svg>
+          <ol className="rail">
+            {o.map((k, v) => {
+              const b = t(k.id),
+                S = k.id === s,
+                D = d(k.id),
+                _ = u || b || D <= p,
+                M = e.lessons[k.id] && e.lessons[k.id].viaTest,
+                R = S ? "cur" : b ? "done" : _ ? "open" : "locked";
+              return (
+                <li
+                  className={cx("rail-row", `rr-${R}`)}
+                  style={{ "--i": v, "--x": `${xs[v]}px` }}
+                  key={k.id}
+                >
+                  <button
+                    type="button"
+                    className="rail-btn"
+                    onClick={() => n(k, _)}
+                    aria-label={`Lección ${D + 1}: ${k.title}${b ? ", completa" : _ ? "" : ", bloqueada"}`}
+                  >
+                    <span
+                      className={cx("node", `node-${R}`)}
+                      aria-hidden="true"
+                    >
+                      <span className="node-face">
+                        {S ? (
+                          <Icon name="play" size={24} stroke={2.4} />
+                        ) : b ? (
+                          <Icon name="check" size={20} stroke={3} />
+                        ) : k.exam ? (
+                          <Icon name="trophy" size={20} />
+                        ) : (
+                          <span className="num">{D + 1}</span>
+                        )}
+                      </span>
+                    </span>
+                    <span className="rail-text">
+                      <b>{k.title}</b>
+                      <span className="muted small">
+                        {R === "locked" ? (
+                          <Icon name="lock" size={12} className="rail-lock" />
+                        ) : null}
+                        {M ? "Superada en el test" : `${lessonMinutes(k)} min`}
+                        {b && e.lessons[k.id].best !== undefined && !M
+                          ? ` · ${Math.round(e.lessons[k.id].best * 100)} %`
+                          : ""}
+                      </span>
+                      {S ? (
+                        <span className="rail-go">
+                          {e.lessons[k.id] ? "Repetir" : "Empezar"}
+                        </span>
+                      ) : null}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+          <div
+            className={cx("rail-end", full && "full")}
+            style={{ "--x": `${xs[o.length]}px`, "--i": o.length }}
+          >
+            <span
+              className={cx("node node-s", full ? "node-done" : "node-locked")}
+            >
+              <span className="node-face">
+                <Icon name="trophy" size={18} />
+              </span>
+            </span>
+            <span className={cx("num end-label", full ? "acc" : "muted")}>
+              {full
+                ? `Sección ${a.id} completa`
+                : `${c} de ${o.length} lecciones`}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

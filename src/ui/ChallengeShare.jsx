@@ -27,9 +27,9 @@ function ChallengeButton({
         <Icon name="users" size={18} /> {label}
       </Button>
       <Modal open={open} onClose={() => setOpen(false)}>
-        <h2 style={{ fontSize: 22 }}>Desafiá a un amigo</h2>
+        <h2 style={{ fontSize: 22 }}>Desafía a un amigo</h2>
         <p className="muted" style={{ marginTop: 6 }}>
-          Le llega un enlace con lo mismo que jugaste vos y tu puntaje. Si lo
+          Le llega un enlace con lo mismo que jugaste tú y tu puntaje. Si lo
           abre, juega exactamente lo mismo y comparan.
         </p>
         <label className="field">
@@ -68,7 +68,7 @@ function ChallengeOutcome({ challenge, score, data, text }) {
       </h2>
       <div className="chal-vs">
         <div>
-          <div className="muted small">Vos</div>
+          <div className="muted small">Tú</div>
           <b className="num">{score}</b>
         </div>
         <span className="muted">contra</span>

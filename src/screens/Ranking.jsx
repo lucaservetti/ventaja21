@@ -53,12 +53,12 @@ function Ranking() {
       <div className="card rank-list" aria-busy={!data && !err}>
         {err ? (
           <p className="muted">
-            No se pudo cargar el ranking. Revisá la conexión.
+            No se pudo cargar el ranking. Revisa la conexión.
           </p>
         ) : !data ? (
           <p className="muted">Cargando…</p>
         ) : !data.rows.length ? (
-          <p className="muted">Todavía nadie jugó. ¡Podés ser el primero!</p>
+          <p className="muted">Todavía nadie jugó. ¡Puedes ser el primero!</p>
         ) : (
           <ol>
             {data.rows.map((r, i) => (
@@ -108,9 +108,9 @@ function Ranking() {
         <div className="card rank-join">
           <Icon name="podium" />
           <div className="grow">
-            <b>¿Querés aparecer?</b>
+            <b>¿Quieres aparecer?</b>
             <div className="muted small">
-              Entrá con tu cuenta de Google. Es opcional.
+              Entra con tu cuenta de Google. Es opcional.
             </div>
           </div>
           <Button kind="outline" onClick={() => nav.push("account")}>

@@ -28,7 +28,7 @@ function GuideRules() {
   return (
     <>
       <GP>
-        El blackjack se juega contra el crupier. Ganás si tu mano suma más que
+        El blackjack se juega contra el crupier. Ganas si tu mano suma más que
         la suya sin pasarte de 21, o si el crupier se pasa.
       </GP>
       <GH>Valores</GH>
@@ -43,9 +43,9 @@ function GuideRules() {
       <GH>Cómo se juega una mano</GH>
       <GList
         items={[
-          "Apostás y recibís dos cartas. El crupier recibe una visible y otra tapada.",
+          "Apuestas y recibes dos cartas. El crupier recibe una visible y otra tapada.",
           "Si el crupier muestra As o 10, revisa si tiene blackjack. Si muestra As, antes te ofrece el **seguro**.",
-          "Jugás tu mano: **pedir**, **plantarte**, **doblar** (duplicás la apuesta y recibís una sola carta), **separar** un par (cada carta arranca una mano) o **rendirte** (si se permite: recuperás la mitad).",
+          "Juegas tu mano: **pedir**, **plantarte**, **doblar** (duplicas la apuesta y recibes una sola carta), **separar** un par (cada carta arranca una mano) o **rendirte** (si se permite: recuperas la mitad).",
           "Después juega el crupier: pide hasta 17 o más. Según la mesa, con 17 blando se planta (S17) o pide (H17).",
           "Si te pasaste, perdiste aunque después el crupier también se pase.",
         ]}
@@ -53,11 +53,11 @@ function GuideRules() {
       <GH>Pagos</GH>
       <GList
         items={[
-          "Ganás: 1 a 1.",
+          "Ganas: 1 a 1.",
           "Blackjack: 3 a 2.",
           "Seguro: 2 a 1.",
-          "Empate: recuperás tu apuesta.",
-          "Rendición: recuperás la mitad.",
+          "Empate: recuperas tu apuesta.",
+          "Rendición: recuperas la mitad.",
         ]}
       />
     </>
@@ -69,7 +69,7 @@ function GuideStrategy() {
     <>
       <GP>
         La estrategia básica es la mejor forma de jugar cada mano sin contar
-        cartas. Esta tabla se adapta a las reglas de tu mesa (las cambiás en
+        cartas. Esta tabla se adapta a las reglas de tu mesa (las cambias en
         Ajustes).
       </GP>
       <div className="tags" style={{ margin: "10px 0 16px" }}>
@@ -83,11 +83,11 @@ function GuideStrategy() {
       <GH>Las reglas de oro</GH>
       <GList
         items={[
-          "Con 17 duro o más, plantate siempre. Con 8 o menos, pedí siempre.",
-          "Con 12 a 16: plantate contra 2 a 6 y pedí contra 7 a As. Excepción: 12 contra 2 y 3 se pide.",
-          "Doblá 11 contra todo menos As, 10 contra 2 a 9, y 9 contra 3 a 6.",
-          "Separá siempre ases y ochos. Nunca separes dieces ni cincos.",
-          "A,7 (18 blando): plantate contra 2, 7 y 8; doblá contra 3 a 6; pedí contra 9, 10 y As.",
+          "Con 17 duro o más, plántate siempre. Con 8 o menos, pide siempre.",
+          "Con 12 a 16: plántate contra 2 a 6 y pide contra 7 a As. Excepción: 12 contra 2 y 3 se pide.",
+          "Dobla 11 contra todo menos As, 10 contra 2 a 9, y 9 contra 3 a 6.",
+          "Separa siempre ases y ochos. Nunca separes dieces ni cincos.",
+          "A,7 (18 blando): plántate contra 2, 7 y 8; dobla contra 3 a 6; pide contra 9, 10 y As.",
           "Nunca tomes el seguro (salvo contando, con conteo real +3 o más).",
         ]}
       />
@@ -143,12 +143,12 @@ function GuideSystems() {
       <GH>Balanceados y no balanceados</GH>
       <GP>
         En un sistema **balanceado** (Hi-Lo, Hi-Opt, Zen, Omega II, Halves) un
-        mazo completo suma 0, y para decidir tenés que dividir por los mazos que
+        mazo completo suma 0, y para decidir tienes que dividir por los mazos que
         quedan (conteo real).
       </GP>
       <GP>
         En uno **no balanceado** como KO, un mazo suma +4. A cambio no hace
-        falta dividir: arrancás en 4 − 4 × mazos (con 6 mazos, −20) y cuando el
+        falta dividir: empiezas en 4 − 4 × mazos (con 6 mazos, −20) y cuando el
         conteo corrido llega a +4 la ventaja es parecida a un conteo real Hi-Lo
         de +4, quede lo que quede del zapato. Se empieza a subir la apuesta un
         poco antes de ese punto.
@@ -156,9 +156,9 @@ function GuideSystems() {
       <GH>¿Cuál elegir?</GH>
       <GList
         items={[
-          "**Hi-Lo:** el estándar. Casi toda la información de desviaciones y apuestas está pensada para Hi-Lo. Empezá acá.",
+          "**Hi-Lo:** el estándar. Casi toda la información de desviaciones y apuestas está pensada para Hi-Lo. Empieza aquí.",
           "**KO:** si te cuesta dividir. Un poco menos preciso.",
-          "**Zen, Omega II, Hi-Opt II, Halves:** más precisos, pero más trabajo mental. Valen la pena solo si ya dominás Hi-Lo.",
+          "**Zen, Omega II, Hi-Opt II, Halves:** más precisos, pero más trabajo mental. Valen la pena solo si ya dominas Hi-Lo.",
         ]}
       />
     </>
@@ -245,8 +245,8 @@ function GuideDeviations() {
       </div>
       <GP>
         Las de índice negativo (13 contra 2, 12 contra 4, 5 y 6, 13 contra 3) se
-        leen al revés: te plantás hasta que el conteo real baja del índice, y
-        ahí pedís.
+        leen al revés: te plantas hasta que el conteo real baja del índice, y
+        ahí pides.
       </GP>
       <GH>Fab 4 (solo con rendición)</GH>
       <div className="g-table-wrap">
@@ -324,15 +324,15 @@ function GuideBankroll() {
     <>
       <GP>
         Contar te da alrededor de 1 % de ventaja, pero la varianza del blackjack
-        es grande: podés perder durante semanas jugando perfecto.
+        es grande: puedes perder durante semanas jugando perfecto.
       </GP>
       <GList
         items={[
-          "Separá una **banca** solo para jugar. Nunca uses plata que necesitás.",
+          "Separa una **banca** solo para jugar. Nunca uses dinero que necesitas.",
           "Una referencia común: tener al menos **100 veces tu apuesta máxima**.",
-          "Si la banca baja mucho, bajá la unidad. Si sube, la podés subir de a poco.",
+          "Si la banca baja mucho, baja la unidad. Si sube, la puedes subir de a poco.",
           "Los sistemas de progresión (martingala y similares) no cambian la ventaja.",
-          "Decidí tus límites antes de jugar. Si el juego deja de ser entretenimiento, pará y pedí ayuda.",
+          "Decide tus límites antes de jugar. Si el juego deja de ser entretenimiento, para y pide ayuda.",
         ]}
       />
       <Visual
@@ -357,8 +357,8 @@ function GuideCasino() {
         items={[
           "Contar mentalmente no es trampa, pero el casino puede pedirte que no juegues al blackjack, limitarte las apuestas o mezclar más seguido.",
           "**Usar el celular o cualquier aparato en la mesa está prohibido** y en muchos lugares es ilegal. Esta app es para practicar en casa.",
-          "Llaman la atención los saltos grandes de apuesta, separar dieces y mirar fijo todas las cartas. Variá la apuesta de a poco.",
-          "Buscá zapatos mezclados a mano, con el corte bien atrás y que paguen 3:2. Evitá las máquinas de mezcla continua.",
+          "Llaman la atención los saltos grandes de apuesta, separar dieces y mirar fijo todas las cartas. Varía la apuesta de a poco.",
+          "Busca zapatos mezclados a mano, con el corte bien atrás y que paguen 3:2. Evita las máquinas de mezcla continua.",
         ]}
       />
       <GH>Online</GH>
@@ -378,7 +378,7 @@ const GLOSSARY = [
     "Bandeja de descarte",
     "Donde van las cartas ya jugadas. Sirve para estimar los mazos que quedan (discard tray).",
   ],
-  ["Banca", "La plata que separás solo para jugar (bankroll)."],
+  ["Banca", "El dinero que separas solo para jugar (bankroll)."],
   ["Blackjack", "As + carta de 10 en las dos primeras cartas. Paga 3 a 2."],
   ["Blanda (mano)", "Mano con un As que vale 11, como A,7 (soft)."],
   [
@@ -397,14 +397,14 @@ const GLOSSARY = [
   ["Desviación", "Jugada que cambia según el conteo (deviation)."],
   ["Doblar", "Duplicar la apuesta y recibir una sola carta (double)."],
   ["Dura (mano)", "Mano sin As, o con el As valiendo 1 (hard)."],
-  ["Empate", "Mismo total que el crupier: recuperás tu apuesta (push)."],
+  ["Empate", "Mismo total que el crupier: recuperas tu apuesta (push)."],
   ["H17 / S17", "El crupier pide (H17) o se planta (S17) con 17 blando."],
   ["Índice", "Conteo real a partir del cual cambia una jugada (index)."],
   [
     "Pago parejo",
     "Cobrar 1 a 1 tu blackjack cuando el crupier muestra As (even money).",
   ],
-  ["Pasarse", "Superar 21. Perdés la mano (bust)."],
+  ["Pasarse", "Superar 21. Pierdes la mano (bust)."],
   ["Pedir", "Recibir otra carta (hit)."],
   [
     "Penetración",
@@ -472,7 +472,7 @@ const MYTHS = [
   ],
   [
     '"Duplicar después de perder siempre gana."',
-    "La martingala solo cambia cuándo perdés. Tarde o temprano llega una racha que la funde.",
+    "La martingala solo cambia cuándo pierdes. Tarde o temprano llega una racha que la funde.",
   ],
 ];
 function GuideMyths() {

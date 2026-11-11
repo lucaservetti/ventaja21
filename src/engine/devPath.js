@@ -1,5 +1,5 @@
 // Ruta de desviaciones: 10 niveles para aprender las jugadas que cambian con el conteo (Illustrious 18 y Fab 4),
-// de a pocas por vez, hasta un examen donde calculás vos el conteo real.
+// de a pocas por vez, hasta un examen donde calculas tú el conteo real.
 import { FAB_4, ILLUSTRIOUS_18 } from "./strategy.js";
 import { floorTC, fmtSigned } from "./systems.js";
 import { makeSpot } from "./trainer.js";
@@ -14,7 +14,7 @@ const DEV_LEVELS = [
     n: 1,
     id: "d1",
     title: "El seguro",
-    sub: "La desviación que más plata vale",
+    sub: "La desviación que más dinero vale",
     ids: ["ins"],
     size: 10,
   },
@@ -53,7 +53,7 @@ const DEV_LEVELS = [
   {
     n: 6,
     id: "d6",
-    title: "Con conteo bajo, pedí",
+    title: "Con conteo bajo, pide",
     sub: "12 y 13 contra cartas débiles",
     ids: ["12v4", "12v5", "12v6", "13v2", "13v3"],
     size: 12,
@@ -77,7 +77,7 @@ const DEV_LEVELS = [
   {
     n: 9,
     id: "d9",
-    title: "Calculá vos el conteo real",
+    title: "Calcula tú el conteo real",
     sub: "Te damos el corrido y los mazos",
     ids: ["ins", ...I18_HARD],
     size: 15,
@@ -87,7 +87,7 @@ const DEV_LEVELS = [
     n: 10,
     id: "d10",
     title: "Examen de desviaciones",
-    sub: "Todo junto, calculando vos",
+    sub: "Todo junto, calculando tú",
     ids: ALL_DEVS.map((d) => d.id),
     size: 20,
     rc: true,
@@ -96,11 +96,11 @@ const DEV_LEVELS = [
 ].map((l) => ({ need: 0.8, ...l }));
 
 const VERB = {
-  H: "pedí",
-  S: "plantate",
-  D: "doblá",
-  R: "rendite",
-  P: "separá",
+  H: "pide",
+  S: "plántate",
+  D: "dobla",
+  R: "ríndete",
+  P: "separa",
 };
 
 function devById(id) {
@@ -118,7 +118,7 @@ function devLabel(dev) {
 function ruleText(dev, rules) {
   const i = idxText(devIndex(dev, rules));
   if (dev.type === "ins")
-    return `Tomá el seguro con conteo real ${i} o más; con menos, nunca.`;
+    return `Toma el seguro con conteo real ${i} o más; con menos, nunca.`;
   return `Con conteo real ${i} o más, ${VERB[dev.at]}; con menos, ${VERB[dev.below]}.`;
 }
 

@@ -77,12 +77,12 @@ function Account() {
             <span className="li-icon acc-ic">
               <Icon name="user" />
             </span>
-            <h2>Guardá tu progreso en tu cuenta de Google</h2>
+            <h2>Guarda tu progreso en tu cuenta de Google</h2>
             <ul className="acc-list">
-              <li>No lo perdés si cambiás de celular o borrás la app.</li>
-              <li>Lo seguís en otro celular o en la web.</li>
-              <li>Aparecés en el ranking del desafío diario.</li>
-              <li>Ganás días de Premium de regalo (en Progreso → Premios).</li>
+              <li>No lo pierdes si cambias de celular o borras la app.</li>
+              <li>Lo sigues en otro celular o en la web.</li>
+              <li>Apareces en el ranking del desafío diario.</li>
+              <li>Ganas días de Premium de regalo (en Progreso → Premios).</li>
             </ul>
             <p className="muted small">
               Es opcional: sin cuenta la app funciona igual. Solo guardamos tu
@@ -117,8 +117,8 @@ function Account() {
                 </b>
                 <div className="muted small">
                   {sync.status === "error"
-                    ? "Revisá la conexión. Se vuelve a intentar solo."
-                    : "Se guarda solo mientras usás la app."}
+                    ? "Revisa la conexión. Se vuelve a intentar solo."
+                    : "Se guarda solo mientras usas la app."}
                 </div>
               </div>
             </div>
@@ -156,8 +156,8 @@ function Account() {
               role={nickMal ? "alert" : undefined}
             >
               {nickMal
-                ? "Ese nombre no se puede usar. Elegí otro (sin insultos ni groserías)."
-                : "Lo ven los demás. Podés usar un apodo, sin insultos ni groserías."}
+                ? "Ese nombre no se puede usar. Elige otro (sin insultos ni groserías)."
+                : "Lo ven los demás. Puedes usar un apodo, sin insultos ni groserías."}
             </p>
           </div>
           <div className="btns" style={{ marginTop: 14 }}>
@@ -190,9 +190,9 @@ function Account() {
       >
         {sync.conflict ? (
           <>
-            <h2 style={{ fontSize: 22 }}>¿Con qué progreso te quedás?</h2>
+            <h2 style={{ fontSize: 22 }}>¿Con qué progreso te quedas?</h2>
             <p className="muted" style={{ marginTop: 6 }}>
-              Hay progreso en este celular y otro en tu cuenta. Elegí uno; el
+              Hay progreso en este celular y otro en tu cuenta. Elige uno; el
               otro se reemplaza.
             </p>
             <div className="acc-choice">
@@ -224,7 +224,7 @@ function Account() {
         <h2 style={{ fontSize: 22 }}>¿Cerrar sesión?</h2>
         <p className="muted" style={{ marginTop: 6 }}>
           Tu progreso queda guardado en tu cuenta de Google y se borra de este
-          aparato. Cuando vuelvas a entrar, lo recuperás tal cual.
+          aparato. Cuando vuelvas a entrar, lo recuperas tal cual.
         </p>
         {salirErr ? (
           <p className="small bad" role="alert" style={{ marginTop: 8 }}>
@@ -263,7 +263,7 @@ function Account() {
         <p className="muted" style={{ marginTop: 6 }}>
           Se borran tu cuenta de Edge 21, tu progreso guardado en la nube, tus
           puntajes del ranking y tus premios (también los días de Premium de
-          regalo). El progreso de este celular queda. Si tenés una suscripción
+          regalo). El progreso de este celular queda. Si tienes una suscripción
           de Google Play, se cancela aparte, en Google Play.
         </p>
         <div className="btns" style={{ marginTop: 16 }}>

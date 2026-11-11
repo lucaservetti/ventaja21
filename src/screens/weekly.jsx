@@ -1,7 +1,7 @@
-// Desafío semanal: un reto distinto cada semana (de lunes a domingo), medido con lo que ya jugás.
-// Al completarlo ganás la insignia de esa semana.
+// Desafío semanal: un reto distinto cada semana (de lunes a domingo), medido con lo que ya juegas.
+// Al completarlo ganas la insignia de esa semana.
 import { useEffect } from "react";
-import { addDays, dayKey, setState } from "../state.js";
+import { addDays, dayKey, diaHecho, setState } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
 import { cx } from "../ui/components.jsx";
 
@@ -20,7 +20,7 @@ const WEEKLY = [
     id: "daily5",
     icon: "calendar",
     title: "Cinco desafíos diarios",
-    desc: "Hacé el desafío diario 5 días de esta semana.",
+    desc: "Haz el desafío diario 5 días de esta semana.",
     goal: 5,
     value: (st, m) =>
       Object.keys(st.daily.results || {}).filter((k) => inWeek(k, m)).length,
@@ -29,7 +29,7 @@ const WEEKLY = [
     id: "hands200",
     icon: "train",
     title: "200 manos",
-    desc: "Jugá 200 manos en las tandas de Entrenar esta semana.",
+    desc: "Juega 200 manos en las tandas de Entrenar esta semana.",
     goal: 200,
     value: (st, m) =>
       st.train.sessions
@@ -40,7 +40,7 @@ const WEEKLY = [
     id: "blitz20",
     icon: "clock",
     title: "Veinte contra reloj",
-    desc: "Acertá 20 manos en un contrarreloj esta semana.",
+    desc: "Acierta 20 manos en un contrarreloj esta semana.",
     goal: 20,
     value: (st, m) =>
       ((st.train.blitz && st.train.blitz.last) || [])
@@ -51,18 +51,18 @@ const WEEKLY = [
     id: "goal5",
     icon: "target",
     title: "Constancia",
-    desc: "Cumplí tu meta diaria 5 días de esta semana.",
+    desc: "Practica 5 días de esta semana.",
     goal: 5,
     value: (st, m) =>
-      Object.entries(st.dailyGoal.days || {}).filter(
-        ([k, d]) => inWeek(k, m) && d.s >= d.g,
+      Object.keys(st.activity || {}).filter(
+        (k) => diaHecho(st.activity, k) && inWeek(k, m),
       ).length,
   },
   {
     id: "perfect3",
     icon: "sparkle",
     title: "Tres perfectas",
-    desc: "Hacé 3 tandas de Entrenar sin un solo error esta semana.",
+    desc: "Haz 3 tandas de Entrenar sin un solo error esta semana.",
     goal: 3,
     value: (st, m) =>
       st.train.sessions.filter(

@@ -211,8 +211,8 @@ function DrillValues({
           m.ok === m.n
             ? "Exacto: ese es el reflejo que necesita el conteo real."
             : m.ok / m.n >= 0.8
-              ? "Muy bien. Repasá las que fallaste y vas a tenerlo automático."
-              : "Repasá los valores y probá de nuevo."
+              ? "Muy bien. Repasa las que fallaste y vas a tenerlo automático."
+              : "Repasa los valores y prueba de nuevo."
         }
         missed={m.missed.map((Z) => ({
           card: Z,
@@ -403,19 +403,19 @@ function DrillResult({
     </div>
   );
 }
-// Conteo corrido: mirás una secuencia de cartas y al final escribís el conteo.
+// Conteo corrido: miras una secuencia de cartas y al final escribes el conteo.
 // Sirve para la práctica libre, el desafío diario y los niveles 3 a 7 de la ruta de conteo.
 const DISTRACT_LINES = [
-  "¿Me cambiás estos billetes?",
+  "¿Me cambias estos billetes?",
   "¡Vamos, que sale un diez!",
   "Mozo, ¿me trae un café?",
   "¿Cuánto paga el seguro?",
   "Esta mesa está fría hoy…",
-  "¿Vos sabés a qué hora cierran?",
+  "¿Tú sabes a qué hora cierran?",
   "¡Uh, otra vez 16!",
-  "¿Me pasás las fichas verdes?",
-  "¿Sos de acá?",
-  "Dale, dale, que viene el As.",
+  "¿Me pasas las fichas verdes?",
+  "¿Eres de aquí?",
+  "¡Vamos, vamos, que viene el As!",
 ];
 const SLOWER = {
   pro: "fast",
@@ -442,7 +442,7 @@ const DAILY_FORMATS = [
 function dailyFormat(date = new Date()) {
   return DAILY_FORMATS[date.getDay()];
 }
-// Puntaje del desafío: 100 si acertás (más un extra si contestás rápido); cerca, algo de puntos.
+// Puntaje del desafío: 100 si aciertas (más un extra si contestas rápido); cerca, algo de puntos.
 function dailyScore(err, answerMs) {
   if (err === 0) return 100 + Math.max(0, Math.round((8000 - answerMs) / 400));
   return Math.max(0, 60 - 20 * Math.abs(err));
@@ -465,7 +465,7 @@ function DrillRunning({
     level
       ? {
           n: level.cards,
-          // Practicando, un paso más lento que el nivel (lo podés cambiar).
+          // Practicando, un paso más lento que el nivel (lo puedes cambiar).
           speed: practice ? SLOWER[level.speed] : level.speed,
           mode: level.mode || "single",
           distract: !!level.distract,
@@ -724,16 +724,16 @@ function DrillRunning({
                 ? "El conteo del día"
                 : challenge
                   ? `El desafío de ${challenge.nm || "tu amigo"}`
-                  : "Llevá el total mientras caen las cartas"}
+                  : "Lleva el total mientras caen las cartas"}
           </h2>
           <p className="muted" style={{ marginTop: 8 }}>
             {level
-              ? `${cfg.n} cartas ${cfg.distract ? "con distracciones" : `a ritmo ${(DRILL_SPEEDS.find((s) => s.id === cfg.speed) || {}).label.toLowerCase()}`}. Arrancás en 0 y al final escribís el conteo corrido (running count) en Hi-Lo.`
+              ? `${cfg.n} cartas ${cfg.distract ? "con distracciones" : `a ritmo ${(DRILL_SPEEDS.find((s) => s.id === cfg.speed) || {}).label.toLowerCase()}`}. Empiezas en 0 y al final escribes el conteo corrido (running count) en Hi-Lo.`
               : daily
-                ? `${dailyFormat().name}: ${cfg.n} cartas${cfg.mode === "pairs" ? " de a dos" : ""}${cfg.distract ? " con distracciones" : ""} a ritmo ${(DRILL_SPEEDS.find((s) => s.id === cfg.speed) || {}).label.toLowerCase()}, iguales para todos hoy. Si acertás sumás 100 puntos, más un extra si contestás rápido. Tu primer intento cuenta${st.daily.streak ? ` (vas ${st.daily.streak} ${st.daily.streak === 1 ? "día" : "días"} seguidos)` : ""}.`
+                ? `${dailyFormat().name}: ${cfg.n} cartas${cfg.mode === "pairs" ? " de a dos" : ""}${cfg.distract ? " con distracciones" : ""} a ritmo ${(DRILL_SPEEDS.find((s) => s.id === cfg.speed) || {}).label.toLowerCase()}, iguales para todos hoy. Si aciertas sumas 100 puntos, más un extra si contestas rápido. Tu primer intento cuenta${st.daily.streak ? ` (vas ${st.daily.streak} ${st.daily.streak === 1 ? "día" : "días"} seguidos)` : ""}.`
                 : challenge
-                  ? `${cfg.n} cartas de a ${cfg.mode === "pairs" ? "dos" : "una"}, las mismas que le tocaron. Sacó ${challenge.sc} puntos: 100 por acertar el conteo, más un extra si contestás rápido.`
-                  : `Vas a ver las cartas de a ${cfg.mode === "pairs" ? "dos" : "una"}. Al final escribís el conteo corrido (running count) en ${sys.short || sys.name}. Arrancás en 0.`}
+                  ? `${cfg.n} cartas de a ${cfg.mode === "pairs" ? "dos" : "una"}, las mismas que le tocaron. Sacó ${challenge.sc} puntos: 100 por acertar el conteo, más un extra si contestas rápido.`
+                  : `Vas a ver las cartas de a ${cfg.mode === "pairs" ? "dos" : "una"}. Al final escribes el conteo corrido (running count) en ${sys.short || sys.name}. Empiezas en 0.`}
           </p>
           {level && practice ? (
             <p className="small" style={{ marginTop: 10, fontWeight: 700 }}>
@@ -761,7 +761,7 @@ function DrillRunning({
               {doneToday.ok
                 ? "acertaste"
                 : `le erraste por ${Math.abs(doneToday.err)}`}
-              . Podés practicarlo igual.
+              . Puedes practicarlo igual.
             </p>
           ) : null}
           {doneToday &&
@@ -932,7 +932,7 @@ function DrillRunning({
                 : "?"}
             </b>
             <span className="tiny muted">
-              {showCount ? "tocá para ocultarlo" : "tocá para verlo"}
+              {showCount ? "toca para ocultarlo" : "toca para verlo"}
             </span>
           </button>
         ) : null}
@@ -971,10 +971,10 @@ function DrillRunning({
   const tip = result.ok
     ? level
       ? "Exacto."
-      : "Exacto. Probá una velocidad más rápida cuando te salga seguido."
+      : "Exacto. Prueba una velocidad más rápida cuando te salga seguido."
     : Math.abs(result.err) === 1
-      ? "Te faltó o sobró una carta. Mirá el repaso: casi siempre es una neutra que contaste o una alta que se escapó."
-      : "Hacelo de a parejas: cancelá una alta con una baja apenas caen, y solo las que sobran mueven tu conteo.";
+      ? "Te faltó o sobró una carta. Mira el repaso: casi siempre es una neutra que contaste o una alta que se escapó."
+      : "Hazlo de a parejas: cancela una alta con una baja apenas caen, y solo las que sobran mueven tu conteo.";
   return (
     <div className="drill fade-up">
       <TopBar
@@ -1087,7 +1087,7 @@ function DrillRunning({
             m: cfg.mode,
             sc: dailyScore(result.err, result.answerMs || 9000),
           }}
-          text={`Hice ${dailyScore(result.err, result.answerMs || 9000)} puntos contando cartas en Edge 21. ¿Me ganás con las mismas cartas? 🃏`}
+          text={`Hice ${dailyScore(result.err, result.answerMs || 9000)} puntos contando cartas en Edge 21. ¿Me ganas con las mismas cartas? 🃏`}
         />
       ) : !daily && !level ? (
         <div className="chal-cta">
@@ -1100,7 +1100,7 @@ function DrillRunning({
               m: cfg.mode,
               sc: dailyScore(result.err, result.answerMs || 9000),
             }}
-            text={`Hice ${dailyScore(result.err, result.answerMs || 9000)} puntos contando ${cfg.n} cartas en Edge 21. ¿Me ganás con las mismas cartas? 🃏`}
+            text={`Hice ${dailyScore(result.err, result.answerMs || 9000)} puntos contando ${cfg.n} cartas en Edge 21. ¿Me ganas con las mismas cartas? 🃏`}
           />
         </div>
       ) : null}
@@ -1154,8 +1154,8 @@ function SecondChance({ streak, onGo }) {
     <div className="second-chance">
       <p className="small">
         {streak > 0
-          ? `Ibas ${streak} ${streak === 1 ? "día" : "días"} seguidos. Salvá tu racha con otro intento que cuenta.`
-          : "Tenés un intento más que cuenta para el puntaje de hoy."}
+          ? `Ibas ${streak} ${streak === 1 ? "día" : "días"} seguidos. Salva tu racha con otro intento que cuenta.`
+          : "Tienes un intento más que cuenta para el puntaje de hoy."}
       </p>
       <Button
         kind="outline"
@@ -1371,7 +1371,7 @@ function TrueHint({ q }) {
     <p className="center hint-line fade-up">
       {fmtSigned(q.rc)} ÷ {halfText(q.decksLeft).replace("½", ",5")} ={" "}
       <b>{Number.isInteger(exact) ? fmtSigned(exact) : fmtSigned(exact, 1)}</b>
-      {Number.isInteger(exact) ? "" : ". Ahora redondeá hacia abajo."}
+      {Number.isInteger(exact) ? "" : ". Ahora redondea hacia abajo."}
     </p>
   ) : (
     <div className="center">
@@ -1429,8 +1429,8 @@ function DrillTrue({ level: levelN = null, practice = false }) {
       onAgain={() => a.replace("drillTrue")}
       resultMessage={(s) =>
         s === 1
-          ? "Perfecto. Ya podés pasar a estimar los mazos vos mismo."
-          : "Recordá: dividí y redondeá hacia abajo."
+          ? "Perfecto. Ya puedes pasar a estimar los mazos tú mismo."
+          : "Recuerda: divide y redondea hacia abajo."
       }
       render={(s) => (
         <>
@@ -1493,8 +1493,8 @@ function DrillDecks() {
       onAgain={() => a.replace("drillDecks")}
       resultMessage={(s) =>
         s >= 0.8
-          ? "Buen ojo. En la mesa, mirá la bandeja de descarte antes de cada apuesta."
-          : "Usá las marcas: cada raya es un mazo."
+          ? "Buen ojo. En la mesa, mira la bandeja de descarte antes de cada apuesta."
+          : "Usa las marcas: cada raya es un mazo."
       }
       render={(s) => (
         <>
@@ -1576,12 +1576,12 @@ function DrillBet({ level: levelN = null, practice = false }) {
       onAgain={() => a.replace("drillBet")}
       resultMessage={(l) =>
         l === 1
-          ? "Tenés la escala de memoria."
-          : "Repasá la escala: ≤ +1: 1 · +2: 2 · +3: 4 · +4: 6 · +5 o más: 8."
+          ? "Tienes la escala de memoria."
+          : "Repasa la escala: ≤ +1: 1 · +2: 2 · +3: 4 · +4: 6 · +5 o más: 8."
       }
       render={(l) => (
         <>
-          <h2 className="center drill-q">¿Cuántas unidades apostás?</h2>
+          <h2 className="center drill-q">¿Cuántas unidades apuestas?</h2>
           <div className="center" style={{ margin: "16px 0" }}>
             <div className="eyebrow">Conteo real</div>
             <div className="big-num" style={{ fontSize: 72 }}>
@@ -1659,14 +1659,14 @@ function DeckCountdown() {
         <div className="card">
           <h2 style={{ fontSize: 24 }}>La prueba clásica del contador</h2>
           <p className="muted" style={{ marginTop: 8 }}>
-            Pasá un mazo entero tocando la pantalla, lo más rápido que puedas,
+            Pasa un mazo entero tocando la pantalla, lo más rápido que puedas,
             llevando el conteo. Escondimos una carta: al final, tu conteo te
             dice qué tipo de carta falta.
           </p>
           <p className="muted" style={{ marginTop: 8 }}>
             {t.balanced
-              ? "Con un sistema balanceado, un mazo completo suma 0. Si terminás en +1, falta una carta alta; en −1, una baja; en 0, una neutra."
-              : "Con KO un mazo completo suma +4: compará contra eso."}
+              ? "Con un sistema balanceado, un mazo completo suma 0. Si terminas en +1, falta una carta alta; en −1, una baja; en 0, una neutra."
+              : "Con KO un mazo completo suma +4: compara contra eso."}
           </p>
           {R ? (
             <p className="acc" style={{ marginTop: 10, fontWeight: 700 }}>
@@ -1710,7 +1710,7 @@ function DeckCountdown() {
             className="center muted"
             style={{ display: "block", marginTop: 26, fontWeight: 700 }}
           >
-            Tocá para la siguiente
+            Toca para la siguiente
           </span>
         </button>
         <ExitDrillModal

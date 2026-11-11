@@ -15,7 +15,7 @@ import {
 } from "../ui/components.jsx";
 import { countValue, fmtTag, systemFor } from "../engine/systems.js";
 import { InfoDot, PageHeader, SettingsButton } from "../ui/common.jsx";
-import { HiLoValues } from "../lessons/visuals.jsx";
+import { HiLoValues, SystemValues } from "../lessons/visuals.jsx";
 import { dailyFormat } from "./drills.jsx";
 import { useNav } from "../nav.js";
 import { GoalBadge } from "./goal.jsx";
@@ -91,7 +91,7 @@ function CountTab() {
               </span>
             </div>
             <p className="muted">
-              Una carta por vez. Tocá cuánto vale cada una y se corrige en el
+              Una carta por vez. Toca cuánto vale cada una y se corrige en el
               momento.
             </p>
             <div className="tags" style={{ margin: "12px 0 16px" }}>
@@ -116,8 +116,8 @@ function CountTab() {
               <span className="hero-tag good num">+1</span>
             </div>
             <p className="muted">
-              Mirás una secuencia de cartas y al final escribís el conteo
-              corrido (<i className="en">running count</i>). Elegís la
+              Miras una secuencia de cartas y al final escribes el conteo
+              corrido (<i className="en">running count</i>). Eliges la
               velocidad, la cantidad y si hay distracciones.
             </p>
             <div className="tags" style={{ margin: "12px 0 16px" }}>
@@ -198,7 +198,7 @@ function CountTab() {
           <div className="grow">
             <b>¿Te aviso para no perder la racha?</b>
             <p className="muted small">
-              Elegís qué días y a qué hora. Si ya practicaste, no te molesta.
+              Eliges qué días y a qué hora. Si ya practicaste, no te molesta.
             </p>
             <div className="btns-row">
               <Button small onClick={() => nav.push("recordatorios")}>
@@ -230,7 +230,7 @@ function CountTab() {
           <span className="li-sub" style={{ display: "block" }}>
             {st.drills.speed && st.drills.speed.best
               ? `Tu récord: ${st.drills.speed.best.toFixed(1).replace(".", ",")} cartas por segundo`
-              : "Cada tanda más rápida: ¿llegás al ritmo del casino?"}
+              : "Cada tanda más rápida: ¿llegas al ritmo del casino?"}
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
@@ -246,8 +246,8 @@ function CountTab() {
         <span className="li-text">
           <span className="li-title">Simulador de blackjack</span>
           <span className="li-sub" style={{ display: "block" }}>
-            Jugá un zapato entero: apostá con el conteo, jugá la estrategia y
-            aguantá la varianza.
+            Juega un zapato entero: apuesta con el conteo, juega la estrategia y
+            aguanta la varianza.
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
@@ -267,14 +267,14 @@ function CountTab() {
         <DrillRow
           icon="target"
           title="Conteo real"
-          sub="Pasá el conteo corrido a conteo real (true count)"
+          sub="Pasa el conteo corrido a conteo real (true count)"
           onClick={() => nav.push("drillTrue", { confirmExit: true })}
           n={st.drills.true.sessions.length}
         />
         <DrillRow
           icon="shoe"
           title="Estimar mazos"
-          sub="Leé la bandeja de descarte"
+          sub="Lee la bandeja de descarte"
           onClick={() => nav.push("drillDecks", { confirmExit: true })}
           n={st.drills.decks.sessions.length}
         />
@@ -288,7 +288,7 @@ function CountTab() {
         <DrillRow
           icon="clock"
           title="Mazo completo"
-          sub="Contá 51 cartas contra reloj"
+          sub="Cuenta 51 cartas contra reloj"
           onClick={() => nav.push("deckCountdown", { confirmExit: true })}
           n={(st.drills.deck.sessions || []).length}
         />
@@ -303,61 +303,66 @@ function CountTab() {
         />
       </div>
 
-      <div className="section-title">
-        <h2>
-          Tu progreso <InfoDot onClick={() => setDetailOpen(true)} />
-        </h2>
-        <span className="chip-tag">Valores</span>
-      </div>
-      <div className="card">
-        <p className="muted small">
-          Precisión por ejercicio, del más viejo al más nuevo.
-        </p>
-        <div className="bars" style={{ marginBottom: 30 }}>
-          {Array.from({ length: 7 }, (_, i) => {
-            const s = valueSessions[valueSessions.length - 7 + i];
-            if (!s)
-              return <span className="b" style={{ height: 14 }} key={i} />;
-            const acc = s.ok / s.n;
-            return (
-              <span
-                className={cx(
-                  "b",
-                  acc >= 0.9 ? "on" : acc >= 0.7 ? "mid" : "low",
-                )}
-                style={{ height: `${Math.max(10, acc * 100)}%` }}
-                key={i}
-              >
-                <span>{Math.round(acc * 100)}%</span>
+      {/* Sin ejercicios hechos no hay nada que mostrar todavía. */}
+      {valueSessions.length || running.length ? (
+        <>
+          <div className="section-title">
+            <h2>
+              Tu progreso <InfoDot onClick={() => setDetailOpen(true)} />
+            </h2>
+            <span className="chip-tag">Valores</span>
+          </div>
+          <div className="card">
+            <p className="muted small">
+              Precisión por ejercicio, del más viejo al más nuevo.
+            </p>
+            <div className="bars" style={{ marginBottom: 30 }}>
+              {Array.from({ length: 7 }, (_, i) => {
+                const s = valueSessions[valueSessions.length - 7 + i];
+                if (!s)
+                  return <span className="b" style={{ height: 14 }} key={i} />;
+                const acc = s.ok / s.n;
+                return (
+                  <span
+                    className={cx(
+                      "b",
+                      acc >= 0.9 ? "on" : acc >= 0.7 ? "mid" : "low",
+                    )}
+                    style={{ height: `${Math.max(10, acc * 100)}%` }}
+                    key={i}
+                  >
+                    <span>{Math.round(acc * 100)}%</span>
+                  </span>
+                );
+              })}
+            </div>
+            <div className="row between small">
+              <span className="muted">
+                {st.drills.values.sessions.length}{" "}
+                {st.drills.values.sessions.length === 1
+                  ? "ejercicio"
+                  : "ejercicios"}
               </span>
-            );
-          })}
-        </div>
-        <div className="row between small">
-          <span className="muted">
-            {st.drills.values.sessions.length}{" "}
-            {st.drills.values.sessions.length === 1
-              ? "ejercicio"
-              : "ejercicios"}
-          </span>
-          <button
-            type="button"
-            className="link small"
-            onClick={() => setDetailOpen(true)}
-          >
-            Detalles ›
-          </button>
-        </div>
-        {running.length ? (
-          <p className="muted small" style={{ marginTop: 12 }}>
-            Conteo corrido: {running.filter((r) => r.ok).length} de{" "}
-            {running.length} exactos
-            {bestRun
-              ? ` · récord ${bestRun.n} cartas a ${bestRun.rate.toFixed(1).replace(".", ",")} cartas/s`
-              : ""}
-          </p>
-        ) : null}
-      </div>
+              <button
+                type="button"
+                className="link small"
+                onClick={() => setDetailOpen(true)}
+              >
+                Detalles ›
+              </button>
+            </div>
+            {running.length ? (
+              <p className="muted small" style={{ marginTop: 12 }}>
+                Conteo corrido: {running.filter((r) => r.ok).length} de{" "}
+                {running.length} exactos
+                {bestRun
+                  ? ` · récord ${bestRun.n} cartas a ${bestRun.rate.toFixed(1).replace(".", ",")} cartas/s`
+                  : ""}
+              </p>
+            ) : null}
+          </div>
+        </>
+      ) : null}
       <Sheet
         open={helpOpen}
         onClose={() => setHelpOpen(false)}
@@ -373,8 +378,8 @@ function CountTab() {
           Un conteo alto quiere decir que quedan muchas cartas altas en el
           zapato: es el momento de subir la apuesta.{" "}
           {sys.balanced
-            ? "Para decidir, dividí el conteo corrido (running count) por los mazos que quedan: eso es el conteo real (true count)."
-            : "Con KO no dividís: arrancás en 4 − 4 × mazos y mirás el conteo corrido directo."}
+            ? "Para decidir, divide el conteo corrido (running count) por los mazos que quedan: eso es el conteo real (true count)."
+            : "Con KO no divides: empiezas en 4 − 4 × mazos y miras el conteo corrido directo."}
         </p>
         <Button
           kind="secondary"
@@ -400,7 +405,7 @@ function CountTab() {
 }
 const AFTER_VALUES = {
   markPath: null,
-  text: "Ahora practicalos: 12 cartas y cada toque se corrige al instante.",
+  text: "Ahora practícalos: 12 cartas y cada toque se corrige al instante.",
   screen: "drillValues",
   params: { confirmExit: true },
   label: "Empezar: Valores de las cartas",
@@ -423,34 +428,6 @@ function DrillRow({ icon: a, title: e, sub: t, onClick: s, n }) {
       {n ? <span className="li-side num">{n}×</span> : null}
       <Icon name="chev" className="li-chev" />
     </button>
-  );
-}
-function SystemValues({ sys: a }) {
-  return (
-    <div className="sys-values">
-      {[
-        ["A", "A"],
-        ["2", "2"],
-        ["3", "3"],
-        ["4", "4"],
-        ["5", "5"],
-        ["6", "6"],
-        ["7", "7"],
-        ["8", "8"],
-        ["9", "9"],
-        ["T", "10–K"],
-      ].map(([t, s]) => {
-        let n = a.values[t];
-        return (
-          <div className="sv" key={t}>
-            <span className="sv-r">{s}</span>
-            <b className={cx("num", n > 0 ? "good" : n < 0 ? "bad" : "muted")}>
-              {fmtTag(n)}
-            </b>
-          </div>
-        );
-      })}
-    </div>
   );
 }
 function ValuesDetail({ st: a, sys: e }) {
@@ -520,7 +497,7 @@ function ValuesDetail({ st: a, sys: e }) {
       </div>
       {c && r < 0.95 ? (
         <p className="muted" style={{ marginTop: 14 }}>
-          {"Practicá el "}
+          {"Practica el "}
           <b style={{ color: "var(--text)" }}>{c}</b>: es la carta que más te
           cuesta ({fmtTag(countValue(makeCard(c, "s"), e))}). Va a salir más
           seguido en tus próximos ejercicios.
@@ -544,8 +521,8 @@ function ValuesDetail({ st: a, sys: e }) {
     </div>
   ) : (
     <p className="muted">
-      Todavía no hiciste el ejercicio de valores. Cuando lo hagas, acá vas a ver
-      tu precisión carta por carta.
+      Todavía no hiciste el ejercicio de valores. Cuando lo hagas, aquí vas a
+      ver tu precisión carta por carta.
     </p>
   );
 }

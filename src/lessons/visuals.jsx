@@ -14,7 +14,7 @@ import {
 } from "../engine/strategy.js";
 import { ChartLegend, PlayingCard, chartCode, cx } from "../ui/components.jsx";
 import { bustChances } from "../engine/ev.js";
-import { BET_RAMP } from "../engine/systems.js";
+import { BET_RAMP, SYSTEMS, fmtTag } from "../engine/systems.js";
 import { useRules } from "../ui/common.jsx";
 
 function rich(a) {
@@ -96,6 +96,12 @@ function Visual({ v: a }) {
       );
     case "values":
       return <HiLoValues />;
+    case "sysvalues":
+      return (
+        <div className="vis">
+          <SystemValues sys={SYSTEMS[a.sys]} />
+        </div>
+      );
     case "tiles":
       return (
         <div className={cx("vis tiles", a.items.length === 2 && "two")}>
@@ -133,11 +139,11 @@ function Visual({ v: a }) {
         <div className="vis tiles two">
           <div className="tile">
             <div className="tile-v t-good">$15</div>
-            <div className="tile-l">cobrás con $10 en una mesa 3:2</div>
+            <div className="tile-l">cobras con $10 en una mesa 3:2</div>
           </div>
           <div className="tile">
             <div className="tile-v t-bad">$12</div>
-            <div className="tile-l">cobrás con $10 en una mesa 6:5</div>
+            <div className="tile-l">cobras con $10 en una mesa 6:5</div>
           </div>
         </div>
       );
@@ -214,7 +220,7 @@ function HandsVisual({ dealer: a, player: e, caption: t }) {
         <b className="num">{handValue(s).total}</b>
       </div>
       <div className="hv-row">
-        <span className="eyebrow acc">Vos</span>
+        <span className="eyebrow acc">Tú</span>
         <div className="card-row">
           {n.map((l) => (
             <PlayingCard card={l} size="sm" deal={true} key={l.id} />
@@ -223,6 +229,35 @@ function HandsVisual({ dealer: a, player: e, caption: t }) {
         <b className="num acc">{handValue(n).total}</b>
       </div>
       {t ? <div className="vis-cap">{t}</div> : null}
+    </div>
+  );
+}
+// Lo que vale cada carta en un sistema de conteo (la usan las lecciones y la pestaña Conteo).
+function SystemValues({ sys: a }) {
+  return (
+    <div className="sys-values">
+      {[
+        ["A", "A"],
+        ["2", "2"],
+        ["3", "3"],
+        ["4", "4"],
+        ["5", "5"],
+        ["6", "6"],
+        ["7", "7"],
+        ["8", "8"],
+        ["9", "9"],
+        ["T", "10–K"],
+      ].map(([t, s]) => {
+        let n = a.values[t];
+        return (
+          <div className="sv" key={t}>
+            <span className="sv-r">{s}</span>
+            <b className={cx("num", n > 0 ? "good" : n < 0 ? "bad" : "muted")}>
+              {fmtTag(n)}
+            </b>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -441,12 +476,12 @@ function BetRamp({ highlight: a = null }) {
   );
 }
 const DEV_VERBS = {
-  S: "Plantate",
-  D: "Doblá",
-  P: "Separá",
-  H: "Pedí",
-  R: "Rendite",
-  I: "Tomá el seguro",
+  S: "Plántate",
+  D: "Dobla",
+  P: "Separa",
+  H: "Pide",
+  R: "Ríndete",
+  I: "Toma el seguro",
 };
 function DevList({ which: a = "top" }) {
   let e = useRules(),
@@ -555,6 +590,7 @@ function ChartRowHint({ cards, up, rules, title = "Así está en la tabla" }) {
   );
 }
 export {
+  SystemValues,
   BetRamp,
   BustCards,
   ChartRowHint,

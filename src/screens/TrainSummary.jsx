@@ -55,7 +55,7 @@ function TrainSummary({ summary: a, results: e, mode: t, focus: s }) {
   if (!p) {
     if (u === 1) {
       v.push(
-        "¡Tanda perfecta! Probá el examen de nivel o una habilidad que tengas floja.",
+        "¡Tanda perfecta! Prueba el examen de nivel o una habilidad que tengas floja.",
       );
     } else {
       if (u < 0.8) {
@@ -181,7 +181,7 @@ function TrainSummary({ summary: a, results: e, mode: t, focus: s }) {
             <div className="summary-replay">
               <p className="muted small">
                 Estas manos quedaron en <b>Tus errores</b>, en Entrenar. Salen
-                de ahí cuando las acertás dos veces.
+                de ahí cuando las aciertas dos veces.
               </p>
               <Button
                 kind="secondary"
@@ -236,11 +236,11 @@ function mainMiss(a, e) {
 }
 function examVerdict(a) {
   return a >= 0.96
-    ? "Nivel profesional: jugás la estrategia básica casi sin errores."
+    ? "Nivel profesional: juegas la estrategia básica casi sin errores."
     : a >= 0.88
       ? "Muy bien. Te quedan pocas manos por pulir."
       : a >= 0.72
-        ? "Bien, pero todavía hay errores que cuestan plata. Repasá las manos de abajo."
+        ? "Bien, pero todavía hay errores que cuestan dinero. Repasa las manos de abajo."
         : "Todavía hay que repasar. Las lecciones de la sección 2 y las tandas por habilidad te van a ayudar.";
 }
 export { TrainSummary };

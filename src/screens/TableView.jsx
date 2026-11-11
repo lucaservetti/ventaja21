@@ -445,7 +445,7 @@ function TableView({
               {table.bet ? (
                 <ChipStack amount={table.bet} size={42} />
               ) : (
-                <span className="bet-ring">APOSTÁ</span>
+                <span className="bet-ring">APUESTA</span>
               )}
               {table.bet ? (
                 <b className="num bet-amt">{table.fmt(table.bet)}</b>
@@ -592,7 +592,7 @@ function TableView({
             </b>
             <p className="muted small">
               {isBlackjack(table.hands[0].cards)
-                ? "Tenés blackjack y el crupier muestra As. Pago parejo: cobrás 1 a 1 ya, tenga o no blackjack."
+                ? "Tienes blackjack y el crupier muestra As. Pago parejo: cobras 1 a 1 ya, tenga o no blackjack."
                 : `El crupier muestra As. El seguro cuesta ${table.fmt(table.hands[0].bet / 2)} y paga 2 a 1 si tiene blackjack.`}
             </p>
             <div className="ins-btns">
@@ -738,8 +738,8 @@ function UnitBets({ table }) {
     <>
       <div className="bet-hint tiny">
         {settled
-          ? "Elegí la apuesta de la próxima mano según el conteo real."
-          : `Tu unidad es ${table.fmt(unit)}. Elegí cuántas unidades apostar.`}
+          ? "Elige la apuesta de la próxima mano según el conteo real."
+          : `Tu unidad es ${table.fmt(unit)}. Elige cuántas unidades apostar.`}
       </div>
       <div className="unit-bets">
         {UNIT_STEPS.map((u) => (
@@ -775,7 +775,7 @@ function UnitBets({ table }) {
             className="grow deal-btn"
           >
             {settled
-              ? "Elegí tu apuesta"
+              ? "Elige tu apuesta"
               : `Repartir · ${table.fmt(table.bet)}`}
           </Button>
         )}
@@ -784,7 +784,7 @@ function UnitBets({ table }) {
   );
 }
 
-// Modo casino: la barra que se vacía mientras decidís.
+// Modo casino: la barra que se vacía mientras decides.
 function DecisionTimer({ deadline, total }) {
   const left = Math.max(0, deadline - Date.now());
   // A 2 segundos del final, un toque de aviso.

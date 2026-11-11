@@ -15,7 +15,7 @@ import { Logo } from "../ui/common.jsx";
 import { useNav } from "../nav.js";
 
 // Test de nivel: como mucho 8 preguntas, de la sección 1 a la 4. Termina en la primera que no
-// sabés: ahí empezás. Así el que recién arranca contesta una o dos, y el que ya sabe, todas.
+// sabes: ahí empiezas. Así el que recién arranca contesta una o dos, y el que ya sabe, todas.
 const PLACEMENT_QUESTIONS = [
   {
     s: 1,
@@ -25,14 +25,14 @@ const PLACEMENT_QUESTIONS = [
   },
   {
     s: 1,
-    q: "Tenés As y 6. ¿Cuánto vale tu mano?",
+    q: "Tienes As y 6. ¿Cuánto vale tu mano?",
     o: ["Solo 7", "7 o 17 (17 blando)", "16"],
     a: 1,
     cards: ["Ah", "6s"],
   },
   {
     s: 2,
-    q: "Tenés 12 y el crupier muestra un 4. ¿Qué hacés?",
+    q: "Tienes 12 y el crupier muestra un 4. ¿Qué haces?",
     o: ["Pedir", "Plantarme", "Doblar"],
     a: 1,
     cards: ["10c", "2d"],
@@ -40,7 +40,7 @@ const PLACEMENT_QUESTIONS = [
   },
   {
     s: 2,
-    q: "Tenés 11 y el crupier muestra un 6.",
+    q: "Tienes 11 y el crupier muestra un 6.",
     o: ["Pedir", "Plantarme", "Doblar"],
     a: 2,
     cards: ["6d", "5c"],
@@ -48,7 +48,7 @@ const PLACEMENT_QUESTIONS = [
   },
   {
     s: 2,
-    q: "Tenés 8,8 y el crupier muestra un 10.",
+    q: "Tienes 8,8 y el crupier muestra un 10.",
     o: ["Separar", "Plantarme", "Pedir"],
     a: 0,
     cards: ["8h", "8c"],
@@ -96,7 +96,7 @@ function Onboarding() {
         <Logo size={96} />
         <h1>Edge 21</h1>
         <p className="muted">
-          Aprendé estrategia básica y conteo de cartas, paso a paso, con manos
+          Aprende estrategia básica y conteo de cartas, paso a paso, con manos
           de verdad.
         </p>
         <div className="onb-cards">
@@ -106,7 +106,7 @@ function Onboarding() {
         <ul className="onb-bullets">
           <li>Lecciones de 2 a 5 minutos</li>
           <li>Una mesa que te corrige cada jugada</li>
-          <li>Sin plata real</li>
+          <li>Sin dinero real</li>
         </ul>
       </div>
       <div className="bottom-actions">
@@ -145,7 +145,7 @@ function Placement({
       setTimeout(() => {
         r((b) => [...b, { s: p.s, ok: m }]);
         d(null);
-        // La primera que no sabés termina el test: empezás por esa sección.
+        // La primera que no sabes termina el test: empiezas por esa sección.
         o((b) => (m ? b + 1 : PLACEMENT_QUESTIONS.length));
       }, 650);
     },
@@ -244,11 +244,11 @@ function Placement({
         <div className="eyebrow acc" style={{ marginTop: 20 }}>
           Test de nivel · 2 minutos
         </div>
-        <h1>¿Por dónde empezás?</h1>
+        <h1>¿Por dónde empiezas?</h1>
         <p className="muted" style={{ marginTop: 12, fontSize: 18 }}>
-          {`Hasta ${PLACEMENT_QUESTIONS.length} preguntas cortas. Cuando una no la sepas, tocá `}
+          {`Hasta ${PLACEMENT_QUESTIONS.length} preguntas cortas. Cuando una no la sepas, toca `}
           <b style={{ color: "var(--text)" }}>No sé</b>
-          {": ahí termina y empezás desde esa parte. Lo anterior queda como superado."}
+          {": ahí termina y empiezas desde esa parte. Lo anterior queda como superado."}
         </p>
         <div className="bottom-actions">
           <Button onClick={() => o(0)}>Empezar el test</Button>
@@ -282,10 +282,10 @@ function Placement({
         </h1>
         <p className="muted" style={{ marginTop: 12, fontSize: 17 }}>
           {m
-            ? "Arrancás desde la primera lección. Podés hacer el test cuando quieras desde Ajustes."
+            ? "Empiezas desde la primera lección. Puedes hacer el test cuando quieras desde Ajustes."
             : C.start === 1
               ? "Arrancamos por las bases: en pocos minutos vas a tener las reglas claras."
-              : "Las lecciones anteriores quedan marcadas como superadas. Podés repasarlas cuando quieras."}
+              : "Las lecciones anteriores quedan marcadas como superadas. Puedes repasarlas cuando quieras."}
         </p>
         {m ? null : (
           <div className="card" style={{ marginTop: 20 }}>
@@ -312,7 +312,7 @@ function Placement({
         {s === "online" && a ? (
           <p className="note-box" style={{ marginTop: 14 }}>
             Como vas a jugar online, dejamos el simulador listo con una mesa en
-            vivo de 8 mazos. Lo cambiás en Jugar → Mesa.
+            vivo de 8 mazos. Lo cambias en Jugar → Mesa.
           </p>
         ) : null}
         <div className="bottom-actions">

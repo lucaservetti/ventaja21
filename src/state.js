@@ -67,7 +67,7 @@ const TABLE_PRESETS = [
   {
     id: "rng",
     name: "Online automático (RNG)",
-    desc: "Se mezcla después de cada mano. Contar no sirve: probalo.",
+    desc: "Se mezcla después de cada mano. Contar no sirve: pruébalo.",
     rules: {
       decks: 6,
       h17: false,
@@ -139,19 +139,19 @@ const LEVELS = [
     min: 950,
     name: "Ficha roja",
     chip: "#d23b3b",
-    note: "Ya jugás la mayoría de las manos bien.",
+    note: "Ya juegas la mayoría de las manos bien.",
   },
   {
     min: 1100,
     name: "Ficha verde",
     chip: "#2f9e5b",
-    note: "Dominás la estrategia básica.",
+    note: "Dominas la estrategia básica.",
   },
   {
     min: 1250,
     name: "Ficha negra",
     chip: "#1b1b1b",
-    note: "Casi no cometés errores.",
+    note: "Casi no cometes errores.",
   },
   {
     min: 1400,
@@ -256,6 +256,9 @@ const DEFAULT_STATE = {
     betsOk: 0,
   },
   activity: {},
+  // Protectores de racha: cuántos tienes (hasta 2), si ya ganaste el primero (a los 3 días), el día
+  // que ganaste el último y el aviso de que uno salvó tu racha ({ dias, dia }).
+  racha: { protectores: 0, primero: false, nuevo: null, aviso: null },
   // Tarjetas de la tabla (repaso espaciado): { [spotKey]: { box, due, n, ok } } y cuántas nuevas hoy.
   srs: { cards: {}, newDay: null, newToday: 0 },
   // Modo casino real: lo último que elegiste y tus visitas al casino.
@@ -403,10 +406,88 @@ let activityTick = 0;
 function getActivityTick() {
   return activityTick;
 }
+// La mejor racha de días seguidos con alguna actividad terminada.
+function bestActivityStreak(a) {
+  const days = Object.keys(a || {})
+    .filter((d) => a[d])
+    .sort();
+  let best = 0;
+  let run = 0;
+  let prev = null;
+  for (const d of days) {
+    run = prev && addDays(prev, 1) === d ? run + 1 : 1;
+    best = Math.max(best, run);
+    prev = d;
+  }
+  return best;
+}
 function markActive(a) {
   activityTick++;
   let e = dayKey();
-  return a.activity[e] ? a : { ...a, activity: { ...a.activity, [e]: true } };
+  if (a.activity[e]) return a;
+  const activity = { ...a.activity, [e]: true };
+  return {
+    ...a,
+    activity,
+    racha: ganarProtector(a.racha, activityStreak(activity)),
+  };
+}
+// Un día de la racha que salvó un protector queda marcado "p": cuenta para la racha pero no como
+// día practicado (desafío semanal, calendario).
+function diaHecho(act, d) {
+  return !!act && !!act[d] && act[d] !== "p";
+}
+// Protectores de racha: ganas el primero a los 3 días de racha y uno más cada 7 días (7, 14, 21…),
+// hasta tener 2. Si un día no practicas, se usa uno solo y la racha sigue.
+const MAX_PROTECTORES = 2;
+function ganarProtector(r, racha) {
+  const base = {
+    protectores: 0,
+    primero: false,
+    nuevo: null,
+    aviso: null,
+    ...(r || {}),
+  };
+  const toca = (racha === 3 && !base.primero) || (racha > 0 && racha % 7 === 0);
+  if (!toca) return base;
+  const cuanto = Math.min(MAX_PROTECTORES, base.protectores + 1);
+  return {
+    ...base,
+    primero: base.primero || racha >= 3,
+    protectores: cuanto,
+    nuevo: cuanto > base.protectores ? dayKey() : base.nuevo,
+  };
+}
+// Se llama al abrir la app (y al volver a ella): si ayer (y quizás antes) no practicaste y te
+// alcanzan los protectores para tapar esos días, los usa y la racha sigue.
+function usarProtectores() {
+  setState((s) => {
+    const act = s.activity || {};
+    const r = s.racha || {};
+    const tiene = r.protectores || 0;
+    const ayer = addDays(dayKey(), -1);
+    if (!tiene || act[ayer]) return s;
+    const huecos = [];
+    let d = ayer;
+    while (!act[d] && huecos.length < tiene) {
+      huecos.push(d);
+      d = addDays(d, -1);
+    }
+    // Si antes de los huecos no había racha (o faltan protectores), no hay nada que salvar.
+    if (!act[d]) return s;
+    const nueva = { ...act };
+    for (const h of huecos) nueva[h] = "p";
+    const dias = activityStreak(nueva);
+    return {
+      ...s,
+      activity: nueva,
+      racha: {
+        ...r,
+        protectores: tiene - huecos.length,
+        aviso: { dias, usados: huecos.length, dia: dayKey() },
+      },
+    };
+  });
 }
 function setSettings(a) {
   setState((e) => ({ ...e, settings: { ...e.settings, ...a } }));
@@ -528,7 +609,7 @@ function recordLevel(id, ok, score) {
   });
 }
 // Errores para repetir: una mano fallada entra a la lista (o suma un fallo si ya estaba);
-// sale cuando la acertás dos veces seguidas, en cualquier lado.
+// sale cuando la aciertas dos veces seguidas, en cualquier lado.
 const MAX_MISTAKES = 40;
 function recordHandResult(hand, ok) {
   setState((st) => {
@@ -569,7 +650,7 @@ function recordHandResult(hand, ok) {
     return { ...st, train: { ...st.train, mistakes: next } };
   });
 }
-// Tarjetas de la tabla: cada casilla sube de caja cuando la acertás y vuelve a la primera si fallás.
+// Tarjetas de la tabla: cada casilla sube de caja cuando la aciertas y vuelve a la primera si fallas.
 const SRS_DAYS = [0, 1, 3, 7, 14, 30, 60];
 function recordSrs(key, ok) {
   setState((st) => {
@@ -693,7 +774,7 @@ function setGoalMinutes(minutes) {
     };
   });
 }
-// Repaso: una pregunta fallada entra a la lista; sale cuando la acertás dos veces en el repaso.
+// Repaso: una pregunta fallada entra a la lista; sale cuando la aciertas dos veces en el repaso.
 const DAY_MS = 86400000;
 function recordReviewAnswer(lessonId, step, ok, sig, fromReview = false) {
   setState((st) => {
@@ -800,6 +881,10 @@ export {
   recordLevelPractice,
   setGoalMinutes,
   activityStreak,
+  bestActivityStreak,
+  diaHecho,
+  usarProtectores,
+  MAX_PROTECTORES,
   addDays,
   applyRating,
   canPersist,
