@@ -20,16 +20,22 @@ import { createRoot } from "react-dom/client";
 import { Logo } from "./ui/common.jsx";
 import { initMedir } from "./medir.js";
 import { Panel } from "./screens/Panel.jsx";
-import { instalarEscritorio, useEscritorio, usePuedeInstalar } from "./escritorio.js";
+import {
+  instalarEscritorio,
+  useEscritorio,
+  usePuedeInstalar,
+} from "./escritorio.js";
 import { jsx as _jsx } from "react/jsx-runtime";
 import {
   activityStreak,
+  dayKey,
   getState,
   goalDay,
   levelFor,
   resetAll,
   setSettings,
   setState,
+  usarProtectores,
   useStore,
 } from "./state.js";
 import { Icon } from "./ui/icons.jsx";
@@ -508,13 +514,41 @@ function App() {
   const [goalToast, setGoalToast] = useState(null);
   // La racha suma el día con la primera actividad que terminas; la meta de minutos es aparte.
   useStreakCelebration((streak) => {
+    const r = getState().racha || {};
     const msg =
-      streak > 1
-        ? `🔥 ¡Racha de ${streak} días! Sumaste el día de hoy.`
-        : "🔥 ¡Empezaste tu racha! Vuelve mañana para sumar otro día.";
+      r.nuevo === dayKey()
+        ? `🔥 ¡Racha de ${streak} días! Y ganaste un protector de racha 🛡️`
+        : streak > 1
+          ? `🔥 ¡Racha de ${streak} días! Sumaste el día de hoy.`
+          : "🔥 ¡Empezaste tu racha! Vuelve mañana para sumar otro día.";
     setGoalToast({ id: Date.now(), msg, kind: "good" });
-    setTimeout(() => setGoalToast(null), 3600);
+    setTimeout(() => setGoalToast(null), 4200);
   });
+  // Protectores de racha: al abrir la app (y al volver a ella otro día) tapan los días sin práctica.
+  useEffect(() => {
+    const revisar = () => {
+      usarProtectores();
+      const r = getState().racha || {};
+      if (!r.aviso || r.aviso.visto) return;
+      setState((s) => ({
+        ...s,
+        racha: { ...s.racha, aviso: { ...r.aviso, visto: true } },
+      }));
+      setGoalToast({
+        id: Date.now(),
+        msg:
+          r.aviso.usados === 1
+            ? `🛡️ Un protector salvó tu racha de ${r.aviso.dias} días. ¡Practica hoy para seguirla!`
+            : `🛡️ ${r.aviso.usados} protectores salvaron tu racha de ${r.aviso.dias} días. ¡Practica hoy para seguirla!`,
+        kind: "good",
+      });
+      setTimeout(() => setGoalToast(null), 5000);
+    };
+    revisar();
+    const vis = () => document.visibilityState === "visible" && revisar();
+    document.addEventListener("visibilitychange", vis);
+    return () => document.removeEventListener("visibilitychange", vis);
+  }, []);
   useGoalCelebration(() => {
     setGoalToast({
       id: Date.now(),

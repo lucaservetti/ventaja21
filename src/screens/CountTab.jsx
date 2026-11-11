@@ -303,61 +303,66 @@ function CountTab() {
         />
       </div>
 
-      <div className="section-title">
-        <h2>
-          Tu progreso <InfoDot onClick={() => setDetailOpen(true)} />
-        </h2>
-        <span className="chip-tag">Valores</span>
-      </div>
-      <div className="card">
-        <p className="muted small">
-          Precisión por ejercicio, del más viejo al más nuevo.
-        </p>
-        <div className="bars" style={{ marginBottom: 30 }}>
-          {Array.from({ length: 7 }, (_, i) => {
-            const s = valueSessions[valueSessions.length - 7 + i];
-            if (!s)
-              return <span className="b" style={{ height: 14 }} key={i} />;
-            const acc = s.ok / s.n;
-            return (
-              <span
-                className={cx(
-                  "b",
-                  acc >= 0.9 ? "on" : acc >= 0.7 ? "mid" : "low",
-                )}
-                style={{ height: `${Math.max(10, acc * 100)}%` }}
-                key={i}
-              >
-                <span>{Math.round(acc * 100)}%</span>
+      {/* Sin ejercicios hechos no hay nada que mostrar todavía. */}
+      {valueSessions.length || running.length ? (
+        <>
+          <div className="section-title">
+            <h2>
+              Tu progreso <InfoDot onClick={() => setDetailOpen(true)} />
+            </h2>
+            <span className="chip-tag">Valores</span>
+          </div>
+          <div className="card">
+            <p className="muted small">
+              Precisión por ejercicio, del más viejo al más nuevo.
+            </p>
+            <div className="bars" style={{ marginBottom: 30 }}>
+              {Array.from({ length: 7 }, (_, i) => {
+                const s = valueSessions[valueSessions.length - 7 + i];
+                if (!s)
+                  return <span className="b" style={{ height: 14 }} key={i} />;
+                const acc = s.ok / s.n;
+                return (
+                  <span
+                    className={cx(
+                      "b",
+                      acc >= 0.9 ? "on" : acc >= 0.7 ? "mid" : "low",
+                    )}
+                    style={{ height: `${Math.max(10, acc * 100)}%` }}
+                    key={i}
+                  >
+                    <span>{Math.round(acc * 100)}%</span>
+                  </span>
+                );
+              })}
+            </div>
+            <div className="row between small">
+              <span className="muted">
+                {st.drills.values.sessions.length}{" "}
+                {st.drills.values.sessions.length === 1
+                  ? "ejercicio"
+                  : "ejercicios"}
               </span>
-            );
-          })}
-        </div>
-        <div className="row between small">
-          <span className="muted">
-            {st.drills.values.sessions.length}{" "}
-            {st.drills.values.sessions.length === 1
-              ? "ejercicio"
-              : "ejercicios"}
-          </span>
-          <button
-            type="button"
-            className="link small"
-            onClick={() => setDetailOpen(true)}
-          >
-            Detalles ›
-          </button>
-        </div>
-        {running.length ? (
-          <p className="muted small" style={{ marginTop: 12 }}>
-            Conteo corrido: {running.filter((r) => r.ok).length} de{" "}
-            {running.length} exactos
-            {bestRun
-              ? ` · récord ${bestRun.n} cartas a ${bestRun.rate.toFixed(1).replace(".", ",")} cartas/s`
-              : ""}
-          </p>
-        ) : null}
-      </div>
+              <button
+                type="button"
+                className="link small"
+                onClick={() => setDetailOpen(true)}
+              >
+                Detalles ›
+              </button>
+            </div>
+            {running.length ? (
+              <p className="muted small" style={{ marginTop: 12 }}>
+                Conteo corrido: {running.filter((r) => r.ok).length} de{" "}
+                {running.length} exactos
+                {bestRun
+                  ? ` · récord ${bestRun.n} cartas a ${bestRun.rate.toFixed(1).replace(".", ",")} cartas/s`
+                  : ""}
+              </p>
+            ) : null}
+          </div>
+        </>
+      ) : null}
       <Sheet
         open={helpOpen}
         onClose={() => setHelpOpen(false)}
@@ -516,8 +521,8 @@ function ValuesDetail({ st: a, sys: e }) {
     </div>
   ) : (
     <p className="muted">
-      Todavía no hiciste el ejercicio de valores. Cuando lo hagas, aquí vas a ver
-      tu precisión carta por carta.
+      Todavía no hiciste el ejercicio de valores. Cuando lo hagas, aquí vas a
+      ver tu precisión carta por carta.
     </p>
   );
 }

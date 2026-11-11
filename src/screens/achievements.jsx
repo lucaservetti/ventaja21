@@ -40,6 +40,14 @@ const GROUPS = [
         value: (st) => realLessons.filter((l) => lessonDone(st, l.id)).length,
       },
       {
+        id: "lessons-5",
+        icon: "learn",
+        title: "Buen ritmo",
+        desc: "Termina 5 lecciones.",
+        goal: 5,
+        value: (st) => realLessons.filter((l) => lessonDone(st, l.id)).length,
+      },
+      {
         id: "section-1",
         icon: "book",
         title: "Lo básico",
@@ -65,6 +73,17 @@ const GROUPS = [
         value: (st) => realLessons.filter((l) => lessonDone(st, l.id)).length,
       },
       {
+        id: "systems",
+        icon: "crown",
+        title: "Más allá de Hi-Lo",
+        desc: "Completa la sección de otros sistemas de conteo.",
+        goal: SECTIONS[SECTIONS.length - 1].lessons.length,
+        value: (st) =>
+          SECTIONS[SECTIONS.length - 1].lessons.filter((l) =>
+            lessonDone(st, l.id),
+          ).length,
+      },
+      {
         id: "final-exam",
         icon: "trophy",
         title: "Contador certificado",
@@ -84,6 +103,14 @@ const GROUPS = [
         desc: "Mantén la racha 3 días seguidos.",
         goal: 3,
         value: (st) => bestActivityStreak(st.activity),
+      },
+      {
+        id: "protector-1",
+        icon: "shield",
+        title: "Con escudo",
+        desc: "Gana tu primer protector de racha.",
+        goal: 1,
+        value: (st) => (st.racha && st.racha.primero ? 1 : 0),
       },
       {
         id: "weekly-1",
@@ -122,6 +149,15 @@ const GROUPS = [
   {
     title: "Entrenar",
     items: [
+      {
+        id: "train-1",
+        icon: "train",
+        title: "Primera tanda",
+        desc: "Termina tu primera tanda en Entrenar.",
+        goal: 1,
+        value: (st) =>
+          st.train.sessions.filter((s) => s.kind !== "exam").length,
+      },
       {
         id: "hands-100",
         icon: "train",
@@ -187,6 +223,26 @@ const GROUPS = [
     title: "Conteo",
     items: [
       {
+        id: "count-1",
+        icon: "drills",
+        title: "Primer conteo",
+        desc: "Termina tu primer ejercicio de conteo.",
+        goal: 1,
+        value: (st) =>
+          Object.values(st.drills).reduce(
+            (n, d) => n + ((d.sessions && d.sessions.length) || 0),
+            0,
+          ),
+      },
+      {
+        id: "level-1",
+        icon: "drills",
+        title: "Primer nivel",
+        desc: "Pasa el nivel 1 de la ruta de conteo.",
+        goal: 1,
+        value: (st) => passedCount(st),
+      },
+      {
         id: "dev-all",
         icon: "target",
         title: "Desviaciones dominadas",
@@ -231,6 +287,14 @@ const GROUPS = [
   {
     title: "Mesa y casino",
     items: [
+      {
+        id: "table-20",
+        icon: "play",
+        title: "A la mesa",
+        desc: "Juega 20 manos en el simulador.",
+        goal: 20,
+        value: (st) => st.play.hands || 0,
+      },
       {
         id: "shoe-1",
         icon: "shoe",

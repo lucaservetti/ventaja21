@@ -256,6 +256,9 @@ const DEFAULT_STATE = {
     betsOk: 0,
   },
   activity: {},
+  // Protectores de racha: cuántos tienes (hasta 2), si ya ganaste el primero (a los 3 días), el día
+  // que ganaste el último y el aviso de que uno salvó tu racha ({ dias, dia }).
+  racha: { protectores: 0, primero: false, nuevo: null, aviso: null },
   // Tarjetas de la tabla (repaso espaciado): { [spotKey]: { box, due, n, ok } } y cuántas nuevas hoy.
   srs: { cards: {}, newDay: null, newToday: 0 },
   // Modo casino real: lo último que elegiste y tus visitas al casino.
@@ -421,7 +424,70 @@ function bestActivityStreak(a) {
 function markActive(a) {
   activityTick++;
   let e = dayKey();
-  return a.activity[e] ? a : { ...a, activity: { ...a.activity, [e]: true } };
+  if (a.activity[e]) return a;
+  const activity = { ...a.activity, [e]: true };
+  return {
+    ...a,
+    activity,
+    racha: ganarProtector(a.racha, activityStreak(activity)),
+  };
+}
+// Un día de la racha que salvó un protector queda marcado "p": cuenta para la racha pero no como
+// día practicado (desafío semanal, calendario).
+function diaHecho(act, d) {
+  return !!act && !!act[d] && act[d] !== "p";
+}
+// Protectores de racha: ganas el primero a los 3 días de racha y uno más cada 7 días (7, 14, 21…),
+// hasta tener 2. Si un día no practicas, se usa uno solo y la racha sigue.
+const MAX_PROTECTORES = 2;
+function ganarProtector(r, racha) {
+  const base = {
+    protectores: 0,
+    primero: false,
+    nuevo: null,
+    aviso: null,
+    ...(r || {}),
+  };
+  const toca = (racha === 3 && !base.primero) || (racha > 0 && racha % 7 === 0);
+  if (!toca) return base;
+  const cuanto = Math.min(MAX_PROTECTORES, base.protectores + 1);
+  return {
+    ...base,
+    primero: base.primero || racha >= 3,
+    protectores: cuanto,
+    nuevo: cuanto > base.protectores ? dayKey() : base.nuevo,
+  };
+}
+// Se llama al abrir la app (y al volver a ella): si ayer (y quizás antes) no practicaste y te
+// alcanzan los protectores para tapar esos días, los usa y la racha sigue.
+function usarProtectores() {
+  setState((s) => {
+    const act = s.activity || {};
+    const r = s.racha || {};
+    const tiene = r.protectores || 0;
+    const ayer = addDays(dayKey(), -1);
+    if (!tiene || act[ayer]) return s;
+    const huecos = [];
+    let d = ayer;
+    while (!act[d] && huecos.length < tiene) {
+      huecos.push(d);
+      d = addDays(d, -1);
+    }
+    // Si antes de los huecos no había racha (o faltan protectores), no hay nada que salvar.
+    if (!act[d]) return s;
+    const nueva = { ...act };
+    for (const h of huecos) nueva[h] = "p";
+    const dias = activityStreak(nueva);
+    return {
+      ...s,
+      activity: nueva,
+      racha: {
+        ...r,
+        protectores: tiene - huecos.length,
+        aviso: { dias, usados: huecos.length, dia: dayKey() },
+      },
+    };
+  });
 }
 function setSettings(a) {
   setState((e) => ({ ...e, settings: { ...e.settings, ...a } }));
@@ -816,6 +882,9 @@ export {
   setGoalMinutes,
   activityStreak,
   bestActivityStreak,
+  diaHecho,
+  usarProtectores,
+  MAX_PROTECTORES,
   addDays,
   applyRating,
   canPersist,

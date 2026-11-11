@@ -23,6 +23,7 @@
   --bad-soft: #2d1311;
   --warn: #f2b84b;
   --split: #7fb6ff;
+  --ice: #7cc4f0;
   --surr: #f39a63;
   --card-face: #fafaf6;
   --card-ink: #121214;
@@ -5660,6 +5661,9 @@ i.en {
 .cal-d.part {
   background: #5e5132;
 }
+.cal-d.ice {
+  background: var(--ice);
+}
 .goal-badge {
   padding: 0 12px 0 5px;
   gap: 6px;
@@ -8256,6 +8260,7 @@ html[data-theme="light"] {
   --accent-line: #c9a258;
   --good: #1f9a5c;
   --good-soft: #dcf2e5;
+  --ice: #2f86c4;
   --bad: #d23b30;
   --bad-soft: #fbe3e0;
   --tabbar-bg: #fffaf0;
@@ -10057,4 +10062,37 @@ html[data-theme="light"] .app.escritorio .tabbar {
 .prog-racha .flame {
   width: 34px;
   height: 34px;
+}
+
+/* Protectores de racha (hoja "Tu racha" y semana). */
+.protect {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 14px;
+}
+.protect-icons {
+  display: flex;
+  gap: 4px;
+  flex: none;
+}
+.protect-ic {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  color: var(--text-3);
+}
+.protect-ic.on {
+  background: color-mix(in srgb, var(--ice) 22%, transparent);
+  color: var(--ice);
+}
+.goal-ice {
+  display: grid;
+  place-items: center;
+  height: 26px;
+  color: var(--ice);
 }

@@ -100,18 +100,11 @@ function TrainTab() {
         </div>
       )}
       {!i ? <ForYou st={a} nav={e} /> : null}
-      <div className="section-title">
-        <h2>Memoriza la tabla</h2>
-      </div>
-      <ChartCards st={a} nav={e} />
-      <div className="section-title">
-        <h2>Desviaciones</h2>
-      </div>
-      <DevPathCard st={a} nav={e} />
-      {l.length < 3 ? (
+      {i ? (
         <>
-          <hr className="hr" />
-          <h2 style={{ fontSize: 28, marginBottom: 16 }}>Cómo funciona</h2>
+          <div className="section-title">
+            <h2>Cómo funciona</h2>
+          </div>
           <ol className="how">
             <li>
               <span className="how-n">1</span>
@@ -191,6 +184,10 @@ function TrainTab() {
         )}
       </div>
       <div className="section-title">
+        <h2>Memoriza la tabla</h2>
+      </div>
+      <ChartCards st={a} nav={e} />
+      <div className="section-title">
         <h2>Ponte a prueba</h2>
       </div>
       <div className="list">
@@ -253,6 +250,10 @@ function TrainTab() {
           <Icon name="chev" className="li-chev" />
         </button>
       </div>
+      <div className="section-title">
+        <h2>Desviaciones</h2>
+      </div>
+      <DevPathCard st={a} nav={e} />
       <div className="section-title">
         <h2>
           Historial
@@ -381,48 +382,39 @@ function TrainTab() {
 function ForYou({ st, nav }) {
   const mistakes = st.train.mistakes || [];
   const fromTable = mistakes.filter((m) => m.src === "mesa").length;
+  // Sin errores pendientes no hace falta la sección (menos cosas en pantalla).
+  if (!mistakes.length)
+    return <ProfileChips st={st} onMore={() => nav.goTab("progreso")} />;
   return (
     <>
       <div className="section-title">
         <h2>Para ti</h2>
       </div>
-      {mistakes.length ? (
-        <button
-          type="button"
-          className="card list-item mistakes-card"
-          onClick={() =>
-            nav.push("trainSession", { mode: "mistakes", confirmExit: true })
-          }
-        >
-          <span className="mistake-fan" aria-hidden="true">
-            <MiniCards
-              ranks={mistakes[mistakes.length - 1].cards.slice(0, 2)}
-              suits={["s", "h"]}
-            />
-            <span className="mistake-count num">{mistakes.length}</span>
+      <button
+        type="button"
+        className="card list-item mistakes-card"
+        onClick={() =>
+          nav.push("trainSession", { mode: "mistakes", confirmExit: true })
+        }
+      >
+        <span className="mistake-fan" aria-hidden="true">
+          <MiniCards
+            ranks={mistakes[mistakes.length - 1].cards.slice(0, 2)}
+            suits={["s", "h"]}
+          />
+          <span className="mistake-count num">{mistakes.length}</span>
+        </span>
+        <span className="li-text">
+          <span className="li-title">Repite tus errores</span>
+          <span className="li-sub" style={{ display: "block" }}>
+            {mistakes.length}{" "}
+            {mistakes.length === 1 ? "mano que fallaste" : "manos que fallaste"}
+            {fromTable ? `, ${fromTable} en la mesa` : ""}. Cada una sale cuando
+            la aciertas dos veces.
           </span>
-          <span className="li-text">
-            <span className="li-title">Repite tus errores</span>
-            <span className="li-sub" style={{ display: "block" }}>
-              {mistakes.length}{" "}
-              {mistakes.length === 1
-                ? "mano que fallaste"
-                : "manos que fallaste"}
-              {fromTable ? `, ${fromTable} en la mesa` : ""}. Cada una sale
-              cuando la aciertas dos veces.
-            </span>
-          </span>
-          <Icon name="chev" className="li-chev" />
-        </button>
-      ) : (
-        <div className="card flat mistakes-empty">
-          <Icon name="check" size={20} className="good" />
-          <span>
-            No tienes manos falladas pendientes. Las que falles (aquí o en la
-            mesa) aparecen aquí para repetirlas.
-          </span>
-        </div>
-      )}
+        </span>
+        <Icon name="chev" className="li-chev" />
+      </button>
       <ProfileChips st={st} onMore={() => nav.goTab("progreso")} />
     </>
   );

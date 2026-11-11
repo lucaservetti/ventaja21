@@ -1,6 +1,6 @@
 // "Tu semana": cuánto practicaste en los últimos 7 días, comparado con los 7 anteriores.
 import { useMemo, useState } from "react";
-import { addDays, dayKey } from "../state.js";
+import { addDays, dayKey, diaHecho } from "../state.js";
 import { cx } from "../ui/components.jsx";
 
 const DAY_LETTERS = "DLMMJVS";
@@ -22,7 +22,8 @@ function weekStats(st, offset) {
   return {
     days: days.map((d) => ({ d, secs: secsOf(d) })),
     secs: days.reduce((a, d) => a + secsOf(d), 0),
-    active: days.filter((d) => st.activity[d] || secsOf(d) > 0).length,
+    active: days.filter((d) => diaHecho(st.activity, d) || secsOf(d) > 0)
+      .length,
     hands: sessions.reduce((a, s) => a + s.n, 0),
     ok: sessions.reduce((a, s) => a + s.ok, 0),
     drills,

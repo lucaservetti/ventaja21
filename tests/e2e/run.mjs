@@ -542,15 +542,16 @@ const PRUEBAS = {
       d.setDate(d.getDate() + n);
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     };
-    const cargar = async (activity) => {
-      await page.evaluate((a) => {
+    const cargar = async (activity, racha = null) => {
+      await page.evaluate(([a, r]) => {
         const k = "ventaja21.state.v1";
         const s = JSON.parse(localStorage.getItem(k));
         s.activity = a;
+        if (r) s.racha = r;
         localStorage.setItem(k, JSON.stringify(s));
         // Que la app no pise este estado al recargar.
         Storage.prototype.setItem = () => {};
-      }, activity);
+      }, [activity, racha]);
       await page.reload();
       await page.waitForTimeout(900);
     };
@@ -573,6 +574,13 @@ const PRUEBAS = {
     // Un día salteado corta la racha.
     await cargar({ [dia(-3)]: true, [dia(-1)]: true });
     check((await badge().innerText()).trim() === "1", "un día salteado no cortó la racha");
+    // Protector de racha: ayer no hubo actividad pero tenías uno: se usa solo y la racha sigue.
+    await cargar({ [dia(-3)]: true, [dia(-2)]: true }, { protectores: 1, primero: true });
+    check((await badge().innerText()).trim() === "3", `el protector no salvó la racha: ${await badge().innerText()}`);
+    check(await page.getByText(/protector salvó tu racha de 3 días|shield saved your 3-day streak/).first().isVisible(), "no avisó que usó el protector");
+    // Sin protectores, el mismo hueco la corta.
+    await cargar({ [dia(-3)]: true, [dia(-2)]: true }, { protectores: 0, primero: true });
+    check((await badge().innerText()).trim() === "0", "sin protector la racha siguió");
   },
   async edad(h) {
     // Control de edad (src/edad.js): en las pruebas está salteado; aquí se pide con v21.edad.

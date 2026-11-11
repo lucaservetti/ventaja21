@@ -12,6 +12,7 @@ import {
   goalDay,
   goalMet,
   goalStreak,
+  MAX_PROTECTORES,
   setGoalMinutes,
   setState,
   useStore,
@@ -145,6 +146,33 @@ function bestGoalStreak(st) {
   return best;
 }
 
+// Protectores de racha: los que tienes y cómo se ganan.
+function Protectores({ st }) {
+  const n = (st.racha && st.racha.protectores) || 0;
+  return (
+    <div className="protect card flat">
+      <div className="protect-icons" aria-hidden="true">
+        {Array.from({ length: MAX_PROTECTORES }, (_, i) => (
+          <span className={cx("protect-ic", i < n && "on")} key={i}>
+            <Icon name="shield" size={22} />
+          </span>
+        ))}
+      </div>
+      <div className="grow">
+        <b>
+          {n === 1
+            ? "Tienes 1 protector de racha"
+            : `Tienes ${n} protectores de racha`}
+        </b>
+        <div className="muted small">
+          Si un día no practicas, se usa solo y tu racha sigue. Ganas uno a los
+          3 días de racha y otro cada 7 días (puedes guardar hasta 2).
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function GoalSheet({ open, onClose }) {
   const st = useStore();
   const today = dayKey();
@@ -178,7 +206,13 @@ function GoalSheet({ open, onClose }) {
           const wd = new Date(y, m - 1, dd).getDay();
           return (
             <div className={cx("goal-day", day === today && "today")} key={day}>
-              <Flame size={26} lit={!!st.activity[day]} />
+              {st.activity[day] === "p" ? (
+                <span className="goal-ice" title="Protector de racha">
+                  <Icon name="shield" size={22} />
+                </span>
+              ) : (
+                <Flame size={26} lit={!!st.activity[day]} />
+              )}
               <span>{WEEKDAYS[wd]}</span>
             </div>
           );
@@ -194,9 +228,10 @@ function GoalSheet({ open, onClose }) {
         />
       ) : null}
       <p className="muted small" style={{ marginTop: 12 }}>
-        Suma cualquier cosa que termines: una lección, una tanda de Entrenar,
-        un ejercicio de conteo, el desafío o manos en la mesa.
+        Suma cualquier cosa que termines: una lección, una tanda de Entrenar, un
+        ejercicio de conteo, el desafío o manos en la mesa.
       </p>
+      <Protectores st={st} />
       <h3 className="sheet-sub">Meta de minutos (opcional)</h3>
       <div className="meta-min card flat">
         <Ring
@@ -205,11 +240,15 @@ function GoalSheet({ open, onClose }) {
           stroke={6}
           tone={met ? "var(--good)" : "var(--accent)"}
         >
-          {met ? <Icon name="check" size={18} stroke={3} className="good" /> : null}
+          {met ? (
+            <Icon name="check" size={18} stroke={3} className="good" />
+          ) : null}
         </Ring>
         <div className="grow">
           <b className="num">{`${minutesText(d.s)} de ${Math.round(d.g / 60)} minutos`}</b>
-          <div className="muted small">{met ? "¡Meta cumplida!" : "Practicando hoy"}</div>
+          <div className="muted small">
+            {met ? "¡Meta cumplida!" : "Practicando hoy"}
+          </div>
         </div>
       </div>
       <Pills

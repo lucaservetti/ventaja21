@@ -1,7 +1,7 @@
 // Desafío semanal: un reto distinto cada semana (de lunes a domingo), medido con lo que ya juegas.
 // Al completarlo ganas la insignia de esa semana.
 import { useEffect } from "react";
-import { addDays, dayKey, setState } from "../state.js";
+import { addDays, dayKey, diaHecho, setState } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
 import { cx } from "../ui/components.jsx";
 
@@ -54,8 +54,9 @@ const WEEKLY = [
     desc: "Practica 5 días de esta semana.",
     goal: 5,
     value: (st, m) =>
-      Object.keys(st.activity || {}).filter((k) => st.activity[k] && inWeek(k, m))
-        .length,
+      Object.keys(st.activity || {}).filter(
+        (k) => diaHecho(st.activity, k) && inWeek(k, m),
+      ).length,
   },
   {
     id: "perfect3",
