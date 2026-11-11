@@ -9967,3 +9967,44 @@ html[data-theme="light"] .app.escritorio .tabbar {
   background: var(--surface-2);
   color: var(--text-2);
 }
+
+/* Pantalla de edad (src/screens/Edad.jsx) */
+.edad .onb-hero h1 {
+  margin-top: 18px;
+  font-size: 34px;
+  line-height: 1.1;
+}
+.edad-form {
+  width: 100%;
+  max-width: 380px;
+  margin: 22px auto 0;
+  padding: 0 20px;
+  box-sizing: border-box;
+  text-align: center;
+}
+.edad-form .field > span {
+  display: block;
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+.edad-form > p {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+.edad-inp {
+  font-size: 30px;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.25em;
+}
+.edad .bottom-actions {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 0;
+  background: none;
+}

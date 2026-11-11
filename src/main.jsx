@@ -37,6 +37,8 @@ import { vibrate } from "./sound.js";
 import { Toasts, cx } from "./ui/components.jsx";
 import { TrainSession } from "./screens/TrainSession.jsx";
 import { Onboarding, Placement } from "./screens/Onboarding.jsx";
+import { Edad, SoloMayores } from "./screens/Edad.jsx";
+import { estadoEdad } from "./edad.js";
 import { LearnTab } from "./screens/LearnTab.jsx";
 import { CountTab } from "./screens/CountTab.jsx";
 import { TrainTab } from "./screens/TrainTab.jsx";
@@ -165,6 +167,7 @@ const SHEETS = {
 };
 let screenSeq = 1;
 function App() {
+  const [edad, setEdad] = useState(estadoEdad);
   let a = useStore(),
     [e, t] = useState(() =>
       TABS.some((k) => k.id === a.lastTab) ? a.lastTab : "aprender",
@@ -520,6 +523,15 @@ function App() {
     maybeAskReview();
     setTimeout(() => setAchToast(null), 3800);
   });
+  // Antes que nada, la edad (también para quien ya usaba la app): ver src/edad.js.
+  if (edad !== "ok")
+    return (
+      <NavContext.Provider value={y}>
+        <div className={cx("app", desk && "escritorio sin-menu")}>
+          {edad === "menor" ? <SoloMayores /> : <Edad onListo={setEdad} />}
+        </div>
+      </NavContext.Provider>
+    );
   if (!a.profile.onboarded)
     return (
       <NavContext.Provider value={y}>

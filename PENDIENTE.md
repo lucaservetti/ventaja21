@@ -14,6 +14,7 @@
 ## Al lanzar en Google Play
 
 - AdMob: en **Bloqueo de contenido → Categorías sensibles**, bloqueá **Juegos de azar y apuestas** (y, si querés, "Citas"), para que no aparezcan casinos de verdad en la app.
+- AdMob: en **Privacidad y mensajes**, creá y publicá el mensaje de **RGPD (Europa)** y el de **Regulaciones de estados de EE. UU.** La app ya muestra el formulario de Google cuando hace falta (`initAds` en `src/platform.js`), pero sin esos mensajes publicados no aparece.
 
 - `servidor/wrangler.toml`: `BIENVENIDA = "1"`. Activa los 3 días de bienvenida, también para quienes ya entraron con Google.
 - `src/platform.js`: decidir si la web sigue como prueba o se abre más (`WEB_DEMO_ON`).

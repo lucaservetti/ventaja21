@@ -21,6 +21,7 @@ import {
   setSettings,
   subscribe,
 } from "./state.js";
+import { cuandoEdadOk } from "./edad.js";
 
 function simulated() {
   try {
@@ -654,7 +655,8 @@ function initPlatform() {
   followSystemFont();
   restoreFromMirror().finally(keepMirror);
   initShop().catch(() => {});
-  initAds();
+  // Los anuncios arrancan recién con la edad confirmada (ver src/edad.js).
+  cuandoEdadOk(initAds);
 }
 
 export {
