@@ -205,8 +205,8 @@ function Journal() {
       <TopBar
         onClose={() => nav.pop()}
         closeIcon="back"
-        title="Diario de casino real"
-        sub="Lo que juegas de verdad"
+        title="Diario de sesiones"
+        sub="Un registro honesto de tus sesiones"
       />
       <div className="field jr-cur">
         <span>Moneda</span>
@@ -300,9 +300,9 @@ function Journal() {
         <div className="card flat center jr-empty">
           <Icon name="book" size={34} />
           <p style={{ marginTop: 10 }}>
-            Anota cada vez que juegas en un casino de verdad: cuántas horas y
-            cuánto ganaste o perdiste. Aquí vas a ver tu resultado acumulado y
-            cuánto ganas por hora.
+            Anota tus sesiones: cuántas horas y cuál fue el resultado. Un
+            registro honesto te muestra lo que dicen los números: en pocas
+            horas, manda la suerte.
           </p>
           <p className="muted small" style={{ marginTop: 8 }}>
             Se guarda solo en este celular, como el resto de tu progreso.

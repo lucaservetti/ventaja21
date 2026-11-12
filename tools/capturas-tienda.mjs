@@ -135,7 +135,7 @@ const CAPTURAS = [
     },
   },
   {
-    t: ["Modo <em>casino real</em>", "Real <em>casino</em> mode"],
+    t: ["Casino <em>simulado</em>", "Simulated <em>casino</em>"],
     s: ["presupuesto simulado, límites y vigilancia", "simulated budget, table limits and surveillance"],
     go: async (p, l) => {
       await tab(p, L(l, "Jugar", "Play"));

@@ -46,7 +46,7 @@ const TIMES = [
 const HANDS_PER_HOUR = [200, 140, 110, 85, 70];
 const END_TEXT = {
   left: "Te retiraste",
-  broke: "Te quedaste sin dinero",
+  broke: "Te quedaste sin saldo",
   backoff: "Te pidieron que te retires",
   exam: "Examen de casino",
 };
@@ -140,8 +140,8 @@ function CasinoSetup() {
       <TopBar
         onClose={() => nav.pop()}
         closeIcon="back"
-        title="Modo casino real"
-        sub="Como ir a jugar de verdad"
+        title="Casino simulado"
+        sub="Una mesa como la real, con saldo virtual"
       />
       <div className="card casino-hero">
         <span className="casino-hero-ic">
@@ -150,7 +150,7 @@ function CasinoSetup() {
         <p>
           Llevas un presupuesto de mentira, cambias fichas en la mesa y juegas{" "}
           <b>sin ayudas</b>: sin coach, sin el conteo a la vista, con el crupier
-          rápido y tiempo para decidir. Al irte ves cuánto ganaste y cómo
+          rápido y tiempo para decidir. Al irte ves cómo te fue y cómo
           jugaste.
         </p>
       </div>
@@ -161,10 +161,10 @@ function CasinoSetup() {
         <CurrencyPills />
       </div>
       <div className="field">
-        <span>Dinero que llevas al casino</span>
+        <span>Saldo virtual para empezar</span>
         <AmountPills
           cur={cur}
-          title="Dinero que llevas"
+          title="Saldo virtual"
           options={cur.wallet}
           value={s.wallet}
           min={s.minBet}
@@ -265,7 +265,7 @@ function CasinoSetup() {
           <Icon name="stats" />
         </span>
         <span className="li-text">
-          <span className="li-title">¿Cuánto dinero llevar?</span>
+          <span className="li-title">¿Con cuánto saldo empezar?</span>
           <span className="li-sub" style={{ display: "block" }}>
             Simula tu banca con esta mesa
           </span>
@@ -646,10 +646,10 @@ function CasinoPlay({ setup, exam = false }) {
         </div>
       </Modal>
       <Modal open={modal === "broke"} onClose={() => finish("broke")}>
-        <h2 style={{ fontSize: 24 }}>Te quedaste sin dinero</h2>
+        <h2 style={{ fontSize: 24 }}>Te quedaste sin saldo</h2>
         <p className="muted" style={{ margin: "10px 0 20px" }}>
           No te alcanza para la apuesta mínima de {fmtMoney(setup.minBet, cur)}.
-          Pasa hasta jugando perfecto: por eso importa cuánto dinero llevas.
+          Pasa hasta jugando perfecto: por eso importa con cuánto saldo empiezas.
         </p>
         <Button onClick={() => finish("broke")}>Ver cómo te fue</Button>
       </Modal>

@@ -51,7 +51,7 @@ function PremiumCard({ st, lessonsDone }) {
         <span className="li-text">
           <span className="eyebrow acc">Edge 21 Premium</span>
           <span className="li-title" style={{ display: "block", marginTop: 2 }}>
-            Modo casino real, las 10 desviaciones y sin anuncios
+            Casino simulado, las 10 desviaciones y sin anuncios
           </span>
           <span className="li-sub" style={{ display: "block" }}>
             {trialDays

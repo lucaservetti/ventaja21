@@ -30,7 +30,7 @@ const TEXTOS = {
   ],
   premium: [
     "Premium es de la app",
-    "El modo casino real, las desviaciones, el análisis de tus errores y lo demás de Premium están en la app de Android.",
+    "El casino simulado, las desviaciones, el análisis de tus errores y lo demás de Premium están en la app de Android.",
   ],
   info: [
     "Estás en la versión web de prueba",

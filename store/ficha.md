@@ -34,14 +34,14 @@ UN CASINO EN TU MANO
 
 PREMIUM (MENSUAL, ANUAL CON PRUEBA GRATIS, O UN SOLO PAGO)
 • Sin anuncios.
-• Modo casino real (simulado, con fichas de mentira): el presupuesto que llevarías en dólares, pesos o euros, límites de mesa, tiempo para decidir, vigilancia del casino, modo turista y examen con certificado.
+• Casino simulado (con saldo virtual y fichas de mentira): el presupuesto que llevarías en dólares, pesos o euros, límites de mesa, tiempo para decidir, vigilancia del casino, modo turista y examen con certificado.
 • Ruta de desviaciones completa: los Illustrious 18 y el Fab 4.
-• Simulador de banca: cuánto dinero necesitas y tu riesgo de quebrar.
+• Simulador de banca: qué banca hace falta para cada forma de apostar y el riesgo de quedarse sin nada.
 • Análisis de tus errores: tu tabla pintada según dónde fallas y cómo vas mejorando.
 • Paños y mazos: el color de la mesa, el dorso de las cartas y el mazo de 4 colores.
 • La mesa a tu medida: cada regla a mano (mazos, corte, 3:2 o 6:5, H17, rendición y más) y dos manos por ronda.
 • Guía y progreso completos: desviaciones, el valor de cada regla y tu historial con todas tus tandas.
-• Sistemas de conteo avanzados y diario de casino real.
+• Sistemas de conteo avanzados y diario de sesiones.
 • O gánalo practicando: días de Premium de regalo por constancia y por terminar las lecciones.
 
 TU PROGRESO, TUYO
@@ -80,7 +80,7 @@ https://edge21.app/privacidad.html
 - Gráfico destacado: store/grafico-destacado.png (1024×500)
 - Capturas de teléfono: store/capturas/01.png a 08.png (1080×1920), en ese orden:
   1. Aprender (camino de fichas) · 2. La jugada correcta · 3. Ruta de conteo · 4. Simulador ·
-  5. Análisis de errores · 6. Paños y mazos · 7. Progreso · 8. Modo casino real
+  5. Análisis de errores · 6. Paños y mazos · 7. Progreso · 8. Casino simulado
 - Video: store/video/edge21-video-es.mp4. Play pide un enlace de YouTube: súbelo como "No listado" y pega el enlace.
 
 Para rehacer las capturas con la app actual: `npm run build && node tools/capturas-tienda.mjs`.

@@ -9,7 +9,7 @@ Edge 21: Blackjack Trainer
 Learn blackjack basic strategy and card counting, step by step. No gambling.
 
 ## Full description (max. 4000 characters)
-Edge 21 is a blackjack trainer for learning to play right: basic strategy first, then counting cards with Hi-Lo and, finally, using the count at a real casino table.
+Edge 21 is a blackjack trainer for learning to play right: basic strategy first, then counting cards with Hi-Lo and, finally, using the count at the table.
 
 LEARN STEP BY STEP
 • 44 short lessons with a narrated table: you play every hand while the mentor explains why.
@@ -34,14 +34,14 @@ A CASINO IN YOUR POCKET
 
 PREMIUM (MONTHLY, YEARLY WITH A FREE TRIAL, OR ONE-TIME)
 • No ads.
-• Real casino mode (simulated, with play chips): the budget you'd bring in dollars, pesos or euros, table limits, a decision timer, casino surveillance, tourist mode and an exam with a certificate.
+• Simulated casino (virtual balance and play chips): the budget you'd bring in dollars, pesos or euros, table limits, a decision timer, casino surveillance, tourist mode and an exam with a certificate.
 • The full deviations path: the Illustrious 18 and the Fab 4.
-• Bankroll simulator: how much money you need and your risk of ruin.
+• Bankroll simulator: what bankroll each betting style needs and the risk of running out.
 • Mistake analysis: your chart colored by where you miss and how you're improving.
 • Tables and decks: felt color, card backs and a 4-color deck.
 • Your table, your way: every rule by hand (decks, penetration, 3:2 or 6:5, H17, surrender and more) and two hands per round.
 • Full guide and progress: deviations, what each rule is worth, and your history with every session.
-• Advanced counting systems and a real casino journal.
+• Advanced counting systems and a session journal.
 • Or earn it by practicing: free days of Premium for consistency and for finishing the lessons.
 
 YOUR PROGRESS, YOURS
