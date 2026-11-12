@@ -28,10 +28,10 @@ import { hito } from "../medir.js";
 import { LANG, LOCALE } from "../i18n/index.js";
 
 const FEATURES = {
-  casino: "El modo casino real",
-  casinoPlay: "El modo casino real",
+  casino: "El casino simulado",
+  casinoPlay: "El casino simulado",
   bankroll: "El simulador de banca",
-  journal: "El diario de casino real",
+  journal: "El diario de sesiones",
   devLevel: "La ruta de desviaciones completa",
   looks: "Elegir paños y mazos",
   mistakes: "El análisis de tus errores",
@@ -49,7 +49,7 @@ const PERKS = [
   },
   {
     icon: "crown",
-    title: "Modo casino real",
+    title: "Casino simulado",
     sub: "Presupuesto simulado, límites de mesa, tiempo para decidir, vigilancia, modo turista y el examen con certificado.",
   },
   {
@@ -70,7 +70,7 @@ const PERKS = [
   {
     icon: "stats",
     title: "Simulador de banca",
-    sub: "Cuánto dinero necesitas y tu riesgo de quebrar, en tu moneda.",
+    sub: "Qué banca hace falta para cada forma de apostar y el riesgo de quedarse sin nada.",
   },
   {
     icon: "eye",
@@ -89,8 +89,8 @@ const PERKS = [
   },
   {
     icon: "book",
-    title: "Diario de casino real",
-    sub: "Anota lo que juegas de verdad y mira tu resultado por hora.",
+    title: "Diario de sesiones",
+    sub: "Un registro honesto de tus sesiones y su resultado.",
   },
 ];
 // Precios de la web (pagos.config.json): más baratos que en Google Play, porque no tienen su comisión.
@@ -444,9 +444,9 @@ function Premium({ feature, then }) {
 
 // Etiqueta "Premium" para lo que está bloqueado sin Premium.
 const PRUEBA_NOMBRE = {
-  casino: "el modo casino real",
+  casino: "el casino simulado",
   bankroll: "el simulador de banca",
-  journal: "el diario de casino real",
+  journal: "el diario de sesiones",
   devLevel: "la ruta de desviaciones completa",
   looks: "los paños y mazos",
   mistakes: "el análisis de tus errores",

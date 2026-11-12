@@ -1014,18 +1014,18 @@ const LESSON_TOOLS = {
     screen: "bankroll",
     icon: "stats",
     title: "Simulador de banca",
-    sub: "Mira cuánto dinero necesitas con tu forma de apostar",
+    sub: "Mira qué banca hace falta con cada forma de apostar",
   },
   l26: {
     screen: "casino",
     icon: "crown",
-    title: "Modo casino real",
+    title: "Casino simulado",
     sub: "Juega con la vigilancia prendida y fíjate si te descubren",
   },
   l29: {
     screen: "casino",
     icon: "users",
-    title: "Modo casino real",
+    title: "Casino simulado",
     sub: "Elige 3 o 4 jugadores y cuenta la mesa llena a ritmo de casino",
   },
 };

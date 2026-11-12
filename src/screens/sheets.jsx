@@ -402,10 +402,10 @@ function SettingsSheet({ open: a, onClose: e }) {
       )}
       <h3 className="sheet-sub">Juego responsable</h3>
       <p className="muted small">
-        Edge 21 es para aprender. Contar cartas mentalmente es legal, pero los
-        casinos pueden pedirte que no juegues, y usar el celular en la mesa está
-        prohibido. Juega solo dinero que no necesitas. Si el juego deja de ser
-        entretenimiento, frena y pide ayuda.
+        Edge 21 es para aprender: la práctica usa saldo virtual, sin dinero real
+        ni premios. Contar cartas mentalmente es legal, pero los casinos pueden
+        pedirte que no juegues, y usar el celular en la mesa está prohibido. Si
+        el juego deja de ser entretenimiento, frena y pide ayuda.
       </p>
       <p className="small legal-links" style={{ marginTop: 18 }}>
         <a

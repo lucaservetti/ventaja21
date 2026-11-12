@@ -350,7 +350,7 @@ function ProgressOverview({ st: a, nav: e }) {
               Simulador de banca <PremiumTag st={a} />
             </span>
             <span className="li-sub" style={{ display: "block" }}>
-              Cuánto dinero necesitas y cuánto puedes perder en una mala racha
+              Qué banca hace falta y cuánto se puede perder en una mala racha
             </span>
           </span>
           <Icon name="chev" className="li-chev" />
@@ -365,12 +365,12 @@ function ProgressOverview({ st: a, nav: e }) {
           </span>
           <span className="li-text">
             <span className="li-title">
-              Diario de casino real <PremiumTag st={a} />
+              Diario de sesiones <PremiumTag st={a} />
             </span>
             <span className="li-sub" style={{ display: "block" }}>
               {a.journal.entries.length
                 ? `${a.journal.entries.length} ${a.journal.entries.length === 1 ? "sesión anotada" : "sesiones anotadas"}`
-                : "Anota lo que juegas de verdad y mira tu resultado"}
+                : "Un registro honesto de tus sesiones"}
             </span>
           </span>
           <Icon name="chev" className="li-chev" />

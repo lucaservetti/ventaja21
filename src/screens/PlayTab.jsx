@@ -147,7 +147,7 @@ function PlayTab({ active }) {
       <div className="sim-top">
         <IconButton
           icon="crown"
-          label="Modo casino real"
+          label="Casino simulado"
           onClick={() => nav.push("casino")}
           className="sq small-ib casino-ib"
           size={20}
@@ -452,7 +452,7 @@ function TableSheet({ open, onClose, table }) {
         </span>
         <span className="li-text">
           <span className="li-title">
-            Modo casino real <PremiumTag st={st} />
+            Casino simulado <PremiumTag st={st} />
           </span>
           <span className="li-sub" style={{ display: "block" }}>
             Presupuesto simulado, límites de mesa, tiempo para decidir y

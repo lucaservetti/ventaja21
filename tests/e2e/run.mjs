@@ -841,7 +841,7 @@ const PRUEBAS = {
     });
     await page.reload();
     await page.waitForTimeout(1200);
-    await h.see("Modo casino real, las 10 desviaciones y sin anuncios", "Real casino mode, all 10 deviation levels and no ads");
+    await h.see("Casino simulado, las 10 desviaciones y sin anuncios", "Simulated casino, the 10 deviations and no ads");
     await h.foto("tarjeta");
     await h.css(".prem-card-main", 700);
     await h.see("Todo lo avanzado y sin anuncios", "Everything advanced, and no ads");

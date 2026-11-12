@@ -11,7 +11,7 @@ export const COMUN = {
   es: {
     nav: { inicio: "Inicio", guias: "Guías", jugar: "Jugar ahora" },
     otro: "EN",
-    pie: "Edge 21 ♠ · Es para aprender: juega solo dinero que no necesitas.",
+    pie: "Edge 21 ♠ · Es para aprender: la práctica usa saldo virtual, sin dinero real ni premios.",
     privacidad: "Política de privacidad",
     terminos: "Términos de uso",
     ctaTitulo: "Practícalo gratis en Edge 21",
@@ -27,7 +27,7 @@ export const COMUN = {
   en: {
     nav: { inicio: "Home", guias: "Guides", jugar: "Play now" },
     otro: "ES",
-    pie: "Edge 21 ♠ · It's for learning: only play with money you don't need.",
+    pie: "Edge 21 ♠ · It's for learning: practice uses a virtual balance, with no real money or prizes.",
     privacidad: "Privacy policy",
     terminos: "Terms of use",
     ctaTitulo: "Practice it for free on Edge 21",
@@ -257,12 +257,12 @@ export const CONTEO = {
     },
     sigue: {
       h: "Lo que sigue: contar en serio",
-      intro: "Entender el Hi-Lo lleva diez minutos. Contar un zapato entero, rápido y sin que se te note, lleva práctica.",
+      intro: "Entender el Hi-Lo lleva diez minutos. Contar un zapato entero, rápido y sin errores, lleva práctica.",
       items: [
-        { t: "La ruta de conteo", p: "10 niveles, del valor de cada carta a contar un zapato entero al ritmo del casino, con Hi-Lo o KO.", tag: "gratis" },
+        { t: "La ruta de conteo", p: "10 niveles, del valor de cada carta a contar un zapato entero a ritmo real, con Hi-Lo o KO.", tag: "gratis" },
         { t: "El desafío diario", p: "Un formato distinto cada día y un ranking para compararte con los demás.", tag: "gratis" },
         { t: "Las desviaciones", p: "Usar el conteo también para jugar: los Illustrious 18 y el Fab 4, que suman la mayor parte de la ventaja extra.", tag: "premium" },
-        { t: "Sistemas avanzados y casino real", p: "Hi-Opt I y II, Zen, Omega II y Wong Halves, el modo casino con tu dinero y vigilancia, y el simulador de banca para saber cuánto necesitas.", tag: "premium" },
+        { t: "Sistemas avanzados y casino simulado", p: "Hi-Opt I y II, Zen, Omega II y Wong Halves, el modo casino simulado con saldo virtual y vigilancia, y el simulador de banca para saber cuánto necesitas.", tag: "premium" },
       ],
     },
     faq: [
@@ -338,13 +338,13 @@ export const CONTEO = {
       ],
     },
     sigue: {
-      h: "What's next: counting for real",
-      intro: "Understanding Hi-Lo takes ten minutes. Counting a whole shoe, fast and without it showing, takes practice.",
+      h: "What's next: counting a whole shoe",
+      intro: "Understanding Hi-Lo takes ten minutes. Counting a whole shoe, fast and without mistakes, takes practice.",
       items: [
-        { t: "The counting path", p: "10 levels, from each card's value to counting a whole shoe at casino speed, with Hi-Lo or KO.", tag: "gratis" },
+        { t: "The counting path", p: "10 levels, from each card's value to counting a whole shoe at real speed, with Hi-Lo or KO.", tag: "gratis" },
         { t: "The daily challenge", p: "A different format every day and a leaderboard to compare yourself with others.", tag: "gratis" },
         { t: "Deviations", p: "Using the count to play too: the Illustrious 18 and the Fab 4, which add most of the extra edge.", tag: "premium" },
-        { t: "Advanced systems and real casino", p: "Hi-Opt I and II, Zen, Omega II and Wong Halves, casino mode with your money and surveillance, and the bankroll simulator to know how much you need.", tag: "premium" },
+        { t: "Advanced systems and simulated casino", p: "Hi-Opt I and II, Zen, Omega II and Wong Halves, simulated casino mode with a virtual balance and surveillance, and the bankroll simulator to know how much you need.", tag: "premium" },
       ],
     },
     faq: [
