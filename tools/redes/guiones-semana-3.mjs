@@ -41,7 +41,7 @@ const VIDEOS = {
   // primer cuadro, y la primera carta cae en el segundo 0,35.
   "1-desafio-memoria-2": {
     serie: "DESAFÍO DE MEMORIA #2",
-    dur: 17.8,
+    dur: 22.2,
     portada: 0.5,
     musica: 0.85,
     semilla: 112,
@@ -53,11 +53,11 @@ const VIDEOS = {
     ],
     html() {
       const cartas = ["8d", "Qh", "4s", "2c", "Ac", "6h", "9s", "5d", "3h", "7c"];
-      const t0 = 0.35;
-      const paso = 0.75;
+      const t0 = 1.4;
+      const paso = 0.95;
       return [
-        escena(0, 8.0, `
-          ${titulo(0, "¿Podés llevar la *cuenta*? 🧠", { tag: "h2", ya: true, sonido: false })}
+        escena(0, 10.6, `
+          ${titulo(0, "10 cartas, una sola vez: / ¿podés llevar la *cuenta*? 🧠", { tag: "h2", ya: true, sonido: false })}
           ${reglas()}
           <div style="position:relative;width:880px;height:500px">
             ${carta(null, 330, { abs: true, r: -3, z: 0 })}
@@ -66,15 +66,15 @@ const VIDEOS = {
           <div class="fila" style="gap:16px">
             ${cartas.map((_, i) => `<i class="punto-p" style="${an(A("enciende", t0 + i * paso + 0.2, 0.25))}"></i>`).join("")}
           </div>`, { gap: 30 }),
-        escena(8.2, 11.95, `
-          ${titulo(8.2, "¿Cuánto *te dio*?", { clase: "xl" })}
-          ${parr(8.7, "Comentalo <b>antes</b> de ver la respuesta 👇")}
-          ${cuentaAtras(8.9, 3)}`),
-        `${(sfx(10.4, "subida", { d: 1.5, v: 0.7 }), "")}`,
-        escena(12.15, 15.6, `
-          ${respuesta(12.15, cartas)}
-          ${titulo(14.3, "¿Acertaste? *Guardalo* 📌", { tag: "h3" })}`, { gap: 24 }),
-        final(15.8),
+        escena(10.8, 15.0, `
+          ${titulo(10.8, "¿Cuánto *te dio*?", { clase: "xl" })}
+          ${parr(11.3, "Comentalo <b>antes</b> de ver la respuesta 👇")}
+          ${cuentaAtras(11.8, 3)}`),
+        `${(sfx(13.3, "subida", { d: 1.5, v: 0.7 }), "")}`,
+        escena(15.2, 19.8, `
+          ${respuesta(15.2, cartas)}
+          ${titulo(17.6, "¿Acertaste? *Guardalo* 📌", { tag: "h3" })}`, { gap: 24 }),
+        final(20.0),
       ].join("");
     },
   },
@@ -150,7 +150,7 @@ const VIDEOS = {
           ${parr(9.4, "La probás <b>antes que nadie</b> y me decís qué mejorarías 🎁")}`, { gap: 30 }),
         escena(11.8, 14.2, `
           ${titulo(11.8, "¿Te sumás? / Comentá *YO* 👇")}
-          ${chico(12.6, "El link está en el perfil")}`),
+          ${chico(12.6, "Entrá a <b>edge21.app</b>")}`),
         final(14.4),
       ].join("");
     },
@@ -159,7 +159,7 @@ const VIDEOS = {
   // Domingo 15 · ¿Qué es más probable? Tres duelos; el último sorprende.
   "4-que-es-mas-probable": {
     serie: "PROBABILIDAD",
-    dur: 17.6,
+    dur: 23.0,
     portada: 0.5,
     musica: 0.85,
     semilla: 115,
@@ -172,13 +172,13 @@ const VIDEOS = {
     html() {
       // Un duelo: dos lados, VS, una barrita de tiempo y la respuesta.
       const duelo = (de, izq, der, gana, pi, pd, nota = "") => {
-        const rev = de + 2.4;
+        const rev = de + 3.6;
         sfx(rev, "ding");
         const lado = (x, pct, ok) => `
-          <div class="lado" style="${an(A("pop", de ? de + (x.retraso || 0) : -0.5, 0.45, E.back), A(ok ? "enverdece" : "apaga", rev, 0.3, E.out, "forwards"))}">
+          <div class="lado" style="height:620px;padding:40px 18px;${an(A("pop", de ? de + (x.retraso || 0) : -0.5, 0.45, E.back), A(ok ? "enverdece" : "apaga", rev, 0.3, E.out, "forwards"))}">
             <h3>${x.texto}</h3>
-            <div class="fila" style="gap:8px">${x.cartas.map((c) => carta(c, 74)).join("")}</div>
-            <div class="sobre" style="height:80px">${ventana(rev, null, `<span class="pct">${pct}</span>`)}</div>
+            <div class="fila" style="gap:8px">${x.cartas.map((c) => carta(c, 112)).join("")}</div>
+            <div class="sobre" style="height:100px">${ventana(rev, null, `<span class="pct" style="font-size:96px">${pct}</span>`)}</div>
           </div>`;
         return `
           <div class="duelo">
@@ -186,18 +186,19 @@ const VIDEOS = {
             <span class="vs-b" style="${an(A("pop", de ? de + 0.2 : -0.5, 0.4, E.back))}">VS</span>
             ${lado({ ...der, retraso: 0.1 }, pd, gana === 1)}
           </div>
-          ${barraTiempo(de + 0.4, 2)}
+          ${barraTiempo(de + 0.5, 3)}
           <div class="sobre" style="height:70px">${ventana(rev + 0.3, null, `<h3>${nota}</h3>`, "", "entra")}</div>`;
       };
       return [
-        escena(0, 13.4, `${titulo(0, "¿Qué es *más probable*?", { tag: "h2", ya: true, sonido: false })}`, { estilo: "justify-content:flex-start;padding-top:10px", zoom: false, whoosh: false }),
-        escena(0, 4.2, duelo(0, { texto: "Una figura", cartas: ["Jh", "Qs", "Kd"] }, { texto: "Un As", cartas: ["As"] }, 0, "23%", "8%", "La figura: <em>3 veces más</em>"), { estilo: "padding-top:150px", gap: 26 }),
-        escena(4.4, 8.5, duelo(4.4, { texto: "Una carta roja", cartas: ["Kh", "5d"] }, { texto: "Del 2 al 6", cartas: ["2s", "4c", "6h"] }, 0, "50%", "38%", "La roja, pero <em>más cerca</em> de lo que parece"), { estilo: "padding-top:150px", gap: 26 }),
-        escena(8.7, 13.4, duelo(8.7, { texto: "21 con 2 cartas", cartas: ["As", "Kd"] }, { texto: "El 7 de ♥", cartas: ["7h"] }, 0, "≈ 5%", "≈ 2%", "😮 El <em>21</em> sale más del doble") + confeti(11.15), { estilo: "padding-top:150px", gap: 26 }),
-        escena(13.6, 15.4, `
-          ${titulo(13.6, "¿Cuántas *acertaste*? 👇")}
-          ${parr(14.2, "Comentá: <b>0, 1, 2 o 3</b>")}`),
-        final(15.6),
+        escena(0, 18.6, `${titulo(0, "¿Qué es *más probable*?", { tag: "h2", ya: true, sonido: false })}`, { estilo: "justify-content:flex-start;padding-top:10px", zoom: false, whoosh: false }),
+        escena(0, 1.5, `${parr(-1, "3 rondas · <b>la última sorprende</b> 😮")}`, { estilo: "padding-top:120px", zoom: false, whoosh: false }),
+        escena(1.6, 7.0, duelo(1.6, { texto: "Una figura", cartas: ["Jh", "Qs", "Kd"] }, { texto: "Un As", cartas: ["As"] }, 0, "23%", "8%", "La figura: <em>3 veces más</em>"), { estilo: "padding-top:150px", gap: 26 }),
+        escena(7.2, 12.6, duelo(7.2, { texto: "Una carta roja", cartas: ["Kh", "5d"] }, { texto: "Del 2 al 6", cartas: ["2s", "4c", "6h"] }, 0, "50%", "38%", "La roja, pero <em>más cerca</em> de lo que parece"), { estilo: "padding-top:150px", gap: 26 }),
+        escena(12.8, 18.6, duelo(12.8, { texto: "21 con 2 cartas", cartas: ["As", "Kd"] }, { texto: "El 7 de ♥", cartas: ["7h"] }, 0, "≈ 5%", "≈ 2%", "😮 El <em>21</em> sale más del doble") + confeti(16.45), { estilo: "padding-top:150px", gap: 26 }),
+        escena(18.8, 20.8, `
+          ${titulo(18.8, "¿Cuántas *acertaste*? 👇")}
+          ${parr(19.4, "Comentá: <b>0, 1, 2 o 3</b>")}`),
+        final(21.0),
       ].join("");
     },
   },
@@ -250,7 +251,7 @@ const VIDEOS = {
   // Martes 17 · ¿Qué hacés? #4: A+6. Casi todos se plantan con 17… y no te podés pasar.
   "6-a-mas-6": {
     serie: "¿QUÉ HACÉS? #4",
-    dur: 16.2,
+    dur: 19.6,
     portada: 0.6,
     musica: 0.85,
     semilla: 117,
@@ -262,22 +263,22 @@ const VIDEOS = {
     ],
     html() {
       return [
-        escena(0, 4.6, `
-          ${titulo(0, "Tenés *A + 6*. ¿Te plantás con 17?", { tag: "h2", ya: true, sonido: false })}
-          <div class="fila" style="gap:14px">${carta("As", 200)}${carta("6h", 200, { de: 0.2 })}</div>
-          <span class="total" style="${an(A("pop", 0.6, 0.4, E.back))}">7 o 17</span>
-          <div class="fila" style="gap:14px">${opcion(0.9, "ME PLANTO", 4.7)}${opcion(1.05, "PIDO", 4.7, true)}</div>
-          ${cuentaAtras(1.6, 3, 150)}`, { gap: 30 }),
-        escena(4.8, 11.8, `
-          ${sello(4.85, "¡PEDÍ!", "real", "font-size:130px")}
-          ${titulo(5.6, "Con A+6 *no te podés pasar*", { tag: "h2" })}
-          <div class="fila" style="gap:12px">${carta("As", 150)}${carta("6h", 150)}${carta("Kd", 150, { de: 7.0, voltea: 7.4 })}</div>
-          <div class="sobre" style="height:70px">${ventana(6.6, 7.9, `<span class="total">7 o 17</span>`)}${ventana(7.9, null, `<span class="total bueno">17 · el As pasa a valer 1 😮</span>`)}</div>
-          ${chico(9.0, "Contra 3, 4, 5 o 6, mejor todavía: doblá.")}`, { gap: 26 }),
-        `${(sfx(7.95, "bien"), "")}`,
-        escena(12.0, 14.0, `
-          ${titulo(12.0, "*Guardalo* 📌 / y mandáselo a quien siempre se planta", { tag: "h2", paso: 0.05 })}`),
-        final(14.2),
+        escena(0, 7.6, `
+          ${titulo(0, "Tenés *17*… / ¿pedirías otra carta? 🤔", { tag: "h2", ya: true, sonido: false })}
+          <div class="fila" style="gap:16px">${carta("As", 270)}${carta("6h", 270)}</div>
+          <span class="total" style="${an(A("pop", 1.3, 0.45, E.back))}">As + 6 = 7 o 17</span>
+          <div class="fila" style="gap:14px">${opcion(2.1, "ME PLANTO", 7.7)}${opcion(2.3, "PIDO", 7.7, true)}</div>
+          ${cuentaAtras(3.2, 4, 150)}`, { gap: 30 }),
+        escena(7.8, 14.8, `
+          ${sello(7.85, "¡PEDÍ!", "real", "font-size:130px")}
+          ${titulo(8.6, "Con A+6 *no te podés pasar*", { tag: "h2" })}
+          <div class="fila" style="gap:12px">${carta("As", 150)}${carta("6h", 150)}${carta("Kd", 150, { de: 10.0, voltea: 10.4 })}</div>
+          <div class="sobre" style="height:70px">${ventana(9.6, 10.9, `<span class="total">7 o 17</span>`)}${ventana(10.9, null, `<span class="total bueno">17 · el As pasa a valer 1 😮</span>`)}</div>
+          ${chico(12.0, "Contra 3, 4, 5 o 6, mejor todavía: doblá.")}`, { gap: 26 }),
+        `${(sfx(10.95, "bien"), "")}`,
+        escena(15.0, 17.4, `
+          ${titulo(15.0, "*Guardalo* 📌 / y mandáselo a quien siempre se planta", { tag: "h2", paso: 0.05 })}`),
+        final(17.6),
       ].join("");
     },
   },
@@ -285,7 +286,7 @@ const VIDEOS = {
   // Miércoles 18 · Desafío de memoria #3, con trampa: muchos 7, 8 y 9, cartas por toda la pantalla.
   "7-desafio-memoria-3": {
     serie: "DESAFÍO DE MEMORIA #3",
-    dur: 17.6,
+    dur: 21.0,
     portada: 0.5,
     musica: 0.85,
     semilla: 118,
@@ -297,8 +298,8 @@ const VIDEOS = {
     ],
     html() {
       const cartas = ["7h", "9s", "3c", "8d", "Ks", "7c", "5h", "9d", "8s", "Ad", "2h", "7s"];
-      const t0 = 0.4;
-      const paso = 0.58;
+      const t0 = 1.3;
+      const paso = 0.75;
       // Posiciones repartidas por la pantalla, sin pisarse demasiado.
       const pos = cartas.map((_, i) => {
         const col = i % 3;
@@ -306,22 +307,22 @@ const VIDEOS = {
         return [(col - 1) * 270 + Math.round((rnd() * 2 - 1) * 30), (fila - 1.5) * 128 + Math.round((rnd() * 2 - 1) * 14), +((rnd() * 2 - 1) * 14).toFixed(1)];
       });
       return [
-        escena(0, 7.6, `
+        escena(0, 10.4, `
           ${titulo(0, "Desafío *difícil* 😈 ¿cuánto suman?", { tag: "h2", ya: true, sonido: false })}
           ${reglas()}
           <div style="position:relative;width:880px;height:660px">
             ${carta(null, 180, { abs: true, r: 4, z: 0 })}
             ${cartas.map((c, i) => carta(c, 180, { abs: true, de: t0 + i * paso, x: pos[i][0], y: pos[i][1], r: pos[i][2], z: i + 1, dur: 0.42, desde: i % 2 ? [-950, -300, -38] : [950, -320, 38] })).join("")}
           </div>`, { gap: 26 }),
-        escena(7.8, 11.4, `
-          ${titulo(7.8, "¿Cuánto *te dio*?", { clase: "xl" })}
-          ${parr(8.3, "Comentalo 👇 <b>sin mirar la respuesta</b>")}
-          ${cuentaAtras(8.4, 3)}`),
-        `${(sfx(9.9, "subida", { d: 1.5, v: 0.7 }), "")}`,
-        escena(11.6, 15.4, `
-          ${respuesta(11.6, cartas, { cols: 6, w: 100, paso: 0.1 })}
-          ${chico(13.6, "La trampa: el 7, el 8 y el 9 valen 0")}`, { gap: 22 }),
-        final(15.6),
+        escena(10.6, 14.4, `
+          ${titulo(10.6, "¿Cuánto *te dio*?", { clase: "xl" })}
+          ${parr(11.1, "Comentalo 👇 <b>sin mirar la respuesta</b>")}
+          ${cuentaAtras(11.4, 3)}`),
+        `${(sfx(12.9, "subida", { d: 1.5, v: 0.7 }), "")}`,
+        escena(14.6, 18.6, `
+          ${respuesta(14.6, cartas, { cols: 6, w: 100, paso: 0.1 })}
+          ${chico(16.6, "La trampa: el 7, el 8 y el 9 valen 0")}`, { gap: 22 }),
+        final(18.8),
       ].join("");
     },
   },
