@@ -114,6 +114,7 @@ const PRUEBAS = {
         const b = page.locator(sel).nth(i);
         const txt = ((await b.innerText().catch(() => "")) + " " + ((await b.getAttribute("aria-label").catch(() => "")) || "")).trim();
         if (PELIGRO.test(txt)) continue;
+        if (process.env.DBG) console.log(`    · ${es} ${i}: ${txt.slice(0, 40)}`);
         if (!(await b.isVisible().catch(() => false))) continue;
         await b.click({ timeout: 1000 }).catch(() => {});
         await page.waitForTimeout(600);
