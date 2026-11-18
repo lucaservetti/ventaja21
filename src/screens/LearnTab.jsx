@@ -14,6 +14,7 @@ import { useEscritorio } from "../escritorio.js";
 import { MyChart } from "./MyChart.jsx";
 import { codigoAmigo, useAccount } from "../cloud.js";
 import { GoalBadge } from "./goal.jsx";
+import { Misiones } from "./misiones.jsx";
 import { reviewCount } from "../lessons/Review.jsx";
 import { APP_MODE, NATIVE, WEB_DEMO, hasPremium, shop } from "../platform.js";
 
@@ -367,6 +368,7 @@ function LearnTab() {
       ) : null}
       <NextStepsCard st={a} done={t} />
       {testOculto(a, l) ? <ContinueCard st={a} done={t} currentId={s} /> : null}
+      {testOculto(a, l) ? <Misiones compacta={true} /> : null}
       {WEB_DEMO ? (
         <button
           type="button"

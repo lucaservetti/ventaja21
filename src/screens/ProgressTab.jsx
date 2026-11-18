@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Misiones } from "./misiones.jsx";
 import {
   activityStreak,
   bestActivityStreak,
@@ -195,6 +196,9 @@ function ProgressOverview({ st: a, nav: e }) {
         </span>
         <Icon name="chev" className="li-chev" />
       </button>
+      <div style={{ marginTop: 14 }}>
+        <Misiones />
+      </div>
       {a.train.sessions.length ? (
         <div className="card" style={{ marginTop: 14 }}>
           <div className="row between">
@@ -801,6 +805,14 @@ function Records({ st: a }) {
         `${d} ${d === 1 ? "día" : "días"} (récord ${a.daily.best})`,
       ],
       ["Lecciones con 100 %", String(r)],
+      [
+        "Días con las misiones completas",
+        String((a.misiones && a.misiones.completas) || 0),
+      ],
+      [
+        "Visitas al casino simulado",
+        String((a.casino.trips || []).filter((f) => !f.exam).length),
+      ],
     ];
   return (
     <>

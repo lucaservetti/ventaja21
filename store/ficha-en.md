@@ -45,7 +45,7 @@ PREMIUM (MONTHLY, YEARLY WITH A FREE TRIAL, OR ONE-TIME)
 • Or earn it by practicing: free days of Premium for consistency and for finishing the lessons.
 
 YOUR PROGRESS, YOURS
-• A daily streak with streak shields, a minutes goal, achievements and a player profile with your strengths and weak spots.
+• Daily missions with a reward, a daily streak with streak shields, a minutes goal, achievements and a player profile with your strengths and weak spots.
 • Works offline, no sign-up needed. If you want, sign in with Google to save your progress in the cloud, join the leaderboard and earn rewards.
 • Light theme, large text and screen reader support.
 

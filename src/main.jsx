@@ -42,6 +42,8 @@ import {
 import { Icon } from "./ui/icons.jsx";
 import { vibrate } from "./sound.js";
 import { Toasts, cx } from "./ui/components.jsx";
+import { prepararMisiones } from "./misiones.js";
+import { useAvisoMisiones } from "./screens/misiones.jsx";
 import { TrainSession } from "./screens/TrainSession.jsx";
 import { Onboarding, Placement } from "./screens/Onboarding.jsx";
 import { Edad, SoloMayores } from "./screens/Edad.jsx";
@@ -529,6 +531,7 @@ function App() {
   useEffect(() => {
     const revisar = () => {
       usarProtectores();
+      prepararMisiones();
       const r = getState().racha || {};
       if (!r.aviso || r.aviso.visto) return;
       setState((s) => ({
@@ -549,6 +552,17 @@ function App() {
     const vis = () => document.visibilityState === "visible" && revisar();
     document.addEventListener("visibilitychange", vis);
     return () => document.removeEventListener("visibilitychange", vis);
+  }, []);
+  // Misiones del día: un cartelito al cumplir cada una, y el del premio (screens/misiones.jsx).
+  const aviso = (msg) => {
+    setGoalToast({ id: Date.now(), msg, kind: "good" });
+    setTimeout(() => setGoalToast(null), 4200);
+  };
+  useAvisoMisiones(aviso);
+  useEffect(() => {
+    const f = (e) => aviso(e.detail);
+    window.addEventListener("edge21:aviso", f);
+    return () => window.removeEventListener("edge21:aviso", f);
   }, []);
   useGoalCelebration(() => {
     setGoalToast({

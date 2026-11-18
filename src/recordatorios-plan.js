@@ -16,6 +16,10 @@ const ID_RACHA = 2000;
 const MENSAJES = [
   ["Tu desafío de hoy te espera 🃏", "Un formato nuevo cada día. ¿Lo juegas?"],
   [
+    "Tus misiones de hoy ✅",
+    "Son 3 tareas cortas. Complétalas y gana un protector de racha 🛡️",
+  ],
+  [
     "Cinco minutos de práctica 🎯",
     "Una tanda corta y tu estrategia queda más firme.",
   ],

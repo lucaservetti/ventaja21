@@ -118,6 +118,98 @@ function gradeExam(t) {
   return { rows, passed: rows.every((r) => r.ok) };
 }
 
+// Tu historial en el casino simulado (en la moneda que tienes elegida): totales y la línea de tu
+// saldo visita a visita, para ver la varianza con tus propios números.
+function CasinoStats({ trips, cur }) {
+  const mias = trips.filter((t) => !t.exam && tripCur(t).id === cur.id);
+  if (!mias.length) return null;
+  const sum = (f) => mias.reduce((a, t) => a + (f(t) || 0), 0);
+  const manos = sum((t) => t.hands);
+  const horas = sum((t) => t.hands / HANDS_PER_HOUR[t.bots || 0]);
+  const neto = sum((t) => t.net);
+  const mejor = Math.max(...mias.map((t) => t.net));
+  const echado = mias.filter((t) => t.end === "backoff").length;
+  // Línea acumulada (de la visita más vieja a la más nueva).
+  const pts = [0];
+  for (const t of mias.slice().sort((x, y) => x.t - y.t)) pts.push(pts[pts.length - 1] + t.net);
+  const lo = Math.min(...pts);
+  const hi = Math.max(...pts);
+  const rango = hi - lo || 1;
+  const W = 300;
+  const H = 70;
+  const x = (i) => (pts.length > 1 ? (i / (pts.length - 1)) * W : 0);
+  const y = (v) => H - 4 - ((v - lo) / rango) * (H - 8);
+  const linea = pts.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  return (
+    <div className="card casino-stats">
+      <div className="eyebrow">Tu historial en el casino</div>
+      <div className="cs-grid">
+        <div>
+          <b className="num">{mias.length}</b>
+          <span className="tiny muted">{mias.length === 1 ? "visita" : "visitas"}</span>
+        </div>
+        <div>
+          <b className="num">{manos}</b>
+          <span className="tiny muted">
+            manos ·{" "}
+            {horas >= 1
+              ? `${horas.toFixed(1).replace(".", ",")} h`
+              : `${Math.max(1, Math.round(horas * 60))} min`}
+          </span>
+        </div>
+        <div>
+          <b className={cx("num", neto > 0 ? "t-good" : neto < 0 ? "t-bad" : "")}>
+            {fmtSignedMoney(neto, cur)}
+          </b>
+          <span className="tiny muted">en total</span>
+        </div>
+      </div>
+      {pts.length > 2 ? (
+        <svg
+          className="cs-linea"
+          viewBox={`0 0 ${W} ${H}`}
+          preserveAspectRatio="none"
+          role="img"
+          aria-label="Tu saldo acumulado visita a visita"
+        >
+          {lo < 0 && hi > 0 ? (
+            <line x1="0" x2={W} y1={y(0)} y2={y(0)} className="cs-cero" />
+          ) : null}
+          <path d={linea} className={neto >= 0 ? "cs-sube" : "cs-baja"} />
+        </svg>
+      ) : null}
+      <div className="kv">
+        <span className="kv-k">Tu mejor visita</span>
+        <span className={cx("kv-v num", mejor > 0 ? "t-good" : "")}>
+          {fmtSignedMoney(mejor, cur)}
+        </span>
+      </div>
+      <div className="kv">
+        <span className="kv-k">Jugadas correctas</span>
+        <span className="kv-v num">
+          {pct(sum((t) => t.decisionsOk), sum((t) => t.decisions))}
+        </span>
+      </div>
+      <div className="kv">
+        <span className="kv-k">Apuestas según el conteo</span>
+        <span className="kv-v num">{pct(sum((t) => t.betsOk), sum((t) => t.bets))}</span>
+      </div>
+      <div className="kv">
+        <span className="kv-k">Te pidieron que te retires</span>
+        <span className={cx("kv-v num", echado ? "t-bad" : "t-good")}>
+          {echado} {echado === 1 ? "vez" : "veces"}
+        </span>
+      </div>
+      {pts.length > 2 ? (
+        <p className="tiny muted" style={{ marginTop: 8 }}>
+          Así se ve la varianza: aun jugando perfecto, el saldo sube y baja. La ventaja aparece después
+          de muchas horas.
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 function CasinoSetup() {
   const st = useStore();
   const nav = useNav();
@@ -316,6 +408,7 @@ function CasinoSetup() {
         <Icon name="chev" className="li-chev" />
       </button>
 
+      <CasinoStats trips={trips} cur={cur} />
       {trips.length ? (
         <>
           <div className="section-title">
@@ -749,6 +842,23 @@ function CasinoResult({ trip }) {
   const mistakes = (st.train.mistakes || []).filter(
     (m) => m.src === "mesa" && m.t >= trip.t - trip.ms,
   ).length;
+  // Récords personales (contra tus visitas anteriores en la misma moneda).
+  const antes = st.casino.trips.filter(
+    (t) => t.t !== trip.t && !t.exam && tripCur(t).id === cur.id,
+  );
+  const records = [];
+  if (!trip.exam && antes.length) {
+    if (trip.net > 0 && trip.net > Math.max(...antes.map((t) => t.net)))
+      records.push("🏆 ¡Tu mejor visita hasta ahora!");
+    const largas = antes.filter((t) => t.end !== "backoff").map((t) => t.hands);
+    if (
+      trip.heatOn &&
+      trip.end !== "backoff" &&
+      trip.hands >= 20 &&
+      trip.hands > Math.max(0, ...largas)
+    )
+      records.push("🕶️ Tu visita más larga sin que te descubran");
+  }
   return (
     <div className="casino-result fade-up drill-result">
       {grade && grade.passed ? (
@@ -777,6 +887,15 @@ function CasinoResult({ trip }) {
           </p>
         </div>
       )}
+      {records.length ? (
+        <div className="casino-records">
+          {records.map((r) => (
+            <span key={r} className="casino-record">
+              {r}
+            </span>
+          ))}
+        </div>
+      ) : null}
       {grade ? (
         <div className="card" style={{ marginTop: 20 }}>
           {grade.rows.map((r) => (

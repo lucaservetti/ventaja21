@@ -582,6 +582,39 @@ const PRUEBAS = {
     await cargar({ [dia(-3)]: true, [dia(-2)]: true }, { protectores: 0, primero: true });
     check((await badge().innerText()).trim() === "0", "sin protector la racha siguió");
   },
+  async misiones(h) {
+    // Misiones del día: aparecen en Aprender, cuentan lo que hiciste hoy y al completarlas dan un premio.
+    const { page } = h;
+    const cargar = async (fn) => {
+      await page.evaluate((src) => {
+        const k = "ventaja21.state.v1";
+        const s = JSON.parse(localStorage.getItem(k));
+        new Function("s", "hoy", "ahora", src)(s, s.misiones.dia, Date.now());
+        localStorage.setItem(k, JSON.stringify(s));
+        Storage.prototype.setItem = () => {};
+      }, fn);
+      await page.reload();
+      await page.waitForTimeout(900);
+    };
+    await page.waitForTimeout(500);
+    // Con la primera lección hecha hoy: la tarjeta aparece con 1 de 3.
+    await cargar(`s.lessons = { l1: { done: true, best: 1, at: ahora } };`);
+    await h.see("Misiones de hoy", "Today's missions");
+    await h.see("Termina 1 lección", "Finish 1 lesson");
+    check(await page.locator(".misiones-n:visible").first().innerText() === "1/3", "no cuenta la lección de hoy");
+    await h.foto("misiones");
+    // Todo hecho: aparece el botón del premio y da un protector.
+    await cargar(`
+      s.train.sessions = [{ t: ahora, n: 20, ok: 18 }];
+      s.play.hands = (s.misiones.base.hands || 0) + 10;
+      s.daily.results = { [hoy]: { ok: true } };
+      s.drills.values = { sessions: [{ t: ahora }, { t: ahora }] };
+      s.dailyGoal.days = { [hoy]: { s: 9999, g: 600 } };
+    `);
+    await h.click("Abrir el premio del día", "Open today's reward");
+    await h.see("Ganaste un protector de racha", "You earned a streak shield");
+    await h.foto("premio");
+  },
   async edad(h) {
     // Control de edad (src/edad.js): en las pruebas está salteado; aquí se pide con v21.edad.
     const { page } = h;
