@@ -61,6 +61,16 @@ const STATE = (extra = {}) => ({
   countPath: { passed: { values: { at: 1, score: 1 }, pairs: { at: 1, score: 1 }, run10: { at: 1, score: 1 } }, tries: {}, practiced: {} },
   rating: { value: 1180, peak: 1210, history: [] },
   lastTab: "aprender",
+  // Sin carteles encima: las frases de primera vez ya cerradas y las misiones ya avisadas.
+  tips: { aprender: 1, conteo: 1, entrenar: 1, jugar: 1, progreso: 1 },
+  misiones: {
+    dia: key(today),
+    ids: ["leccion", "meta", "mesa"],
+    base: { hands: 0 },
+    avisadas: { leccion: key(today), meta: key(today), mesa: key(today), entrenar: key(today), conteo: key(today), desafio: key(today) },
+    cobrado: null,
+    completas: 4,
+  },
   ...extra,
   settings: { currency: "USD", premium: true, ...(extra.settings || {}) },
 });
@@ -127,7 +137,7 @@ const CAPTURAS = [
   },
   {
     t: ["Mira cómo <em>mejoras</em>", "Watch yourself <em>improve</em>"],
-    s: ["tu racha, tu rango y tus logros", "your streak, your rank and achievements"],
+    s: ["tu racha, tus misiones y tu rango", "your streak, missions and rank"],
     go: async (p, l) => {
       await tab(p, L(l, "Progreso", "Progress"));
       await p.evaluate(() => document.querySelector("section:not([hidden]) .goal-card").scrollIntoView({ block: "start" }));

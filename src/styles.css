@@ -9691,6 +9691,13 @@ html[data-theme="light"] .cele-card {
   .app.escritorio .sheet.tall {
     height: min(880px, calc(100vh - 64px));
   }
+  /* Con letra grande la app está agrandada un 12 % (zoom): el alto de la pantalla también. */
+  html[data-text="large"] .app.escritorio .sheet {
+    max-height: calc((100vh - 64px) / 1.12);
+  }
+  html[data-text="large"] .app.escritorio .sheet.tall {
+    height: min(880px, calc((100vh - 64px) / 1.12));
+  }
   .app.escritorio .closing .sheet {
     animation: fadeOut 0.18s ease both;
   }
