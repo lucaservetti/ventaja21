@@ -112,7 +112,9 @@ const PRUEBAS = {
       console.log(`  ${es}: ${n} botones`);
       for (let i = 0; i < n; i++) {
         const b = page.locator(sel).nth(i);
-        const txt = ((await b.innerText().catch(() => "")) + " " + ((await b.getAttribute("aria-label").catch(() => "")) || "")).trim();
+        // Con espera corta: al cambiar de sub-pestaña puede haber menos botones que al empezar.
+        if (!(await b.count())) continue;
+        const txt = ((await b.innerText({ timeout: 1000 }).catch(() => "")) + " " + ((await b.getAttribute("aria-label", { timeout: 1000 }).catch(() => "")) || "")).trim();
         if (PELIGRO.test(txt)) continue;
         if (process.env.DBG) console.log(`    · ${es} ${i}: ${txt.slice(0, 40)}`);
         if (!(await b.isVisible().catch(() => false))) continue;
