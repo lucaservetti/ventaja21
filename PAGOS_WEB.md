@@ -14,7 +14,7 @@ Cobra alrededor de un 5% más 50 centavos por venta. Google Play se queda con un
 
 ## 1. Abrir la cuenta de Paddle
 
-1. Entrá a **paddle.com** y tocá **Sign up**. Elegí que sos una persona (*individual / sole trader*), con tu nombre y tu país, Argentina.
+1. Entrá a **paddle.com** y tocá **Sign up**. Elegí que sos una persona (*individual / sole trader*), con tu nombre y tu país, Uruguay.
 2. Paddle revisa el sitio antes de aprobarte, y suele tardar unos días. Tiene que ver:
    - **qué vendés:** "Edge 21 Premium: suscripción de una app educativa para aprender estrategia de blackjack. **No hay apuestas ni plata real.**" Ponelo así, bien claro, para que no lo confundan con un casino;
    - los precios en la web (la sección Premium de edge21.app);

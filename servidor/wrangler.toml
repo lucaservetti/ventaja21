@@ -34,7 +34,7 @@ DUENOS = "FoItGSWPJZSRqaXN5ORR8oNgFKN2"
 # Clave pública de Firebase (la misma de la app): para saber cuándo se creó una cuenta (invitar amigos).
 API_KEY = "AIzaSyBRQvpHNOL5W5md04iJfAVbAuLvfLVtqi4"
 # Pagos en la web (Paddle): el código del precio "Para siempre" (pri_…). Ver PAGOS_WEB.md.
-PADDLE_PRECIO_SIEMPRE = ""
+PADDLE_PRECIO_SIEMPRE = "pri_01m7ted9jg08zeapks3ar1t22r"
 
 # Secreto (no va acá): FIREBASE_SA = la clave JSON de la cuenta de servicio de Firebase.
 # Secreto (opcional): PADDLE_WEBHOOK_SECRET = el secreto de los avisos de Paddle (pdl_ntfset_…).
