@@ -2,7 +2,7 @@
   "_ayuda": "Pagos de Premium en la web (iPhone y computadora) con Paddle. Mientras token esté vacío, la web dice 'Muy pronto'. Ver PAGOS_WEB.md.",
   "paddle": {
     "entorno": "sandbox",
-    "token": "",
+    "token": "test_14af19a3dcadc0819a844e57f95",
     "precios": {
       "monthly": "pri_01m7te6kbtcyxn1c5wwptz159t",
       "yearly": "pri_01m7te9fw11n0p1fd737qc9zsx",

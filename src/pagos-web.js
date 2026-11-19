@@ -9,7 +9,20 @@ import { LANG } from "./i18n/index.js";
 
 const CFG = typeof __PAGOS__ !== "undefined" ? __PAGOS__ : null;
 const PRECIOS = (CFG && CFG.paddle && CFG.paddle.precios) || {};
-// Encendido solo en la web, con token y con los precios cargados.
+// En el sandbox de Paddle (pagos de prueba, con tarjetas falsas) los pagos solo aparecen para quien
+// abre la web con ?pagos=prueba: si no, cualquiera podría "comprar" Premium con una tarjeta de prueba.
+// Con ?pagos=no se vuelve a apagar.
+function modoPrueba() {
+  try {
+    const q = new URLSearchParams(location.search).get("pagos");
+    if (q === "prueba") localStorage.setItem("edge21.pagosPrueba", "1");
+    if (q === "no") localStorage.removeItem("edge21.pagosPrueba");
+    return localStorage.getItem("edge21.pagosPrueba") === "1";
+  } catch {
+    return false;
+  }
+}
+// Encendido solo en la web, con token y con los precios cargados (y en sandbox, solo en modo prueba).
 const PAGOS_WEB = !!(
   !APP_MODE &&
   CFG &&
@@ -17,7 +30,8 @@ const PAGOS_WEB = !!(
   CFG.paddle.token &&
   PRECIOS.monthly &&
   PRECIOS.yearly &&
-  PRECIOS.lifetime
+  PRECIOS.lifetime &&
+  (CFG.paddle.entorno !== "sandbox" || modoPrueba())
 );
 const MOSTRAR = (CFG && CFG.mostrar) || {};
 
