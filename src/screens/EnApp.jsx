@@ -69,7 +69,7 @@ function EnApp({ feature }) {
                 <b>Tu progreso ya está guardado</b>
                 <p className="muted small">
                   Cuando bajes la app, entra con la misma cuenta de Google y
-                  sigues donde estabas. Y te esperan 3 días de Premium de
+                  sigues donde estabas. Y te espera 1 día de Premium de
                   regalo.
                 </p>
               </>
@@ -78,7 +78,7 @@ function EnApp({ feature }) {
                 <b>Guarda tu progreso para la app</b>
                 <p className="muted small">
                   Entra con Google: lo que hiciste aquí pasa a la app, y te
-                  llevas 3 días de Premium de regalo cuando salga.
+                  llevas 1 día de Premium de regalo cuando salga.
                 </p>
                 <Button onClick={() => nav.push("account")}>
                   Entrar con Google

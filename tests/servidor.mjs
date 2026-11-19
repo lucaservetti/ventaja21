@@ -85,8 +85,8 @@ await paso("cuenta nueva: todo en progreso y CORS para la web", async () => {
   check(r.status === 200, `respondió ${r.status}`);
   check(r.headers.get("Access-Control-Allow-Origin") === "https://edge21.app", "falta CORS");
   const d = await r.json();
-  // Lo único que da una cuenta nueva es la bienvenida: 3 días.
-  check(d.nuevos.length === 1 && d.nuevos[0] === "bienvenida" && d.dias === 3, JSON.stringify(d));
+  // Lo único que da una cuenta nueva es la bienvenida: 1 día.
+  check(d.nuevos.length === 1 && d.nuevos[0] === "bienvenida" && d.dias === 1, JSON.stringify(d));
   check(d.premios.filter((p) => p.id !== "bienvenida").every((p) => p.estado === "progreso"), JSON.stringify(d.premios));
 });
 
@@ -95,8 +95,8 @@ await paso("trampa: puntajes de días pasados escritos hoy no cuentan para la ra
   await racha(u.uid, 10);
   const d = await (await call(u.token)).json();
   check(estado(d, "racha7") === "progreso", `racha7 quedó ${estado(d, "racha7")}`);
-  // Solo los 3 días de bienvenida, nada por la racha.
-  check(d.dias === 3 && d.nuevos.join() === "bienvenida", `dio ${d.dias} días: ${JSON.stringify(d.nuevos)}`);
+  // Solo el día de bienvenida, nada por la racha.
+  check(d.dias === 1 && d.nuevos.join() === "bienvenida", `dio ${d.dias} días: ${JSON.stringify(d.nuevos)}`);
 });
 
 await paso("antes de salir en Play, la bienvenida queda en espera", async () => {
@@ -104,7 +104,7 @@ await paso("antes de salir en Play, la bienvenida queda en espera", async () => 
   const d = await premios(u.uid, { ...env, BIENVENIDA: "0" }, Date.now(), { onTime: always });
   check(d.dias === 0 && estado(d, "bienvenida") === "pronto", JSON.stringify(d));
   const d2 = await premios(u.uid, env, Date.now(), { onTime: always });
-  check(d2.dias === 3 && estado(d2, "bienvenida") === "nuevo", `al activarla no la dio: ${JSON.stringify(d2)}`);
+  check(d2.dias === 1 && estado(d2, "bienvenida") === "nuevo", `al activarla no la dio: ${JSON.stringify(d2)}`);
 });
 
 await paso("racha de 7 días: 2 días de Premium, una sola vez", async () => {
@@ -112,10 +112,10 @@ await paso("racha de 7 días: 2 días de Premium, una sola vez", async () => {
   await racha(u.uid, 7);
   const now = Date.now();
   const d = await premios(u.uid, env, now, { onTime: always });
-  // 2 de la racha + 3 de bienvenida.
-  check(estado(d, "racha7") === "nuevo" && d.dias === 5, JSON.stringify(d));
+  // 2 de la racha + 1 de bienvenida.
+  check(estado(d, "racha7") === "nuevo" && d.dias === 3, JSON.stringify(d));
   const h = await hastaDe(u.uid);
-  check(Math.abs(h - (now + 5 * DAY)) < 5000, "la fecha de Premium no es dentro de 5 días");
+  check(Math.abs(h - (now + 3 * DAY)) < 5000, "la fecha de Premium no es dentro de 3 días");
   const d2 = await premios(u.uid, env, Date.now(), { onTime: always });
   check(estado(d2, "racha7") === "ganado" && d2.dias === 0, "lo dio dos veces");
   check((await hastaDe(u.uid)) === h, "cambió la fecha la segunda vez");
@@ -132,13 +132,15 @@ await paso("racha de 30, graduación y podio suman, con tope de 14 días por mes
   const monday = mondayUTC(Date.now() - 7 * DAY);
   for (let i = 0; i < 11; i++) await put(`weekly/${monday}/scores/otro${i}`, { name: `o${i}`, score: 100 + i, t: 1 });
   await put(`weekly/${monday}/scores/${u.uid}`, { name: "yo", score: 700, t: 1 });
-  // Y otro podio, dos semanas atrás: ese ya no entra en el tope.
-  const monday2 = mondayUTC(Date.now() - 14 * DAY);
-  for (let i = 0; i < 11; i++) await put(`weekly/${monday2}/scores/otro${i}`, { name: `o${i}`, score: 100 + i, t: 1 });
-  await put(`weekly/${monday2}/scores/${u.uid}`, { name: "yo", score: 700, t: 1 });
+  // Otros dos podios, dos y tres semanas atrás: el último ya no entra en el tope.
+  for (const w of [2, 3]) {
+    const m = mondayUTC(Date.now() - w * 7 * DAY);
+    for (let i = 0; i < 11; i++) await put(`weekly/${m}/scores/otro${i}`, { name: `o${i}`, score: 100 + i, t: 1 });
+    await put(`weekly/${m}/scores/${u.uid}`, { name: "yo", score: 700, t: 1 });
+  }
   const d = await premios(u.uid, env, Date.now(), { onTime: always });
-  // 2 + 7 + 3 + 2 = 14 (el tope), más los 3 de bienvenida, que no cuentan; el segundo podio espera.
-  check(d.dias === 17, `dio ${d.dias} días: ${JSON.stringify(d.nuevos)}`);
+  // 2 + 5 + 3 + 2 + 2 = 14 (el tope), más 1 de bienvenida, que no cuenta; el tercer podio espera.
+  check(d.dias === 15, `dio ${d.dias} días: ${JSON.stringify(d.nuevos)}`);
   check(estado(d, "racha30") === "nuevo" && estado(d, "graduacion") === "nuevo", JSON.stringify(d.premios));
   check(estado(d, "podio") === "nuevo", "el podio no se dio");
   const d2 = await premios(u.uid, env, Date.now(), { onTime: always });
@@ -149,7 +151,8 @@ await paso("racha de 30, graduación y podio suman, con tope de 14 días por mes
 
 await paso("podio en una semana con pocos jugadores: no cuenta", async () => {
   const u = await user();
-  const monday = mondayUTC(Date.now() - 21 * DAY);
+  // Cuatro semanas atrás: una semana que ninguna otra prueba llena de jugadores.
+  const monday = mondayUTC(Date.now() - 28 * DAY);
   for (let i = 0; i < 7; i++) await put(`daily/${dayKeyUTC(Date.parse(monday) + i * DAY)}/scores/${u.uid}`, { name: "solo", score: 120, ok: true, t: 1 });
   await put(`weekly/${monday}/scores/${u.uid}`, { name: "solo", score: 840, t: 1 });
   const d = await premios(u.uid, env, Date.now(), { onTime: always });
@@ -197,8 +200,8 @@ await paso("dos pedidos al mismo tiempo: los días se dan una sola vez", async (
     premios(u.uid, env, now, { onTime: always }),
   ]);
   const total = rs.filter((r) => r.status === "fulfilled").reduce((s, r) => s + r.value.dias, 0);
-  check(total === 5, `dio ${total} días`);
-  check(Math.abs((await hastaDe(u.uid)) - (now + 5 * DAY)) < 5000, "Premium quedó con otra fecha");
+  check(total === 3, `dio ${total} días`);
+  check(Math.abs((await hastaDe(u.uid)) - (now + 3 * DAY)) < 5000, "Premium quedó con otra fecha");
 });
 
 await paso("borrar la cuenta borra los premios y el Premium de regalo", async () => {
