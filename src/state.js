@@ -261,6 +261,9 @@ const DEFAULT_STATE = {
   racha: { protectores: 0, primero: false, nuevo: null, aviso: null },
   // Frases de "primera vez" que ya cerraste ({ [id]: fecha }).
   tips: {},
+  // Misiones del día (misiones.js): el día, cuáles tocaron, el contador de manos al empezar, cuáles
+  // ya se avisaron, el día en que abriste el premio y cuántos días las completaste todas.
+  misiones: { dia: null, ids: [], base: {}, avisadas: {}, cobrado: null, completas: 0 },
   // Tarjetas de la tabla (repaso espaciado): { [spotKey]: { box, due, n, ok } } y cuántas nuevas hoy.
   srs: { cards: {}, newDay: null, newToday: 0 },
   // Modo casino real: lo último que elegiste y tus visitas al casino.

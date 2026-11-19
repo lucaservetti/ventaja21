@@ -9691,6 +9691,13 @@ html[data-theme="light"] .cele-card {
   .app.escritorio .sheet.tall {
     height: min(880px, calc(100vh - 64px));
   }
+  /* Con letra grande la app está agrandada un 12 % (zoom): el alto de la pantalla también. */
+  html[data-text="large"] .app.escritorio .sheet {
+    max-height: calc((100vh - 64px) / 1.12);
+  }
+  html[data-text="large"] .app.escritorio .sheet.tall {
+    height: min(880px, calc((100vh - 64px) / 1.12));
+  }
   .app.escritorio .closing .sheet {
     animation: fadeOut 0.18s ease both;
   }
@@ -10152,4 +10159,170 @@ html[data-theme="light"] .app.escritorio .tabbar {
 .termino-def {
   font-size: 17px;
   line-height: 1.5;
+}
+
+/* Misiones del día (Aprender y Progreso). */
+.misiones-card {
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.misiones-card.lista {
+  border: 1px solid var(--accent-line);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.misiones-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.misiones-n {
+  font-weight: 800;
+  color: var(--accent-text);
+}
+.misiones-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mision {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.mision.done {
+  cursor: default;
+  opacity: 0.75;
+}
+.mision-ic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+.mision.done .mision-ic {
+  background: var(--good-soft);
+  color: var(--good);
+}
+.mision-txt {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mision-t {
+  font-weight: 600;
+  line-height: 1.25;
+}
+.mision.done .mision-t {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+.mision-bar {
+  display: block;
+  height: 6px;
+  border-radius: 6px;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  overflow: hidden;
+}
+.mision-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+  background: var(--accent);
+}
+.mision-v {
+  flex: none;
+  color: var(--text-2);
+}
+.misiones-pie {
+  margin: 0;
+}
+.misiones-ok {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+/* Casino simulado: historial y récords. */
+.casino-stats {
+  margin-top: 18px;
+}
+.cs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 10px 0 6px;
+}
+.cs-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.cs-grid b {
+  font-size: clamp(15px, 4.8vw, 20px);
+  line-height: 1.15;
+  white-space: nowrap;
+}
+.cs-linea {
+  display: block;
+  width: 100%;
+  height: 70px;
+  margin: 6px 0 8px;
+  overflow: visible;
+}
+.cs-linea path {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.cs-linea .cs-sube {
+  stroke: var(--good);
+}
+.cs-linea .cs-baja {
+  stroke: var(--bad);
+}
+.cs-linea .cs-cero {
+  stroke: var(--line);
+  stroke-dasharray: 4 4;
+  vector-effect: non-scaling-stroke;
+}
+.casino-records {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+.casino-record {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-weight: 700;
+  font-size: 14px;
+}
+.casino-trip .score-pill {
+  min-width: 96px;
+  justify-content: center;
 }

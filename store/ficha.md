@@ -45,7 +45,7 @@ PREMIUM (MENSUAL, ANUAL CON PRUEBA GRATIS, O UN SOLO PAGO)
 • O gánalo practicando: días de Premium de regalo por constancia y por terminar las lecciones.
 
 TU PROGRESO, TUYO
-• Racha diaria con protectores, meta de minutos, logros y tu perfil de jugador con puntos fuertes y débiles.
+• Misiones del día con premio, racha diaria con protectores, meta de minutos, logros y tu perfil de jugador con puntos fuertes y débiles.
 • Funciona sin internet y sin crear cuentas. Si quieres, entras con Google para guardar tu progreso en la nube, aparecer en el ranking y ganar premios.
 • Tema claro, letra grande y lector de pantalla.
 

@@ -279,7 +279,7 @@ function final(de) {
     null,
     `<div class="fin-logo" style="${an(A("pop", de, 0.5, E.back))}"><div class="halo" style="${an(`gira ${(C.dur - de).toFixed(2)}s linear ${de}s both`)}"></div><img src="/img/ficha.svg"></div>
      ${titulo(de + 0.1, "Practicalo gratis en *Edge\u00a021*", { tag: "h2", sonido: false, paso: 0.04 })}
-     <div class="cta" style="${an(A("pop", de + 0.35, 0.45, E.back))}">Link en el perfil<i class="brillo" style="${an(A("brilla", de + 0.8, 0.8, E.io))}"></i></div>
+     <div class="cta" style="${an(A("pop", de + 0.35, 0.45, E.back))}">edge21.app<i class="brillo" style="${an(A("brilla", de + 0.8, 0.8, E.io))}"></i></div>
      <p class="chico" style="${an(A("entra", de + 0.5, 0.4))}">Lecciones, desafío diario y práctica sin dinero</p>`,
     { zoom: false },
   );
@@ -416,7 +416,7 @@ p em,h1 em,h2 em,h3 em{font-style:normal;color:#e9b949}
 @keyframes oculta{from{visibility:visible}to{visibility:hidden}}
 @keyframes salida{from{opacity:1;transform:none;filter:blur(0)}to{opacity:0;transform:translateY(-70px) scale(.94);filter:blur(10px);visibility:hidden}}
 @keyframes zoomlento{from{transform:scale(1)}to{transform:scale(1.045)}}
-@keyframes golpe{from{transform:scale(1.07)}to{transform:none}}
+@keyframes golpe{from{transform:scale(1.025)}to{transform:none}}
 @keyframes palabra{from{opacity:0;transform:translateY(46px) scale(.9);filter:blur(8px)}to{opacity:1;transform:none;filter:blur(0)}}
 @keyframes entra{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:none}}
 @keyframes izq{from{opacity:0;transform:translateX(-90px)}to{opacity:1;transform:none}}

@@ -292,6 +292,14 @@
   @keyframes spin-in { from { transform: rotate(-200deg) scale(0.4); opacity: 0; } to { transform: none; opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
 
+  @media (max-width: 380px) {
+    .bar .wrap { gap: 6px; }
+    .bar .brand { font-size: 17px; gap: 6px; }
+    .bar .brand img { width: 26px; height: 26px; }
+    .lang button { padding: 6px 9px; }
+    .bar .btn.sm { padding: 8px 10px !important; font-size: 13px !important; white-space: nowrap; flex-shrink: 0; }
+    .bar .lang { flex-shrink: 0; }
+  }
   @media (max-width: 820px) {
     .bar nav { display: none; }
     .bar .wrap { gap: 10px; }
@@ -612,7 +620,7 @@
       f3t: "Ruta de conteo de 10 niveles", f3p: "De los valores de las cartas a contar un zapato completo. Hi-Lo, KO, Zen, Omega II y más.",
       f4t: "Entrenamiento a medida", f4p: "Tandas de manos apuntadas a tus puntos débiles, un rango por color de ficha y tus errores guardados hasta que los domines.",
       f5t: "Un casino en tu mano", f5p: "Simulador con otros jugadores, chequeos sorpresa del conteo, seis tipos de mesa y presión de mesa.",
-      f6t: "Desafío diario y semanal", f6p: "Un formato distinto cada día, un reto por semana con insignia y un contrarreloj: ¿llegas al ritmo del casino?",
+      f6t: "Misiones y desafíos", f6p: "3 misiones nuevas cada día con premio, un desafío diario con un formato distinto, un reto por semana con insignia y un contrarreloj.",
       "s-title": "Así se ve",
       c1: "Aprender", c2: "La jugada correcta", c3: "La ruta de conteo", c4: "La mesa", c5: "Casino simulado", c6: "Tu progreso",
       "p-title": "Premium, a tu manera", "p-sub": "Por mes, por año con 5 días gratis, o un solo pago para siempre. Lo básico sigue siendo gratis.",
@@ -667,7 +675,7 @@
       f3t: "A 10-level counting path", f3p: "From card values to counting a whole shoe. Hi-Lo, KO, Zen, Omega II and more.",
       f4t: "Training made for you", f4p: "Rounds aimed at your weak spots, a rank by chip color and your mistakes saved until you master them.",
       f5t: "A casino in your pocket", f5p: "A simulator with other players, surprise count checks, six table types and table pressure.",
-      f6t: "Daily and weekly challenges", f6p: "A different format every day, a weekly goal with a badge and a beat-the-clock mode: can you keep up with casino speed?",
+      f6t: "Missions and challenges", f6p: "3 new missions every day with a reward, a daily challenge in a different format, a weekly goal with a badge and a beat-the-clock mode.",
       "s-title": "See it in action",
       c1: "Learn", c2: "The right play", c3: "The counting path", c4: "The table", c5: "Simulated casino", c6: "Your progress",
       "p-title": "Premium, your way", "p-sub": "Monthly, yearly with a 5-day free trial, or pay once and keep it forever. The basics stay free.",
