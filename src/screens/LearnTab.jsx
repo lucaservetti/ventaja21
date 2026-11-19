@@ -203,7 +203,7 @@ function AmigoCard() {
       <h2>Ganen Premium los dos</h2>
       <p className="muted">
         Entra con Google y juega el desafío diario 5 días distintos en tus
-        primeras dos semanas: ganan 3 días de Premium cada uno.
+        primeras dos semanas: ganan 1 día de Premium cada uno.
       </p>
       <div className="test-card-btns">
         <Button onClick={() => nav.push("account")}>Entrar con Google</Button>

@@ -140,7 +140,8 @@ function Premium({ feature, then }) {
     [],
   );
   // Premium regalado (días ganados en Premios) vence: igual se muestran los planes.
-  const gift = !st.settings.premium ? giftUntil(st) : 0;
+  // Una suscripción pagada en la web también se guarda "hasta tal fecha": no es regalo.
+  const gift = !st.settings.premium && !st.settings.cloudPagado ? giftUntil(st) : 0;
   const owned = hasPremium(st) && !gift;
   const { acct } = useAccount();
   // Después de pagar, el servidor anota Premium en unos segundos: se pregunta cada 2,5 s (hasta 30 s).
@@ -236,7 +237,9 @@ function Premium({ feature, then }) {
           {owned
             ? shop.kind === "lifetime"
               ? "Tienes Premium para siempre. ¡Gracias por apoyar la app!"
-              : "¡Ya eres Premium! Gracias por apoyar la app."
+              : st.settings.cloudPagado && !NATIVE
+                ? "¡Ya eres Premium! Gracias por apoyar la app. Si es una suscripción, la cancelas cuando quieras desde el mail del pago."
+                : "¡Ya eres Premium! Gracias por apoyar la app."
             : gift
               ? `Tienes Premium de regalo hasta el ${new Date(gift).toLocaleDateString(LOCALE, { day: "numeric", month: "long" })}.`
               : feature && FEATURES[feature]

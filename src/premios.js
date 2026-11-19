@@ -4,9 +4,9 @@
 // Cada premio se gana una sola vez, menos el podio, que es uno por semana.
 const PREMIOS = [
   // Por entrar con la cuenta de Google: una vez por cuenta, y no cuenta para el tope.
-  { id: "bienvenida", dias: 3, meta: 1 },
+  { id: "bienvenida", dias: 1, meta: 1 },
   { id: "racha7", dias: 2, meta: 7 },
-  { id: "racha30", dias: 7, meta: 30 },
+  { id: "racha30", dias: 5, meta: 30 },
   { id: "podio", dias: 2, meta: 3 },
   { id: "graduacion", dias: 3, meta: 36 },
 ];
@@ -24,7 +24,7 @@ const DAY = 24 * 60 * 60 * 1000;
 // AMIGO_DIAS días de Premium los dos (no cuentan para el tope del mes). Como mucho AMIGO_TOPE amigos.
 const AMIGO_META = 5;
 const AMIGO_PLAZO = 14;
-const AMIGO_DIAS = 3;
+const AMIGO_DIAS = 1;
 const AMIGO_TOPE = 10;
 // Premios que no cuentan para el tope de 14 días por mes.
 const esLibre = (id) =>

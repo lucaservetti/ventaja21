@@ -452,11 +452,13 @@ async function premios(uid, env, now = Date.now(), opts = {}) {
   // cuando la app está en Google Play (BIENVENIDA = "1" en wrangler.toml): antes, los días se
   // vencerían sin poder usarlos. Mientras tanto queda "pronto" y se da apenas se active.
   const bienvenida = env.BIENVENIDA === "1";
-  if (bienvenida) merece.push({ id: "bienvenida", dias: 3, libre: true });
-  if (run >= 7) merece.push({ id: "racha7", dias: 2 });
-  if (run >= 30) merece.push({ id: "racha30", dias: 7 });
-  if (lecciones >= 36) merece.push({ id: "graduacion", dias: 3 });
-  for (const m of podios) merece.push({ id: `podio-${m}`, dias: 2 });
+  // Los días de cada premio salen de src/premios.js (lo mismo que muestra la app).
+  const diasDe = (id) => PREMIOS.find((p) => p.id === id).dias;
+  if (bienvenida) merece.push({ id: "bienvenida", dias: diasDe("bienvenida"), libre: true });
+  if (run >= 7) merece.push({ id: "racha7", dias: diasDe("racha7") });
+  if (run >= 30) merece.push({ id: "racha30", dias: diasDe("racha30") });
+  if (lecciones >= 36) merece.push({ id: "graduacion", dias: diasDe("graduacion") });
+  for (const m of podios) merece.push({ id: `podio-${m}`, dias: diasDe("podio") });
 
   // Invitar amigos (ver src/premios.js). Cada lado se da su premio cuando le toca revisar.
   // a) Si a esta cuenta la invitaron: vale cuando jugó el desafío AMIGO_META días en su plazo.
