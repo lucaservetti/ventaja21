@@ -257,16 +257,23 @@ async function token() {
   return acct.token;
 }
 // Lo que dijo el servidor sobre el Premium de la cuenta: se guarda y vale para esta sesión.
-function applyCloudPremium(until) {
+// pagado: si ese Premium viene de un pago (en la web, con Paddle) y no solo de días de regalo. Sirve
+// para que la pantalla de Premium no muestre los planes a quien ya pagó una suscripción (las dos cosas
+// se guardan como "hasta tal fecha"). Sin pagado (undefined), se deja lo que había.
+function applyCloudPremium(until, pagado) {
   const changed = getSessionCloud() !== until;
   setSessionCloud(until);
-  if (getState().settings.cloudPremium !== until)
-    setSettings({ cloudPremium: until });
+  const st = getState().settings;
+  const patch = {};
+  if (st.cloudPremium !== until) patch.cloudPremium = until;
+  if (pagado !== undefined && !!st.cloudPagado !== pagado) patch.cloudPagado = pagado;
+  if (Object.keys(patch).length) setSettings(patch);
   else if (changed) setState((e) => ({ ...e }));
 }
 function signOut() {
   setSessionCloud(null);
-  if (getState().settings.cloudPremium) setSettings({ cloudPremium: null });
+  if (getState().settings.cloudPremium || getState().settings.cloudPagado)
+    setSettings({ cloudPremium: null, cloudPagado: false });
   premiosData = null;
   try {
     localStorage.removeItem(PREMIOS_KEY);
@@ -403,7 +410,8 @@ async function checkPremium() {
       token: await token(),
     });
     const f = doc ? fromFields(doc) : {};
-    applyCloudPremium(f.activo ? f.hasta || true : null);
+    const pagado = !!(f.activo && doc.fields && doc.fields.pago && doc.fields.pago.mapValue);
+    applyCloudPremium(f.activo ? f.hasta || true : null, pagado);
   } catch {
     // Sin conexión: queda lo último que se supo.
   }

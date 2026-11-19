@@ -166,7 +166,7 @@ function Premios() {
     if (acct) checkPremios();
   }, [acct && acct.uid]);
   const mine = data && acct && data.uid === acct.uid ? data : null;
-  const gift = giftUntil(st);
+  const gift = st.settings.cloudPagado ? 0 : giftUntil(st);
   return (
     <div className="premios fade-up">
       <TopBar onClose={() => nav.pop()} closeIcon="back" title="Premios" />
