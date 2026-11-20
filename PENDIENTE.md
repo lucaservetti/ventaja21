@@ -9,6 +9,8 @@
    - Cuando la app esté en Play, se agrega también el SHA-1 de la firma de Play (Play Console → Integridad de la app).
 2. **Mail:** "Enviar como soporte@edge21.app" desde Gmail (pasos C y D). Google no dejó crear la contraseña de aplicación; probar en unos días desde el celular, después de agregarle un teléfono de recuperación a edge21app@gmail.com.
 3. **Cobrar Premium en la web (desde el 19 de noviembre, con 18 años):** abrir la cuenta de Paddle y seguir `PAGOS_WEB.md`. El código ya está; falta cargar el token, los precios y el secreto.
+   - **Estado (20/11):** cuenta Live en verificación. Producto y precios Live ya creados (`pro_01m7xcm5qanedwj0nkxdbgxfa4`): mensual `pri_01m7xcnx5rhb0gwzw91t2t3zmg` (US$2,49), anual `pri_01m7xcpxv2swwx70svxaddj01p` (US$16,99, 5 días gratis), para siempre `pri_01m7xcqxntcxgv8bhjgqzaxb5e` (US$39,99).
+   - **Cuando Paddle apruebe:** token `live_…`, destino de notificaciones Live (y su secreto en `PADDLE_WEBHOOK_SECRET`), *Default payment link* `https://edge21.app/app/`, cuenta para cobrar en *Payouts*. Después: `pagos.config.json` en `production` con estos precios, `PADDLE_PRECIO_SIEMPRE` en `servidor/wrangler.toml`, y una compra de prueba con un cupón del 100 %.
 4. **Premium de Google Play en la cuenta (cuando exista Play Console):** que el servidor confirme cada compra de Android con Google y la anote en `premium/{uid}`, así sirve también en la web y en el iPhone.
 
 ## Al lanzar en Google Play
