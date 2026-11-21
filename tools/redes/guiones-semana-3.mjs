@@ -171,7 +171,7 @@ const VIDEOS = {
         const lado = (x, pct, ok) => `
           <div class="lado" style="height:620px;padding:40px 18px;${an(A("pop", de ? de + (x.retraso || 0) : -0.5, 0.45, E.back), A(ok ? "enverdece" : "apaga", rev, 0.3, E.out, "forwards"))}">
             <h3>${x.texto}</h3>
-            <div class="fila" style="gap:8px">${x.cartas.map((c) => carta(c, 112)).join("")}</div>
+            <div class="fila" style="gap:8px">${x.cartas.map((c) => carta(c, 128)).join("")}</div>
             <div class="sobre" style="height:100px">${ventana(rev, null, `<span class="pct" style="font-size:96px">${pct}</span>`)}</div>
           </div>`;
         return `
@@ -303,7 +303,7 @@ const VIDEOS = {
           ${reglas()}
           <div style="position:relative;width:880px;height:660px">
             ${carta(null, 180, { abs: true, r: 4, z: 0 })}
-            ${cartas.map((c, i) => carta(c, 180, { abs: true, de: t0 + i * paso, x: pos[i][0], y: pos[i][1], r: pos[i][2], z: i + 1, dur: 0.42, desde: i % 2 ? [-950, -300, -38] : [950, -320, 38] })).join("")}
+            ${cartas.map((c, i) => carta(c, 180, { abs: true, de: t0 + i * paso, x: pos[i][0], y: pos[i][1], r: pos[i][2], z: i + 1, dur: 0.42, desde: i % 2 ? [-160, 320, -10] : [160, 320, 10] })).join("")}
           </div>`, { gap: 26 }),
         escena(10.6, 14.4, `
           ${titulo(10.6, "¿Cuánto *te dio*?", { clase: "xl" })}
@@ -345,9 +345,9 @@ const VIDEOS = {
         escena(0, 1.9, `
           ${titulo(0, "¿Qué *nivel* tenés? / 3 preguntas ⏱️", { ya: true, sonido: false })}
           <div class="fila" style="gap:12px">${opcion(0.3, "Principiante")}${opcion(0.45, "Intermedio")}${opcion(0.6, "Pro 🔥")}</div>`),
-        escena(2.1, 6.5, pregunta(2.1, 1, `${titulo(2.15, "¿Cuánto vale un *As*?", { tag: "h2" })}${carta("Ah", 170)}`, ["1", "11", "1 u 11"], 2), { gap: 28 }),
-        escena(6.7, 11.1, pregunta(6.7, 2, `${titulo(6.75, "*12* contra un *4*. ¿Qué hacés?", { tag: "h2" })}<div class="fila" style="gap:40px">${carta("4c", 130)}<span class="lbl">vs</span>${carta("10s", 130)}${carta("2d", 130)}</div>`, ["PEDIR", "PLANTARTE"], 1), { gap: 26 }),
-        escena(11.3, 15.8, pregunta(11.3, 3, `${titulo(11.35, "Con Hi-Lo, ¿cuánto *suman*?", { tag: "h2" })}<div class="fila" style="gap:10px">${["Kh", "4s", "9d", "6c", "As"].map((c) => carta(c, 110)).join("")}</div>`, ["+1", "0", "−1"], 1), { gap: 26 }),
+        escena(2.1, 6.5, pregunta(2.1, 1, `${titulo(2.15, "¿Cuánto vale un *As*?", { tag: "h2" })}${carta("Ah", 230)}`, ["1", "11", "1 u 11"], 2), { gap: 28 }),
+        escena(6.7, 11.1, pregunta(6.7, 2, `${titulo(6.75, "*12* contra un *4*. ¿Qué hacés?", { tag: "h2" })}<div class="fila" style="gap:40px">${carta("4c", 170)}<span class="lbl">vs</span>${carta("10s", 170)}${carta("2d", 170)}</div>`, ["PEDIR", "PLANTARTE"], 1), { gap: 26 }),
+        escena(11.3, 15.8, pregunta(11.3, 3, `${titulo(11.35, "Con Hi-Lo, ¿cuánto *suman*?", { tag: "h2" })}<div class="fila" style="gap:10px">${["Kh", "4s", "9d", "6c", "As"].map((c) => carta(c, 150)).join("")}</div>`, ["+1", "0", "−1"], 1), { gap: 26 }),
         escena(16.0, 19.2, `
           ${titulo(16.0, "¿Cuántas *acertaste*? 👇", { tag: "h2" })}
           <div class="lista">

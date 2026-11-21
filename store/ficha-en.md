@@ -12,7 +12,7 @@ Learn blackjack basic strategy and card counting, step by step. No gambling.
 Edge 21 is a blackjack trainer for learning to play right: basic strategy first, then counting cards with Hi-Lo and, finally, using the count at the table.
 
 LEARN STEP BY STEP
-• 44 short lessons with a narrated table: you play every hand while the mentor explains why.
+• 46 short lessons with a narrated table: you play every hand while the mentor explains why.
 • Your basic strategy chart lights up as you learn, with the reason behind every play.
 • Already know the basics? Take a test and skip straight to your level.
 
@@ -53,7 +53,7 @@ IMPORTANT
 Edge 21 is for learning: there's no real-money gambling and you can't win real money. No method guarantees winning. Counting cards in your head is legal, but casinos can ask you to stop playing, and using your phone at the table is prohibited. If you gamble, only use money you don't need.
 
 ## What's new in the first version (max. 500 characters)
-The first version of Edge 21: 44 lessons (KO, Hi-Opt, Zen, Omega II and Wong Halves too), a 10-level card counting path, a daily challenge with a leaderboard, a blackjack simulator and Premium with a free trial. Thanks for trying it! If anything looks off, write to us at soporte@edge21.app.
+The first version of Edge 21: 46 lessons (KO, Hi-Opt, Zen, Omega II and Wong Halves too), a 10-level card counting path, a daily challenge with a leaderboard, a blackjack simulator and Premium with a free trial. Thanks for trying it! If anything looks off, write to us at soporte@edge21.app.
 
 ## Images
 - Feature graphic: store/grafico-destacado-en.png (1024×500)

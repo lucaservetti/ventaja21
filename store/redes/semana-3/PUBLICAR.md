@@ -1,8 +1,9 @@
-# Semana provisoria (viernes 20 al jueves 26 de noviembre)
+# Semana provisoria (sábado 21 al viernes 27 de noviembre)
 
 Son los videos de la semana 3, rehechos con más calma, para publicar mientras empezás a grabarte. Se corrió una semana: ninguno estaba publicado todavía. Este archivo reemplaza el calendario de `PLAN.md`: allí las fechas, las duraciones y los tiempos de la narración ya no sirven.
 
 **Qué cambió:**
+- **Diseño nuevo y sin música** (solo los efectos): cartas más grandes y centradas, que entran suaves desde abajo sin pasar por encima del título.
 - **Arrancan más calmos.** Hay 1 a 1,5 segundos para leer la pregunta antes de que algo se mueva, y el golpe del primer cuadro es más suave.
 - **Más lentos donde iban apurados:**
   - Desafío #2: cartas cada 0,95 s.
@@ -19,13 +20,15 @@ Son los videos de la semana 3, rehechos con más calma, para publicar mientras e
 
 | Día | Video | Duración |
 |---|---|---|
-| Vie 20 | `2-pov-11-contra-6/` | 16,8 s |
-| Sáb 21 | `1-desafio-memoria-2/` | 22,2 s |
-| Dom 22 | `4-que-es-mas-probable/` | 23,0 s |
-| Lun 23 | `3-busco-testers/` | 16,4 s |
-| Mar 24 | `6-a-mas-6/` | 19,6 s |
-| Mié 25 | `7-desafio-memoria-3/` | 21,0 s |
-| Jue 26 | `8-que-nivel-tenes/` | 21,4 s |
+| Sáb 21 | `2-pov-11-contra-6/` | 16,8 s |
+| Dom 22 | `1-desafio-memoria-2/` | 22,2 s |
+| Lun 23 | `4-que-es-mas-probable/` | 23,0 s |
+| Mar 24 | `3-busco-testers/` | 16,4 s |
+| Mié 25 | `6-a-mas-6/` | 19,6 s |
+| Jue 26 | `7-desafio-memoria-3/` | 21,0 s |
+| Vie 27 | `8-que-nivel-tenes/` | 21,4 s |
+
+**Sábado 28 y domingo 29:** no se publica nada. Son para grabar y editar los primeros videos tuyos, que arrancan el **lunes 30**.
 
 **Cómo publicar:**
 - Igual que siempre: de 19 a 22 h, primero TikTok y después Instagram.
@@ -34,7 +37,7 @@ Son los videos de la semana 3, rehechos con más calma, para publicar mientras e
 
 ---
 
-## Vie 20 · POV: 11 contra un 6
+## Sáb 21 · POV: 11 contra un 6
 
 **TikTok**
 ```
@@ -58,7 +61,7 @@ La respuesta: DOBLAR ✅ Con 11, cualquier 10 o figura te da 21, y hay 16 de esa
 
 ---
 
-## Sáb 21 · Desafío de memoria #2
+## Dom 22 · Desafío de memoria #2
 
 **TikTok**
 ```
@@ -78,11 +81,11 @@ Así se cuenta con el método Hi-Lo. En edge21.app lo practicás con 10 niveles,
 #contarcartas #blackjack #memoria #desafio #matematicas #juegosdecartas
 ```
 
-**Comentario fijado:** `¿Te dio +3? 🔥 Si no, mirá la cuenta carta por carta. El miércoles viene el #3, con trampa 😈`
+**Comentario fijado:** `¿Te dio +3? 🔥 Si no, mirá la cuenta carta por carta. El jueves viene el #3, con trampa 😈`
 
 ---
 
-## Dom 22 · ¿Qué es más probable?
+## Lun 23 · ¿Qué es más probable?
 
 **TikTok**
 ```
@@ -109,7 +112,7 @@ Probabilidad aplicada a las cartas, gratis en edge21.app
 
 ---
 
-## Lun 23 · Busco testers
+## Mar 24 · Busco testers
 
 Guardá los mails de los que comenten "YO": los vas a necesitar apenas Google te habilite la cuenta para la prueba cerrada.
 
@@ -139,7 +142,7 @@ A cada persona que comente "YO", mandale los pasos de `store/testers.md`.
 
 ---
 
-## Mar 24 · Tenés 17… ¿pedirías otra carta?
+## Mié 25 · Tenés 17… ¿pedirías otra carta?
 
 **TikTok**
 ```
@@ -166,7 +169,7 @@ La jugada correcta de cada mano, gratis en edge21.app
 
 ---
 
-## Mié 25 · Desafío de memoria #3, con trampa
+## Jue 26 · Desafío de memoria #3, con trampa
 
 **TikTok**
 ```
@@ -190,7 +193,7 @@ Practicá el conteo con 10 niveles, gratis en edge21.app
 
 ---
 
-## Jue 26 · ¿Qué nivel tenés?
+## Vie 27 · ¿Qué nivel tenés?
 
 **TikTok**
 ```

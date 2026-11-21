@@ -2907,6 +2907,93 @@ const SECTIONS = [
           ),
         ],
       },
+      {
+        id: "l35",
+        title: "Mitos del blackjack",
+        sum: [
+          "Las rachas, buenas o malas, no cambian lo que viene: solo importan las cartas que quedan.",
+          "El jugador que juega mal no te perjudica a la larga: a veces te ayuda y a veces no.",
+          "Contar con la cabeza es legal, pero el casino puede pedirte que no juegues.",
+        ],
+        steps: [
+          info("«El crupier está en racha»", [
+            "Después de varias manos ganadas por el crupier, mucha gente cree que «viene caliente» o que ahora «le toca perder».",
+            "Ninguna de las dos: las cartas no se acuerdan de las manos anteriores. Lo único que cambia algo es **qué cartas quedan en el zapato**, y eso lo mide el conteo.",
+          ]),
+          info("«El de al lado me arruinó la mano»", [
+            "Si alguien pide con 16 contra un 6 y se lleva el 10 que «era del crupier», parece que te perjudicó.",
+            "Pero esa carta era igual de probable que te ayudara: a veces su jugada mala te salva y a veces te hunde. **A la larga no cambia tus resultados.** Tú preocúpate de jugar bien tu mano.",
+          ]),
+          info("«La carta tapada siempre es un 10»", [
+            "Es una ayuda para aprender, no una regla. De las 13 cartas, **4 valen 10**: casi un tercio, no todas.",
+            "Por eso la estrategia básica no adivina la carta tapada: calcula qué jugada gana más en promedio, con todas las cartas posibles.",
+          ]),
+          info("«Contar cartas es ilegal»", [
+            "Contar con la cabeza es legal: solo estás prestando atención. Lo prohibido es usar **aparatos** en la mesa.",
+            "Lo que sí puede hacer el casino es pedirte que no juegues más al blackjack, o mezclar más seguido. Por eso existe el camuflaje.",
+          ]),
+          quiz(
+            "El crupier ganó las últimas 6 manos. ¿Qué cambia para la próxima?",
+            ["Le toca perder", "Va a seguir ganando", "Nada: solo importan las cartas que quedan"],
+            2,
+            "Las manos anteriores no cambian las probabilidades. Las cartas que ya salieron, sí: eso es lo que cuenta el conteo.",
+          ),
+          quiz(
+            "Alguien en tu mesa juega mal. A la larga, ¿te perjudica?",
+            ["Sí, siempre", "No: sus errores te ayudan tantas veces como te perjudican"],
+            1,
+            "Sus jugadas cambian qué carta te toca a ti, pero esa carta es igual de buena o mala en promedio.",
+          ),
+          quiz(
+            "¿Qué parte del conteo de cartas está prohibida?",
+            ["Contar con la cabeza", "Usar aparatos en la mesa", "Ninguna, todo está permitido"],
+            1,
+            "Contar mentalmente es legal. Los aparatos están prohibidos, y el casino puede pedirte que dejes de jugar.",
+          ),
+        ],
+      },
+      {
+        id: "l36",
+        title: "Entrar y salir del zapato",
+        sum: [
+          "Puedes mirar una mesa sin jugar y sentarte cuando el conteo real es positivo.",
+          "Y levantarte cuando el conteo se vuelve negativo: así juegas más manos buenas.",
+          "Llama la atención: algunos casinos no dejan entrar a la mitad del zapato.",
+        ],
+        steps: [
+          info("Mirar antes de sentarte", [
+            "En vez de jugar todo el zapato, puedes **quedarte parado detrás de la mesa** llevando el conteo, sin apostar.",
+            "Cuando el conteo real llega a **+1 o +2**, te sientas y apuestas. Así te salteas muchas de las manos que tienen la ventaja en contra.",
+          ]),
+          info("Saber irte", [
+            "Si el conteo real baja a **−1 o menos**, te levantas y buscas otra mesa.",
+            "Jugar menos manos malas vale tanto como apostar más en las buenas: las dos cosas mejoran tu resultado.",
+          ]),
+          info("El costo: llamar la atención", [
+            "Alguien que mira sin jugar y se sienta justo cuando el conteo es bueno es fácil de detectar.",
+            "Por eso algunas mesas tienen un cartel de **«no se entra a mitad del zapato»**: ahí solo puedes sentarte después de una mezcla.",
+            "Y en el blackjack online con mezcla continua no sirve: el zapato se mezcla en cada mano.",
+          ]),
+          quiz(
+            "Estás mirando una mesa sin jugar. ¿Cuándo te conviene sentarte?",
+            ["Cuando el conteo real llega a +1 o +2", "Cuando el crupier perdió varias manos", "En cualquier momento"],
+            0,
+            "Te sientas cuando las cartas que quedan te favorecen: eso lo dice el conteo real, no las rachas.",
+          ),
+          quiz(
+            "Estás jugando y el conteo real baja a −2. ¿Qué haces?",
+            ["Subo la apuesta para recuperar", "Me levanto y busco otra mesa", "Sigo igual"],
+            1,
+            "Con el conteo en contra, la mejor mano es la que no juegas.",
+          ),
+          quiz(
+            "¿Por qué no sirve en el blackjack online de mezcla continua?",
+            ["Porque está prohibido", "Porque el zapato se mezcla en cada mano y el conteo no sube"],
+            1,
+            "Si las cartas vuelven al zapato en cada mano, el conteo nunca llega a darte ventaja.",
+          ),
+        ],
+      },
     ],
   },
   {
