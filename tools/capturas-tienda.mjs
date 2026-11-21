@@ -62,7 +62,7 @@ const STATE = (extra = {}) => ({
   rating: { value: 1180, peak: 1210, history: [] },
   lastTab: "aprender",
   // Sin carteles encima: las frases de primera vez ya cerradas y las misiones ya avisadas.
-  tips: { aprender: 1, conteo: 1, entrenar: 1, jugar: 1, progreso: 1 },
+  tips: { aprender: 1, conteo: 1, entrenar: 1, jugar: 1, progreso: 1, cuenta: 1 },
   misiones: {
     dia: key(today),
     ids: ["leccion", "meta", "mesa"],

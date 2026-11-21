@@ -118,11 +118,12 @@ import {
   usePracticeClock,
 } from "./screens/goal.jsx";
 
+// En el orden del camino: aprender, practicar la jugada, contar, jugar y ver cómo vas.
 const TABS = [
-  { id: "conteo", label: "Conteo", icon: "drills" },
-  { id: "entrenar", label: "Entrenar", icon: "train" },
-  { id: "jugar", label: "Jugar", icon: "play", layerClass: "layer-sim" },
   { id: "aprender", label: "Aprender", icon: "learn" },
+  { id: "entrenar", label: "Entrenar", icon: "train" },
+  { id: "conteo", label: "Conteo", icon: "drills" },
+  { id: "jugar", label: "Jugar", icon: "play", layerClass: "layer-sim" },
   { id: "progreso", label: "Progreso", icon: "stats" },
 ];
 const TAB_SCREENS = {

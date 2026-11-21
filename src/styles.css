@@ -10519,3 +10519,12 @@ html[data-theme="light"] .app.escritorio .tabbar {
     height: 30px;
   }
 }
+
+/* Aprender: las secciones de más adelante, en una línea (se abren con un toque). */
+.sec-done.sec-later {
+  border-color: var(--surface-2);
+  background: var(--surface);
+}
+.sec-later .sec-done-title {
+  color: var(--text-2);
+}
