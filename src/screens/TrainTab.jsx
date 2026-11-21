@@ -220,6 +220,25 @@ function TrainTab() {
         <button
           type="button"
           className="list-item"
+          onClick={() => e.push("drillErrores", { confirmExit: true })}
+        >
+          <span className="li-icon">
+            <Icon name="eye" />
+          </span>
+          <span className="li-text">
+            <span className="li-title">¿Pagó bien el crupier?</span>
+            <span className="li-sub" style={{ display: "block" }}>
+              Mira la mano y lo que pagó: descubre cuándo se equivoca.
+            </span>
+          </span>
+          <span className="li-side">
+            {mejorDe(a.drills.dealerErrors)}
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+        <button
+          type="button"
+          className="list-item"
           onClick={() =>
             e.push("trainSession", { mode: "exam", confirmExit: true })
           }

@@ -12,7 +12,7 @@ Entrenador de blackjack: estrategia básica y contar cartas. Sin apuestas.
 Edge 21 es un entrenador de blackjack para aprender a jugar bien: primero la estrategia básica, después a contar cartas con Hi-Lo y, al final, a usar el conteo en una mesa de casino de verdad.
 
 APRENDE PASO A PASO
-• 46 lecciones cortas con una mesa narrada: juegas cada mano mientras te explican por qué.
+• 47 lecciones cortas con una mesa narrada: juegas cada mano mientras te explican por qué.
 • Tu tabla de estrategia básica se va encendiendo a medida que aprendes, con la razón de cada jugada.
 • Si ya sabes, haz un examen y salta directo al nivel que te toca.
 
@@ -53,7 +53,7 @@ IMPORTANTE
 Edge 21 es para aprender: no se apuesta ni se gana dinero real. Ningún método garantiza ganar. Contar cartas mentalmente es legal, pero los casinos pueden pedirte que dejes de jugar, y usar el celular en la mesa está prohibido. Si juegas, hazlo solo con dinero que no necesitas.
 
 ## Novedades de la primera versión (máx. 500 caracteres)
-Primera versión de Edge 21: 46 lecciones (también KO, Hi-Opt, Zen, Omega II y Wong Halves), ruta de conteo de 10 niveles, desafío diario con ranking, simulador de blackjack y Premium con prueba gratis. ¡Gracias por probarla! Si encuentras algo raro, escríbenos a soporte@edge21.app.
+Primera versión de Edge 21: 47 lecciones (también KO, Hi-Opt, Zen, Omega II y Wong Halves), ruta de conteo de 10 niveles, desafío diario con ranking, simulador de blackjack y Premium con prueba gratis. ¡Gracias por probarla! Si encuentras algo raro, escríbenos a soporte@edge21.app.
 
 ## Categoría
 **Educación** (recomendado). En Juegos → Cartas compite con cientos de casinos de fichas y la gente que busca aprender no la encuentra. En el cuestionario de clasificación igual hay que decir que tiene "apuestas simuladas" (fichas de mentira).

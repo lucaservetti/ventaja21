@@ -1934,8 +1934,157 @@ function DrillPayouts() {
   );
 }
 
+// "¿Pagó bien el crupier?": una mano ya terminada y lo que hizo el crupier. Hay que darse cuenta
+// si pagó bien o se equivocó (los crupieres también se equivocan, y casi nunca a favor tuyo).
+const APUESTAS_ERROR = [10, 15, 20, 25, 30, 40, 50, 75, 100];
+// El crupier pide hasta 17 y se planta con 17 blando (como en la mesa estándar de la app).
+function manoDelCrupier() {
+  const c = [makeCard(RANKS[randInt(13)], SUITS[randInt(4)]), makeCard(RANKS[randInt(13)], SUITS[randInt(4)])];
+  while (handValue(c).total < 17) c.push(makeCard(RANKS[randInt(13)], SUITS[randInt(4)]));
+  return c;
+}
+const carta = () => makeCard(RANKS[randInt(13)], SUITS[randInt(4)]);
+const DIEZ = ["10", "J", "Q", "K"];
+function preguntaDeError() {
+  for (;;) {
+    const x = APUESTAS_ERROR[randInt(APUESTAS_ERROR.length)];
+    const tipo = ["bj", "normal", "normal", "normal", "doble"][randInt(5)];
+    let jugador;
+    if (tipo === "bj") jugador = shuffle([makeCard("A", SUITS[randInt(4)]), makeCard(DIEZ[randInt(4)], SUITS[randInt(4)])]);
+    else if (tipo === "doble") {
+      // Se dobla con 9, 10 u 11: dos cartas chicas y una más.
+      const pares = [["5", "4"], ["6", "4"], ["7", "3"], ["6", "5"], ["8", "3"], ["7", "4"], ["9", "2"], ["8", "2"]];
+      const [a, b] = pares[randInt(pares.length)];
+      jugador = [makeCard(a, SUITS[randInt(4)]), makeCard(b, SUITS[randInt(4)]), carta()];
+    } else {
+      // Pide como alguien que juega razonable: hasta 13 si es dura, hasta 18 si es blanda.
+      jugador = [carta(), carta()];
+      for (let v = handValue(jugador); !v.bust && (v.soft ? v.total < 18 : v.total < 13); v = handValue(jugador))
+        jugador.push(carta());
+    }
+    const crupier = manoDelCrupier();
+    const vj = handValue(jugador);
+    const vc = handValue(crupier);
+    // El crupier con blackjack o el jugador con 21 de dos cartas que no es blackjack: se descartan.
+    if (crupier.length === 2 && vc.total === 21) continue;
+    if (tipo !== "bj" && jugador.length === 2 && vj.total === 21) continue;
+    if (tipo === "normal" && vj.bust) continue;
+    const apuesta = tipo === "doble" ? x * 2 : x;
+    let resultado;
+    if (tipo === "bj") resultado = "bj";
+    else if (vj.bust) resultado = "pierde";
+    else if (vc.bust || vj.total > vc.total) resultado = "gana";
+    else if (vj.total === vc.total) resultado = "empate";
+    else resultado = "pierde";
+    // Lo correcto y los errores típicos, como { paga: monto } o { accion: "devuelve" | "lleva" }.
+    const correcto =
+      resultado === "bj"
+        ? { paga: x * 1.5 }
+        : resultado === "gana"
+          ? { paga: apuesta }
+          : resultado === "empate"
+            ? { accion: "devuelve" }
+            : { accion: "lleva" };
+    const errores =
+      resultado === "bj"
+        ? [{ paga: x }, { paga: x * 1.2 }]
+        : resultado === "gana"
+          ? tipo === "doble"
+            ? [{ paga: x }, { accion: "devuelve" }]
+            : [{ accion: "devuelve" }, { paga: x / 2 }]
+          : resultado === "empate"
+            ? [{ accion: "lleva" }, { paga: x }]
+            : [{ accion: "devuelve" }, { paga: apuesta }];
+    const bien = randInt(100) < 55;
+    const hizo = bien ? correcto : errores[randInt(errores.length)];
+    // Frases enteras (no pedazos) para que se traduzcan bien.
+    const doblada = tipo === "doble";
+    const texto = hizo.paga
+      ? doblada
+        ? `Apostaste ${pesos(x)} y doblaste. El crupier te pagó ${pesos(hizo.paga)}.`
+        : `Apostaste ${pesos(x)}. El crupier te pagó ${pesos(hizo.paga)}.`
+      : hizo.accion === "devuelve"
+        ? doblada
+          ? `Apostaste ${pesos(x)} y doblaste. El crupier te devolvió la apuesta, sin pagarte nada.`
+          : `Apostaste ${pesos(x)}. El crupier te devolvió la apuesta, sin pagarte nada.`
+        : doblada
+          ? `Apostaste ${pesos(x)} y doblaste. El crupier se llevó tu apuesta.`
+          : `Apostaste ${pesos(x)}. El crupier se llevó tu apuesta.`;
+    const comparacion = vc.bust
+      ? "El crupier se pasó"
+      : `Tenías ${vj.total} y el crupier ${vc.total}`;
+    let porque;
+    if (resultado === "bj")
+      porque = `Blackjack paga 3 a 2: con ${pesos(x)} te tenían que pagar ${pesos(x * 1.5)}.`;
+    else if (resultado === "gana")
+      porque = doblada
+        ? `${comparacion}: ganabas. Como doblaste, jugabas ${pesos(apuesta)} y te tenían que pagar ${pesos(apuesta)}.`
+        : `${comparacion}: ganabas. Te tenían que pagar ${pesos(apuesta)}.`;
+    else if (resultado === "empate")
+      porque = `Empate a ${vj.total}: te devuelven la apuesta y no te pagan nada.`;
+    else
+      porque = vj.bust
+        ? "Te pasaste: perdías y el crupier se lleva tu apuesta."
+        : doblada
+          ? `${comparacion}: perdías. El crupier se lleva los ${pesos(apuesta)}: la apuesta y la doblada.`
+          : `${comparacion}: perdías y el crupier se lleva tu apuesta.`;
+    porque = (bien ? "Pagó bien. " : "Se equivocó. ") + porque;
+    return {
+      jugador,
+      crupier,
+      texto,
+      porque,
+      options: ["Pagó bien", "Se equivocó"],
+      answer: bien ? 0 : 1,
+      missText: `${texto} → ${bien ? "Pagó bien" : "Se equivocó"}`,
+    };
+  }
+}
+function DrillErrores() {
+  const nav = useNav();
+  const quiz = useQuiz(() => preguntaDeError(), 10);
+  return (
+    <QuizDrill
+      title="¿Pagó bien el crupier?"
+      kind="dealerErrors"
+      d={quiz}
+      onAgain={() => nav.replace("drillErrores")}
+      resultMessage={(r) =>
+        r >= 0.8
+          ? "Buen ojo: en la mesa te vas a dar cuenta si el crupier se equivoca. Si pasa, avísale enseguida, antes de la próxima mano."
+          : "Repasa: blackjack paga 3 a 2, ganar paga lo mismo que apostaste (el doble si doblaste) y el empate solo te devuelve la apuesta."
+      }
+      render={(q) => (
+        <>
+          <div className="error-manos">
+            <div className="error-mano">
+              <span className="eyebrow">Crupier</span>
+              <div className="suma-cartas">
+                {q.crupier.map((c) => (
+                  <PlayingCard card={c} size="sm" key={c.id} />
+                ))}
+              </div>
+            </div>
+            <div className="error-mano">
+              <span className="eyebrow">Tú</span>
+              <div className="suma-cartas">
+                {q.jugador.map((c) => (
+                  <PlayingCard card={c} size="sm" key={c.id} />
+                ))}
+              </div>
+            </div>
+          </div>
+          <h2 className="center drill-q pago-q">{q.texto}</h2>
+        </>
+      )}
+      explain={(q) => q.porque}
+    />
+  );
+}
+
 export {
   DAILY_FORMATS,
+  DrillErrores,
   DrillPayouts,
   DrillTotals,
   DRILL_SPEEDS,

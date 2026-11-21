@@ -794,6 +794,31 @@ const PRUEBAS = {
     await h.foto("jugando");
   },
 
+  // Ejercicios de mesa: sumar la mano, pagos y "¿Pagó bien el crupier?". Cada uno responde una
+  // pregunta, muestra la explicación y sigue.
+  async mesaEjercicios(h) {
+    const { page } = h;
+    for (const [es, en] of [
+      ["¿Cuánto suma?", "What's the total?"],
+      ["Pagos", "Payouts"],
+      ["¿Pagó bien el crupier?", "Did the dealer pay right?"],
+    ]) {
+      await h.tab("Entrenar", "Train");
+      await h.click(es, en, { exact: true, wait: 900 });
+      const opciones = page.locator(".option").filter({ visible: true });
+      check((await opciones.count()) >= 2, `${es}: no hay opciones`);
+      await opciones.first().click();
+      await page.waitForTimeout(500);
+      await h.see("Siguiente", "Next");
+      await h.foto(es.replace(/[^a-z]/gi, "").slice(0, 12) || "ejercicio");
+      await page.locator(".drill .topbar button, .layer.full .topbar button").filter({ visible: true }).first().click();
+      await page.waitForTimeout(600);
+      const salir = page.getByRole("button", { name: h.T("Salir", "Leave") }).filter({ visible: true });
+      if (await salir.count()) await salir.first().click();
+      await page.waitForTimeout(500);
+    }
+  },
+
   // Desafío diario: aparece, se juega y queda guardado.
   async desafio(h) {
     const { page } = h;

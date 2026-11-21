@@ -10398,3 +10398,22 @@ html[data-theme="light"] .app.escritorio .tabbar {
   width: auto;
   flex: none;
 }
+
+/* "¿Pagó bien el crupier?": las dos manos, una al lado de la otra si entran. */
+.error-manos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 22px;
+  margin-top: 6px;
+}
+.error-mano {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.error-mano .suma-cartas {
+  margin: 6px 0 2px;
+  flex-wrap: nowrap;
+  gap: 5px;
+}
