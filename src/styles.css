@@ -10495,8 +10495,8 @@ html[data-theme="light"] .app.escritorio .tabbar {
 .guardar-card .btn {
   width: auto;
 }
-/* Celulares angostos: el título y los botones de arriba entran en una línea. */
-@media (max-width: 380px) {
+/* Celulares (hasta 420 px): el título y los botones de arriba entran en una línea. */
+@media (max-width: 420px) {
   .ph-row {
     column-gap: 8px;
   }
