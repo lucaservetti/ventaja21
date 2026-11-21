@@ -121,7 +121,7 @@ await paso("en otro celular nuevo, entrar trae el progreso", async () => {
 await paso("cerrar sesión guarda en la cuenta y deja el aparato como nuevo; volver a entrar lo trae", async () => {
   await b.locator('nav.tabbar button:has-text("Conteo")').click();
   await b.getByRole("button", { name: "Ajustes" }).filter({ visible: true }).first().click();
-  await b.getByText("Tu cuenta", { exact: true }).click();
+  await b.locator(".cuenta-setting").click();
   await b.waitForTimeout(400);
   await b.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
   await b.getByText("¿Cerrar sesión?").waitFor({ timeout: 3000 });
@@ -165,7 +165,7 @@ await paso("con progreso en los dos lados pregunta, y elegir el de la cuenta lo 
   // Abrir la pantalla de cuenta desde Ajustes.
   await c.locator('nav.tabbar button:has-text("Conteo")').click();
   await c.getByRole("button", { name: "Ajustes" }).filter({ visible: true }).first().click();
-  await c.getByText("Tu cuenta", { exact: true }).click();
+  await c.locator(".cuenta-setting").click();
   await c.waitForTimeout(400);
   c.evaluate((t) => window.__cloudTest.finishSignIn(t), fakeGoogle("g-ana", "Ana Pérez", "ana@ejemplo.com"));
   await c.getByText("¿Con qué progreso te quedas?").waitFor({ timeout: 8000 });
@@ -222,7 +222,7 @@ await paso("los errores de la app llegan a la nube", async () => {
 await paso("borrar la cuenta borra la nube y el ranking", async () => {
   await a.locator('nav.tabbar button:has-text("Conteo")').click();
   await a.getByRole("button", { name: "Ajustes" }).filter({ visible: true }).first().click();
-  await a.getByText("Tu cuenta", { exact: true }).click();
+  await a.locator(".cuenta-setting").click();
   await a.getByText("Borrar mi cuenta y mis datos de la nube").click();
   await a.getByText("Sí, borrar todo").click();
   await a.getByText("Guarda tu progreso en tu cuenta de Google").waitFor({ timeout: 8000 });
