@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { dayKey, setSettings, useStore } from "../state.js";
+import { dayKey, setSettings, setState, useStore } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
 import { Button, IconButton, Toasts, cx } from "../ui/components.jsx";
-import { PageHeader, PrimeraVez } from "../ui/common.jsx";
+import { AccountButton, PageHeader, PrimeraVez } from "../ui/common.jsx";
 import {
   LESSONS,
   SECTIONS,
@@ -12,7 +12,7 @@ import {
 import { useNav } from "../nav.js";
 import { useEscritorio } from "../escritorio.js";
 import { MyChart } from "./MyChart.jsx";
-import { codigoAmigo, useAccount } from "../cloud.js";
+import { ACCOUNTS, codigoAmigo, useAccount } from "../cloud.js";
 import { GoalBadge } from "./goal.jsx";
 import { Misiones } from "./misiones.jsx";
 import { reviewCount } from "../lessons/Review.jsx";
@@ -192,6 +192,36 @@ function lessonProgress(a) {
     t = LESSONS.find((s) => !e(s.id));
   return { done: e, currentId: t ? t.id : null };
 }
+// Después de la segunda lección, sin cuenta: invitar a guardar el progreso con Google (con el
+// regalo de bienvenida). Se cierra con la X y no vuelve (queda en st.tips.cuenta).
+function GuardarCard({ st, lessonsDone }) {
+  const nav = useNav();
+  const { acct } = useAccount();
+  if (!ACCOUNTS || acct || codigoAmigo() || lessonsDone < 2) return null;
+  if (st.tips && st.tips.cuenta) return null;
+  const cerrar = () =>
+    setState((s) => ({ ...s, tips: { ...(s.tips || {}), cuenta: Date.now() } }));
+  return (
+    <div className="card guardar-card">
+      <div className="guardar-top">
+        <span className="li-icon">
+          <Icon name="user" />
+        </span>
+        <div className="grow">
+          <b>Guarda tu progreso</b>
+          <p className="muted">
+            Entra con Google: no lo pierdes si cambias de celular, apareces en el
+            ranking y te llevas 1 día de Premium de regalo.
+          </p>
+        </div>
+        <IconButton icon="close" label="Ahora no" onClick={cerrar} />
+      </div>
+      <Button small={true} onClick={() => nav.push("account")}>
+        Entrar con Google
+      </Button>
+    </div>
+  );
+}
 // Si llegaste con el enlace de un amigo y todavía no entraste con Google: cómo ganan los dos.
 function AmigoCard() {
   const nav = useNav();
@@ -355,10 +385,12 @@ function LearnTab() {
               onClick={() => e.push("guide")}
             />
             <GoalBadge />
+            <AccountButton />
           </>
         }
       />
       <AmigoCard />
+      <GuardarCard st={a} lessonsDone={l} />
       <TestCard st={a} lessonsDone={l} />
       {testOculto(a, l) ? (
         <PrimeraVez id="aprender">

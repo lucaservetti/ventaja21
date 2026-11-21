@@ -26,7 +26,7 @@ import {
   InfoDot,
   PageHeader,
   PrimeraVez,
-  SettingsButton,
+  AccountButton,
   spotTitle,
   useRules,
 } from "../ui/common.jsx";
@@ -57,7 +57,7 @@ function ProgressTab() {
         actions={
           <>
             <GoalBadge />
-            <SettingsButton />
+            <AccountButton />
           </>
         }
       />

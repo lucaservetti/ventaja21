@@ -8,7 +8,7 @@ import {
   MiniCards,
   PageHeader,
   PrimeraVez,
-  SettingsButton,
+  AccountButton,
   pct,
   useRules,
 } from "../ui/common.jsx";
@@ -53,7 +53,7 @@ function TrainTab() {
         actions={
           <>
             <GoalBadge />
-            <SettingsButton />
+            <AccountButton />
           </>
         }
       />

@@ -18,7 +18,7 @@ import {
   InfoDot,
   PageHeader,
   PrimeraVez,
-  SettingsButton,
+  AccountButton,
 } from "../ui/common.jsx";
 import { HiLoValues, SystemValues } from "../lessons/visuals.jsx";
 import { dailyFormat } from "./drills.jsx";
@@ -67,7 +67,7 @@ function CountTab() {
               onClick={() => setHelpOpen(true)}
             />
             <GoalBadge />
-            <SettingsButton />
+            <AccountButton />
           </>
         }
       />

@@ -63,6 +63,36 @@ function SettingsSheet({ open: a, onClose: e }) {
   };
   return (
     <Sheet open={a} onClose={e} title="Ajustes" tall={true}>
+      {/* Tu cuenta, primero: sin cuenta es la invitación a entrar con Google. */}
+      {ACCOUNTS ? (
+        <button
+          type="button"
+          className={cx("list-item setting-link cuenta-setting", !acct && "sin-cuenta")}
+          onClick={() => {
+            e();
+            s.push("account");
+          }}
+        >
+          <span className="cuenta-avatar" aria-hidden="true">
+            {acct ? (
+              (acct.name || acct.email || "?").trim()[0].toUpperCase()
+            ) : (
+              <Icon name="user" size={22} />
+            )}
+          </span>
+          <span className="li-text">
+            <span className="li-title" style={{ fontSize: 17 }}>
+              {acct ? acct.name || "Tu cuenta" : "Entrar con Google"}
+            </span>
+            <span className="li-sub" style={{ display: "block" }}>
+              {acct
+                ? `Guardando tu progreso en ${acct.email || "tu cuenta de Google"}`
+                : "Guarda tu progreso y llévate 1 día de Premium de regalo"}
+            </span>
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+      ) : null}
       {
         <button
           type="button"
@@ -85,28 +115,6 @@ function SettingsSheet({ open: a, onClose: e }) {
           <Icon name="chev" className="li-chev" />
         </button>
       }
-      {ACCOUNTS ? (
-        <button
-          type="button"
-          className="list-item setting-link"
-          onClick={() => {
-            e();
-            s.push("account");
-          }}
-        >
-          <span className="li-text">
-            <span className="li-title" style={{ fontSize: 17 }}>
-              Tu cuenta
-            </span>
-            <span className="li-sub" style={{ display: "block" }}>
-              {acct
-                ? `Guardando tu progreso en ${acct.email || "tu cuenta de Google"}`
-                : "Guarda tu progreso con Google (opcional)"}
-            </span>
-          </span>
-          <Icon name="chev" className="li-chev" />
-        </button>
-      ) : null}
       {ES_DUENO(acct) ? (
         <button
           type="button"

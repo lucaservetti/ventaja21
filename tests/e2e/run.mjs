@@ -477,12 +477,12 @@ const PRUEBAS = {
   // con el botón de la app y con el del navegador, deja en la app (antes llevaba a la página de inicio).
   async volverAtras(h) {
     const { page } = h;
-    const ajustes = 'section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]';
+    const ajustes = 'section:not([hidden]) .acct-btn, section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]';
     const enApp = () => page.evaluate(() => /\/app\/(index\.html)?$/.test(location.pathname));
     await h.tab("Progreso", "Progress");
     for (let vuelta = 0; vuelta < 2; vuelta++) {
       await h.css(ajustes, 600);
-      await h.click("Tu cuenta", "Your account", { wait: 700 });
+      await h.css(".cuenta-setting", 700);
       // Volver: la primera vez con el botón de la app, la segunda con el del navegador.
       if (vuelta === 0) await page.locator('.layer.full [aria-label="Volver"], .layer.full [aria-label="Back"]').filter({ visible: true }).first().click();
       else await page.goBack();
@@ -516,12 +516,12 @@ const PRUEBAS = {
     await h.foto("menu");
     // Ajustes: ventana en el medio (no pegada abajo).
     await h.tab("Progreso", "Progress");
-    await h.css('section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    await h.css('section:not([hidden]) .acct-btn, section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
     const hoja = await page.locator(".sheet").boundingBox();
     check(hoja && hoja.y > 10 && hoja.y + hoja.height < 900 - 10 && hoja.x > 248, `Ajustes no quedó en el medio: ${JSON.stringify(hoja)}`);
     await h.foto("ajustes");
     // Abrir una pantalla y usar el menú: se cierra y va a esa pestaña.
-    await h.click("Tu cuenta", "Your account", { wait: 700 });
+    await h.css(".cuenta-setting", 700);
     check(await page.locator("nav.tabbar").isVisible(), "con una pantalla abierta el menú desaparece");
     await h.tab("Aprender", "Learn");
     await page.waitForTimeout(500);
@@ -687,7 +687,7 @@ const PRUEBAS = {
     check(de("nuevo").length === 1 && de("activo").length === 0 && de("empezar").length === 1, `repetidos: ${JSON.stringify(eventos.map((x) => x.e))}`);
     // Apagada en Ajustes: no manda más.
     await h.tab("Progreso", "Progress");
-    await h.css('section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    await h.css('section:not([hidden]) .acct-btn, section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
     await h.click("Estadísticas anónimas", "Anonymous statistics", { wait: 400 });
     check((await h.state()).settings.sinEstadisticas === true, "no se apagó");
     await page.keyboard.press("Escape");
@@ -718,7 +718,7 @@ const PRUEBAS = {
     check(eventos.length === antes, `mandó estando apagada: ${JSON.stringify(eventos.slice(antes))}`);
     // Panel: solo para el dueño, desde Ajustes.
     await h.tab("Progreso", "Progress");
-    await h.css('section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    await h.css('section:not([hidden]) .acct-btn, section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
     await h.click("Estadísticas", "Statistics", { exact: true, wait: 900 });
     await h.see("Hasta dónde llegan", "How far they get");
     await h.see("Terminaron 1 lección", "Finished 1 lesson");
@@ -745,7 +745,7 @@ const PRUEBAS = {
     await page.evaluate(() => localStorage.setItem("v21.sim", "1"));
     await page.reload();
     await page.waitForTimeout(1200);
-    const ajustes = 'section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]';
+    const ajustes = 'section:not([hidden]) .acct-btn, section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]';
     await h.tab("Progreso", "Progress");
     await h.click("Análisis de tus errores", "Mistake analysis", { wait: 700 });
     await h.see("¿La quieres probar primero?", "Want to try it first?");
@@ -919,7 +919,7 @@ const PRUEBAS = {
     const { page } = h;
     // Sin Premium: un sistema avanzado abre la pantalla de Premium.
     await h.tab("Progreso", "Progress");
-    await h.css('section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    await h.css('section:not([hidden]) .acct-btn, section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
     await h.click("Sistema de conteo", "Counting system", { wait: 600 });
     // Hi-Opt I también es de Premium: gratis quedan Hi-Lo y KO.
     await h.click("Hi-Opt I", "Hi-Opt I", { wait: 700 });
@@ -949,7 +949,7 @@ const PRUEBAS = {
     await h.foto("analisis");
     await page.locator(".layer.full button").filter({ visible: true }).first().click();
     await page.waitForTimeout(500);
-    await h.css('section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    await h.css('section:not([hidden]) .acct-btn, section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
     await h.click("Personalizar", "Customize", { wait: 700 });
     check(!(await page.locator(".look-lock").count()), "con Premium sigue el aviso de Premium");
     await h.css('.look-sw[aria-label="Azul"], .look-sw[aria-label="Blue"]', 300);
