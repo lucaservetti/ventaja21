@@ -232,7 +232,7 @@ await paso("borrar la cuenta borra la nube y el ranking", async () => {
 });
 
 await paso("sin errores en la consola", async () => {
-  const all = [...a.errors, ...b.errors, ...c.errors].filter((e) => !/error de prueba/.test(e));
+  const all = [...a.errors, ...b.errors, ...c.errors].filter((e) => !/error de prueba|report-only Content Security Policy/.test(e));
   check(!all.length, all.join(" | "));
 });
 
