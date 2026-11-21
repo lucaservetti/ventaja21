@@ -81,6 +81,12 @@ function TableView({
 }) {
   useTable(table);
   const nav = useNav();
+  // ¿Se puede repartir sin poner fichas? Sí, con la última apuesta, si alcanza y respeta la mesa.
+  const apuestaLista =
+    table.lastBet > 0 &&
+    table.lastBet <= table.bankroll &&
+    table.lastBet >= table.minBet &&
+    !table.countCheckDue;
   // Repartir (en la web de prueba hay un límite de manos por día; ver platform.js).
   const dealOk = (pre) => {
     if (!demoTake("jugar")) {
@@ -532,12 +538,17 @@ function TableView({
                   small={true}
                   onClick={() => {
                     vibrate(10);
+                    // Sin fichas puestas: repite la última apuesta (al empezar, la sugerida), así
+                    // se reparte con un solo toque.
+                    if (!table.bet && table.rebet() === false) return;
                     dealOk();
                   }}
-                  disabled={!table.bet}
+                  disabled={!table.bet && !apuestaLista}
                   className="grow deal-btn"
                 >
-                  Repartir
+                  {table.bet
+                    ? "Repartir"
+                    : `Repartir · ${table.fmt(table.lastBet)}`}
                 </Button>
               )}
             </div>

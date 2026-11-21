@@ -3400,10 +3400,10 @@ function lessonMinutes(a) {
   return Math.max(2, Math.min(5, Math.round(a.steps.length / 4)));
 }
 // Abre una lección (el examen final no es una lección: abre el simulador en modo examen).
-function openLesson(nav, lesson, replace = false) {
+function openLesson(nav, lesson, replace = false, desde = 0) {
   const [name, params] = lesson.exam
     ? ["shoeChallenge", { mode: "exam", confirmExit: true, flex: true }]
-    : ["lesson", { id: lesson.id, confirmExit: true }];
+    : ["lesson", { id: lesson.id, confirmExit: true, ...(desde ? { desde } : {}) }];
   if (replace) nav.replace(name, params);
   else nav.push(name, params);
 }

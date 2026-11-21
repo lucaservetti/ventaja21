@@ -267,20 +267,33 @@ function ContinueCard({ st, done, currentId }) {
   const n = LESSONS.indexOf(lesson) + 1;
   const hoy = !!st.activity[dayKey()];
   const nueva = !LESSONS.some((x) => done(x.id));
+  // Si dejaste esta lección por la mitad (hace menos de una semana), se retoma en ese paso.
+  const ec = st.enCurso;
+  const aMedias =
+    ec && ec.id === lesson.id && ec.paso > 0 && Date.now() - ec.t < 7 * 864e5 ? ec : null;
   return (
     <div className="card continue-card">
       <div className="eyebrow acc">
-        {hoy ? "Ya sumaste hoy · sigue si quieres" : "Tu próximo paso"}
+        {aMedias
+          ? "Seguir donde quedaste"
+          : hoy
+            ? "Ya sumaste hoy · sigue si quieres"
+            : "Tu próximo paso"}
       </div>
       <div className="continue-row">
         <span className="grow">
           <b className="continue-title">{lesson.title}</b>
           <span className="muted small" style={{ display: "block" }}>
-            {`Lección ${n} · ${lessonMinutes(lesson)} min`}
+            {aMedias
+              ? `Lección ${n} · ibas por el paso ${aMedias.paso + 1} de ${aMedias.n}`
+              : `Lección ${n} · ${lessonMinutes(lesson)} min`}
           </span>
         </span>
-        <Button small={true} onClick={() => openLesson(nav, lesson)}>
-          {nueva ? "Empezar" : "Seguir"}
+        <Button
+          small={true}
+          onClick={() => openLesson(nav, lesson, false, aMedias ? aMedias.paso : 0)}
+        >
+          {nueva && !aMedias ? "Empezar" : "Seguir"}
         </Button>
       </div>
     </div>
@@ -349,6 +362,7 @@ function InstalarIphone({ st, lessonsDone }) {
 }
 function LearnTab() {
   const desk = useEscritorio();
+  const { acct } = useAccount();
   let a = useStore(),
     e = useNav(),
     { done: t, currentId: s } = lessonProgress(a),
@@ -389,17 +403,22 @@ function LearnTab() {
           </>
         }
       />
-      <AmigoCard />
-      <GuardarCard st={a} lessonsDone={l} />
+      {/* Arriba, lo que viniste a hacer: el test (al empezar) o tu próximo paso. Debajo, como
+          mucho un aviso por vez: la invitación de un amigo, la frase de bienvenida o guardar tu
+          progreso con Google. */}
       <TestCard st={a} lessonsDone={l} />
-      {testOculto(a, l) ? (
+      <NextStepsCard st={a} done={t} />
+      {testOculto(a, l) ? <ContinueCard st={a} done={t} currentId={s} /> : null}
+      {ACCOUNTS && !acct && codigoAmigo() ? (
+        <AmigoCard />
+      ) : testOculto(a, l) && !(a.tips && a.tips.aprender) ? (
         <PrimeraVez id="aprender">
           Aquí aprendes con lecciones cortas, una por vez. Arriba a la derecha
           tienes tu tabla de estrategia y la guía.
         </PrimeraVez>
-      ) : null}
-      <NextStepsCard st={a} done={t} />
-      {testOculto(a, l) ? <ContinueCard st={a} done={t} currentId={s} /> : null}
+      ) : (
+        <GuardarCard st={a} lessonsDone={l} />
+      )}
       {testOculto(a, l) ? <Misiones compacta={true} /> : null}
       {WEB_DEMO ? (
         <button
@@ -488,10 +507,37 @@ function SectionPath({ section: a, st: e, done: t, currentId: s, onOpen: n }) {
     full = c === o.length;
   // Las secciones bloqueadas que no son la siguiente muestran solo su cartel (menos camino que
   // recorrer con el dedo); sus lecciones se ven tocando "Ver las lecciones".
+  // La sección que sigue muestra su cartel (con "Saltar hasta aquí") sin el camino; las de más
+  // adelante, una sola línea, como las terminadas. Así Aprender no es una lista eterna.
   const curSec = SECTIONS.findIndex((x) => x.lessons.some((k) => k.id === s));
-  const lejos = locked && curSec >= 0 && SECTIONS.indexOf(a) > curSec + 1;
+  const idx = SECTIONS.indexOf(a);
+  const lejos = locked && curSec >= 0 && idx > curSec;
+  const muyLejos = locked && curSec >= 0 && idx > curSec + 1;
   const [open, setOpen] = useState(false);
   const [ver, setVer] = useState(false);
+  if (muyLejos && !ver)
+    return (
+      <div className="section-block">
+        <button
+          type="button"
+          className="sec-done sec-later"
+          onClick={() => setVer(true)}
+          aria-expanded={false}
+        >
+          <span className="node node-locked node-s" aria-hidden="true">
+            <span className="node-face num">{a.id}</span>
+          </span>
+          <span className="grow">
+            <span className="eyebrow">Sección {a.id}</span>
+            <b className="sec-done-title">{a.title}</b>
+          </span>
+          <span className="muted small num">
+            {c}/{o.length}
+          </span>
+          <Icon name="chev" className="sec-done-chev" />
+        </button>
+      </div>
+    );
   if (full && !open)
     return (
       <div className="section-block">

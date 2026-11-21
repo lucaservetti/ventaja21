@@ -4,6 +4,7 @@ import {
   completeLesson,
   markPathDone,
   recordReviewAnswer,
+  setState,
   useStore,
   withRules,
 } from "../state.js";
@@ -76,11 +77,18 @@ function reviewable(step) {
     (step.t === "scene" && !!(step.ask || step.play))
   );
 }
-function Lesson({ id: a, then: e }) {
+// Dónde retomar una lección: en el paso guardado, pero si es parte de una mano narrada (pasos
+// "scene" seguidos), desde el principio de esa mano, para que la mesa quede igual.
+function pasoSeguro(steps, paso) {
+  let k = Math.max(0, Math.min(paso | 0, steps.length - 1));
+  while (k > 0 && steps[k].t === "scene" && steps[k - 1].t === "scene") k--;
+  return k;
+}
+function Lesson({ id: a, then: e, desde }) {
   let t = useNav(),
     s = getLesson(a),
     n = s.steps,
-    [l, i] = useState(0),
+    [l, i] = useState(() => (desde ? pasoSeguro(n, desde) : 0)),
     [o, c] = useState({}),
     [r, u] = useState({}),
     [d, p] = useState(false),
@@ -92,6 +100,12 @@ function Lesson({ id: a, then: e }) {
     window.addEventListener("v21-back", X);
     return () => window.removeEventListener("v21-back", X);
   }, []);
+  // "Seguir donde quedaste": se guarda en qué paso vas (desde el segundo) y se borra al terminar.
+  useEffect(() => {
+    if (l < 1) return;
+    const paso = pasoSeguro(n, l);
+    setState((st) => ({ ...st, enCurso: { id: s.id, paso, n: n.length, t: Date.now() } }));
+  }, [l]);
   let b = !((X, P) =>
       X.t === "scene"
         ? X.act
@@ -125,6 +139,7 @@ function Lesson({ id: a, then: e }) {
         } else {
           let X = M.n ? M.ok / M.n : 1;
           completeLesson(s.id, X);
+          setState((st) => (st.enCurso ? { ...st, enCurso: null } : st));
           if (e && e.markPath) {
             markPathDone(e.markPath);
           }

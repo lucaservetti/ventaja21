@@ -261,6 +261,7 @@ const DEFAULT_STATE = {
   racha: { protectores: 0, primero: false, nuevo: null, aviso: null },
   // Frases de "primera vez" que ya cerraste ({ [id]: fecha }).
   tips: {},
+  enCurso: null, // lección dejada por la mitad: { id, paso, n, t } ("Seguir donde quedaste")
   // Misiones del día (misiones.js): el día, cuáles tocaron, el contador de manos al empezar, cuáles
   // ya se avisaron, el día en que abriste el premio y cuántos días las completaste todas.
   misiones: { dia: null, ids: [], base: {}, avisadas: {}, cobrado: null, completas: 0 },
