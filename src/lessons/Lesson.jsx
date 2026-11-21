@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Misiones } from "../screens/misiones.jsx";
 import {
   completeLesson,
   markPathDone,
@@ -1173,11 +1172,6 @@ function LessonResult({ lesson: a, score: e, then: t }) {
             Terminaste todas las lecciones. Sigue con el repaso, la ruta de
             conteo y el simulador.
           </p>
-        ) : null}
-        {a.section > 0 ? (
-          <div style={{ marginTop: 16 }}>
-            <Misiones />
-          </div>
         ) : null}
       </div>
       <div className="bottom-actions">
