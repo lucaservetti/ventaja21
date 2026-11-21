@@ -14,6 +14,7 @@ const SOLO = process.argv[2] || null;
 // ANCHO=320 prueba un celular chico; TEMA=light el tema claro; LETRA=1 la letra grande.
 const AUDITAR = !!process.env.AUDITAR;
 const ANCHO = +process.env.ANCHO || 390;
+const ALTO = +process.env.ALTO || 844;
 const TEMA = process.env.TEMA === "light" ? "light" : "dark";
 const AJUSTES = process.env.TEMA || process.env.LETRA ? { theme: TEMA, bigText: !!process.env.LETRA } : null;
 const hallazgos = new Set();
@@ -1024,7 +1025,7 @@ const PRUEBAS = {
   for (const lang of langs) {
     for (const [name, fn] of Object.entries(PRUEBAS)) {
       if (SOLO && SOLO !== name) continue;
-      const ctx = await browser.newContext({ viewport: { width: ANCHO, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, locale: lang === "es" ? "es-UY" : "en-US", colorScheme: TEMA });
+      const ctx = await browser.newContext({ viewport: { width: ANCHO, height: ALTO }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, locale: lang === "es" ? "es-UY" : "en-US", colorScheme: TEMA });
       const seed = ["onboarding", "medicion"].includes(name) ? null : AJUSTES ? { ...ONB, settings: AJUSTES } : ONB;
       if (AUDITAR) await ctx.addInitScript({ path: path.join(ROOT, "tests/e2e/auditoria.js") });
       await ctx.addInitScript(`if (!sessionStorage.getItem("seeded")) { sessionStorage.setItem("seeded","1"); localStorage.setItem("edge21.lang", ${JSON.stringify(lang)}); ${seed ? `localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(seed))});` : ""} }`);
