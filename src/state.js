@@ -564,6 +564,13 @@ function recordTrainSession(a) {
     });
   });
 }
+// Ejercicios de Entrenar que guardan sus tandas en st.drills pero no son de conteo (no cuentan para
+// los logros, las misiones ni el resumen de conteo).
+const DRILLS_MESA = ["totals", "payouts"];
+const drillsDeConteo = (drills) =>
+  Object.entries(drills || {})
+    .filter(([k]) => !DRILLS_MESA.includes(k))
+    .map(([, v]) => v);
 function recordDrill(a, e, t) {
   setState((s) => {
     let n = { ...(s.drills[a] || { sessions: [] }) };
@@ -869,6 +876,8 @@ function importBackup(a) {
   }
 }
 export {
+  DRILLS_MESA,
+  drillsDeConteo,
   TABLE_PRESETS,
   dropReviewItem,
   recordReviewAnswer,

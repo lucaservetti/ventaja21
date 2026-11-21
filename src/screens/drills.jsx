@@ -13,6 +13,7 @@ import {
   RANKS,
   SUITS,
   buildDecks,
+  handValue,
   hashString,
   makeCard,
   randInt,
@@ -21,6 +22,7 @@ import {
   weightedIndex,
 } from "../engine/cards.js";
 import { sfx, vibrate } from "../sound.js";
+import { DEC } from "../i18n/index.js";
 import { APP_MODE, hasPremium, watchAdForReward } from "../platform.js";
 import { CLOUD } from "../cloud.js";
 import { randomSeed } from "../challenge.js";
@@ -1790,8 +1792,152 @@ function DeckCountdown() {
     </div>
   );
 }
+
+// ---- Ejercicios de mesa: sumar la mano y calcular los pagos ----
+// "¿Cuánto suma?": reconocer al instante el total, sobre todo las manos blandas (con un As que vale 11).
+function manoAlAzar() {
+  for (;;) {
+    const n = 2 + randInt(3);
+    const conAs = randInt(100) < 55;
+    const cartas = [];
+    if (conAs) cartas.push(makeCard("A", SUITS[randInt(4)]));
+    while (cartas.length < n) cartas.push(makeCard(RANKS[randInt(13)], SUITS[randInt(4)]));
+    shuffle(cartas);
+    const v = handValue(cartas);
+    if (v.bust || (cartas.length === 2 && v.total === 21)) continue;
+    return { cartas, v };
+  }
+}
+const textoTotal = (soft, t) => (soft ? `Blando ${t}` : `Duro ${t}`);
+function DrillTotals() {
+  const nav = useNav();
+  const quiz = useQuiz(() => {
+    const { cartas, v } = manoAlAzar();
+    const bien = textoTotal(v.soft, v.total);
+    const posibles = [
+      [!v.soft, v.total],
+      [v.soft, v.total - 10],
+      [false, v.hard],
+      [v.soft, v.total + 1],
+      [v.soft, v.total - 1],
+      [!v.soft, v.total + 10],
+    ]
+      .filter(([, t]) => t >= 4 && t <= 21)
+      .map(([sf, t]) => textoTotal(sf, t))
+      .filter((x, i, l) => x !== bien && l.indexOf(x) === i);
+    const opciones = [bien, ...shuffle(posibles).slice(0, 3)];
+    shuffle(opciones);
+    return {
+      cartas,
+      options: opciones,
+      answer: opciones.indexOf(bien),
+      v,
+      missText: `${cartas.map((c) => c.r).join(" + ")} = ${bien}`,
+    };
+  }, 12);
+  return (
+    <QuizDrill
+      title="¿Cuánto suma?"
+      kind="totals"
+      d={quiz}
+      onAgain={() => nav.replace("drillTotals")}
+      resultMessage={(r) =>
+        r >= 0.9
+          ? "Rápido y sin errores: en la mesa vas a poder pensar en la jugada, no en la suma."
+          : "Ojo con el As: vale 11 mientras no te pases; si te pasarías, vale 1 y la mano pasa a ser dura."
+      }
+      render={(q) => (
+        <>
+          <h2 className="center drill-q">¿Cuánto suma esta mano?</h2>
+          <div className="suma-cartas">
+            {q.cartas.map((c) => (
+              <PlayingCard card={c} size="md" key={c.id} />
+            ))}
+          </div>
+        </>
+      )}
+      explain={(q) =>
+        q.v.soft
+          ? `Es blanda: el As vale 11, así que suma ${q.v.total}. Si después una carta te pasaría de 21, el As pasa a valer 1.`
+          : q.v.aces
+            ? `Es dura: el As tiene que valer 1, porque con 11 te pasarías. Total: ${q.v.total}.`
+            : `Es dura: no hay As. Total: ${q.v.total}.`
+      }
+    />
+  );
+}
+
+// "Pagos": cuánto te pagan en la mesa (blackjack 3 a 2 o 6 a 5, seguro, doblar).
+const pesos = (n) => `$${Number.isInteger(n) ? n : n.toFixed(2).replace(".", DEC)}`;
+const MONTOS_PAGO = {
+  bj: [10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 75, 80, 90, 100, 125, 150],
+  bj65: [10, 15, 20, 25, 30, 40, 50, 75, 100],
+  seguro: [10, 20, 30, 40, 50, 60, 80, 100, 150, 200],
+  doble: [10, 15, 20, 25, 30, 40, 50, 75, 100],
+};
+function preguntaDePago() {
+  const tipo = ["bj", "bj", "bj65", "seguro", "doble"][randInt(5)];
+  const montos = MONTOS_PAGO[tipo];
+  const x = montos[randInt(montos.length)];
+  let bien;
+  let otros;
+  let texto;
+  let porque;
+  if (tipo === "bj") {
+    bien = x * 1.5;
+    otros = [x, x * 2, x * 1.2, x * 1.5 + 5, x * 1.5 - 5];
+    texto = `Apostaste ${pesos(x)} y te salió blackjack. La mesa paga 3 a 2: ¿cuánto te pagan?`;
+    porque = `3 a 2 es una vez y media lo apostado: ${pesos(x)} + la mitad (${pesos(x / 2)}) = ${pesos(bien)}.`;
+  } else if (tipo === "bj65") {
+    bien = x * 1.2;
+    otros = [x * 1.5, x, x * 1.25, x * 1.2 + 5, x * 2];
+    texto = `Apostaste ${pesos(x)} y te salió blackjack, pero esta mesa paga 6 a 5. ¿Cuánto te pagan?`;
+    porque = `6 a 5: por cada $5 apostados te pagan $6. Con ${pesos(x)} son ${pesos(bien)}. Pagando 3 a 2 serían ${pesos(x * 1.5)}: por eso conviene evitar las mesas 6 a 5.`;
+  } else if (tipo === "seguro") {
+    bien = x;
+    otros = [x / 2, x * 1.5, x * 2, x * 3];
+    texto = `Apostaste ${pesos(x)} y tomaste el seguro completo (${pesos(x / 2)}). El crupier tenía blackjack: ¿cuánto te paga el seguro?`;
+    porque = `El seguro paga 2 a 1: ${pesos(x / 2)} × 2 = ${pesos(bien)}. Es justo lo que pierdes en la mano: quedas igual.`;
+  } else {
+    bien = x * 2;
+    otros = [x, x * 3, x * 1.5, x * 4];
+    texto = `Apostaste ${pesos(x)}, doblaste y ganaste. ¿Cuánto ganaste en esa mano?`;
+    porque = `Al doblar pones otro tanto: juegas ${pesos(x * 2)}, y si ganas te pagan eso mismo: ${pesos(bien)}.`;
+  }
+  const opc = [bien, ...shuffle([...new Set(otros.filter((o) => o > 0 && o !== bien))]).slice(0, 3)];
+  shuffle(opc);
+  return {
+    texto,
+    porque,
+    options: opc.map(pesos),
+    answer: opc.indexOf(bien),
+    missText: `${texto} → ${pesos(bien)}`,
+  };
+}
+function DrillPayouts() {
+  const nav = useNav();
+  const quiz = useQuiz(() => preguntaDePago(), 10);
+  return (
+    <QuizDrill
+      title="Pagos"
+      kind="payouts"
+      d={quiz}
+      onAgain={() => nav.replace("drillPayouts")}
+      resultMessage={(r) =>
+        r >= 0.8
+          ? "Bien: sabes cuánto te tienen que pagar. Los crupieres también se equivocan, y ahora te das cuenta."
+          : "Repasa: blackjack 3 a 2 es una vez y media lo apostado; 6 a 5 es 1,2 veces; el seguro paga 2 a 1."
+      }
+      render={(q) => <h2 className="center drill-q pago-q">{q.texto}</h2>}
+      explain={(q) => q.porque}
+    />
+  );
+}
+
 export {
   DAILY_FORMATS,
+  DrillPayouts,
+  DrillTotals,
   DRILL_SPEEDS,
   dailyFormat,
   DeckCountdown,

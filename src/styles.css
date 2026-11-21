@@ -10336,3 +10336,19 @@ html[data-theme="light"] .app.escritorio .tabbar {
     gap: 18px;
   }
 }
+
+/* Ejercicios de mesa (Entrenar → ¿Cuánto suma? y Pagos) */
+.suma-cartas {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 4px;
+}
+.drill-q.pago-q {
+  font-size: 21px;
+  line-height: 1.35;
+  max-width: 34ch;
+  margin-left: auto;
+  margin-right: auto;
+}

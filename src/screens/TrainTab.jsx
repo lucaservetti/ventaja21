@@ -28,6 +28,11 @@ const SKILL_SUITS = {
   surrender: ["c", "h"],
   count: ["s", "d"],
 };
+// El mejor resultado de un ejercicio (en %), para mostrar al costado.
+const mejorDe = (d) => {
+  const ses = (d && d.sessions) || [];
+  return ses.length ? pct(Math.max(...ses.map((x) => x.ok / x.n))) : "";
+};
 function TrainTab() {
   let a = useStore(),
     e = useNav(),
@@ -171,6 +176,44 @@ function TrainTab() {
           </span>
           <span className="li-side">
             {a.train.blitz && a.train.blitz.best ? a.train.blitz.best : ""}
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+        <button
+          type="button"
+          className="list-item"
+          onClick={() => e.push("drillTotals", { confirmExit: true })}
+        >
+          <span className="li-icon">
+            <Icon name="hand" />
+          </span>
+          <span className="li-text">
+            <span className="li-title">¿Cuánto suma?</span>
+            <span className="li-sub" style={{ display: "block" }}>
+              El total de la mano al instante, con o sin As.
+            </span>
+          </span>
+          <span className="li-side">
+            {mejorDe(a.drills.totals)}
+          </span>
+          <Icon name="chev" className="li-chev" />
+        </button>
+        <button
+          type="button"
+          className="list-item"
+          onClick={() => e.push("drillPayouts", { confirmExit: true })}
+        >
+          <span className="li-icon">
+            <Icon name="target" />
+          </span>
+          <span className="li-text">
+            <span className="li-title">Pagos</span>
+            <span className="li-sub" style={{ display: "block" }}>
+              Blackjack 3 a 2 o 6 a 5, seguro y dobladas: cuánto te pagan.
+            </span>
+          </span>
+          <span className="li-side">
+            {mejorDe(a.drills.payouts)}
           </span>
           <Icon name="chev" className="li-chev" />
         </button>
