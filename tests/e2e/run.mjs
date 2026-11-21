@@ -758,7 +758,10 @@ const PRUEBAS = {
     await page.waitForTimeout(500);
     // Otra función: no se puede probar.
     await h.css(ajustes, 600);
-    await h.click("Paños y mazos", "Tables and decks", { wait: 800 });
+    await h.click("Personalizar", "Customize", { wait: 800 });
+    // Personalizar se abre igual; el paño y las cartas en la mesa piden Premium.
+    await h.see("Elige y mira cómo queda", "Pick one and see how it looks");
+    await h.click("Usarlo en la mesa", "Use it at the table", { wait: 800 });
     await h.see("Tu prueba gratis es de otra función", "Your free trial is for another feature");
     check(!(await page.getByText(h.T("Probar 20 minutos (ver un anuncio)", "Try it for 20 minutes (watch an ad)")).count()), "ofrece una segunda prueba");
     // Se termina: se cierra y no se puede volver a probar.
@@ -922,7 +925,8 @@ const PRUEBAS = {
     await page.locator(".layer.full button").filter({ visible: true }).first().click();
     await page.waitForTimeout(500);
     await h.css('section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
-    await h.click("Paños y mazos", "Tables and decks", { wait: 700 });
+    await h.click("Personalizar", "Customize", { wait: 700 });
+    check(!(await page.locator(".look-lock").count()), "con Premium sigue el aviso de Premium");
     await h.css('.look-sw[aria-label="Azul"], .look-sw[aria-label="Blue"]', 300);
     await h.foto("panos");
     const felt = await page.evaluate(() => document.documentElement.dataset.felt);

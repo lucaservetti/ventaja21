@@ -246,6 +246,17 @@ const ICON_PATHS = {
       />
     </>
   ),
+  palette: (
+    <>
+      <path
+        d="M12 3.5a8.5 8.5 0 1 0 0 17c1.2 0 1.9-.8 1.9-1.8 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-1 .8-1.8 1.8-1.8h2.1a3.7 3.7 0 0 0 3.7-3.7C20.5 6.9 16.7 3.5 12 3.5z"
+        strokeLinejoin="round"
+      />
+      <circle cx="7.6" cy="11.2" r="1.2" />
+      <circle cx="10.2" cy="7.4" r="1.2" />
+      <circle cx="14.6" cy="7.6" r="1.2" />
+    </>
+  ),
   layers: (
     <>
       <path d="M12 3.5 21 8l-9 4.5L3 8z" strokeLinejoin="round" />

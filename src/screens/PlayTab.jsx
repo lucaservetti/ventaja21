@@ -474,6 +474,25 @@ function TableSheet({ open, onClose, table }) {
         </span>
         <Icon name="chev" className="li-chev" />
       </button>
+      <button
+        type="button"
+        className="card list-item casino-entry"
+        onClick={() => {
+          onClose();
+          nav.push("looks");
+        }}
+      >
+        <span className="li-icon">
+          <Icon name="palette" />
+        </span>
+        <span className="li-text">
+          <span className="li-title">Personalizar</span>
+          <span className="li-sub" style={{ display: "block" }}>
+            El color del paño, el dorso de las cartas y el tema
+          </span>
+        </span>
+        <Icon name="chev" className="li-chev" />
+      </button>
       <div className="eyebrow">Tipo de mesa</div>
       <div className="preset-list">
         {TABLE_PRESETS.map((p) => (
