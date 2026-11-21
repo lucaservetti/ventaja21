@@ -38,7 +38,7 @@ Cada precio tiene un código que empieza con `pri_…`.
 1. **Developer tools → Authentication → Client-side tokens → New token.** Te da un código que empieza con `live_…` (o `test_…` en el sandbox). Es público: va en la web.
 2. **Developer tools → Notifications → New destination:**
    - URL: `https://api.edge21.app/pagos/paddle`;
-   - eventos: `transaction.completed`, `subscription.created`, `subscription.activated`, `subscription.updated`, `subscription.resumed` y `subscription.canceled`.
+   - eventos: `transaction.completed`, `subscription.created`, `subscription.activated`, `subscription.updated`, `subscription.resumed`, `subscription.canceled`, `adjustment.created` y `adjustment.updated` (los dos últimos son los reembolsos y contracargos: con ellos el servidor saca el Premium de una compra devuelta).
 
    Al guardar te muestra un **secreto** (`pdl_ntfset_…`). Ese es privado: **no lo pegues en el chat ni en el repositorio.**
 3. **Checkout → Website approval:** agregá `edge21.app`.

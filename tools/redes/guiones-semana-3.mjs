@@ -43,7 +43,6 @@ const VIDEOS = {
     serie: "DESAFÍO DE MEMORIA #2",
     dur: 22.2,
     portada: 0.5,
-    musica: 0.85,
     semilla: 112,
     voz: [
       [0.1, "¿Podés llevar la cuenta? Sumá uno del dos al seis, y restá uno del diez al As."],
@@ -84,7 +83,6 @@ const VIDEOS = {
     serie: "¿QUÉ HACÉS? #3",
     dur: 16.8,
     portada: 0.6,
-    musica: 0.85,
     semilla: 113,
     voz: [
       [0.1, "Tenés once y el crupier muestra un seis. ¿Qué hacés?"],
@@ -97,15 +95,13 @@ const VIDEOS = {
         escena(0, 6.05, `
           <span class="tag">POV</span>
           ${titulo(0, "Tenés *11* y el crupier muestra un *6*", { tag: "h2", ya: true, sonido: false })}
-          <div class="fila" style="gap:64px;align-items:flex-start">
-            <div class="mano"><span class="lbl">Crupier</span><div class="fila" style="gap:12px">${carta("6c", 150)}${carta(null, 150, { de: 0.15 })}</div></div>
-            <div class="mano"><span class="lbl">Vos</span><div class="fila" style="gap:12px">${carta("5h", 150, { de: 0.3 })}${carta("6d", 150, { de: 0.45 })}</div><span class="total" style="${an(A("pop", 0.85, 0.4, E.back))}">11</span></div>
-          </div>
-          <div class="fila" style="gap:14px">${opcion(1.1, "PEDIR", 6.2)}${opcion(1.25, "PLANTARTE", 6.2)}${opcion(1.4, "DOBLAR", 6.2, true)}</div>
-          ${cuentaAtras(2.4, 3, 160)}`, { gap: 30 }),
+          <div class="mano"><span class="lbl">Crupier</span><div class="fila" style="gap:16px">${carta("6c", 165)}${carta(null, 165, { de: 0.5 })}</div></div>
+          <div class="mano"><span class="lbl">Vos</span><div class="fila" style="gap:16px">${carta("5h", 165, { de: 0.8 })}${carta("6d", 165, { de: 1.05 })}<span class="total" style="margin-left:14px;${an(A("pop", 1.5, 0.4, E.back))}">11</span></div></div>
+          <div class="fila" style="gap:14px">${opcion(1.8, "PEDIR", 6.2)}${opcion(1.95, "PLANTARTE", 6.2)}${opcion(2.1, "DOBLAR", 6.2, true)}</div>
+          ${cuentaAtras(2.7, 3, 130)}`, { gap: 22 }),
         escena(6.25, 12.5, `
           ${sello(6.3, "DOBLAR ✓", "real", "font-size:120px")}
-          <div class="fila" style="gap:12px">${carta("5h", 150)}${carta("6d", 150)}${carta("Kc", 150, { de: 7.3, voltea: 7.7 })}</div>
+          <div class="fila" style="gap:14px">${carta("5h", 200)}${carta("6d", 200)}${carta("Kc", 200, { de: 7.3, voltea: 7.7 })}</div>
           <div class="sobre" style="height:70px">${ventana(7.0, 8.2, `<span class="total">11</span>`)}${ventana(8.2, null, `<span class="total bueno">21 🔥</span>`)}</div>
           ${titulo(8.6, "Con 11, cualquier *10* o figura te da *21*", { tag: "h3", paso: 0.05 })}
           ${chico(10.0, "Doblar: pedís una sola carta más. Con 11 contra 2 a 10, siempre.")}`, { gap: 28 }),
@@ -123,7 +119,6 @@ const VIDEOS = {
     serie: "BUSCO TESTERS",
     dur: 16.4,
     portada: 0.6,
-    musica: 0.85,
     semilla: 114,
     voz: [
       [0.1, "Hice una app y necesito veinte personas que la prueben antes que nadie."],
@@ -161,7 +156,6 @@ const VIDEOS = {
     serie: "PROBABILIDAD",
     dur: 23.0,
     portada: 0.5,
-    musica: 0.85,
     semilla: 115,
     voz: [
       [0.1, "¿Qué es más probable? Una figura, o un As."],
@@ -208,7 +202,6 @@ const VIDEOS = {
     serie: "PAUSÁ SI PODÉS",
     dur: 15.4,
     portada: 4.9,
-    musica: 0.85,
     semilla: 116,
     voz: [
       [0.1, "Pausá el video y contá. Si podés."],
@@ -253,7 +246,6 @@ const VIDEOS = {
     serie: "¿QUÉ HACÉS? #4",
     dur: 19.6,
     portada: 0.6,
-    musica: 0.85,
     semilla: 117,
     voz: [
       [0.1, "Tenés As y seis. ¿Te plantás con diecisiete?"],
@@ -288,7 +280,6 @@ const VIDEOS = {
     serie: "DESAFÍO DE MEMORIA #3",
     dur: 21.0,
     portada: 0.5,
-    musica: 0.85,
     semilla: 118,
     voz: [
       [0.1, "Desafío difícil: doce cartas, y tienen trampa."],
@@ -332,7 +323,6 @@ const VIDEOS = {
     serie: "TEST DE NIVEL",
     dur: 21.4,
     portada: 0.5,
-    musica: 0.85,
     semilla: 119,
     voz: [
       [0.1, "¿Qué nivel tenés? Tres preguntas."],

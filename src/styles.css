@@ -10016,7 +10016,8 @@ html[data-theme="light"] .app.escritorio .tabbar {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 18px;
+  /* Sin los márgenes negativos de los botones fijos: en la compu se estiraban a todo el ancho. */
+  margin: 18px 0 0;
   padding: 0;
   background: none;
 }
@@ -10325,4 +10326,13 @@ html[data-theme="light"] .app.escritorio .tabbar {
 .casino-trip .score-pill {
   min-width: 96px;
   justify-content: center;
+}
+
+/* Mesa en pantallas anchas: las fichas juntas en el centro (con space-between quedaban
+   desparramadas de punta a punta de la mesa). */
+@media (min-width: 600px) {
+  .chip-rack {
+    justify-content: center;
+    gap: 18px;
+  }
 }
