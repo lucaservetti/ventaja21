@@ -1,9 +1,12 @@
-// Paños y mazos (Premium): el color de la mesa, el dorso de las cartas y el mazo de 4 colores.
-// Se aplican en <html> (data-felt, data-back, data-deck) solo con Premium.
+// Personalizar: el tema y la letra (gratis) y la mesa: paño, dorso de las cartas y mazo de 4
+// colores (Premium). Todos pueden elegir y ver la vista previa; en la mesa, el paño y las cartas
+// se aplican en <html> (data-felt, data-back, data-deck) solo con Premium (ver main.jsx).
 import { setSettings, useStore } from "../state.js";
-import { PlayingCard, Toggle, cx } from "../ui/components.jsx";
+import { Button, Pills, PlayingCard, Toggle, cx } from "../ui/components.jsx";
 import { TopBar } from "../ui/common.jsx";
 import { useNav } from "../nav.js";
+import { puedeUsar } from "../platform.js";
+import { PremiumTag } from "./Premium.jsx";
 
 const FELTS = [
   { id: "", label: "Verde", c: "#0f3a26" },
@@ -48,13 +51,10 @@ function Looks() {
   const felt = s.felt || "";
   const back = s.cardBack || "";
   const four = !!s.fourColor;
+  const libre = puedeUsar("looks", st);
   return (
     <div className="looks fade-up">
-      <TopBar
-        onClose={() => nav.pop()}
-        closeIcon="back"
-        title="Paños y mazos"
-      />
+      <TopBar onClose={() => nav.pop()} closeIcon="back" title="Personalizar" />
       <div
         className="felt look-preview"
         tabIndex={0}
@@ -71,7 +71,23 @@ function Looks() {
           ))}
         </div>
       </div>
-      <h3 className="sheet-sub">Paño</h3>
+      {libre ? null : (
+        <div className="card flat look-lock">
+          <p>
+            Elige y mira cómo queda. En la mesa, el paño y las cartas se usan
+            con Premium.
+          </p>
+          <Button
+            small={true}
+            onClick={() => nav.push("premium", { feature: "looks" })}
+          >
+            Usarlo en la mesa
+          </Button>
+        </div>
+      )}
+      <h3 className="sheet-sub">
+        Paño <PremiumTag st={st} />
+      </h3>
       <div className="look-row" role="radiogroup" aria-label="Paño">
         {FELTS.map((f) => (
           <Swatch
@@ -84,7 +100,9 @@ function Looks() {
           </Swatch>
         ))}
       </div>
-      <h3 className="sheet-sub">Dorso de las cartas</h3>
+      <h3 className="sheet-sub">
+        Dorso de las cartas <PremiumTag st={st} />
+      </h3>
       <div
         className="look-row"
         role="radiogroup"
@@ -107,7 +125,9 @@ function Looks() {
           </Swatch>
         ))}
       </div>
-      <h3 className="sheet-sub">Mazo</h3>
+      <h3 className="sheet-sub">
+        Mazo <PremiumTag st={st} />
+      </h3>
       <Toggle
         id="look-four"
         label="Mazo de 4 colores"
@@ -118,6 +138,24 @@ function Looks() {
       <p className="muted small" style={{ marginTop: 14 }}>
         Se usa en la mesa, el modo casino y los ejercicios con cartas.
       </p>
+      <h3 className="sheet-sub">Pantalla</h3>
+      <div className="field">
+        <span>Tema</span>
+        <Pills
+          options={[
+            { value: "dark", label: "Oscuro" },
+            { value: "light", label: "Claro" },
+          ]}
+          value={s.theme || "dark"}
+          onChange={(m) => setSettings({ theme: m })}
+        />
+      </div>
+      <Toggle
+        id="look-big"
+        label="Letra más grande"
+        checked={!!s.bigText}
+        onChange={(m) => setSettings({ bigText: m })}
+      />
     </div>
   );
 }

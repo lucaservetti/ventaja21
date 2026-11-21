@@ -185,6 +185,7 @@ async function empezarPrueba(feature) {
 }
 
 // Pantallas que son de Premium. La ruta de desviaciones es gratis hasta el nivel 2.
+// Personalizar ("looks") se abre siempre: el paño y las cartas se aplican solo con Premium.
 function needsPremium(name, params = {}, st = getState()) {
   if (hasPremium(st)) return false;
   if (pruebaActiva(st) === grupoDe(name)) return false;
@@ -193,7 +194,6 @@ function needsPremium(name, params = {}, st = getState()) {
     "casinoPlay",
     "bankroll",
     "journal",
-    "looks",
     "mistakes",
   ].includes(name);
   // En la guía, las desviaciones y el valor de cada regla son de Premium.

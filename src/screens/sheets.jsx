@@ -229,17 +229,6 @@ function SettingsSheet({ open: a, onClose: e }) {
           onChange={(m) => m !== LANG && setLang(m)}
         />
       </div>
-      <div className="field">
-        <span>Tema</span>
-        <Pills
-          options={[
-            { value: "dark", label: "Oscuro" },
-            { value: "light", label: "Claro" },
-          ]}
-          value={n.theme || "dark"}
-          onChange={(m) => setSettings({ theme: m })}
-        />
-      </div>
       <button
         type="button"
         className="list-item setting-link"
@@ -250,10 +239,10 @@ function SettingsSheet({ open: a, onClose: e }) {
       >
         <span className="li-text">
           <span className="li-title" style={{ fontSize: 17 }}>
-            Paños y mazos <PremiumTag st={t} />
+            Personalizar
           </span>
           <span className="li-sub" style={{ display: "block" }}>
-            El color de la mesa y el dibujo de las cartas
+            Tema, tamaño de letra, paño y cartas
           </span>
         </span>
         <Icon name="chev" className="li-chev" />
@@ -284,12 +273,6 @@ function SettingsSheet({ open: a, onClose: e }) {
         sub="Nos ayudan a mejorar la app: cuántos vuelven, hasta dónde llegan. Sin datos tuyos."
         checked={!n.sinEstadisticas}
         onChange={(m) => setSettings({ sinEstadisticas: !m })}
-      />
-      <Toggle
-        id="s-big"
-        label="Letra más grande"
-        checked={!!n.bigText}
-        onChange={(m) => setSettings({ bigText: m })}
       />
       <Toggle
         id="s-sound"
