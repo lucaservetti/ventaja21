@@ -575,6 +575,7 @@ function CasinoPlay({ setup, exam = false }) {
       camo: camoScore(s.heatPeak, s.obviousJumps, s.coverBets),
       coverBets: s.coverBets,
       obviousJumps: s.obviousJumps,
+      prefShuffles: s.prefShuffles || 0,
       betLow: s.betLow,
       betHigh: s.betHigh,
       minBet: setup.minBet,
@@ -834,6 +835,8 @@ function CasinoResult({ trip }) {
       ? "Para durar más en un casino: sube la apuesta de a poco (no de 1 a 8 de golpe), no la bajes a la mínima justo después de mezclar y cada tanto haz una apuesta que no siga el conteo."
       : decisions < 0.9
         ? "Las jugadas te costaron dinero: repasa la tabla y las desviaciones en Entrenar antes de volver."
+        : trip.prefShuffles >= 2
+          ? "El crupier mezcló antes de tiempo varias veces: te tenían fichado y te cortaban el zapato justo cuando el conteo te favorecía. Sube la apuesta de a poco y mézclala con apuestas que no sigan el conteo."
         : bets < 0.7
           ? "Tus apuestas no siguieron bien el conteo: sin eso, contar no te da ventaja. Practica «Apostar según el conteo» en Conteo."
           : trip.net < 0
@@ -997,6 +1000,12 @@ function CasinoResult({ trip }) {
               <span className="kv-v">
                 <HeatMeter heat={trip.heatPeak} />
               </span>
+            </div>
+          ) : null}
+          {trip.prefShuffles ? (
+            <div className="kv">
+              <span className="kv-k">Mezclas antes de tiempo</span>
+              <span className="kv-v num">{trip.prefShuffles}</span>
             </div>
           ) : null}
         </div>

@@ -176,6 +176,7 @@ class Table {
       heatPeak: 0,
       coverBets: 0,
       obviousJumps: 0,
+      prefShuffles: 0,
       betLow: 0,
       betHigh: 0,
       mistakes: [],
@@ -327,6 +328,37 @@ class Table {
         3600,
       );
     if (this.heat >= 100) this.backedOff = true;
+  }
+  // Mezcla preferencial: con la vigilancia alta, si apuestas fuerte justo cuando el conteo está a tu
+  // favor, el crupier corta el zapato y mezcla antes de tiempo (los casinos lo hacen para que el
+  // contador pierda la ventaja). La apuesta queda puesta, pero ahora en un zapato nuevo.
+  async preferentialShuffle(tc) {
+    if (
+      this.heat < 60 ||
+      tc < 2 ||
+      this.bet < 4 * this.minBet ||
+      this.roundsThisShoe < 1 ||
+      this.rules.pen <= 0 ||
+      Math.random() >= 0.45
+    )
+      return;
+    this.session.prefShuffles++;
+    this.toast(
+      "El crupier mezcló antes de tiempo: en los casinos lo hacen cuando sospechan de un contador.",
+      "warn",
+      3800,
+    );
+    this.phase = "shuffle";
+    this.emit();
+    this.shoe.shuffleNow();
+    this.seen = [];
+    this.recount();
+    this.roundsThisShoe = 0;
+    this.roundsSinceCheck = 0;
+    this.shoeStats = emptyShoeStats();
+    this.session.shoes++;
+    await this.sleep(2.2);
+    this.burned = this.shoe.draw();
   }
   // Puntaje de camuflaje (0 a 100): cuánto pareces un jugador común.
   get camo() {
@@ -540,7 +572,10 @@ class Table {
       };
     }
 
-    if (this.opts.heat) this.updateHeat(tcBefore);
+    if (this.opts.heat) {
+      this.updateHeat(tcBefore);
+      await this.preferentialShuffle(tcBefore);
+    }
     const s = this.session;
     s.betLow = s.betLow ? Math.min(s.betLow, this.bet) : this.bet;
     s.betHigh = Math.max(s.betHigh, this.bet);
