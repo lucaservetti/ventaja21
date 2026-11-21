@@ -120,7 +120,7 @@ Los da un servidor (`servidor/`, en Cloudflare, gratis), nunca la app, para que 
 | Racha de 7 días en el desafío diario | 2 | Una vez |
 | Racha de 30 días | 7 | Una vez |
 | Podio de la semana (con 10 jugadores o más) | 2 | Cada semana |
-| Terminar las 36 lecciones | 3 | Una vez |
+| Terminar las lecciones (36 de 44) | 3 | Una vez |
 
 - **Tope:** 14 días cada 30 días por cuenta. Lo que se pase espera a que se libere lugar.
 - **Hace falta entrar con Google.** La racha se cuenta con los puntajes del ranking, y un puntaje solo vale si se guardó ese mismo día. Así no sirve inventar días pasados.

@@ -171,7 +171,7 @@ const atras = (w, girada = false) =>
   `<div class="atras${girada ? " girada" : ""}" style="border-radius:${(w * 0.075).toFixed(1)}px;border-width:${(w * 0.05).toFixed(1)}px"><div class="atras-in" style="border-radius:${(w * 0.035).toFixed(1)}px"><img src="/img/ficha.svg" style="width:${(w * 0.42).toFixed(1)}px;height:${(w * 0.42).toFixed(1)}px"></div></div>`;
 
 // Una carta ("10s", "Ah", o null para el dorso), de `w` px de ancho. Opciones:
-//   de: cuándo se reparte (vuela desde arriba a la derecha, como del sabot); desde: [dx, dy, giro]
+//   de: cuándo se reparte (sube suave desde abajo, sin cruzar los textos); desde: [dx, dy, giro]
 //   voltea: cuándo se da vuelta (arranca boca abajo)
 //   x, y, r: posición y giro fijos; mueve: { de, dur, x1, y1, r1 } para deslizarla después
 //   abs: centrada y con posición absoluta (para armar manos que se separan)
@@ -186,7 +186,7 @@ function carta(c, w = 170, o = {}) {
   } else interior = c ? cara(c, w) : atras(w);
   let cd = "";
   if (o.de != null) {
-    const [dx, dy, dr] = o.desde || [520, -1300, 34];
+    const [dx, dy, dr] = o.desde || [0, 240, 4];
     cd = `--dx:${dx}px;--dy:${dy}px;--dr:${dr}deg;${an(A("reparte", o.de, o.dur || 0.62, E.out))}`;
     sfx(o.de, "carta");
   }
@@ -422,7 +422,7 @@ p em,h1 em,h2 em,h3 em{font-style:normal;color:#e9b949}
 @keyframes izq{from{opacity:0;transform:translateX(-90px)}to{opacity:1;transform:none}}
 @keyframes pop{0%{opacity:0;transform:scale(.4)}100%{opacity:1;transform:scale(1)}}
 @keyframes subraya{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@keyframes reparte{0%{transform:translate(var(--dx),var(--dy)) rotate(var(--dr)) scale(1.06);opacity:0}10%{opacity:1}100%{transform:none;opacity:1}}
+@keyframes reparte{0%{transform:translate(var(--dx),var(--dy)) rotate(var(--dr)) scale(.94);opacity:0}35%{opacity:1}100%{transform:none;opacity:1}}
 @keyframes voltea{0%{transform:rotateY(180deg)}50%{transform:rotateY(90deg) scale(1.08)}100%{transform:rotateY(0)}}
 @keyframes mueve{from{transform:translate(var(--x0),var(--y0)) rotate(var(--r0))}to{transform:translate(var(--x1),var(--y1)) rotate(var(--r1))}}
 @keyframes anillo{from{stroke-dashoffset:0}to{stroke-dashoffset:-1}}

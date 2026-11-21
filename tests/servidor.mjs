@@ -392,6 +392,21 @@ await paso("pagos en la web (Paddle): firma, suscripción, pago único y avisos 
   check(d2.fields.activo.booleanValue === true && !d2.fields.hasta, "el pago único debería quedar para siempre");
   // Una renovación después no le pone fecha a lo que es para siempre.
   check((await avisar(sub)).status === 200 && !(await get(`premium/${uid}`)).fields.hasta, "una renovación no debería ponerle fecha al para siempre");
+  // Reembolso parcial: no saca nada. Reembolso total del pago único: se saca el Premium.
+  const ajuste = (o) => ({ event_type: "adjustment.updated", data: { id: "adj_1", status: "approved", action: "refund", type: "full", customer_id: "ctm_1", transaction_id: "txn_1", subscription_id: null, ...o } });
+  check((await avisar(ajuste({ type: "partial" }))).status === 200 && (await get(`premium/${uid}`)).fields.activo.booleanValue === true, "un reembolso parcial no debería sacar Premium");
+  check((await avisar(ajuste({ status: "pending_approval" }))).status === 200 && (await get(`premium/${uid}`)).fields.activo.booleanValue === true, "un reembolso sin aprobar no debería sacar Premium");
+  check((await avisar(ajuste({ transaction_id: "txn_otro" }))).status === 200 && (await get(`premium/${uid}`)).fields.activo.booleanValue === true, "el reembolso de otra compra (una cuota vieja) no debería sacar el para siempre");
+  check((await avisar(ajuste({}))).status === 200, "el reembolso debería dar 200");
+  const d3 = await get(`premium/${uid}`);
+  check(d3.fields.activo.booleanValue === false && d3.fields.revocado.mapValue.fields.motivo.stringValue === "reembolso", "el reembolso total del pago único debería sacar Premium");
+  // Suscripción sola: un contracargo la saca.
+  const { uid: uid2 } = await user();
+  const sub2 = structuredClone(sub);
+  sub2.data = { ...sub2.data, id: "sub_2", customer_id: "ctm_2", custom_data: { uid: uid2 } };
+  check((await avisar(sub2)).status === 200 && (await get(`premium/${uid2}`)).fields.activo.booleanValue === true, "la suscripción 2 debería anotarse");
+  check((await avisar(ajuste({ action: "chargeback", customer_id: "ctm_2", transaction_id: "txn_9", subscription_id: "sub_2" }))).status === 200, "el contracargo debería dar 200");
+  check((await get(`premium/${uid2}`)).fields.activo.booleanValue === false, "un contracargo de la suscripción debería sacar Premium");
   // Sin uid o con uno raro: se contesta bien pero no se anota nada.
   const raro = structuredClone(sub);
   raro.data.custom_data = { uid: "../users/x" };

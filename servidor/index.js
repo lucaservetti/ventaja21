@@ -255,6 +255,10 @@ async function verificarPlay(req, env, now = Date.now()) {
   // 400/404/410: Google no conoce esa compra (o ya no existe).
   if ([400, 404, 410].includes(r.status))
     return json(req, 200, { ok: false, code: COMPRA_INVALIDA, message: "Compra no válida" });
+  // Con PLAY_ESTRICTO = "1" (cuando ya se confirmó que el permiso en Play Console anda), un "sin
+  // permiso" de Google también se rechaza: así nadie aprovecha un permiso que se cayó.
+  if (!r.data && env.PLAY_ESTRICTO === "1" && [401, 403].includes(r.status))
+    return json(req, 200, { ok: false, code: COMPRA_INVALIDA, message: "No se pudo verificar la compra" });
   if (!r.data) return aceptar(`Google Play respondió ${r.status}`);
   const compra = compraDePlay(tipo, productId, r.data, now);
   if (!compra)
@@ -708,10 +712,10 @@ function premiumDePago(ev, env) {
   const precios = (d.items || []).map((it) => it && it.price && it.price.id);
   if (ev.event_type === "transaction.completed") {
     if (env.PADDLE_PRECIO_SIEMPRE && precios.includes(env.PADDLE_PRECIO_SIEMPRE))
-      return { uid, siempre: true, cliente: d.customer_id || "" };
+      return { uid, siempre: true, cliente: d.customer_id || "", tx: d.id || "" };
     const fin = d.billing_period && Date.parse(d.billing_period.ends_at);
     return fin
-      ? { uid, hasta: fin + MARGEN_PAGO, cliente: d.customer_id || "", sub: d.subscription_id || "" }
+      ? { uid, hasta: fin + MARGEN_PAGO, cliente: d.customer_id || "", sub: d.subscription_id || "", tx: d.id || "" }
       : null;
   }
   if (
@@ -744,6 +748,9 @@ async function anotarPago(p, env, now = Date.now()) {
     tipo: { stringValue: p.siempre ? "siempre" : pagoPrev.tipo === "siempre" ? "siempre" : "suscripcion" },
     cliente: { stringValue: String(p.cliente || pagoPrev.cliente || "").slice(0, 80) },
     sub: { stringValue: String(p.sub || pagoPrev.sub || "").slice(0, 80) },
+    // La última transacción y la del pago único (para poder sacar Premium si se reembolsa).
+    tx: { stringValue: String(p.tx || pagoPrev.tx || "").slice(0, 80) },
+    txSiempre: { stringValue: String((p.siempre && p.tx) || pagoPrev.txSiempre || "").slice(0, 80) },
     t: { integerValue: String(now) },
   };
   const fields = { activo: { booleanValue: true }, pago: { mapValue: { fields: pago } } };
@@ -756,6 +763,60 @@ async function anotarPago(p, env, now = Date.now()) {
     },
   ]);
   return { uid: p.uid, hasta: siempre ? true : hasta };
+}
+
+// Un reembolso total o un contracargo aprobado: se busca la cuenta por el cliente de Paddle y, si
+// ese pago es el que le dio Premium (el pago único, la suscripción o la última transacción), se
+// desactiva. Un reembolso parcial (un descuento) no saca nada.
+async function reembolso(a, env, now = Date.now()) {
+  if (!a || a.status !== "approved" || !a.customer_id) return null;
+  const total = a.action === "chargeback" || (a.action === "refund" && a.type !== "partial");
+  if (!total) return null;
+  const d = db(env);
+  const filas = await d.query(null, {
+    from: [{ collectionId: "premium" }],
+    where: {
+      fieldFilter: {
+        field: { fieldPath: "pago.cliente" },
+        op: "EQUAL",
+        value: { stringValue: String(a.customer_id).slice(0, 80) },
+      },
+    },
+    limit: 5,
+  });
+  const sacados = [];
+  for (const f of filas || []) {
+    const doc = f.document;
+    if (!doc) continue;
+    const pago = field(doc, "pago") || {};
+    const tx = String(a.transaction_id || "");
+    const esSiempre = !!pago.txSiempre && pago.txSiempre === tx;
+    const esSub = !pago.txSiempre && !!pago.sub && pago.sub === String(a.subscription_id || "");
+    const esUltima = !pago.txSiempre && !!pago.tx && pago.tx === tx;
+    if (!esSiempre && !esSub && !esUltima) continue;
+    await d.commit([
+      {
+        update: {
+          name: doc.name,
+          fields: {
+            activo: { booleanValue: false },
+            revocado: {
+              mapValue: {
+                fields: {
+                  motivo: { stringValue: a.action === "chargeback" ? "contracargo" : "reembolso" },
+                  tx: { stringValue: tx.slice(0, 80) },
+                  t: { integerValue: String(now) },
+                },
+              },
+            },
+          },
+        },
+        updateMask: { fieldPaths: ["activo", "revocado"] },
+      },
+    ]);
+    sacados.push(doc.name.split("/").pop());
+  }
+  return sacados;
 }
 
 async function avisoPaddle(req, env) {
@@ -774,6 +835,15 @@ async function avisoPaddle(req, env) {
     ev = JSON.parse(raw);
   } catch {
     return new Response("json", { status: 400 });
+  }
+  // Reembolsos y contracargos: se saca el Premium que se había dado por ese pago.
+  if (/^adjustment\.(created|updated)$/.test(ev.event_type || "")) {
+    try {
+      await reembolso(ev.data, env);
+      return new Response("ok", { status: 200 });
+    } catch {
+      return new Response("error", { status: 500 });
+    }
   }
   const p = premiumDePago(ev, env);
   // Avisos que no cambian nada (otros eventos, cancelaciones): se contestan bien igual, para que

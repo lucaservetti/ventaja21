@@ -13,6 +13,9 @@ on:
       - "src/premios.js"
       - ".github/workflows/servidor.yml"
 
+permissions:
+  contents: read
+
 jobs:
   publicar:
     runs-on: ubuntu-latest

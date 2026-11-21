@@ -25,7 +25,7 @@ simple = { limit = 10, period = 60 }
 
 [vars]
 PROJECT_ID = "edge21-fb71e"
-# Premio de bienvenida (3 días por entrar con Google): "1" cuando la app esté en Google Play.
+# Premio de bienvenida (1 día por entrar con Google): "1" cuando la app esté en Google Play.
 BIENVENIDA = "0"
 # Premio del podio semanal: "1" cuando haya bastante gente en el ranking (ver src/premios.js).
 PODIO = "0"
@@ -35,6 +35,9 @@ DUENOS = "FoItGSWPJZSRqaXN5ORR8oNgFKN2"
 API_KEY = "AIzaSyBRQvpHNOL5W5md04iJfAVbAuLvfLVtqi4"
 # Pagos en la web (Paddle): el código del precio "Para siempre" (pri_…). Ver PAGOS_WEB.md.
 PADDLE_PRECIO_SIEMPRE = "pri_01m7ted9jg08zeapks3ar1t22r"
+# Compras de Google Play: "1" cuando el permiso de la cuenta de servicio en Play Console ya ande
+# (ver PLAY_STORE.md, paso 6). Desde ahí, una compra que Google no deja verificar se rechaza.
+PLAY_ESTRICTO = "0"
 
 # Secreto (no va acá): FIREBASE_SA = la clave JSON de la cuenta de servicio de Firebase.
 # Secreto (opcional): PADDLE_WEBHOOK_SECRET = el secreto de los avisos de Paddle (pdl_ntfset_…).

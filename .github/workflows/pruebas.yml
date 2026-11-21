@@ -7,6 +7,10 @@ on:
   push:
   pull_request:
 
+# Solo lectura: las pruebas no necesitan cambiar nada del repositorio.
+permissions:
+  contents: read
+
 jobs:
   pruebas:
     runs-on: ubuntu-latest
