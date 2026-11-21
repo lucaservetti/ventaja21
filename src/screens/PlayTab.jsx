@@ -86,6 +86,19 @@ function PlayTab({ active }) {
     table.configure({ ...opts, reshuffle: rulesChanged && !table.running });
   }, [optionsKey]);
 
+  // La frase de primera vez de Jugar se cierra sola al repartir la primera mano: en pantallas bajas
+  // ocupa lugar que necesitan las cartas.
+  useEffect(
+    () =>
+      table.subscribe(() => {
+        if (table.phase !== "deal") return;
+        const tips = getState().tips || {};
+        if (!tips.jugar)
+          setState((s) => ({ ...s, tips: { ...(s.tips || {}), jugar: Date.now() } }));
+      }),
+    [table],
+  );
+
   // Al terminar cada mano se guardan la banca y las estadísticas acumuladas.
   useEffect(() => {
     table.onRoundEnd = (result, t) => {

@@ -10358,3 +10358,15 @@ html[data-theme="light"] .app.escritorio .tabbar {
   margin-left: auto;
   margin-right: auto;
 }
+
+/* En pantallas bajas, la frase de primera vez de Jugar ocupa menos (se cierra sola al repartir). */
+@media (max-height: 800px) {
+  .sim-top-wrap .primera-vez {
+    margin-bottom: 8px;
+    padding: 6px 4px 6px 12px;
+  }
+  .sim-top-wrap .primera-vez p {
+    font-size: 13.5px;
+    line-height: 1.3;
+  }
+}

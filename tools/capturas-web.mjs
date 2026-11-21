@@ -1,4 +1,4 @@
-// Saca las capturas de la página web (img/<pantalla>-<idioma>.webp, 540x960) desde la app actual.
+// Saca las capturas de la página web (img/<pantalla>-<idioma>.webp, 1080x1920) desde la app actual.
 // Uso: npm run build && node tools/capturas-web.mjs
 import { chromium } from "playwright";
 import http from "node:http";
@@ -57,7 +57,7 @@ async function tab(p, name) {
 const b = await chromium.launch();
 for (const L of ["es", "en"]) {
   for (const [nombre, ir] of Object.entries(PANTALLAS)) {
-    const ctx = await b.newContext({ viewport: { width: 405, height: 720 }, deviceScaleFactor: 4 / 3, locale: L === "es" ? "es-UY" : "en-US" });
+    const ctx = await b.newContext({ viewport: { width: 405, height: 720 }, deviceScaleFactor: 8 / 3, locale: L === "es" ? "es-UY" : "en-US" });
     await ctx.addInitScript(azar);
     await ctx.addInitScript(`if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s", "1"); localStorage.setItem("edge21.lang", "${L}"); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(estado))}); }`);
     const p = await ctx.newPage();
@@ -66,7 +66,7 @@ for (const L of ["es", "en"]) {
     await ir(p, L);
     const png = path.join(TMP, `${nombre}-${L}.png`);
     await p.screenshot({ path: png });
-    execFileSync("ffmpeg", ["-v", "error", "-y", "-i", png, "-quality", "82", path.join(ROOT, "img", `${nombre}-${L}.webp`)]);
+    execFileSync("ffmpeg", ["-v", "error", "-y", "-i", png, "-quality", "86", path.join(ROOT, "img", `${nombre}-${L}.webp`)]);
     console.log(`img/${nombre}-${L}.webp`);
     await ctx.close();
   }
