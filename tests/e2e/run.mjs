@@ -1063,7 +1063,9 @@ const PRUEBAS = {
       const page = await ctx.newPage();
       const errors = [];
       page.on("pageerror", (e) => errors.push(String(e)));
-      page.on("console", (m) => m.type() === "error" && !/Failed to load resource/.test(m.text()) && errors.push(m.text()));
+      // No cuentan: recursos que no cargan (sin red) ni los avisos de la política de seguridad de las
+      // páginas de Google (el botón de "Entrar con Google" es de ellos y a veces los escribe).
+      page.on("console", (m) => m.type() === "error" && !/Failed to load resource|report-only Content Security Policy.*accounts\.google\.com|accounts\.google\.com.*report-only Content Security Policy/.test(m.text()) && errors.push(m.text()));
       const t0 = Date.now();
       try {
         await page.goto(base + "/app/index.html");
