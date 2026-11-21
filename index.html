@@ -612,7 +612,7 @@
       "p-soon": "En la web y en Android",
       "l-pill": "Muy pronto en Google Play", "l-title": "Sé de los primeros", "l-sub": "La app de Android está por salir. Pruébala antes que nadie o entérate el día que sale.",
       l1t: "Pruébala antes que nadie", l1p: "Buscamos personas con Android para probar la app completa antes del lanzamiento, gratis.",
-      l1a: "Escríbenos con el mail de tu cuenta de Google Play.", l1b: "Te mandamos la invitación para instalarla.", l1c: "La usas como siempre y nos cuentas qué mejorarías.", l1btn: "Quiero ser tester",
+      l1a: "Escríbenos a <b>soporte@edge21.app</b> con el mail de tu cuenta de Google Play.", l1b: "Te mandamos la invitación para instalarla.", l1c: "La usas como siempre y nos cuentas qué mejorarías.", l1btn: "Quiero ser tester",
       l2t: "Entérate el día que sale", l2p: "Avisamos el lanzamiento en Instagram y TikTok, y subimos un tip de blackjack por día.",
       q9: "¿Cuándo sale la app?", a9: "La app de Android sale muy pronto en Google Play. Mientras tanto, la puedes usar gratis desde la web, y si tienes Android, puedes <a href=\"#lanzamiento\">sumarte como tester</a>.",
       q10: "¿La web es la app completa?", a10: "Sí. En la web tienes lo mismo que en la app, gratis: lecciones, ruta de conteo, Entrenar, desafíos y la mesa. Si entras con Google, tu progreso pasa a la app cuando salga.",
@@ -667,7 +667,7 @@
       "p-soon": "On the web and on Android",
       "l-pill": "Coming soon to Google Play", "l-title": "Be one of the first", "l-sub": "The Android app is about to launch. Try it before anyone else or find out the day it's out.",
       l1t: "Try it before anyone else", l1p: "We're looking for Android users to test the full app before launch, for free.",
-      l1a: "Email us with your Google Play account address.", l1b: "We'll send you the invite to install it.", l1c: "Use it as usual and tell us what you'd improve.", l1btn: "I want to be a tester",
+      l1a: "Email <b>soporte@edge21.app</b> with your Google Play account address.", l1b: "We'll send you the invite to install it.", l1c: "Use it as usual and tell us what you'd improve.", l1btn: "I want to be a tester",
       l2t: "Find out the day it's out", l2p: "We'll announce the launch on Instagram and TikTok, and post a blackjack tip every day.",
       q9: "When does the app come out?", a9: "The Android app is coming very soon to Google Play. Meanwhile, you can use it for free on the web, and if you have Android, you can <a href=\"#lanzamiento\">join as a tester</a>.",
       q10: "Is the web the full app?", a10: "Yes. The web has the same as the app, for free: lessons, the counting path, Train, challenges and the table. If you sign in with Google, your progress moves to the app when it's out.",
@@ -731,7 +731,14 @@
     document.querySelectorAll("details.pre").forEach((d) => (d.hidden = PUBLISHED));
     const sub = lang === "en" ? "I want to try Edge 21 on Android" : "Quiero probar Edge 21 en Android";
     const body = lang === "en" ? "My Google Play email is: " : "Mi mail de Google Play es: ";
-    document.getElementById("tester").href = `mailto:soporte@edge21.app?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+    // En el celular, el mail se abre en la app de correo. En la compu, en Gmail (en una pestaña nueva):
+    // si no, abre Outlook u otro programa que casi nadie usa.
+    const tester = document.getElementById("tester");
+    const compu = matchMedia("(pointer: fine)").matches && !/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
+    tester.href = compu
+      ? `https://mail.google.com/mail/?view=cm&fs=1&to=soporte@edge21.app&su=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`
+      : `mailto:soporte@edge21.app?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+    if (compu) { tester.target = "_blank"; tester.rel = "noopener"; }
     document.querySelectorAll(".to-guias").forEach((a) => (a.href = lang === "en" ? "en/guides/" : "guias/"));
     for (const [id, f] of [["privacy", "privacidad"], ["terms", "terminos"], ["delacc", "borrar-cuenta"]])
       document.getElementById(id).href = `${f}.html${lang === "en" ? "#en" : ""}`;
