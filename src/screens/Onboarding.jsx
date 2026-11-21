@@ -297,13 +297,20 @@ function Placement({
                   <span className="kv-k" style={{ fontWeight: 600 }}>
                     {b.title}
                   </span>
-                  <span
-                    className={cx("row num", D ? "good" : "bad")}
-                    style={{ gap: 6, fontWeight: 700 }}
-                  >
-                    {S.ok}/{S.n}
-                    <Icon name={D ? "check" : "x"} size={18} stroke={3} />
-                  </span>
+                  {S.n ? (
+                    <span
+                      className={cx("row num", D ? "good" : "bad")}
+                      style={{ gap: 6, fontWeight: 700 }}
+                    >
+                      {S.ok}/{S.n}
+                      <Icon name={D ? "check" : "x"} size={18} stroke={3} />
+                    </span>
+                  ) : (
+                    // El test terminó antes de llegar a esta sección: no hubo preguntas.
+                    <span className="muted" style={{ fontWeight: 600 }}>
+                      Sin preguntas
+                    </span>
+                  )}
                 </div>
               );
             })}
