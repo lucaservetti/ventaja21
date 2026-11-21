@@ -1,6 +1,6 @@
 // "Tu semana": cuánto practicaste en los últimos 7 días, comparado con los 7 anteriores.
 import { useMemo, useState } from "react";
-import { addDays, dayKey, diaHecho } from "../state.js";
+import { addDays, dayKey, diaHecho, drillsDeConteo } from "../state.js";
 import { cx } from "../ui/components.jsx";
 
 const DAY_LETTERS = "DLMMJVS";
@@ -14,7 +14,7 @@ function weekStats(st, offset) {
   const inWeek = (t) => !!t && set.has(dayKey(new Date(t)));
   const secsOf = (d) => (st.dailyGoal.days[d] || {}).s || 0;
   const sessions = st.train.sessions.filter((s) => inWeek(s.t));
-  const drills = Object.values(st.drills).reduce(
+  const drills = drillsDeConteo(st.drills).reduce(
     (a, d) =>
       a + ((d && d.sessions) || []).filter((x) => x && inWeek(x.t)).length,
     0,

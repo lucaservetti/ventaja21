@@ -5,6 +5,7 @@
 import {
   MAX_PROTECTORES,
   dayKey,
+  drillsDeConteo,
   getState,
   goalMet,
   setState,
@@ -49,7 +50,7 @@ const MISIONES = {
     need: 2,
     title: () => "Haz 2 ejercicios de conteo",
     have: (st, d) =>
-      Object.values(st.drills || {}).reduce(
+      drillsDeConteo(st.drills).reduce(
         (a, k) => a + (k.sessions || []).filter((s) => hoyDe(s.t) === d).length,
         0,
       ),

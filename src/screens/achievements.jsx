@@ -14,7 +14,7 @@ import { rowLearned } from "../lessons/chartMap.js";
 import { COUNT_LEVELS, passedCount } from "../engine/countPath.js";
 import { devPassedCount } from "../engine/devPath.js";
 import { TopBar } from "../ui/common.jsx";
-import { bestActivityStreak } from "../state.js";
+import { bestActivityStreak, drillsDeConteo } from "../state.js";
 import { MASTERED_BOX } from "./chartCards.jsx";
 import { useNav } from "../nav.js";
 
@@ -245,7 +245,7 @@ const GROUPS = [
         desc: "Termina tu primer ejercicio de conteo.",
         goal: 1,
         value: (st) =>
-          Object.values(st.drills).reduce(
+          drillsDeConteo(st.drills).reduce(
             (n, d) => n + ((d.sessions && d.sessions.length) || 0),
             0,
           ),
