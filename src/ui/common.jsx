@@ -4,6 +4,7 @@ import { makeCard } from "../engine/cards.js";
 import { Badge, IconButton, PlayingCard, RatingGem } from "./components.jsx";
 import { parseSpot } from "../engine/trainer.js";
 import { useNav } from "../nav.js";
+import { ACCOUNTS, useAccount } from "../cloud.js";
 
 function useRules(a) {
   let e = useStore();
@@ -91,6 +92,26 @@ function SettingsButton() {
     />
   );
 }
+// Arriba a la derecha de cada pestaña: tu cuenta y los ajustes en un solo botón. Con cuenta muestra
+// tu inicial; sin cuenta, una silueta con un punto dorado que invita a entrar con Google.
+function AccountButton() {
+  const nav = useNav();
+  const { acct } = useAccount();
+  if (!ACCOUNTS) return <SettingsButton />;
+  const inicial = acct ? (acct.name || acct.email || "?").trim()[0].toUpperCase() : null;
+  return (
+    <button
+      type="button"
+      className={cx2("acct-btn", !acct && "sin-cuenta")}
+      aria-label={acct ? "Tu cuenta y ajustes" : "Entrar con Google y ajustes"}
+      onClick={() => nav.openSheet("settings")}
+    >
+      {inicial ? <span className="acct-ini">{inicial}</span> : <Icon name="user" size={22} />}
+      {acct ? null : <i className="acct-dot" aria-hidden="true" />}
+    </button>
+  );
+}
+const cx2 = (...c) => c.filter(Boolean).join(" ");
 // Encabezado de cada pestaña: título, botones a la derecha y una línea opcional debajo.
 function PageHeader({ title, sub, actions }) {
   return (
@@ -194,6 +215,7 @@ function PrimeraVez({ id, children }) {
   );
 }
 export {
+  AccountButton,
   PrimeraVez,
   LOGO_21,
   LOGO_SPADE,
