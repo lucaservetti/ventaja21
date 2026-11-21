@@ -131,7 +131,7 @@ const CAPTURAS = [
       await tab(p, L(l, "Progreso", "Progress"));
       await p.getByRole("button", { name: L(l, "Ajustes", "Settings") }).filter({ visible: true }).first().click();
       await p.waitForTimeout(500);
-      await p.getByText(L(l, "Paños y mazos", "Tables and decks")).first().click();
+      await p.getByText(L(l, "Personalizar", "Customize"), { exact: true }).first().click();
       await p.waitForTimeout(900);
     },
   },

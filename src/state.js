@@ -566,7 +566,7 @@ function recordTrainSession(a) {
 }
 // Ejercicios de Entrenar que guardan sus tandas en st.drills pero no son de conteo (no cuentan para
 // los logros, las misiones ni el resumen de conteo).
-const DRILLS_MESA = ["totals", "payouts"];
+const DRILLS_MESA = ["totals", "payouts", "dealerErrors"];
 const drillsDeConteo = (drills) =>
   Object.entries(drills || {})
     .filter(([k]) => !DRILLS_MESA.includes(k))

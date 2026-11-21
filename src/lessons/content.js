@@ -2994,6 +2994,48 @@ const SECTIONS = [
           ),
         ],
       },
+      {
+        id: "l37",
+        title: "Qué tan atrás está el corte",
+        sum: [
+          "La carta de corte marca cuánto del zapato se reparte antes de mezclar: eso es la penetración.",
+          "Con el corte más atrás quedan menos mazos, y el mismo conteo corrido da un conteo real más alto.",
+          "Busca mesas con el corte a tres cuartos o más: con el corte a la mitad, contar rinde mucho menos.",
+        ],
+        steps: [
+          info("La carta de corte", [
+            "Antes de repartir se mete una **carta de corte** (*cut card*) en el zapato. Cuando sale, el crupier termina la mano y mezcla.",
+            "La parte del zapato que se reparte antes de mezclar se llama **penetración**. Con el corte a tres cuartos, es del **75 %**.",
+          ]),
+          info("Por qué importa", [
+            "El conteo real es el conteo corrido dividido por los mazos que quedan.",
+            "Un conteo corrido de **+6** con **3 mazos** por jugar es un conteo real de **+2**. El mismo +6 con **1,5 mazos** por jugar es **+4**.",
+            "Cuanto más atrás está el corte, más manos juegas con pocos mazos por jugar: ahí aparecen los conteos altos.",
+          ]),
+          info("El corte a la mitad", [
+            "Si se corta a la mitad del zapato, nunca llegas a la mejor parte: se mezcla justo cuando el conteo empezaba a valer.",
+            "Por eso algunos casinos mezclan antes de tiempo cuando sospechan de alguien. En el casino simulado lo vas a ver: si te vigilan, el crupier mezcla antes.",
+          ]),
+          quiz(
+            "Quedan 2 mazos por jugar y el conteo corrido es +8. ¿Cuál es el conteo real?",
+            ["+2", "+4", "+8"],
+            1,
+            "+8 dividido 2 mazos da +4.",
+          ),
+          quiz(
+            "El conteo corrido es +6. ¿Cuándo te conviene más?",
+            ["Con 4 mazos por jugar", "Con 1,5 mazos por jugar"],
+            1,
+            "Con menos mazos, el +6 pesa más: +4 de conteo real, contra +1,5 con 4 mazos.",
+          ),
+          quiz(
+            "¿Qué mesa conviene para contar?",
+            ["Corte a la mitad del zapato", "Corte a tres cuartos del zapato"],
+            1,
+            "Con el corte más atrás llegas más seguido a los conteos altos.",
+          ),
+        ],
+      },
     ],
   },
   {

@@ -20,7 +20,7 @@ const T = {
       quiz: ["¿Sabés jugar <em>esta mano</em>?", "Pensala antes de que termine la cuenta"],
       count: ["Así se <em>cuentan cartas</em>", "Bajas +1 · del 7 al 9, 0 · altas −1"],
       table: ["Un casino <em>en tu bolsillo</em>", "Practicá contar y apostar sin arriesgar nada"],
-      learn: ["Blackjack, <em>paso a paso</em>", "46 lecciones cortas, de cero a contar cartas"],
+      learn: ["Blackjack, <em>paso a paso</em>", "47 lecciones cortas, de cero a contar cartas"],
     },
     h: {
       learn: ["Aprendé <em>paso a paso</em>", "Lecciones cortas con una mesa narrada"],
@@ -40,7 +40,7 @@ const T = {
       quiz: ["Can you play <em>this hand</em>?", "Decide before the countdown ends"],
       count: ["How to <em>count cards</em>", "Low +1 · 7 to 9, 0 · high −1"],
       table: ["A casino <em>in your pocket</em>", "Practice counting and betting risk-free"],
-      learn: ["Blackjack, <em>step by step</em>", "46 short lessons, from zero to counting cards"],
+      learn: ["Blackjack, <em>step by step</em>", "47 short lessons, from zero to counting cards"],
     },
     h: {
       learn: ["Learn <em>step by step</em>", "Short lessons at a narrated table"],

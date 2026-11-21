@@ -10,18 +10,23 @@ La idea es sumar algo nuevo a la app **cada dos semanas**: una lección y, cuand
 | 21/11/2026 | Lección "Entrar y salir del zapato" | Aprender → Apuestas laterales y variantes |
 | 21/11/2026 | Ejercicios "¿Cuánto suma?" y "Pagos" | Entrenar → Ponte a prueba |
 | 21/11/2026 | Casino: el crupier mezcla antes de tiempo si sospecha | Jugar → Casino simulado |
+| 21/11/2026 | Lección "Qué tan atrás está el corte" | Aprender → Apuestas laterales y variantes |
+| 21/11/2026 | Ejercicio "¿Pagó bien el crupier?" | Entrenar → Ponte a prueba |
+| 21/11/2026 | Pantalla "Personalizar" (tema, letra, paño y cartas) | Jugar → Mesa, y Ajustes |
 
 ## Próximas (una cada dos semanas)
 
 | Fecha | Lección | De qué trata |
 |---|---|---|
-| Vie 5/12 | Doblar con manos blandas | A+2 a A+7 contra 3 a 6: por qué se dobla con una mano que parece floja. |
-| Vie 19/12 | Qué tan atrás está el corte | La penetración: por qué el lugar de la tarjeta de corte cambia todo para un contador. |
-| Vie 2/1 | Contar los ases aparte | El conteo de ases al costado y cuándo vale la pena. |
-| Vie 16/1 | Errores de quien empieza a contar | Perder la cuenta, apurarse, apostar con el conteo corrido en vez del real. |
-| Vie 30/1 | Thorp y el equipo del MIT | La historia del conteo de cartas, y qué es mito y qué es verdad en la película. |
-| Vie 13/2 | El crupier pide con 17 blando | Reglas H17 y S17: cómo cambian la ventaja de la casa y algunas jugadas. |
+| Vie 5/12 | Contar los ases aparte | El conteo de ases al costado y cuándo vale la pena. |
+| Vie 19/12 | Errores de quien empieza a contar | Perder la cuenta, apurarse, apostar con el conteo corrido en vez del real. |
+| Vie 2/1 | Thorp y el equipo del MIT | La historia del conteo de cartas, y qué es mito y qué es verdad en la película. |
+| Vie 16/1 | El crupier pide con 17 blando | Reglas H17 y S17: cómo cambian la ventaja de la casa y algunas jugadas. |
+| Vie 30/1 | La etiqueta en la mesa | Cómo pedir y plantarse con señas, cuándo tocar las fichas y qué no hacer. |
+| Vie 13/2 | Propinas y comps | Las propinas al crupier y los beneficios del casino: qué te conviene y qué es marketing. |
 
-**Ejercicios para sumar más adelante:** reconocer pares que se separan, contar con distracciones (gente hablando), y "¿qué pagó mal el crupier?", con errores de pago escondidos.
+"Doblar con manos blandas" ya no va: lo cubren "Cuándo doblar" y "El 18 blando".
+
+**Ejercicios para sumar más adelante:** reconocer pares que se separan y contar con distracciones (gente hablando).
 
 Si querés cambiar el orden o tenés un tema que te preguntan en los comentarios, va primero lo que pide la gente.
