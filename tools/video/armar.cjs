@@ -7,7 +7,10 @@ const L = process.argv[2] || "es";
 const que = process.argv[3] || "todo";
 const S = path.join(__dirname, "salida");
 const TIKTOK = process.env.TIKTOK === "1";
-const P = path.join(S, `piezas-${L}${TIKTOK ? "-tiktok" : ""}`);
+// NEUTRO=1 (solo es): con los textos en español neutro de fondos.cjs; sale a salida/, para hacer
+// los videos livianos de la web (ver web.sh).
+const NEUTRO = process.env.NEUTRO === "1" && L === "es";
+const P = path.join(S, `piezas-${L}${TIKTOK ? "-tiktok" : ""}${NEUTRO ? "-neutro" : ""}`);
 const FPS = 60;
 const ROOT = path.resolve(__dirname, "../..");
 const frames = (k) => path.join(S, `${L}-${k}`, "f%05d.png");
@@ -21,7 +24,7 @@ const slide = (from, d, delay = 0) => `${from}*pow(1-min(max(t-${delay},0)/${d},
 function vertical(k, { cuenta = null } = {}) {
   const d = dur(k);
   const total = +(d + 1.0).toFixed(3);
-  const out = path.join(ROOT, "store/video/redes", `edge21-${k}-${L}${TIKTOK ? "-tiktok" : ""}.mp4`);
+  const out = NEUTRO ? path.join(S, `edge21-${k}-es-neutro.mp4`) : path.join(ROOT, "store/video/redes", `edge21-${k}-${L}${TIKTOK ? "-tiktok" : ""}.mp4`);
   const inputs = [
     "-loop", "1", "-framerate", String(FPS), "-i", path.join(P, "v-fondo.png"),
     "-loop", "1", "-framerate", String(FPS), "-i", path.join(P, `v-titulo-${k}.png`),
