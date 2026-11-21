@@ -10,7 +10,9 @@ const EN_PLAY = false;
 // TIKTOK=1: versión para TikTok, que es más estricto con todo lo que parezca apuestas. Títulos de
 // desafío y matemática, sin enlaces al final (va a salida/piezas-<idioma>-tiktok).
 const TIKTOK = process.env.TIKTOK === "1";
-const OUT = path.join(__dirname, "salida", `piezas-${L}${TIKTOK ? "-tiktok" : ""}`);
+// NEUTRO=1 (solo es): textos en español neutro, para los videos de muestra de la web (la web usa tú).
+const NEUTRO = process.env.NEUTRO === "1" && L === "es";
+const OUT = path.join(__dirname, "salida", `piezas-${L}${TIKTOK ? "-tiktok" : ""}${NEUTRO ? "-neutro" : ""}`);
 const FPS = 60;
 const T = {
   es: {
@@ -18,7 +20,7 @@ const T = {
       quiz: ["¿Sabés jugar <em>esta mano</em>?", "Pensala antes de que termine la cuenta"],
       count: ["Así se <em>cuentan cartas</em>", "Bajas +1 · del 7 al 9, 0 · altas −1"],
       table: ["Un casino <em>en tu bolsillo</em>", "Practicá contar y apostar sin arriesgar nada"],
-      learn: ["Blackjack, <em>paso a paso</em>", "36 lecciones cortas, de cero a contar cartas"],
+      learn: ["Blackjack, <em>paso a paso</em>", "46 lecciones cortas, de cero a contar cartas"],
     },
     h: {
       learn: ["Aprendé <em>paso a paso</em>", "Lecciones cortas con una mesa narrada"],
@@ -38,7 +40,7 @@ const T = {
       quiz: ["Can you play <em>this hand</em>?", "Decide before the countdown ends"],
       count: ["How to <em>count cards</em>", "Low +1 · 7 to 9, 0 · high −1"],
       table: ["A casino <em>in your pocket</em>", "Practice counting and betting risk-free"],
-      learn: ["Blackjack, <em>step by step</em>", "36 short lessons, from zero to counting cards"],
+      learn: ["Blackjack, <em>step by step</em>", "46 short lessons, from zero to counting cards"],
     },
     h: {
       learn: ["Learn <em>step by step</em>", "Short lessons at a narrated table"],
@@ -73,6 +75,14 @@ if (TIKTOK) {
   }[L];
   Object.assign(T.v, TT.v);
   T.ctaWeb = TT.ctaWeb;
+}
+if (NEUTRO) {
+  Object.assign(T.v, {
+    quiz: ["¿Sabes jugar <em>esta mano</em>?", "Piénsala antes de que termine la cuenta"],
+    table: ["Un casino <em>en tu bolsillo</em>", "Practica contar y apostar sin arriesgar nada"],
+  });
+  T.ctaWeb = "Edge 21 · pruébala gratis en edge21.app";
+  T.think = "Elige tu jugada";
 }
 const FONT = `@font-face{font-family:DM;src:url(${path.join(__dirname, "DMSans-latin-400-800.woff2")});font-weight:400 800}*{margin:0;box-sizing:border-box}body{font-family:DM;color:#f3efe2}`;
 const CHIP = `<img src="${path.resolve(__dirname, "../../img/ficha.svg")}">`;
