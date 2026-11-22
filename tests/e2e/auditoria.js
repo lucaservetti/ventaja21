@@ -62,6 +62,9 @@
   }
   function revisar() {
     tapas();
+    // Campos de texto con letra de menos de 16 px: en el iPhone, Safari hace zoom al tocarlos.
+    for (const el of document.querySelectorAll("input:not([type=checkbox]):not([type=radio]):not([type=range]), textarea, select"))
+      if (el.offsetParent && parseFloat(getComputedStyle(el).fontSize) < 16) anota("campo que hace zoom en el iPhone", el);
     const W = innerWidth;
     if (document.documentElement.scrollWidth > W + 1) anota("la página se mueve a los costados", document.documentElement);
     for (const el of document.querySelectorAll("body *")) {
