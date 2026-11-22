@@ -1,5 +1,5 @@
 // Arma los videos finales a 60 FPS con ffmpeg (ver README.md).
-// Uso: node tools/video/armar.cjs <es|en> [vertical|tienda]
+// Uso: node tools/video/armar.cjs <es|en|pt> [vertical|tienda]
 const { execFileSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");

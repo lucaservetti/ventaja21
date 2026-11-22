@@ -420,7 +420,7 @@ const PRUEBAS = {
       await page.waitForTimeout(500);
       const txt = await page.locator(".layer.with-tabbar:not([hidden])").last().innerText();
       const m = txt.match(ESPANOL);
-      check(!m, `en ${tab} queda español: "${m && txt.slice(Math.max(0, m.index - 40), m.index + 40)}"`);
+      check(!m, `en ${tab} queda español: "${m && txt.slice(Math.max(0, m.index - 40), m.index + 40).replace(/\s+/g, " ")}"`);
     }
     await page.locator(".acct-btn:visible").first().click();
     await page.getByText("Configurações").first().waitFor({ timeout: 3000 });
@@ -608,6 +608,25 @@ const PRUEBAS = {
     }
     check(await enApp(), "cerrar Ajustes sacó de la app");
     await h.see("Progreso", "Progress");
+  },
+
+  // Sin internet: la app abre igual y en su idioma. El diccionario (app/i18n/) lo guarda el service
+  // worker la primera vez que se trae.
+  async sinInternet(h) {
+    const { page } = h;
+    await page.evaluate(() => navigator.serviceWorker && navigator.serviceWorker.ready);
+    await page.reload();
+    await page.waitForTimeout(900);
+    check(await page.evaluate(() => !!navigator.serviceWorker.controller), "el service worker no maneja la página");
+    await page.context().setOffline(true);
+    try {
+      await page.reload();
+      await page.waitForTimeout(1200);
+      check((await page.evaluate(() => document.documentElement.lang)) === h.lang, "sin internet cambió el idioma");
+      await h.see("Entrenar", "Train");
+    } finally {
+      await page.context().setOffline(false);
+    }
   },
 
   // En la compu: menú al costado (siempre a la vista), Ajustes como ventana en el medio, el menú

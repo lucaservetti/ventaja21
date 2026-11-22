@@ -15,7 +15,7 @@ module.exports = {
       await v.tap(".act-btn.act-S");
       await v.wait(200);
       const txt = await v.page.locator(".layer.full").last().innerText();
-      if (/No era esa|Not that one/.test(txt)) return false;
+      if (/No era esa|Not that one|Não era essa/.test(txt)) return false;
       await v.wait(3600);
     },
   },
@@ -71,7 +71,7 @@ module.exports = {
       await v.tap(".act-btn.act-S");
       await v.wait(200);
       const txt = await v.page.locator(".layer.full").last().innerText();
-      if (/No era esa|Not that one/.test(txt)) return false;
+      if (/No era esa|Not that one|Não era essa/.test(txt)) return false;
       await v.wait(2600);
     },
   },

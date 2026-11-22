@@ -1,5 +1,5 @@
 // Fondos, títulos y la cuenta regresiva de los videos (ver README.md).
-// Uso: node tools/video/fondos.cjs <es|en>  → tools/video/salida/piezas-<idioma>/
+// Uso: node tools/video/fondos.cjs <es|en|pt>  → tools/video/salida/piezas-<idioma>/
 const { chromium } = require("playwright");
 const fs = require("fs");
 const path = require("path");
@@ -54,6 +54,26 @@ const T = {
     end: "Free on Google Play",
     think: "Pick your play",
     time: "Time!",
+  },
+  pt: {
+    v: {
+      quiz: ["Você sabe jogar <em>esta mão</em>?", "Pense antes que acabe a contagem"],
+      count: ["Assim se <em>contam cartas</em>", "Baixas +1 · do 7 ao 9, 0 · altas −1"],
+      table: ["Um cassino <em>no seu bolso</em>", "Pratique contar e apostar sem arriscar nada"],
+      learn: ["Blackjack, <em>passo a passo</em>", "47 lições curtas, do zero até contar cartas"],
+    },
+    h: {
+      learn: ["Aprenda <em>passo a passo</em>", "Lições curtas com uma mesa narrada"],
+      train: ["A jogada <em>certa</em>", "Em cada mão, com o porquê"],
+      count: ["Conte cartas <em>de verdade</em>", "Uma trilha de 10 níveis"],
+      table: ["Um cassino <em>na sua mão</em>", "Jogue, conte e aposte com a contagem"],
+      progress: ["Veja como você <em>melhora</em>", "Seu nível, sua semana e suas conquistas"],
+    },
+    cta: "Edge 21 · grátis no Google Play",
+    ctaWeb: "Edge 21 · teste grátis em edge21.app",
+    end: "Grátis no Google Play",
+    think: "Escolha sua jogada",
+    time: "Tempo!",
   },
 }[L];
 if (TIKTOK) {

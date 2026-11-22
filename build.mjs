@@ -41,8 +41,18 @@ const version = pkg.version;
 // Pagos de Premium en la web (Paddle). Ver PAGOS_WEB.md.
 const pagos = JSON.parse(fs.readFileSync("pagos.config.json", "utf8"));
 
+// Los diccionarios van en archivos aparte, con su huella en el nombre (app/i18n/en-<huella>.json): la
+// app trae solo el de su idioma (src/i18n/arranque.js) y el service worker los guarda entre versiones.
+const DICS = Object.fromEntries(
+  [["en", EN], ["pt", PT]].map(([l, d]) => {
+    const json = JSON.stringify(d);
+    return [l, { json, ruta: `i18n/${l}-${crypto.createHash("sha256").update(json).digest("hex").slice(0, 10)}.json` }];
+  }),
+);
+const I18N = Object.fromEntries(Object.entries(DICS).map(([l, d]) => [l, d.ruta]));
+
 const js = await esbuild.build({
-  entryPoints: ["src/main.jsx"],
+  entryPoints: ["src/i18n/arranque.js"],
   bundle: true,
   format: "iife",
   minify: true,
@@ -56,6 +66,7 @@ const js = await esbuild.build({
   define: {
     "process.env.NODE_ENV": '"production"',
     __APP_VERSION__: JSON.stringify(version),
+    __I18N__: JSON.stringify(I18N),
     __FIREBASE__: JSON.stringify(firebase.apiKey && firebase.projectId ? firebase : null),
     __PAGOS__: JSON.stringify({ paddle: pagos.paddle, mostrar: pagos.mostrar }),
     // Anuncio intersticial de AdMob para Android. Sin la variable, se usa el anuncio de prueba de Google.
@@ -69,14 +80,7 @@ const script = js.outputFiles[0].text.replace(/<\/script/gi, "<\\/script");
 const html = fs
   .readFileSync("src/index.html", "utf8")
   .replace("/*STYLES*/", () => css.code.trim())
-  .replace("/*SCRIPT*/", () => script.trim())
-  .replace(
-    "<!--I18N-->",
-    () =>
-      [["en", EN], ["pt", PT]]
-        .map(([l, d]) => `<script type="application/json" id="i18n-${l}">${JSON.stringify(d).replace(/<\//g, "<\\/")}</script>`)
-        .join(""),
-  );
+  .replace("/*SCRIPT*/", () => script.trim());
 // Política de seguridad de la web: el navegador solo corre el código de la app (por su huella) y el
 // de Google para entrar con la cuenta, y solo habla con Firebase y con el servidor de Edge 21. Si
 // alguien lograra meter código en la página, no corre. Solo en la web: en Android, Capacitor agrega
@@ -99,12 +103,15 @@ const csp = [
 const htmlWeb = html.replace('<meta charset="utf-8">', () => `<meta charset="utf-8">\n<meta http-equiv="Content-Security-Policy" content="${csp}">`);
 // La app vive en app/ (edge21.app/app); en el inicio está la página de presentación.
 fs.writeFileSync("app/index.html", htmlWeb);
+fs.rmSync("app/i18n", { recursive: true, force: true });
+fs.mkdirSync("app/i18n");
+for (const d of Object.values(DICS)) fs.writeFileSync(`app/${d.ruta}`, d.json);
 
-const hash = crypto.createHash("sha256").update(htmlWeb).digest("hex").slice(0, 10);
+const hash = crypto.createHash("sha256").update(htmlWeb + JSON.stringify(I18N)).digest("hex").slice(0, 10);
 const fontFiles = fs.readdirSync("app/fonts").filter((f) => f.endsWith(".woff2")).map((f) => `  "./fonts/${f}",`).join("\n");
 fs.writeFileSync(
   "app/sw.js",
-  fs.readFileSync("src/sw.js", "utf8").replaceAll("__VERSION__", version).replaceAll("__HASH__", hash).replace("  /*FONTS*/", fontFiles),
+  fs.readFileSync("src/sw.js", "utf8").replaceAll("__VERSION__", version).replaceAll("__HASH__", hash).replace("  /*FONTS*/", fontFiles).replace("__I18N__", JSON.stringify(I18N)),
 );
 
 // Carpeta www/: la misma app para el proyecto Android (Capacitor). No va al repositorio.
@@ -115,5 +122,6 @@ for (const f of ["manifest.webmanifest", "favicon.svg", "icon-192.png", "icon-51
   fs.copyFileSync(`app/${f}`, `www/${f}`);
 fs.copyFileSync("privacidad.html", "www/privacidad.html");
 fs.cpSync("app/fonts", "www/fonts", { recursive: true });
+fs.cpSync("app/i18n", "www/i18n", { recursive: true });
 
 console.log(`index.html ${(html.length / 1024).toFixed(0)} KB · versión ${version} · caché ${hash}`);

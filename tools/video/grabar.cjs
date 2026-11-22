@@ -5,6 +5,16 @@ const { chromium } = require("playwright");
 const fs = require("fs");
 const http = require("http");
 const path = require("path");
+const PT = JSON.parse(fs.readFileSync(path.join(__dirname, "../../src/i18n/pt.json"), "utf8"));
+function ptDe(es) {
+  if (PT[es] != null) return PT[es];
+  for (const [k, v] of Object.entries(PT)) {
+    if (!/\{\d\}/.test(k)) continue;
+    const m = es.match(new RegExp(`^${k.replace(/[.*+?^$()|[\]\\]/g, "\\$&").replace(/\{\d\}/g, "(.+?)")}$`));
+    if (m) return v.replace(/\{(\d)\}/g, (_, n) => m[+n + 1]);
+  }
+  throw new Error(`falta en pt.json: ${es}`);
+}
 const ESCENAS = require("./escenas.cjs");
 
 const FPS = 60;
@@ -16,7 +26,7 @@ const reloj = fs.readFileSync(path.join(__dirname, "reloj.js"), "utf8");
 const azar = (n) => `(() => { let s = ${n} >>> 0 || 1; const r = () => { s = (s * 1103515245 + 12345) >>> 0; return s / 4294967296; }; Math.random = r; if (window.crypto) window.crypto.getRandomValues = (a) => { for (let i = 0; i < a.length; i++) a[i] = Math.floor(r() * 4294967296); return a; }; })();`;
 
 function servidor() {
-  const types = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".png": "image/png", ".svg": "image/svg+xml", ".webp": "image/webp", ".webmanifest": "application/manifest+json" };
+  const types = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".png": "image/png", ".svg": "image/svg+xml", ".webp": "image/webp", ".webmanifest": "application/manifest+json", ".json": "application/json" };
   const srv = http.createServer((req, res) => {
     let p = decodeURIComponent(new URL(req.url, "http://x").pathname);
     if (p.endsWith("/")) p += "index.html";
@@ -33,7 +43,8 @@ function servidor() {
 // Lo que puede hacer una escena. Con dir=null es un ensayo: corre igual pero sin sacar fotos.
 function director(page, cdp, dir, L) {
   let n = 0;
-  const W = (es, en) => (L === "es" ? es : en);
+  // En portugués, el texto sale de pt.json a partir del español (las plantillas con {0} se rellenan).
+  const W = (es, en) => (L === "es" ? es : L === "pt" ? ptDe(es) : en);
   const v = {
     W,
     get t() {
@@ -95,7 +106,7 @@ function director(page, cdp, dir, L) {
 }
 
 async function toma(browser, base, L, nombre, esc, seed, dir) {
-  const ctx = await browser.newContext({ viewport: { width: 390 * ZOOM, height: 844 * ZOOM }, deviceScaleFactor: 1, locale: L === "es" ? "es-UY" : "en-US" });
+  const ctx = await browser.newContext({ viewport: { width: 390 * ZOOM, height: 844 * ZOOM }, deviceScaleFactor: 1, locale: { es: "es-UY", pt: "pt-BR" }[L] || "en-US" });
   await ctx.addInitScript(`window.__V_EPOCH = ${Date.UTC(2026, 10, 20, 15, 0, 0)};`);
   await ctx.addInitScript(reloj);
   await ctx.addInitScript(azar(seed));
@@ -106,6 +117,8 @@ async function toma(browser, base, L, nombre, esc, seed, dir) {
   page.on("pageerror", (e) => errs.push(String(e)));
   await page.goto(base + "/app/index.html");
   await page.waitForLoadState("load");
+  // En inglés y portugués la app abre recién cuando llega su diccionario (src/i18n/arranque.js).
+  await page.waitForFunction(() => !!document.querySelector("nav.tabbar, .layer"), null, { timeout: 15000 });
   await page.waitForTimeout(300);
   const cdp = await ctx.newCDPSession(page);
   // Arranque sin grabar: la app se acomoda y prepara las pestañas.

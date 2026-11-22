@@ -1,5 +1,5 @@
-// Interacción de las guías: la tabla de estrategia (tocar una casilla muestra la jugada y por qué)
-// y el ejercicio de conteo Hi-Lo. Las páginas las arma tools/guias/armar.mjs.
+// Interacción de las guías: la tabla de estrategia (tocar una casilla muestra la jugada y por qué),
+// el ejercicio de conteo Hi-Lo y la calculadora de 6:5. Las páginas las arma tools/guias/armar.mjs.
 (() => {
   // ---- Tabla de estrategia ----
   const datosEl = document.getElementById("g-datos");
@@ -121,5 +121,21 @@
     start.addEventListener("click", empezar);
     drill.querySelector('[data-a="check"]').addEventListener("click", comprobar);
     input.addEventListener("keydown", (e) => e.key === "Enter" && comprobar());
+  }
+
+  // ---- Calculadora de 6:5: cuánto más se pierde que con 3:2 ----
+  // Blackjack en el 4,75 % de las manos; con 6:5 se cobra 1,2 veces la apuesta en lugar de 1,5.
+  const calc = document.querySelector(".g-calc");
+  if (calc) {
+    const T = JSON.parse(calc.dataset.t);
+    const res = calc.querySelector(".g-calc-res");
+    const val = (k) => Math.max(0, parseFloat(String(calc.querySelector(`[data-k="${k}"]`).value).replace(",", ".")) || 0);
+    const fmt = (n) => (Math.round(n * 100) / 100).toFixed(n < 100 ? 2 : 0).replace(".", T.dec);
+    const calcular = () => {
+      const perdida = val("apuesta") * val("manos") * val("horas") * 0.0475 * 0.3;
+      res.innerHTML = T.res.replace("{0}", fmt(perdida));
+    };
+    calc.addEventListener("input", calcular);
+    calcular();
   }
 })();

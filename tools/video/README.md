@@ -15,7 +15,7 @@ node tools/video/grabar.cjs es         # graba todas las escenas (o: grabar.cjs 
 node tools/video/armar.cjs es          # arma los videos (o: armar.cjs es vertical | tienda)
 ```
 
-Para inglés, lo mismo con `en`. Los cuadros quedan en `tools/video/salida/`, que no se sube al repo. Los videos terminados van a:
+Para inglés y portugués, lo mismo con `en` o `pt`. Los cuadros quedan en `tools/video/salida/`, que no se sube al repo. Los videos terminados van a:
 
 - `store/video/redes/edge21-<escena>-<idioma>.mp4`: verticales 1080x1920 para TikTok, Reels y Shorts;
 - `store/video/edge21-video-<idioma>.mp4`: el de la tienda, 1920x1080.
