@@ -319,6 +319,26 @@ const PRUEBAS = {
   },
 
   // Celebración: al subir de rango aparece con su botón para compartir; "Seguir" la cierra y no vuelve.
+  // El "?" de Conteo: el cartel se cierra al ir a la lección, se cierra con la X y queda por encima
+  // de la barra de pestañas.
+  async ayudaConteo(h) {
+    const { page } = h;
+    await h.tab("Conteo", "Count");
+    const ayuda = page.locator(`button[aria-label="${h.T("Cómo se cuenta", "How to count")}"]:visible`).first();
+    await ayuda.click();
+    await page.locator(".sheet-wrap").waitFor({ timeout: 3000 });
+    const z = await page.evaluate(() => { const l = document.querySelector(".sheet-wrap").closest(".layer"); return l ? +getComputedStyle(l).zIndex : 0; });
+    check(z > 40, "la pantalla con el cartel no queda por encima de la barra de pestañas");
+    await page.locator(".sheet-wrap .sheet-x").click();
+    await page.waitForTimeout(500);
+    check(!(await page.locator(".sheet-wrap:visible").count()), "la X no cerró el cartel");
+    await ayuda.click();
+    await page.locator(".sheet-wrap").waitFor({ timeout: 3000 });
+    await page.locator(".sheet-wrap button.btn, .sheet-wrap button").filter({ hasText: h.T("Ver la lección", "See the lesson") }).first().click();
+    await page.waitForTimeout(800);
+    check(!(await page.locator(".sheet-wrap:visible").count()), "el cartel quedó abierto encima de la lección");
+    await h.foto("ayuda-leccion");
+  },
   // Portugués: las pestañas, los ajustes y lo que se ve con un progreso avanzado, sin restos en español.
   // Corre una sola vez (en la vuelta en español), con el idioma cambiado a mano.
   async portugues(h) {
