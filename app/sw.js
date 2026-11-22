@@ -20,6 +20,7 @@ const CORE = [
 // una caché aparte que no se borra al actualizar; al instalar una versión nueva se baja el
 // diccionario nuevo solo de los idiomas que ya estaban guardados (el de la persona), así la app
 // sigue abriendo sin internet después de actualizarse.
+// eslint-disable-next-line no-undef -- build.mjs lo reemplaza por los nombres de los archivos
 const I18N = {"en":"i18n/en-82527fd5bc.json","pt":"i18n/pt-1085f66589.json"};
 const CACHE_I18N = "v21-i18n";
 const urlI18n = (ruta) => new URL(ruta, self.registration.scope).href;

@@ -57,7 +57,7 @@ const T = {
   },
   pt: {
     v: {
-      quiz: ["Você sabe jogar <em>esta mão</em>?", "Pense antes que acabe a contagem"],
+      quiz: ["Sabe jogar <em>esta mão</em>?", "Pense antes que acabe a contagem"],
       count: ["Assim se <em>contam cartas</em>", "Baixas +1 · do 7 ao 9, 0 · altas −1"],
       table: ["Um cassino <em>no seu bolso</em>", "Pratique contar e apostar sem arriscar nada"],
       learn: ["Blackjack, <em>passo a passo</em>", "47 lições curtas, do zero até contar cartas"],

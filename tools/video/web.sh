@@ -9,7 +9,7 @@ set -e
 cd "$(dirname "$0")/../.."
 for k in quiz count table; do
   for L in ${IDIOMAS:-es en pt}; do
-    if [ "$L" = es ]; then src="tools/video/salida/edge21-$k-es-neutro.mp4"; else src="store/video/redes/edge21-$k-en.mp4"; fi
+    if [ "$L" = es ]; then src="tools/video/salida/edge21-$k-es-neutro.mp4"; else src="store/video/redes/edge21-$k-$L.mp4"; fi
     out="store/video/redes/edge21-$k-$L-web.mp4"
     ffmpeg -v error -y -i "$src" -an -vf "fps=30" -c:v libx264 -preset slower -crf 25 -profile:v high \
       -pix_fmt yuv420p -movflags +faststart "$out"
