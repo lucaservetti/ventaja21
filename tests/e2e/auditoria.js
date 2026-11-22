@@ -30,9 +30,13 @@
     return arriba && !el.contains(arriba) && !arriba.contains(el);
   };
   function tapas() {
-    // Las hojas y los modales tienen que ir afuera de las pantallas (en el iPhone, adentro quedan
-    // debajo de la barra de pestañas) y nada de lo que tienen puede quedar tapado.
-    for (const w of document.querySelectorAll(".layer .sheet-wrap, .layer .modal-wrap")) anota("hoja adentro de una pantalla", w);
+    // Una pantalla con una hoja o un modal abierto tiene que quedar por encima de la barra de pestañas
+    // (en el iPhone, si no, la barra la tapa) y nada de lo que tiene puede quedar tapado.
+    const barraZ = +getComputedStyle(document.querySelector("nav.tabbar") || document.body).zIndex || 0;
+    for (const w of document.querySelectorAll(".sheet-wrap, .modal-wrap")) {
+      const capa = w.closest(".layer");
+      if (capa && !(+getComputedStyle(capa).zIndex > barraZ)) anota("hoja debajo de la barra de pestañas", w);
+    }
     const abierta = [...document.querySelectorAll(".sheet-wrap:not(.closing) .sheet, .modal-wrap .modal")].pop();
     if (abierta) {
       for (const el of abierta.querySelectorAll("button, a, input, h2, p, .li-title")) {

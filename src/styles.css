@@ -1016,6 +1016,12 @@ button.chip:active:not(:disabled) {
   position: relative;
   text-align: center;
 }
+/* La pantalla que tiene una hoja o un modal abierto pasa por encima de la barra de pestañas: en el
+   iPhone, lo fijo que va adentro de una pantalla con scroll quedaba debajo de la barra. La hoja sigue
+   siendo de su pantalla: si la pantalla se esconde (por ejemplo, al abrir una lección), se va con ella. */
+.layer:has(.sheet-wrap, .modal-wrap) {
+  z-index: 50;
+}
 .sheet-wrap {
   position: fixed;
   inset: 0;
