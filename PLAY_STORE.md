@@ -112,6 +112,8 @@ Después completá el panel **"Configura tu app"**. Lo que va en cada formulario
 
 La app también está en inglés (sale en inglés en los celulares que no están en español). Para que la ficha también aparezca en inglés: **Ficha de Play Store → Administrar traducciones → Agregar traducciones → Inglés (Estados Unidos)** y pegá los textos de `store/ficha-en.md`, y subí `store/grafico-destacado-en.png` y las capturas de `store/capturas-en/`.
 
+**Portugués (Brasil):** la app también sale en portugués en los celulares que están en portugués. Igual que con el inglés: **Administrar traducciones → Agregar traducciones → Portugués (Brasil)**, pegá los textos de `store/ficha-pt.md` y subí `store/grafico-destacado-pt.png` y las capturas de `store/capturas-pt/`.
+
 ## Paso 6 · Prueba interna y el producto Premium
 
 1. **Pruebas → Prueba interna → Crear versión** y subí el `.aab` del paso 4. Agregá tu mail como tester y abrí el enlace para instalarla en un Android.

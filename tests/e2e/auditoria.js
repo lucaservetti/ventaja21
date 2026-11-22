@@ -20,6 +20,8 @@
     }
     return false;
   };
+  const ESPANOL =
+    /\b(crupier|mazos?|apuestas?|conteo|lecci[oó]n|lecciones|ejercicios?|manos?|tandas?|racha|jugadas?|pierdes|aquí|despu[eé]s|tambi[eé]n|cu[aá]nto|qué|ning[uú]n|elige|juega|entrenar|tienes|puedes|blandas?|plantarte|plántate|rendirse|ajustes)\b|ñ(?!ol)| y /i;
   function revisar() {
     const W = innerWidth;
     if (document.documentElement.scrollWidth > W + 1) anota("la página se mueve a los costados", document.documentElement);
@@ -38,6 +40,11 @@
         anota("texto que se sale de su caja", el);
       }
       if ((r.right > W + 1 || r.left < -1) && s.position !== "fixed" && !recortado(el)) anota("se sale de la pantalla", el);
+      // En portugués: palabras que solo existen en español (texto que quedó sin traducir).
+      if (tieneTexto && document.documentElement.lang === "pt") {
+        const t = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join(" ");
+        if (ESPANOL.test(t)) anota("en español", el);
+      }
     }
   }
   window.__revisar = () => {

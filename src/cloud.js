@@ -184,7 +184,7 @@ async function renderWebButton(el, onDone) {
     text: "continue_with",
     logo_alignment: "left",
     width: Math.min(400, Math.max(240, el.clientWidth || 320)),
-    locale: document.documentElement.lang === "en" ? "en" : "es-419",
+    locale: { en: "en", pt: "pt-BR" }[document.documentElement.lang] || "es-419",
   });
 }
 // En Android: el selector de cuentas de Google del celular.

@@ -142,7 +142,7 @@ function spotTitle(a) {
   let e = parseSpot(a);
   return e.kind === "pair"
     ? `${e.g === "T" ? "10,10" : e.g === "A" ? "A,A" : e.g + "," + e.g} vs ${upText(e.up)}`
-    : `${e.kind === "soft" ? "Blando" : "Duro"} ${e.total} vs ${upText(e.up)}`;
+    : `${e.kind === "soft" ? `Blando ${e.total}` : `Duro ${e.total}`} vs ${upText(e.up)}`;
 }
 function MiniCards({ ranks: a = ["K", "8"], suits: e = ["s", "s"] }) {
   return (

@@ -85,7 +85,7 @@ function SoloMayores() {
         <p className="small">
           <a
             className="link"
-            href={`https://edge21.app/terminos.html${LANG === "en" ? "#en" : ""}`}
+            href={`https://edge21.app/terminos.html${LANG === "es" ? "" : `#${LANG}`}`}
             target="_blank"
             rel="noreferrer"
           >

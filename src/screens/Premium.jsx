@@ -377,7 +377,7 @@ function Premium({ feature, then }) {
           <p className="small legal-links prem-legal">
             <a
               className="link"
-              href={`https://edge21.app/terminos.html${LANG === "en" ? "#en" : ""}`}
+              href={`https://edge21.app/terminos.html${LANG === "es" ? "" : `#${LANG}`}`}
               target="_blank"
               rel="noreferrer"
             >
@@ -385,7 +385,7 @@ function Premium({ feature, then }) {
             </a>
             <a
               className="link"
-              href={`https://edge21.app/privacidad.html${LANG === "en" ? "#en" : ""}`}
+              href={`https://edge21.app/privacidad.html${LANG === "es" ? "" : `#${LANG}`}`}
               target="_blank"
               rel="noreferrer"
             >

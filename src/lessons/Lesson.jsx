@@ -836,7 +836,7 @@ function DealerStep({ step: a, onDone: e }) {
       p = `Se pasó con ${c.hard}.`;
     } else {
       if (u) {
-        p = `${c.soft ? "Blando " : ""}${c.total}: tiene que pedir.`;
+        p = c.soft ? `Blando ${c.total}: tiene que pedir.` : `${c.total}: tiene que pedir.`;
       } else {
         p = `${c.total}: se planta.`;
       }

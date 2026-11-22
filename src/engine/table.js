@@ -79,7 +79,7 @@ function emptyShoeStats() {
 function spotLabel(spot) {
   if (spot.kind === "pair")
     return `${spot.g === "T" ? "10" : spot.g},${spot.g === "T" ? "10" : spot.g}`;
-  return `${spot.kind === "soft" ? "Blando" : "Duro"} ${spot.total}`;
+  return spot.kind === "soft" ? `Blando ${spot.total}` : `Duro ${spot.total}`;
 }
 
 class Table {

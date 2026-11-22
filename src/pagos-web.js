@@ -92,7 +92,7 @@ async function pagarWeb(plan, acct) {
     settings: {
       displayMode: "overlay",
       theme: "dark",
-      locale: LANG === "en" ? "en" : "es",
+      locale: LANG,
       allowLogout: false,
     },
   });
