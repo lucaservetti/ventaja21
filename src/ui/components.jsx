@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { createPortal } from "react-dom";
 import { Icon, SuitIcon } from "./icons.jsx";
 import { SUIT_NAMES, isRedSuit } from "../engine/cards.js";
 import {
@@ -308,6 +309,13 @@ function Ring({
     </div>
   );
 }
+// Las hojas y los modales se dibujan afuera de la pantalla que los abre, directo en la app: en el
+// iPhone, una pantalla con scroll arma su propia capa y lo que va adentro (aunque sea fijo) queda
+// por debajo de la barra de pestañas, que la tapaba.
+function arriba(el) {
+  const raiz = typeof document !== "undefined" && (document.querySelector(".app") || document.body);
+  return raiz ? createPortal(el, raiz) : el;
+}
 function Sheet({
   open: a,
   onClose: e,
@@ -342,7 +350,7 @@ function Sheet({
     window.addEventListener("keydown", d);
     return () => window.removeEventListener("keydown", d);
   }, [a, e]);
-  return o ? (
+  return o ? arriba(
     <div
       className={cx("sheet-wrap", r && "closing")}
       role="dialog"
@@ -372,12 +380,14 @@ function Sheet({
   ) : null;
 }
 function Modal({ open: a, children: e, onClose: t, className: s }) {
-  return a ? (
-    <div className="modal-wrap" role="dialog" aria-modal="true">
-      <div className="modal-backdrop" onClick={t} />
-      <div className={cx("modal", s)}>{e}</div>
-    </div>
-  ) : null;
+  return a
+    ? arriba(
+        <div className="modal-wrap" role="dialog" aria-modal="true">
+          <div className="modal-backdrop" onClick={t} />
+          <div className={cx("modal", s)}>{e}</div>
+        </div>,
+      )
+    : null;
 }
 function Keypad({
   value: a,

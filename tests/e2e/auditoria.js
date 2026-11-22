@@ -22,7 +22,42 @@
   };
   const ESPANOL =
     /\b(crupier|mazos?|apuestas?|conteo|lecci[oó]n|lecciones|ejercicios?|manos?|tandas?|racha|jugadas?|pierdes|aquí|despu[eé]s|tambi[eé]n|cu[aá]nto|qué|ning[uú]n|elige|juega|entrenar|tienes|puedes|blandas?|plantarte|plántate|rendirse|ajustes)\b|ñ(?!ol)| y /i;
+  // ¿Lo tapa otra cosa? Se mira el centro del elemento: tiene que estar el elemento (o algo suyo).
+  const tapado = (el, r) => {
+    const x = r.left + r.width / 2, y = r.top + r.height / 2;
+    if (x < 0 || y < 0 || x > innerWidth || y > innerHeight) return false;
+    const arriba = document.elementFromPoint(x, y);
+    return arriba && !el.contains(arriba) && !arriba.contains(el);
+  };
+  function tapas() {
+    // Las hojas y los modales tienen que ir afuera de las pantallas (en el iPhone, adentro quedan
+    // debajo de la barra de pestañas) y nada de lo que tienen puede quedar tapado.
+    for (const w of document.querySelectorAll(".layer .sheet-wrap, .layer .modal-wrap")) anota("hoja adentro de una pantalla", w);
+    const abierta = [...document.querySelectorAll(".sheet-wrap:not(.closing) .sheet, .modal-wrap .modal")].pop();
+    if (abierta) {
+      for (const el of abierta.querySelectorAll("button, a, input, h2, p, .li-title")) {
+        const r = el.getBoundingClientRect();
+        const caja = abierta.querySelector(".sheet-body") || abierta;
+        const cb = caja.getBoundingClientRect();
+        // Solo lo que está dentro de la parte visible de la hoja (lo demás se ve al bajar).
+        if (!r.width || r.top < cb.top || r.bottom > cb.bottom) continue;
+        if (tapado(el, r)) anota("tapado en la hoja", el);
+      }
+      return;
+    }
+    // En la pantalla de arriba, ya bajada hasta el fondo: nada tapado por la barra de pestañas.
+    const capa = [...document.querySelectorAll(".layer")].filter((x) => !x.hidden && x.offsetParent !== null).pop();
+    const barra = document.querySelector("nav.tabbar");
+    if (!capa || !barra || !capa.classList.contains("with-tabbar")) return;
+    if (capa.scrollTop + capa.clientHeight < capa.scrollHeight - 2) return;
+    for (const el of capa.querySelectorAll("button, a, input")) {
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height || el.closest(".float-cta")) continue;
+      if (tapado(el, r) && barra.contains(document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2))) anota("tapado por la barra de pestañas", el);
+    }
+  }
   function revisar() {
+    tapas();
     const W = innerWidth;
     if (document.documentElement.scrollWidth > W + 1) anota("la página se mueve a los costados", document.documentElement);
     for (const el of document.querySelectorAll("body *")) {
