@@ -3777,8 +3777,9 @@ button.chip:active:not(:disabled) {
   background: #0a1d14;
   border: 1px solid var(--line);
   color: var(--text);
+  /* 16 px como mínimo: con menos, Safari del iPhone hace zoom al tocar el campo. */
   font:
-    13px/1.4 ui-monospace,
+    16px/1.4 ui-monospace,
     SFMono-Regular,
     Menlo,
     monospace;
