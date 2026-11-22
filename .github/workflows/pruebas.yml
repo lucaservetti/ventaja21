@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        idioma: [es, en]
+        idioma: [es, en, pt]
     steps:
       - uses: actions/checkout@v4
 

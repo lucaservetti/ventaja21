@@ -1,5 +1,5 @@
 // Pruebas de punta a punta: abren la app en un Chromium con tamaño de celular y la recorren como
-// una persona (en español y en inglés). Uso: npm run build && npm run test:e2e
+// una persona (en español y en inglés; IDIOMA=pt para portugués). Uso: npm run build && npm run test:e2e
 // Con FOTOS=1 guarda una captura de cada paso en tests/e2e/fotos/.
 import { chromium } from "playwright";
 import http from "node:http";
@@ -34,6 +34,61 @@ function servidor() {
 
 class Fallo extends Error {}
 const PT = JSON.parse(fs.readFileSync(path.join(ROOT, "src/i18n/pt.json"), "utf8"));
+// Las pruebas buscan pedazos de frases ("Versión web de prueba", "5 días gratis"), pero pt.json tiene
+// la frase entera ("Versión web de prueba.", "{0} días gratis"). ptDe arma el pedazo en portugués:
+// 1) la clave exacta; 2) la misma frase con puntuación al final; 3) el comienzo de una frase más
+// larga, cortando la traducción en el mismo signo de puntuación; 4) una plantilla con {0}, {1}...,
+// traduciendo también lo que va en cada hueco. Lo que no se puede deducir va en PT_PEDAZOS.
+const PT_PEDAZOS = {
+  "Ganaste un protector de racha": "Você ganhou um protetor de sequência",
+  "Termina una actividad hoy": "Termine uma atividade hoje",
+  "Racha de 3 días": "Sequência de 3 dias",
+  "protector salvó tu racha de 3 días": "protetor salvou sua sequência de 3 dias",
+  "¿Cuántas manos aciertas": "Quantas mãos você acerta",
+  "Tu prueba gratis es de otra función": "Seu teste grátis é de outra função",
+};
+const PLANTILLAS = Object.keys(PT)
+  .filter((k) => /\{\d\}/.test(k))
+  .map((k) => {
+    const orden = [...k.matchAll(/\{(\d)\}/g)].map((m) => +m[1]);
+    const re = new RegExp(`^${k.replace(/[.*+?^$()|[\]\\]/g, "\\$&").replace(/\{\d\}/g, "(.+?)")}$`);
+    return { k, re, orden, fijo: k.replace(/\{\d\}/g, "").length };
+  })
+  // Primero las más específicas (más texto fijo), así "{0} es parte de Premium." gana a "{0} es {1}".
+  .sort((a, b) => b.fijo - a.fijo);
+const PUNTO = /[.,;:!?]/g;
+function ptDe(es, hondo = 0) {
+  if (PT[es] != null) return PT[es];
+  if (PT_PEDAZOS[es] != null) return PT_PEDAZOS[es];
+  for (const fin of [".", "?", "!", ":"]) if (PT[es + fin] != null) return PT[es + fin].replace(/[.?!:]$/, "");
+  if (es.length >= 12) {
+    const largas = Object.keys(PT).filter((k) => k.startsWith(es) && /^[.,;:!?]/.test(k.slice(es.length)));
+    if (largas.length) {
+      const n = (es.match(PUNTO) || []).length;
+      const pt = PT[largas[0]];
+      const cortes = [...pt.matchAll(PUNTO)];
+      if (cortes[n]) return pt.slice(0, cortes[n].index);
+    }
+  }
+  // Primero exigiendo que cada hueco se traduzca; si ninguna sirve, dejando los huecos como están
+  // (un nombre, como "Ana te desafía").
+  if (hondo < 2)
+    for (const estricto of hondo ? [true] : [true, false])
+      for (const { k, re, orden, fijo } of PLANTILLAS)
+        for (const fin of ["", "."]) {
+          if (!estricto && fijo < 6) continue;
+          const m = (es + fin).match(re);
+          if (!m) continue;
+          const args = [];
+          orden.forEach((n, i) => (args[n] = m[i + 1]));
+          // Cada hueco tiene que ser un número o un texto que también se pueda traducir.
+          const pts = args.map((a) => (a == null || !/\p{L}/u.test(a) ? a : (ptDe(a, hondo + 1) ?? (estricto ? null : a))));
+          if (pts.some((x, i) => args[i] != null && x == null)) continue;
+          const r = PT[k].replace(/\{(\d)\}/g, (_, n) => pts[+n]);
+          return fin ? r.replace(/\.$/, "") : r;
+        }
+  return hondo ? null : undefined;
+}
 function check(cond, msg) {
   if (!cond) throw new Fallo(msg);
 }
@@ -42,10 +97,16 @@ function check(cond, msg) {
 function helpers(page, lang, name) {
   let n = 0;
   // En portugués se busca el texto en pt.json a partir del español (si no está, queda el español).
-  const T = (es, en) => (lang === "es" ? es : lang === "pt" ? (PT[es] ?? es) : en);
+  const T = (es, en) => (lang === "es" ? es : lang === "pt" ? (ptDe(es) ?? es) : en);
+  const escRe = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const h = {
     page,
+    lang,
     T,
+    // Expresión que encuentra cualquiera de los textos, en el idioma de la prueba: re(["Correcto", "Correct"], ...).
+    re: (...pares) => new RegExp(pares.map(([es, en]) => escRe(T(es, en))).join("|")),
+    // Selector por aria-label en el idioma de la prueba.
+    aria: (es, en) => `[aria-label="${T(es, en)}"]`,
     async foto(label) {
       if (!FOTOS) return;
       fs.mkdirSync(FOTOS, { recursive: true });
@@ -258,9 +319,9 @@ const PRUEBAS = {
         continue;
       }
       const txt = await h.screenText();
-      check(!/Algo salió mal|Something went wrong/.test(txt), `una lección se rompió (${done} terminadas): ${txt.slice(-160)}`);
+      check(!h.re(["Algo salió mal", "Something went wrong"]).test(txt), `una lección se rompió (${done} terminadas): ${txt.slice(-160)}`);
       // El examen final (ya dado por aprobado): se sale y se sigue con la próxima lección.
-      if (/Examen final|Final exam/.test(txt)) {
+      if (h.re(["Examen final", "Final exam"]).test(txt)) {
         const leave = page.getByText(h.T("Salir", "Leave"), { exact: true }).filter({ visible: true });
         if (await leave.count()) await leave.first().click().catch(() => {});
         else await page.locator(".layer.full button").filter({ visible: true }).first().click().catch(() => {});
@@ -312,7 +373,7 @@ const PRUEBAS = {
     await h.click("Repartir 10 manos", "Deal 10 hands", { wait: 900 });
     await h.css(".act-btn.act-S", 500);
     const txt = await h.screenText();
-    check(/Correcto|No era esa|Correct|Not that one/.test(txt), "no aparece la corrección de la jugada");
+    check(h.re(["Correcto", "Correct"], ["No era esa", "Not that one"]).test(txt), "no aparece la corrección de la jugada");
     await h.foto("respuesta");
     const st = await h.state();
     check(st.train && st.train.totalHands >= 1, "la mano no se guardó");
@@ -342,7 +403,7 @@ const PRUEBAS = {
   // Portugués: las pestañas, los ajustes y lo que se ve con un progreso avanzado, sin restos en español.
   // Corre una sola vez (en la vuelta en español), con el idioma cambiado a mano.
   async portugues(h) {
-    if (h.T("es", "en") !== "es") return;
+    if (h.lang !== "es") return;
     const { page } = h;
     const estado = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/video/estado.json"), "utf8"));
     await page.evaluate((e) => {
@@ -420,7 +481,7 @@ const PRUEBAS = {
     await page.waitForTimeout(400);
     const rec = (await h.state()).settings.recordatorios;
     check(rec && rec.on && rec.dias.length === 1 && rec.dias[0] === 0 && rec.hora === "21:30", "no se guardaron los recordatorios: " + JSON.stringify(rec));
-    await page.locator('[aria-label="Volver"], [aria-label="Back"]').filter({ visible: true }).first().click();
+    await page.locator(h.aria("Volver", "Back")).filter({ visible: true }).first().click();
     await page.waitForTimeout(500);
     check(!(await page.locator(".rec-suggest").filter({ visible: true }).count()), "la sugerencia sigue aunque ya los prendió");
     await page.getByRole("button", { name: T("Ajustes", "Settings") }).filter({ visible: true }).first().click();
@@ -517,7 +578,7 @@ const PRUEBAS = {
     await h.see("Tenla como app en tu iPhone.", "Keep it as an app on your iPhone.");
     check(!(await page.getByText(h.T("Versión web de prueba", "Web trial version")).count()), "la web sigue siendo de prueba");
     await h.foto("instalar");
-    await h.css('.install-note [aria-label="Cerrar"], .install-note [aria-label="Close"]', 500);
+    await h.css(`.install-note ${h.aria("Cerrar", "Close")}`, 500);
     check(!(await page.locator(".install-note").count()), "el aviso no se cerró");
     check((await h.state()).settings.instalarVisto === true, "no se guardó que se cerró");
   },
@@ -526,14 +587,14 @@ const PRUEBAS = {
   // con el botón de la app y con el del navegador, deja en la app (antes llevaba a la página de inicio).
   async volverAtras(h) {
     const { page } = h;
-    const ajustes = 'section:not([hidden]) .acct-btn, section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]';
+    const ajustes = `section:not([hidden]) .acct-btn, section:not([hidden]) button${h.aria("Ajustes", "Settings")}`;
     const enApp = () => page.evaluate(() => /\/app\/(index\.html)?$/.test(location.pathname));
     await h.tab("Progreso", "Progress");
     for (let vuelta = 0; vuelta < 2; vuelta++) {
       await h.css(ajustes, 600);
       await h.css(".cuenta-setting", 700);
       // Volver: la primera vez con el botón de la app, la segunda con el del navegador.
-      if (vuelta === 0) await page.locator('.layer.full [aria-label="Volver"], .layer.full [aria-label="Back"]').filter({ visible: true }).first().click();
+      if (vuelta === 0) await page.locator(`.layer.full ${h.aria("Volver", "Back")}`).filter({ visible: true }).first().click();
       else await page.goBack();
       await page.waitForTimeout(700);
       check(await enApp(), `salió de la app (vuelta ${vuelta + 1})`);
@@ -542,7 +603,7 @@ const PRUEBAS = {
     // Abrir y cerrar Ajustes con la X, varias veces: sigue en la app.
     for (let i = 0; i < 3; i++) {
       await h.css(ajustes, 500);
-      await page.locator('.sheet [aria-label="Cerrar"], .sheet [aria-label="Close"]').filter({ visible: true }).first().click();
+      await page.locator(`.sheet ${h.aria("Cerrar", "Close")}`).filter({ visible: true }).first().click();
       await page.waitForTimeout(500);
     }
     check(await enApp(), "cerrar Ajustes sacó de la app");
@@ -565,7 +626,7 @@ const PRUEBAS = {
     await h.foto("menu");
     // Ajustes: ventana en el medio (no pegada abajo).
     await h.tab("Progreso", "Progress");
-    await h.css('section:not([hidden]) .acct-btn, section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    await h.css(`section:not([hidden]) .acct-btn, section:not([hidden]) button${h.aria("Ajustes", "Settings")}`, 600);
     const hoja = await page.locator(".sheet").boundingBox();
     check(hoja && hoja.y > 10 && hoja.y + hoja.height < 900 - 10 && hoja.x > 248, `Ajustes no quedó en el medio: ${JSON.stringify(hoja)}`);
     await h.foto("ajustes");
@@ -581,7 +642,7 @@ const PRUEBAS = {
     await page.keyboard.press("s");
     await page.waitForTimeout(500);
     const txt = await h.screenText();
-    check(/Correcto|No era esa|Correct|Not that one/.test(txt), "la tecla S no jugó");
+    check(h.re(["Correcto", "Correct"], ["No era esa", "Not that one"]).test(txt), "la tecla S no jugó");
     await h.foto("teclado");
   },
 
@@ -615,22 +676,22 @@ const PRUEBAS = {
     check(!(await badge().getAttribute("class")).includes("met"), "la llama está encendida sin actividad hoy");
     await badge().click();
     await page.waitForTimeout(500);
-    check(await page.getByText(/Termina una actividad hoy|Finish an activity today/).first().isVisible(), "no dice que falta hoy");
+    check(await page.getByText(h.re(["Termina una actividad hoy", "Finish an activity today"])).first().isVisible(), "no dice que falta hoy");
     await page.keyboard.press("Escape");
     // Una actividad hoy (sin cumplir la meta de minutos): suma y festeja una vez.
     await cargar({ [dia(-2)]: true, [dia(-1)]: true, [dia(0)]: true });
     check((await badge().innerText()).trim() === "3", `no sumó el día: ${await badge().innerText()}`);
-    check(await page.getByText(/Racha de 3 días|3-day streak/).first().isVisible(), "no festejó la racha");
+    check(await page.getByText(h.re(["Racha de 3 días", "3-day streak"])).first().isVisible(), "no festejó la racha");
     await page.reload();
     await page.waitForTimeout(900);
-    check((await page.getByText(/Racha de 3 días|3-day streak/).count()) === 0, "festejó dos veces el mismo día");
+    check((await page.getByText(h.re(["Racha de 3 días", "3-day streak"])).count()) === 0, "festejó dos veces el mismo día");
     // Un día salteado corta la racha.
     await cargar({ [dia(-3)]: true, [dia(-1)]: true });
     check((await badge().innerText()).trim() === "1", "un día salteado no cortó la racha");
     // Protector de racha: ayer no hubo actividad pero tenías uno: se usa solo y la racha sigue.
     await cargar({ [dia(-3)]: true, [dia(-2)]: true }, { protectores: 1, primero: true });
     check((await badge().innerText()).trim() === "3", `el protector no salvó la racha: ${await badge().innerText()}`);
-    check(await page.getByText(/protector salvó tu racha de 3 días|shield saved your 3-day streak/).first().isVisible(), "no avisó que usó el protector");
+    check(await page.getByText(h.re(["protector salvó tu racha de 3 días", "shield saved your 3-day streak"])).first().isVisible(), "no avisó que usó el protector");
     // Sin protectores, el mismo hueco la corta.
     await cargar({ [dia(-3)]: true, [dia(-2)]: true }, { protectores: 0, primero: true });
     check((await badge().innerText()).trim() === "0", "sin protector la racha siguió");
@@ -682,7 +743,7 @@ const PRUEBAS = {
     // Menor: la app queda cerrada, aunque recargue.
     await page.locator("input.edad-inp").fill(String(anio - 16));
     await h.click("Seguir", "Continue", { exact: true, wait: 500 });
-    const cerrada = () => page.getByText(/Edge 21 es para mayores de 18|Edge 21 is for adults 18 and over/).count();
+    const cerrada = () => page.getByText(h.re(["Edge 21 es para mayores de 18", "Edge 21 is for adults 18 and over"])).count();
     check((await cerrada()) === 1, "no cierra la app a un menor");
     await page.reload();
     await page.waitForTimeout(700);
@@ -738,7 +799,7 @@ const PRUEBAS = {
     check(de("nuevo").length === 1 && de("activo").length === 0 && de("empezar").length === 1, `repetidos: ${JSON.stringify(eventos.map((x) => x.e))}`);
     // Apagada en Ajustes: no manda más.
     await h.tab("Progreso", "Progress");
-    await h.css('section:not([hidden]) .acct-btn, section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    await h.css(`section:not([hidden]) .acct-btn, section:not([hidden]) button${h.aria("Ajustes", "Settings")}`, 600);
     await h.click("Estadísticas anónimas", "Anonymous statistics", { wait: 400 });
     check((await h.state()).settings.sinEstadisticas === true, "no se apagó");
     await page.keyboard.press("Escape");
@@ -769,7 +830,7 @@ const PRUEBAS = {
     check(eventos.length === antes, `mandó estando apagada: ${JSON.stringify(eventos.slice(antes))}`);
     // Panel: solo para el dueño, desde Ajustes.
     await h.tab("Progreso", "Progress");
-    await h.css('section:not([hidden]) .acct-btn, section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    await h.css(`section:not([hidden]) .acct-btn, section:not([hidden]) button${h.aria("Ajustes", "Settings")}`, 600);
     await h.click("Estadísticas", "Statistics", { exact: true, wait: 900 });
     await h.see("Hasta dónde llegan", "How far they get");
     await h.see("Terminaron 1 lección", "Finished 1 lesson");
@@ -796,7 +857,7 @@ const PRUEBAS = {
     await page.evaluate(() => localStorage.setItem("v21.sim", "1"));
     await page.reload();
     await page.waitForTimeout(1200);
-    const ajustes = 'section:not([hidden]) .acct-btn, section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]';
+    const ajustes = `section:not([hidden]) .acct-btn, section:not([hidden]) button${h.aria("Ajustes", "Settings")}`;
     await h.tab("Progreso", "Progress");
     await h.click("Análisis de tus errores", "Mistake analysis", { wait: 700 });
     await h.see("¿La quieres probar primero?", "Want to try it first?");
@@ -915,13 +976,13 @@ const PRUEBAS = {
     const link = shared.match(/https?:\/\/\S+#reto=[\w-]+/)[0];
     const code = link.split("#reto=")[1];
     // Otra persona abre el enlace.
-    const other = await page.context().browser().newContext({ viewport: { width: 390, height: 844 }, locale: h.T("es-UY", "en-US") });
-    await other.addInitScript(`localStorage.setItem("edge21.lang", ${JSON.stringify(h.T("es", "en"))}); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(ONB))});`);
+    const other = await page.context().browser().newContext({ viewport: { width: 390, height: 844 }, locale: { es: "es-UY", pt: "pt-BR" }[h.lang] || "en-US" });
+    await other.addInitScript(`localStorage.setItem("edge21.lang", ${JSON.stringify(h.lang)}); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(ONB))});`);
     const p2 = await other.newPage();
     await p2.goto(page.url().split("#")[0] + "#reto=" + code);
     await p2.waitForTimeout(1200);
     await p2.getByText(h.T("Ana te desafía", "Ana challenges you")).first().waitFor({ timeout: 5000 });
-    if (FOTOS) await p2.screenshot({ path: path.join(FOTOS, `amigo-${h.T("es", "en")}-recibe.png`) });
+    if (FOTOS) await p2.screenshot({ path: path.join(FOTOS, `amigo-${h.lang}-recibe.png`) });
     await p2.getByText(h.T("Aceptar el desafío", "Accept the challenge")).click();
     await p2.waitForTimeout(400);
     await p2.getByText(h.T("Empezar", "Start"), { exact: true }).filter({ visible: true }).first().click();
@@ -970,7 +1031,7 @@ const PRUEBAS = {
     const { page } = h;
     // Sin Premium: un sistema avanzado abre la pantalla de Premium.
     await h.tab("Progreso", "Progress");
-    await h.css('section:not([hidden]) .acct-btn, section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    await h.css(`section:not([hidden]) .acct-btn, section:not([hidden]) button${h.aria("Ajustes", "Settings")}`, 600);
     await h.click("Sistema de conteo", "Counting system", { wait: 600 });
     // Hi-Opt I también es de Premium: gratis quedan Hi-Lo y KO.
     await h.click("Hi-Opt I", "Hi-Opt I", { wait: 700 });
@@ -1000,10 +1061,10 @@ const PRUEBAS = {
     await h.foto("analisis");
     await page.locator(".layer.full button").filter({ visible: true }).first().click();
     await page.waitForTimeout(500);
-    await h.css('section:not([hidden]) .acct-btn, section:not([hidden]) button[aria-label="Ajustes"], section:not([hidden]) button[aria-label="Settings"]', 600);
+    await h.css(`section:not([hidden]) .acct-btn, section:not([hidden]) button${h.aria("Ajustes", "Settings")}`, 600);
     await h.click("Personalizar", "Customize", { wait: 700 });
     check(!(await page.locator(".look-lock").count()), "con Premium sigue el aviso de Premium");
-    await h.css('.look-sw[aria-label="Azul"], .look-sw[aria-label="Blue"]', 300);
+    await h.css(`.look-sw${h.aria("Azul", "Blue")}`, 300);
     await h.foto("panos");
     const felt = await page.evaluate(() => document.documentElement.dataset.felt);
     check(felt === "azul", `el paño no cambió (${felt})`);
@@ -1037,7 +1098,7 @@ const PRUEBAS = {
     await volver();
     // Guía: Desviaciones es de Premium; Reglas del blackjack, no.
     await h.tab("Aprender", "Learn");
-    await h.css('section:not([hidden]) [aria-label="Abrir la Guía"], section:not([hidden]) [aria-label="Open the Guide"]', 700);
+    await h.css(`section:not([hidden]) ${h.aria("Abrir la Guía", "Open the Guide")}`, 700);
     await page.locator(`.list-item:has-text("${h.T("Illustrious 18 y Fab 4", "Illustrious 18 and Fab 4")}")`).filter({ visible: true }).first().click();
     await page.waitForTimeout(700);
     await PREM("Este capítulo de la guía", "This guide chapter");
@@ -1105,7 +1166,7 @@ const PRUEBAS = {
   for (const lang of langs) {
     for (const [name, fn] of Object.entries(PRUEBAS)) {
       if (SOLO && SOLO !== name) continue;
-      const ctx = await browser.newContext({ viewport: { width: ANCHO, height: ALTO }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, locale: lang === "es" ? "es-UY" : "en-US", colorScheme: TEMA });
+      const ctx = await browser.newContext({ viewport: { width: ANCHO, height: ALTO }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, locale: { es: "es-UY", pt: "pt-BR" }[lang] || "en-US", colorScheme: TEMA });
       const seed = ["onboarding", "medicion"].includes(name) ? null : AJUSTES ? { ...ONB, settings: AJUSTES } : ONB;
       if (AUDITAR) await ctx.addInitScript({ path: path.join(ROOT, "tests/e2e/auditoria.js") });
       await ctx.addInitScript(`if (!sessionStorage.getItem("seeded")) { sessionStorage.setItem("seeded","1"); localStorage.setItem("edge21.lang", ${JSON.stringify(lang)}); ${seed ? `localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(seed))});` : ""} }`);
