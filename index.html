@@ -800,7 +800,7 @@
       ? `https://mail.google.com/mail/?view=cm&fs=1&to=soporte@edge21.app&su=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`
       : `mailto:soporte@edge21.app?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
     if (compu) { tester.target = "_blank"; tester.rel = "noopener"; }
-    document.querySelectorAll(".to-guias").forEach((a) => (a.href = lang === "es" ? "guias/" : "en/guides/"));
+    document.querySelectorAll(".to-guias").forEach((a) => (a.href = { es: "guias/", pt: "pt/guias/" }[lang] || "en/guides/"));
     for (const [id, f] of [["privacy", "privacidad"], ["terms", "terminos"], ["delacc", "borrar-cuenta"]])
       document.getElementById(id).href = `${f}.html${lang === "es" ? "" : "#" + lang}`;
     try { localStorage.setItem("edge21.lang", lang); } catch {}

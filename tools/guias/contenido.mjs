@@ -1,4 +1,4 @@
-// Textos de las guías de la web (edge21.app/guias/ y edge21.app/en/guides/). HTML simple: <b>, <em>,
+// Textos de las guías de la web (edge21.app/guias/, edge21.app/en/guides/ y edge21.app/pt/guias/). HTML simple: <b>, <em>,
 // <a>. Las armas con: node tools/guias/armar.mjs
 export const SITIO = "https://edge21.app";
 
@@ -10,7 +10,6 @@ export const RUTAS = {
 export const COMUN = {
   es: {
     nav: { inicio: "Inicio", guias: "Guías", jugar: "Jugar ahora" },
-    otro: "EN",
     pie: "Edge 21 ♠ · Es para aprender: la práctica usa saldo virtual, sin dinero real ni premios.",
     privacidad: "Política de privacidad",
     terminos: "Términos de uso",
@@ -26,7 +25,6 @@ export const COMUN = {
   },
   en: {
     nav: { inicio: "Home", guias: "Guides", jugar: "Play now" },
-    otro: "ES",
     pie: "Edge 21 ♠ · It's for learning: practice uses a virtual balance, with no real money or prizes.",
     privacidad: "Privacy policy",
     terminos: "Terms of use",
@@ -84,7 +82,7 @@ export const ESTRATEGIA = {
         p: [
           "<b>1. Mira qué tipo de mano tienes.</b> Si tienes un As que puede valer 11 sin pasarte, es una mano <em>blanda</em> (por ejemplo, A,6 es 17 blando). Si tienes dos cartas iguales, es un <em>par</em>. Todo lo demás es una mano <em>dura</em>.",
           "<b>2. Busca tu fila y la columna de la carta visible del crupier.</b> Las figuras (J, Q, K) cuentan como 10.",
-          "<b>3. Juega lo que dice la casilla.</b> Siempre, aunque la intuición te diga otra cosa: la tabla ya hizo la cuenta de millones de manos por tú.",
+          "<b>3. Juega lo que dice la casilla.</b> Siempre, aunque la intuición te diga otra cosa: la tabla ya hizo la cuenta de millones de manos por ti.",
         ],
       },
       {
@@ -353,4 +351,178 @@ export const CONTEO = {
       ["Is Hi-Lo the best system?", "It's the most used because it's simple and performs very well. There are more precise systems (like Zen or Omega II), but they're harder and the difference is small."],
     ],
   },
+};
+
+// ---- Português (Brasil) ----
+RUTAS.pt = { inicio: "/", guias: "/pt/guias/", estrategia: "/pt/guias/estrategia-basica/", conteo: "/pt/guias/contagem-de-cartas/" };
+
+COMUN.pt = {
+  nav: { inicio: "Início", guias: "Guias", jugar: "Jogar agora" },
+  pie: "Edge 21 ♠ · É para aprender: a prática usa saldo virtual, sem dinheiro real nem prêmios.",
+  privacidad: "Política de privacidade",
+  terminos: "Termos de uso",
+  ctaTitulo: "Pratique de graça no Edge 21",
+  ctaTexto: "Lições curtas, uma mesa que corrige cada jogada e uma trilha de 10 níveis para aprender a contar. Sem dinheiro real.",
+  ctaBoton: "Jogar grátis agora",
+  migas: "Guias",
+  leer: "Ler o guia",
+  min: "min de leitura",
+  faq: "Perguntas frequentes",
+  gratis: "Grátis",
+  premium: "Premium",
+};
+
+INDICE.pt = {
+  titulo: "Guias de blackjack grátis | Edge 21",
+  descripcion: "Guias claros para jogar blackjack melhor: a tabela de estratégia básica interativa e como contar cartas com o método Hi-Lo, passo a passo.",
+  h1: "Guias de blackjack",
+  intro: "Tudo o que você precisa para jogar cada mão certo e entender como se contam cartas, explicado de forma simples e com exemplos que você pode tocar.",
+};
+
+ESTRATEGIA.pt = {
+  titulo: "Tabela de estratégia básica de blackjack (interativa) | Edge 21",
+  descripcion: "A tabela de estratégia básica completa para 6 baralhos: toque em qualquer casa e veja qual jogada convém e por quê. Mãos duras, macias e pares.",
+  h1: "Tabela de estratégia básica de blackjack",
+  tarjeta: "A jogada certa para cada mão, casa por casa, com o porquê.",
+  minutos: 6,
+  intro: "A estratégia básica é a forma matematicamente correta de jogar cada mão: para cada combinação das suas cartas com a carta aberta do dealer, existe uma jogada que perde menos (ou ganha mais) a longo prazo. Jogando-a perfeitamente, a vantagem da casa cai para cerca de <b>0,5%</b>. Toque em qualquer casa para ver a jogada e por quê.",
+  reglas: "Regras da tabela",
+  reglaS17: "O dealer para com 17 macio",
+  reglaH17: "O dealer pede com 17 macio",
+  reglasNota: "6 baralhos, dobrar com qualquer mão e dobrar depois de dividir. Se na sua mesa o dealer pede com 17 macio, escolha essa opção: mudam poucas casas.",
+  tabs: { hard: "Mãos duras", soft: "Mãos macias", pairs: "Pares" },
+  crupier: "Carta do dealer",
+  tuMano: "Sua mão",
+  elegi: "Toque em uma casa para ver a jogada e por quê.",
+  contra: "contra",
+  acciones: { H: "Pedir", S: "Parar", D: "Dobrar", P: "Dividir", R: "Desistir" },
+  chicas: { s: "se não puder dobrar, pare", h: "se não puder desistir, peça", p: "se não puder desistir, divida" },
+  leyenda: "As letras são as do mundo todo, em inglês: <b>H</b> pedir (<em>hit</em>), <b>S</b> parar (<em>stand</em>), <b>D</b> dobrar (<em>double</em>), <b>P</b> dividir (<em>split</em>). Uma letra pequena diz o que fazer se a jogada não for permitida.",
+  filas: ESTRATEGIA.es.filas,
+  secciones: [
+    {
+      h: "Como ler",
+      p: [
+        "<b>1. Veja que tipo de mão você tem.</b> Se você tem um Ás que pode valer 11 sem estourar, é uma mão <em>macia</em> (por exemplo, A,6 é 17 macio). Se tem duas cartas iguais, é um <em>par</em>. Todo o resto é uma mão <em>dura</em>.",
+        "<b>2. Procure sua linha e a coluna da carta aberta do dealer.</b> As figuras (J, Q, K) valem 10.",
+        "<b>3. Jogue o que a casa diz.</b> Sempre, mesmo que a intuição diga outra coisa: a tabela já fez a conta de milhões de mãos por você.",
+      ],
+    },
+    {
+      h: "As 6 jogadas que mais economizam dinheiro",
+      lista: [
+        "<b>Divida sempre os ases e os oitos.</b> Dois ases juntos são um 12 fraco; 8,8 é um 16, a pior mão do jogo.",
+        "<b>Nunca divida os dez nem os cincos.</b> 20 ganha quase sempre, e 5,5 é um 10: melhor dobrar.",
+        "<b>Dobre o 11 contra quase tudo.</b> Há tantas cartas de 10 que é a melhor oportunidade para colocar mais dinheiro.",
+        "<b>Pare com 12 contra 4, 5 ou 6.</b> O dealer está fraco: deixe que ele corra o risco.",
+        "<b>Peça com 16 contra 10.</b> Dói, mas parar perde ainda mais.",
+        "<b>Não faça o seguro.</b> Sem contar cartas, é uma aposta que perde a longo prazo.",
+      ],
+    },
+    {
+      h: "Por que funciona?",
+      p: [
+        "A vantagem da casa vem de uma única regra: <b>se você estoura, perde mesmo que o dealer também estoure depois</b>. A estratégia básica não a elimina, mas a reduz ao mínimo: diz quando arriscar (dobrar, dividir) e quando deixar o dealer correr o risco.",
+        "É pura matemática: cada casa compara quanto você ganha ou perde em média com cada jogada possível e fica com a melhor. Por isso, mesmo que uma mão específica dê errado, jogar sempre assim é o que mais rende a longo prazo.",
+      ],
+    },
+  ],
+  sigue: {
+    h: "O que vem depois: da tabela para a mesa",
+    intro: "Ler a tabela é o primeiro passo. O que faz a diferença é jogá-la sem pensar e, depois, saber quando vale a pena sair dela.",
+    items: [
+      { t: "Saber de cor", p: "Rodadas de mãos que miram justamente as que você erra e cartões com repetição espaçada, até cada jogada sair sozinha.", tag: "gratis" },
+      { t: "Jogar numa mesa de verdade", p: "Um simulador com outros jogadores que corrige cada decisão enquanto você joga, como num cassino.", tag: "gratis" },
+      { t: "Os 18 desvios", p: "Com a contagem, algumas jogadas mudam: por exemplo, com 16 contra 10 você para se a contagem for positiva. Os Illustrious 18 e o Fab 4, praticados nível por nível.", tag: "premium" },
+      { t: "Sua tabela, sua mesa", p: "Ajuste cada regra (8 baralhos, dealer que pede com 17 macio, desistência) e pratique com a tabela exata da mesa onde você joga.", tag: "premium" },
+    ],
+  },
+  faq: [
+    ["A estratégia básica garante ganhar?", "Não. Ela reduz a vantagem da casa ao mínimo (cerca de 0,5%), mas a casa continua com vantagem. É a base para jogar bem, e a base para contar cartas."],
+    ["Serve para qualquer cassino?", "Serve para mesas de 4 a 8 baralhos. A única coisa que muda algumas casas é se o dealer pede ou para com 17 macio: escolha a opção da sua mesa acima da tabela."],
+    ["Preciso decorar?", "Sim, para usá-la numa mesa de verdade (não dá para usar o celular na mesa). Dá para aprender rápido por partes: primeiro os pares, depois as macias e por último as duras. No Edge 21 a tabela vai acendendo à medida que você aprende."],
+  ],
+};
+
+CONTEO.pt = {
+  titulo: "Como contar cartas no blackjack: método Hi-Lo passo a passo | Edge 21",
+  descripcion: "Aprenda a contar cartas com o método Hi-Lo: o valor de cada carta, a contagem corrente, a contagem real e quanto apostar. Com um exercício para praticar aqui mesmo.",
+  h1: "Como contar cartas no blackjack",
+  tarjeta: "O método Hi-Lo em 4 passos, com um exercício para você se testar.",
+  minutos: 7,
+  intro: "Contar cartas não é decorar o baralho nem ter uma mente prodigiosa: é guardar <b>um único número</b> na cabeça, que sobe e desce com as cartas que saem. Esse número diz quando restam mais cartas altas no sapato, que é quando o jogador tem vantagem. Aqui está o método mais usado do mundo, o <b>Hi-Lo</b>, em 4 passos.",
+  porque: {
+    h: "Por que funciona",
+    p: "As cartas altas (10, J, Q, K e Ás) favorecem você: saem mais blackjacks (que pagam 3 para 2), suas dobras rendem mais e o dealer, que é obrigado a pedir até 17, estoura com mais frequência. As baixas (2 a 6) favorecem o dealer. Quando já saíram muitas baixas, restam mais altas no sapato, e aí vale a pena apostar mais.",
+  },
+  pasos: [
+    {
+      h: "Passo 1 · O valor de cada carta",
+      p: "Cada carta que você vê soma ou subtrai assim. Só isso.",
+      valores: true,
+    },
+    {
+      h: "Passo 2 · A contagem corrente",
+      p: "Você começa em 0 quando embaralham e vai somando o valor de cada carta que aparece na mesa: a sua, a dos outros e a do dealer. Esse total é a <b>contagem corrente</b>. Por exemplo: sai um 5 (+1), um K (−1), um 3 (+1) e um 6 (+1): a contagem corrente é <b>+2</b>.",
+      practica: true,
+    },
+    {
+      h: "Passo 3 · A contagem real",
+      p: "Um +6 não significa o mesmo com 6 baralhos pela frente e com 1. Por isso se divide a contagem corrente pelos baralhos que ainda faltam distribuir (calculados olhando a bandeja de descarte). O resultado é a <b>contagem real</b>, e é ela que manda.",
+      tabla: [
+        ["Contagem corrente", "Baralhos restantes", "Contagem real"],
+        ["+6", "6", "+1"],
+        ["+6", "3", "+2"],
+        ["+6", "1,5", "+4"],
+        ["−4", "2", "−2"],
+      ],
+    },
+    {
+      h: "Passo 4 · Quanto apostar",
+      p: "Com contagem real de +1 ou menos, aposte o mínimo (1 unidade). A partir de +2, aumente aos poucos. Um exemplo prudente:",
+      tabla: [
+        ["Contagem real", "Aposta"],
+        ["+1 ou menos", "1 unidade"],
+        ["+2", "2 unidades"],
+        ["+3", "4 unidades"],
+        ["+4 ou mais", "6 a 8 unidades"],
+      ],
+      nota: "A vantagem de contar é pequena (1 a 2%) e aparece a longo prazo, ao longo de centenas de horas. No curto prazo dá para perder, mesmo contando perfeitamente.",
+    },
+  ],
+  practica: {
+    h: "Teste: conte estas cartas",
+    p: "Vão sair 10 cartas, uma por uma. Faça a contagem Hi-Lo e no final escreva a contagem corrente.",
+    empezar: "Começar",
+    otra: "De novo",
+    pregunta: "Qual é a contagem corrente?",
+    comprobar: "Conferir",
+    bien: "Exato!",
+    mal: "Quase: era {0}.",
+    detalle: "Foi assim, carta por carta:",
+  },
+  mitos: {
+    h: "4 mitos sobre contar cartas",
+    lista: [
+      "<b>“É ilegal.”</b> Contar de cabeça é legal na maioria dos lugares. O que é proibido é usar aparelhos na mesa, e o cassino pode pedir que você não jogue blackjack.",
+      "<b>“É preciso decorar todas as cartas.”</b> Você guarda um único número.",
+      "<b>“É preciso ser um gênio.”</b> É somar e subtrair de um em um. O difícil é fazer isso rápido, com a mesa cheia: isso se treina.",
+      "<b>“Contando, você ganha sempre.”</b> A vantagem é pequena e a longo prazo. Por isso é para aprender e entender o jogo, não para ficar rico.",
+    ],
+  },
+  sigue: {
+    h: "O que vem depois: contar de verdade",
+    intro: "Entender o Hi-Lo leva dez minutos. Contar um sapato inteiro, rápido e sem erros, leva prática.",
+    items: [
+      { t: "A trilha de contagem", p: "10 níveis, do valor de cada carta até contar um sapato inteiro no ritmo real, com Hi-Lo ou KO.", tag: "gratis" },
+      { t: "O desafio diário", p: "Um formato diferente a cada dia e um ranking para você se comparar com os outros.", tag: "gratis" },
+      { t: "Os desvios", p: "Usar a contagem também para jogar: os Illustrious 18 e o Fab 4, que somam a maior parte da vantagem extra.", tag: "premium" },
+      { t: "Sistemas avançados e cassino simulado", p: "Hi-Opt I e II, Zen, Omega II e Wong Halves, o modo cassino simulado com saldo virtual e vigilância, e o simulador de banca para saber de quanto você precisa.", tag: "premium" },
+    ],
+  },
+  faq: [
+    ["Contar cartas é legal?", "Contar de cabeça é legal na maioria dos lugares. Usar um celular ou qualquer aparelho na mesa é proibido, e o cassino pode pedir que você pare de jogar."],
+    ["Quanto tempo leva para aprender a contar?", "Os valores se aprendem em minutos. Acompanhar a contagem de um sapato inteiro, rápido e com a mesa cheia, leva semanas de prática. No Edge 21 há uma trilha de 10 níveis que leva você aos poucos."],
+    ["O Hi-Lo é o melhor sistema?", "É o mais usado porque é simples e rende muito bem. Existem sistemas mais precisos (como Zen ou Omega II), mas são mais difíceis e a diferença é pequena."],
+  ],
 };

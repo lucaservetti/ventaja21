@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Como contar cartas no blackjack: método Hi-Lo passo a passo | Edge 21</title>
+<meta name="description" content="Aprenda a contar cartas com o método Hi-Lo: o valor de cada carta, a contagem corrente, a contagem real e quanto apostar. Com um exercício para praticar aqui mesmo.">
+<meta name="theme-color" content="#06110c">
+<link rel="canonical" href="https://edge21.app/pt/guias/contagem-de-cartas/">
+<link rel="alternate" hreflang="es" href="https://edge21.app/guias/contar-cartas/">
+<link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/card-counting/">
+<link rel="alternate" hreflang="pt-BR" href="https://edge21.app/pt/guias/contagem-de-cartas/">
+<link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/contar-cartas/">
+<link rel="icon" href="/app/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/app/apple-touch-icon.png">
+<meta property="og:title" content="Como contar cartas no blackjack: método Hi-Lo passo a passo | Edge 21">
+<meta property="og:description" content="Aprenda a contar cartas com o método Hi-Lo: o valor de cada carta, a contagem corrente, a contagem real e quanto apostar. Com um exercício para praticar aqui mesmo.">
+<meta property="og:image" content="https://edge21.app/img/og.jpg">
+<meta property="og:url" content="https://edge21.app/pt/guias/contagem-de-cartas/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Edge 21">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/guias/guias.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Como contar cartas no blackjack","description":"Aprenda a contar cartas com o método Hi-Lo: o valor de cada carta, a contagem corrente, a contagem real e quanto apostar. Com um exercício para praticar aqui mesmo.","inLanguage":"pt-BR","url":"https://edge21.app/pt/guias/contagem-de-cartas/","image":"https://edge21.app/img/og.jpg","author":{"@type":"Organization","name":"Edge 21"},"publisher":{"@type":"Organization","name":"Edge 21","logo":{"@type":"ImageObject","url":"https://edge21.app/app/icon-512.png"}}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Guias","item":"https://edge21.app/pt/guias/"},{"@type":"ListItem","position":2,"name":"Como contar cartas no blackjack","item":"https://edge21.app/pt/guias/contagem-de-cartas/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Contar cartas é legal?","acceptedAnswer":{"@type":"Answer","text":"Contar de cabeça é legal na maioria dos lugares. Usar um celular ou qualquer aparelho na mesa é proibido, e o cassino pode pedir que você pare de jogar."}},{"@type":"Question","name":"Quanto tempo leva para aprender a contar?","acceptedAnswer":{"@type":"Answer","text":"Os valores se aprendem em minutos. Acompanhar a contagem de um sapato inteiro, rápido e com a mesa cheia, leva semanas de prática. No Edge 21 há uma trilha de 10 níveis que leva você aos poucos."}},{"@type":"Question","name":"O Hi-Lo é o melhor sistema?","acceptedAnswer":{"@type":"Answer","text":"É o mais usado porque é simples e rende muito bem. Existem sistemas mais precisos (como Zen ou Omega II), mas são mais difíceis e a diferença é pequena."}}]}</script>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/img/ficha.svg" alt="">Edge 21</a>
+    <nav aria-label="Site">
+      <a href="/pt/guias/">Guias</a>
+    </nav>
+    <span class="langs"><a class="lang-link" href="/guias/contar-cartas/" hreflang="es" lang="es">ES</a><a class="lang-link" href="/en/guides/card-counting/" hreflang="en" lang="en">EN</a></span>
+    <a class="btn gold sm" href="/app/">Jogar agora</a>
+  </div>
+</header>
+<main class="wrap">
+
+  <nav class="g-crumbs" aria-label="Caminho"><a href="/pt/guias/">Guias</a> <span aria-hidden="true">›</span> <span>Como contar cartas no blackjack</span></nav>
+  <article>
+    <h1>Como contar cartas no blackjack</h1>
+    <p class="g-lead">Contar cartas não é decorar o baralho nem ter uma mente prodigiosa: é guardar <b>um único número</b> na cabeça, que sobe e desce com as cartas que saem. Esse número diz quando restam mais cartas altas no sapato, que é quando o jogador tem vantagem. Aqui está o método mais usado do mundo, o <b>Hi-Lo</b>, em 4 passos.</p>
+    <section class="g-sec"><h2>Por que funciona</h2><p>As cartas altas (10, J, Q, K e Ás) favorecem você: saem mais blackjacks (que pagam 3 para 2), suas dobras rendem mais e o dealer, que é obrigado a pedir até 17, estoura com mais frequência. As baixas (2 a 6) favorecem o dealer. Quando já saíram muitas baixas, restam mais altas no sapato, e aí vale a pena apostar mais.</p></section>
+    <section class="g-sec g-step"><h2>Passo 1 · O valor de cada carta</h2><p>Cada carta que você vê soma ou subtrai assim. Só isso.</p><div class="g-values">
+      <div class="g-val"><div class="g-cards"><span class="g-card red" role="img" aria-label="2"><span class="g-rank">2</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.3S2.7 15.5 2.7 9.1C2.7 6 5 3.6 7.9 3.6c1.8 0 3.3.9 4.1 2.3.8-1.4 2.3-2.3 4.1-2.3 2.9 0 5.2 2.4 5.2 5.5 0 6.4-9.3 12.2-9.3 12.2z"/></svg></span><span class="g-card" role="img" aria-label="4"><span class="g-rank">4</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c-2.6 3.9-8.3 7-8.3 11.4 0 2.6 2 4.5 4.4 4.5 1.5 0 2.7-.7 3.4-1.7-.3 2-1.2 3.6-2.6 5.1h6.2c-1.4-1.5-2.3-3.1-2.6-5.1.7 1 1.9 1.7 3.4 1.7 2.4 0 4.4-1.9 4.4-4.5 0-4.4-5.7-7.5-8.3-11.4z"/></svg></span><span class="g-card red" role="img" aria-label="6"><span class="g-rank">6</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.8c2.6 3.7 5.3 6.9 8.3 10.2-3 3.3-5.7 6.5-8.3 10.2-2.6-3.7-5.3-6.9-8.3-10.2 3-3.3 5.7-6.5 8.3-10.2z"/></svg></span></div><b class="plus">+1</b><span>2 · 3 · 4 · 5 · 6</span></div>
+      <div class="g-val"><div class="g-cards"><span class="g-card" role="img" aria-label="7"><span class="g-rank">7</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4a4.4 4.4 0 0 0-4.1 6A4.4 4.4 0 1 0 10.9 15c-.3 2.4-1.3 4.4-2.9 6.6h8c-1.6-2.2-2.6-4.2-2.9-6.6a4.4 4.4 0 1 0 3-6.6 4.4 4.4 0 0 0-4.1-6z"/></svg></span><span class="g-card red" role="img" aria-label="8"><span class="g-rank">8</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.3S2.7 15.5 2.7 9.1C2.7 6 5 3.6 7.9 3.6c1.8 0 3.3.9 4.1 2.3.8-1.4 2.3-2.3 4.1-2.3 2.9 0 5.2 2.4 5.2 5.5 0 6.4-9.3 12.2-9.3 12.2z"/></svg></span><span class="g-card" role="img" aria-label="9"><span class="g-rank">9</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c-2.6 3.9-8.3 7-8.3 11.4 0 2.6 2 4.5 4.4 4.5 1.5 0 2.7-.7 3.4-1.7-.3 2-1.2 3.6-2.6 5.1h6.2c-1.4-1.5-2.3-3.1-2.6-5.1.7 1 1.9 1.7 3.4 1.7 2.4 0 4.4-1.9 4.4-4.5 0-4.4-5.7-7.5-8.3-11.4z"/></svg></span></div><b class="zero">0</b><span>7 · 8 · 9</span></div>
+      <div class="g-val"><div class="g-cards"><span class="g-card red" role="img" aria-label="10"><span class="g-rank r10">10</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.8c2.6 3.7 5.3 6.9 8.3 10.2-3 3.3-5.7 6.5-8.3 10.2-2.6-3.7-5.3-6.9-8.3-10.2 3-3.3 5.7-6.5 8.3-10.2z"/></svg></span><span class="g-card" role="img" aria-label="K"><span class="g-rank">K</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4a4.4 4.4 0 0 0-4.1 6A4.4 4.4 0 1 0 10.9 15c-.3 2.4-1.3 4.4-2.9 6.6h8c-1.6-2.2-2.6-4.2-2.9-6.6a4.4 4.4 0 1 0 3-6.6 4.4 4.4 0 0 0-4.1-6z"/></svg></span><span class="g-card" role="img" aria-label="A"><span class="g-rank">A</span><svg class="g-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c-2.6 3.9-8.3 7-8.3 11.4 0 2.6 2 4.5 4.4 4.5 1.5 0 2.7-.7 3.4-1.7-.3 2-1.2 3.6-2.6 5.1h6.2c-1.4-1.5-2.3-3.1-2.6-5.1.7 1 1.9 1.7 3.4 1.7 2.4 0 4.4-1.9 4.4-4.5 0-4.4-5.7-7.5-8.3-11.4z"/></svg></span></div><b class="minus">−1</b><span>10 · J · Q · K · A</span></div>
+    </div></section>
+<section class="g-sec g-step"><h2>Passo 2 · A contagem corrente</h2><p>Você começa em 0 quando embaralham e vai somando o valor de cada carta que aparece na mesa: a sua, a dos outros e a do dealer. Esse total é a <b>contagem corrente</b>. Por exemplo: sai um 5 (+1), um K (−1), um 3 (+1) e um 6 (+1): a contagem corrente é <b>+2</b>.</p><div class="g-drill" id="practica" data-t="{&quot;h&quot;:&quot;Teste: conte estas cartas&quot;,&quot;p&quot;:&quot;Vão sair 10 cartas, uma por uma. Faça a contagem Hi-Lo e no final escreva a contagem corrente.&quot;,&quot;empezar&quot;:&quot;Começar&quot;,&quot;otra&quot;:&quot;De novo&quot;,&quot;pregunta&quot;:&quot;Qual é a contagem corrente?&quot;,&quot;comprobar&quot;:&quot;Conferir&quot;,&quot;bien&quot;:&quot;Exato!&quot;,&quot;mal&quot;:&quot;Quase: era {0}.&quot;,&quot;detalle&quot;:&quot;Foi assim, carta por carta:&quot;}">
+      <h3>Teste: conte estas cartas</h3>
+      <p class="g-muted">Vão sair 10 cartas, uma por uma. Faça a contagem Hi-Lo e no final escreva a contagem corrente.</p>
+      <div class="g-drill-table"><div class="g-drill-card" aria-live="polite"></div><div class="g-drill-n"></div></div>
+      <div class="g-drill-ask" hidden>
+        <label for="g-drill-in">Qual é a contagem corrente?</label>
+        <div class="g-drill-row"><input id="g-drill-in" type="text" inputmode="numeric" autocomplete="off" placeholder="+0"><button type="button" class="btn gold sm" data-a="check">Conferir</button></div>
+      </div>
+      <div class="g-drill-res" aria-live="polite"></div>
+      <button type="button" class="btn gold" data-a="start">Começar</button>
+    </div></section>
+<section class="g-sec g-step"><h2>Passo 3 · A contagem real</h2><p>Um +6 não significa o mesmo com 6 baralhos pela frente e com 1. Por isso se divide a contagem corrente pelos baralhos que ainda faltam distribuir (calculados olhando a bandeja de descarte). O resultado é a <b>contagem real</b>, e é ela que manda.</p><div class="g-table-wrap"><table class="g-table"><thead><tr><th scope="col">Contagem corrente</th><th scope="col">Baralhos restantes</th><th scope="col">Contagem real</th></tr></thead><tbody><tr><td>+6</td><td>6</td><td>+1</td></tr><tr><td>+6</td><td>3</td><td>+2</td></tr><tr><td>+6</td><td>1,5</td><td>+4</td></tr><tr><td>−4</td><td>2</td><td>−2</td></tr></tbody></table></div></section>
+<section class="g-sec g-step"><h2>Passo 4 · Quanto apostar</h2><p>Com contagem real de +1 ou menos, aposte o mínimo (1 unidade). A partir de +2, aumente aos poucos. Um exemplo prudente:</p><div class="g-table-wrap"><table class="g-table"><thead><tr><th scope="col">Contagem real</th><th scope="col">Aposta</th></tr></thead><tbody><tr><td>+1 ou menos</td><td>1 unidade</td></tr><tr><td>+2</td><td>2 unidades</td></tr><tr><td>+3</td><td>4 unidades</td></tr><tr><td>+4 ou mais</td><td>6 a 8 unidades</td></tr></tbody></table></div><p class="g-note">A vantagem de contar é pequena (1 a 2%) e aparece a longo prazo, ao longo de centenas de horas. No curto prazo dá para perder, mesmo contando perfeitamente.</p></section>
+    <section class="g-sec"><h2>4 mitos sobre contar cartas</h2><ul class="g-list"><li><b>“É ilegal.”</b> Contar de cabeça é legal na maioria dos lugares. O que é proibido é usar aparelhos na mesa, e o cassino pode pedir que você não jogue blackjack.</li><li><b>“É preciso decorar todas as cartas.”</b> Você guarda um único número.</li><li><b>“É preciso ser um gênio.”</b> É somar e subtrair de um em um. O difícil é fazer isso rápido, com a mesa cheia: isso se treina.</li><li><b>“Contando, você ganha sempre.”</b> A vantagem é pequena e a longo prazo. Por isso é para aprender e entender o jogo, não para ficar rico.</li></ul></section>
+    <section class="g-sec g-sigue"><h2>O que vem depois: contar de verdade</h2><p>Entender o Hi-Lo leva dez minutos. Contar um sapato inteiro, rápido e sem erros, leva prática.</p><div class="g-sigue-grid"><div class="g-sigue-item gratis"><span class="g-tag">Grátis</span><h3>A trilha de contagem</h3><p>10 níveis, do valor de cada carta até contar um sapato inteiro no ritmo real, com Hi-Lo ou KO.</p></div><div class="g-sigue-item gratis"><span class="g-tag">Grátis</span><h3>O desafio diário</h3><p>Um formato diferente a cada dia e um ranking para você se comparar com os outros.</p></div><div class="g-sigue-item premium"><span class="g-tag">Premium</span><h3>Os desvios</h3><p>Usar a contagem também para jogar: os Illustrious 18 e o Fab 4, que somam a maior parte da vantagem extra.</p></div><div class="g-sigue-item premium"><span class="g-tag">Premium</span><h3>Sistemas avançados e cassino simulado</h3><p>Hi-Opt I e II, Zen, Omega II e Wong Halves, o modo cassino simulado com saldo virtual e vigilância, e o simulador de banca para saber de quanto você precisa.</p></div></div></section>
+    <section class="g-sec"><h2>Perguntas frequentes</h2><details><summary>Contar cartas é legal?</summary><p>Contar de cabeça é legal na maioria dos lugares. Usar um celular ou qualquer aparelho na mesa é proibido, e o cassino pode pedir que você pare de jogar.</p></details><details><summary>Quanto tempo leva para aprender a contar?</summary><p>Os valores se aprendem em minutos. Acompanhar a contagem de um sapato inteiro, rápido e com a mesa cheia, leva semanas de prática. No Edge 21 há uma trilha de 10 níveis que leva você aos poucos.</p></details><details><summary>O Hi-Lo é o melhor sistema?</summary><p>É o mais usado porque é simples e rende muito bem. Existem sistemas mais precisos (como Zen ou Omega II), mas são mais difíceis e a diferença é pequena.</p></details></section>
+  </article>
+  <section class="g-cta">
+    <img src="/img/ficha.svg" alt="">
+    <h2>Pratique de graça no Edge 21</h2>
+    <p>Lições curtas, uma mesa que corrige cada jogada e uma trilha de 10 níveis para aprender a contar. Sem dinheiro real.</p>
+    <a class="btn gold" href="/app/">Jogar grátis agora</a>
+  </section>
+</main>
+<footer class="wrap">
+  <span>Edge 21 ♠ · É para aprender: a prática usa saldo virtual, sem dinheiro real nem prêmios.</span>
+  <nav>
+    <a href="/pt/guias/">Guias</a>
+    <a href="/privacidad.html#pt">Política de privacidade</a>
+    <a href="/terminos.html#pt">Termos de uso</a>
+    <a href="mailto:soporte@edge21.app">soporte@edge21.app</a>
+    <a href="https://www.instagram.com/edge21.app/" rel="noopener">Instagram</a>
+    <a href="https://www.tiktok.com/@edge21.app" rel="noopener">TikTok</a>
+  </nav>
+</footer>
+<script>try{localStorage.setItem("edge21.lang","pt")}catch(e){}try{if(!localStorage.getItem("edge21.origen")){var u=new URLSearchParams(location.search),o=u.get("ref")||u.get("utm_source")||"";if(!o&&document.referrer){var h=new URL(document.referrer).hostname;if(h.slice(-location.hostname.length)!==location.hostname)o=h}localStorage.setItem("edge21.origen",o||"directo")}}catch(e){}</script>
+<script src="/guias/guias.js" defer></script>
+</body>
+</html>
