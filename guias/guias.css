@@ -29,13 +29,14 @@ a { color: var(--gold); }
 .bar nav { margin-left: auto; display: flex; gap: 18px; }
 .bar nav a, .lang-link { color: var(--text-2); text-decoration: none; font-weight: 700; font-size: 15px; }
 .bar nav a:hover, .lang-link:hover, .bar nav a[aria-current] { color: var(--text); }
+.langs { display: flex; gap: 6px; }
 .lang-link { border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; font-size: 13px; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 22px; border-radius: 999px; font-weight: 800; text-decoration: none; font-size: 16px; border: 0; cursor: pointer; font-family: inherit; transition: transform 0.15s; }
 .btn:active { transform: scale(0.97); }
 .btn.gold { position: relative; overflow: hidden; background: linear-gradient(180deg, #f6d77a 0%, #e9b949 45%, #cf9a2e 100%); color: var(--gold-ink); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -2px 0 rgba(120, 80, 10, 0.35), 0 6px 18px rgba(233, 185, 73, 0.22); }
 .btn.gold::after { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.45), transparent); transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none; }
 @media (hover: hover) { .btn.gold:hover::after { left: 130%; } }
-.btn.sm { padding: 8px 15px; font-size: 14px; }
+.btn.sm { padding: 8px 15px; font-size: 14px; white-space: nowrap; }
 
 /* Texto */
 .g-crumbs { margin: 26px 0 8px; font-size: 14px; color: var(--text-2); }
@@ -164,5 +165,8 @@ details p { margin: 10px 0 0; color: var(--text-2); }
 .g-cta p { color: var(--text-2); max-width: 32em; margin: 0 auto 22px; }
 footer { border-top: 1px solid var(--line); padding: 26px 16px calc(36px + env(safe-area-inset-bottom)); color: var(--text-2); font-size: 14px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; }
 footer nav { display: flex; flex-wrap: wrap; gap: 14px; }
-@media (max-width: 620px) { .bar nav { display: none; } .lang-link { margin-left: auto; } }
+@media (max-width: 620px) { .bar nav { display: none; } .langs { margin-left: auto; } }
+/* Con dos botones de idioma, en celulares chicos la barra se aprieta: queda solo la ficha del logo. */
+@media (max-width: 400px) { .bar .wrap { gap: 10px; } }
+@media (max-width: 359px) { .bar .brand { font-size: 0; gap: 0; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

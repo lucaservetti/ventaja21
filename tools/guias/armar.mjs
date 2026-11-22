@@ -1,6 +1,7 @@
-// Arma las guías de la web (páginas aparte de la portada), en español y en inglés:
+// Arma las guías de la web (páginas aparte de la portada), en español, inglés y portugués:
 //   /guias/  ·  /guias/estrategia-basica/  ·  /guias/contar-cartas/
 //   /en/guides/  ·  /en/guides/basic-strategy/  ·  /en/guides/card-counting/
+//   /pt/guias/  ·  /pt/guias/estrategia-basica/  ·  /pt/guias/contagem-de-cartas/
 // La tabla y el "por qué" de cada casilla salen del motor de la app (tools/guias/datos.mjs).
 // También arma sitemap.xml y robots.txt. Uso: node tools/guias/armar.mjs
 import fs from "node:fs";
@@ -10,7 +11,10 @@ import { COMUN, CONTEO, ESTRATEGIA, INDICE, RUTAS, SITIO } from "./contenido.mjs
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
 const DATOS = JSON.parse(execFileSync(process.execPath, [path.join(ROOT, "tools/guias/datos.mjs")], { maxBuffer: 64e6 }).toString());
-const OTRO = { es: "en", en: "es" };
+const IDIOMAS = ["es", "en", "pt"];
+// Código de idioma para lang y hreflang: el portugués es el de Brasil.
+const HL = { es: "es", en: "en", pt: "pt-BR" };
+const legal = (lang) => (lang === "es" ? "" : `#${lang}`);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const texto = (s) => String(s).replace(/<[^>]+>/g, "");
 
@@ -27,9 +31,9 @@ function pagina({ lang, clave, titulo, descripcion, cuerpo, jsonld = [], conScri
   const c = COMUN[lang];
   const r = RUTAS[lang];
   const url = SITIO + r[clave];
-  const alt = SITIO + RUTAS[OTRO[lang]][clave];
+  const otros = IDIOMAS.filter((l) => l !== lang);
   return `<!doctype html>
-<html lang="${lang}">
+<html lang="${HL[lang]}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -37,8 +41,7 @@ function pagina({ lang, clave, titulo, descripcion, cuerpo, jsonld = [], conScri
 <meta name="description" content="${esc(descripcion)}">
 <meta name="theme-color" content="#06110c">
 <link rel="canonical" href="${url}">
-<link rel="alternate" hreflang="${lang}" href="${url}">
-<link rel="alternate" hreflang="${OTRO[lang]}" href="${alt}">
+${IDIOMAS.map((l) => `<link rel="alternate" hreflang="${HL[l]}" href="${SITIO + RUTAS[l][clave]}">`).join("\n")}
 <link rel="alternate" hreflang="x-default" href="${SITIO + RUTAS.es[clave]}">
 <link rel="icon" href="/app/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/app/apple-touch-icon.png">
@@ -47,6 +50,7 @@ function pagina({ lang, clave, titulo, descripcion, cuerpo, jsonld = [], conScri
 <meta property="og:image" content="${SITIO}/img/og.jpg">
 <meta property="og:url" content="${url}">
 <meta property="og:type" content="article">
+<meta property="og:locale" content="${{ es: "es_LA", en: "en_US", pt: "pt_BR" }[lang]}">
 <meta property="og:site_name" content="Edge 21">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="/guias/guias.css">
@@ -56,10 +60,10 @@ ${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</sc
 <header class="bar">
   <div class="wrap">
     <a class="brand" href="${r.inicio}"><img src="/img/ficha.svg" alt="">Edge 21</a>
-    <nav aria-label="${lang === "en" ? "Site" : "Sitio"}">
+    <nav aria-label="${{ es: "Sitio", en: "Site", pt: "Site" }[lang]}">
       <a href="${r.guias}"${clave === "guias" ? ' aria-current="page"' : ""}>${c.nav.guias}</a>
     </nav>
-    <a class="lang-link" href="${RUTAS[OTRO[lang]][clave]}" hreflang="${OTRO[lang]}" lang="${OTRO[lang]}">${c.otro}</a>
+    <span class="langs">${otros.map((l) => `<a class="lang-link" href="${RUTAS[l][clave]}" hreflang="${HL[l]}" lang="${HL[l]}">${l.toUpperCase()}</a>`).join("")}</span>
     <a class="btn gold sm" href="/app/">${c.nav.jugar}</a>
   </div>
 </header>
@@ -76,8 +80,8 @@ ${cuerpo}
   <span>${c.pie}</span>
   <nav>
     <a href="${r.guias}">${c.nav.guias}</a>
-    <a href="/privacidad.html${lang === "en" ? "#en" : ""}">${c.privacidad}</a>
-    <a href="/terminos.html${lang === "en" ? "#en" : ""}">${c.terminos}</a>
+    <a href="/privacidad.html${legal(lang)}">${c.privacidad}</a>
+    <a href="/terminos.html${legal(lang)}">${c.terminos}</a>
     <a href="mailto:soporte@edge21.app">soporte@edge21.app</a>
     <a href="https://www.instagram.com/edge21.app/" rel="noopener">Instagram</a>
     <a href="https://www.tiktok.com/@edge21.app" rel="noopener">TikTok</a>
@@ -92,7 +96,7 @@ ${conScript ? '<script src="/guias/guias.js" defer></script>' : ""}
 
 const migas = (lang, nombre) => {
   const c = COMUN[lang];
-  return `<nav class="g-crumbs" aria-label="${lang === "en" ? "Breadcrumb" : "Ruta"}"><a href="${RUTAS[lang].guias}">${c.migas}</a> <span aria-hidden="true">›</span> <span>${esc(nombre)}</span></nav>`;
+  return `<nav class="g-crumbs" aria-label="${{ es: "Ruta", en: "Breadcrumb", pt: "Caminho" }[lang]}"><a href="${RUTAS[lang].guias}">${c.migas}</a> <span aria-hidden="true">›</span> <span>${esc(nombre)}</span></nav>`;
 };
 // "Lo que sigue": qué se practica en la app después de leer la guía (gratis y con Premium).
 const sigueHtml = (lang, sg) =>
@@ -113,7 +117,7 @@ const articuloLd = (lang, clave, t) => ({
   "@type": "Article",
   headline: t.h1,
   description: t.descripcion,
-  inLanguage: lang,
+  inLanguage: HL[lang],
   url: SITIO + RUTAS[lang][clave],
   image: `${SITIO}/img/og.jpg`,
   author: { "@type": "Organization", name: "Edge 21" },
@@ -266,7 +270,7 @@ function indice(lang) {
         "@type": "CollectionPage",
         name: t.h1,
         description: t.descripcion,
-        inLanguage: lang,
+        inLanguage: HL[lang],
         url: SITIO + RUTAS[lang].guias,
       },
     ],
@@ -279,7 +283,7 @@ function escribir(ruta, html) {
   fs.writeFileSync(f, html);
   console.log(path.relative(ROOT, f));
 }
-for (const lang of ["es", "en"]) {
+for (const lang of IDIOMAS) {
   escribir(RUTAS[lang].guias, indice(lang));
   escribir(RUTAS[lang].estrategia, estrategia(lang));
   escribir(RUTAS[lang].conteo, conteo(lang));
@@ -287,20 +291,14 @@ for (const lang of ["es", "en"]) {
 
 // ---- sitemap.xml y robots.txt ----
 const hoy = new Date().toISOString().slice(0, 10);
-const urls = [
-  { es: "/", en: "/" },
-  { es: RUTAS.es.guias, en: RUTAS.en.guias },
-  { es: RUTAS.es.estrategia, en: RUTAS.en.estrategia },
-  { es: RUTAS.es.conteo, en: RUTAS.en.conteo },
-];
-const entradas = [];
-for (const u of urls)
-  for (const lang of u.es === u.en ? ["es"] : ["es", "en"])
+const entradas = [`  <url>\n    <loc>${SITIO}/</loc>\n    <lastmod>${hoy}</lastmod>\n  </url>`];
+for (const clave of ["guias", "estrategia", "conteo"])
+  for (const lang of IDIOMAS)
     entradas.push(`  <url>
-    <loc>${SITIO + u[lang]}</loc>
-    <lastmod>${hoy}</lastmod>${u.es === u.en ? "" : `
-    <xhtml:link rel="alternate" hreflang="es" href="${SITIO + u.es}"/>
-    <xhtml:link rel="alternate" hreflang="en" href="${SITIO + u.en}"/>`}
+    <loc>${SITIO + RUTAS[lang][clave]}</loc>
+    <lastmod>${hoy}</lastmod>
+${IDIOMAS.map((l) => `    <xhtml:link rel="alternate" hreflang="${HL[l]}" href="${SITIO + RUTAS[l][clave]}"/>`).join("\n")}
+    <xhtml:link rel="alternate" hreflang="x-default" href="${SITIO + RUTAS.es[clave]}"/>
   </url>`);
 for (const p of ["/privacidad.html", "/terminos.html"]) entradas.push(`  <url>\n    <loc>${SITIO + p}</loc>\n  </url>`);
 fs.writeFileSync(
