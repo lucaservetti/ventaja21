@@ -8,6 +8,8 @@ import { transform } from "./scripts/i18n-core.mjs";
 // Textos en inglés: la compilación envuelve en __t()/__tf() los textos que están en el diccionario,
 // y cambia el formato de números y fechas según el idioma (ver src/i18n/).
 const EN = JSON.parse(fs.readFileSync("src/i18n/en.json", "utf8"));
+// Portugués (Brasil): mismas claves que el inglés.
+const PT = JSON.parse(fs.readFileSync("src/i18n/pt.json", "utf8"));
 const i18nPlugin = {
   name: "i18n",
   setup(build) {
@@ -70,7 +72,10 @@ const html = fs
   .replace("/*SCRIPT*/", () => script.trim())
   .replace(
     "<!--I18N-->",
-    () => `<script type="application/json" id="i18n-en">${JSON.stringify(EN).replace(/<\//g, "<\\/")}</script>`,
+    () =>
+      [["en", EN], ["pt", PT]]
+        .map(([l, d]) => `<script type="application/json" id="i18n-${l}">${JSON.stringify(d).replace(/<\//g, "<\\/")}</script>`)
+        .join(""),
   );
 // Política de seguridad de la web: el navegador solo corre el código de la app (por su huella) y el
 // de Google para entrar con la cuenta, y solo habla con Firebase y con el servidor de Edge 21. Si

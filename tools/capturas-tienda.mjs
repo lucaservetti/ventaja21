@@ -75,7 +75,10 @@ const STATE = (extra = {}) => ({
   settings: { currency: "USD", premium: true, ...(extra.settings || {}) },
 });
 
-const L = (lang, es, en) => (lang === "es" ? es : en);
+// En portugués, el texto de la app se busca en pt.json a partir del español.
+const PT = JSON.parse(fs.readFileSync(path.join(ROOT, "src/i18n/pt.json"), "utf8"));
+const L = (lang, es, en) => (lang === "es" ? es : lang === "pt" ? PT[es] ?? es : en);
+const IDX = { es: 0, en: 1, pt: 2 };
 const tab = async (p, name) => {
   await p.locator(`nav.tabbar button:has-text("${name}")`).first().click();
   await p.waitForTimeout(600);
@@ -83,15 +86,15 @@ const tab = async (p, name) => {
 // Cada captura: título, subtítulo, cómo llegar y datos.
 const CAPTURAS = [
   {
-    t: ["Aprende <em>blackjack</em>", "Learn <em>blackjack</em>"],
-    s: ["paso a paso, con lecciones cortas", "step by step, in short lessons"],
+    t: ["Aprende <em>blackjack</em>", "Learn <em>blackjack</em>", "Aprenda <em>blackjack</em>"],
+    s: ["paso a paso, con lecciones cortas", "step by step, in short lessons", "passo a passo, com lições curtas"],
     // A mitad de la sección 1, para que se vea el camino de fichas.
     data: { lessons: Object.fromEntries(["l1", "l2", "l3"].map((l) => [l, { done: true, at: today - DAY }])) },
     go: async (p, l) => tab(p, L(l, "Aprender", "Learn")),
   },
   {
-    t: ["La jugada <em>correcta</em>", "The <em>right play</em>"],
-    s: ["en cada mano, con el porqué", "on every hand, with the why"],
+    t: ["La jugada <em>correcta</em>", "The <em>right play</em>", "A jogada <em>certa</em>"],
+    s: ["en cada mano, con el porqué", "on every hand, with the why", "em cada mão, com o porquê"],
     go: async (p, l) => {
       await tab(p, L(l, "Entrenar", "Train"));
       await p.getByText(L(l, "Repartir 10 manos", "Deal 10 hands")).first().click();
@@ -99,13 +102,13 @@ const CAPTURAS = [
     },
   },
   {
-    t: ["Aprende a <em>contar cartas</em>", "Learn to <em>count cards</em>"],
-    s: ["una ruta de 10 niveles", "a 10-level path"],
+    t: ["Aprende a <em>contar cartas</em>", "Learn to <em>count cards</em>", "Aprenda a <em>contar cartas</em>"],
+    s: ["una ruta de 10 niveles", "a 10-level path", "uma trilha de 10 níveis"],
     go: async (p, l) => tab(p, L(l, "Conteo", "Count")),
   },
   {
-    t: ["Un casino <em>en tu mano</em>", "A casino <em>in your pocket</em>"],
-    s: ["juega y cuenta con fichas de mentira", "play and count with play chips"],
+    t: ["Un casino <em>en tu mano</em>", "A casino <em>in your pocket</em>", "Um cassino <em>no seu bolso</em>"],
+    s: ["juega y cuenta con fichas de mentira", "play and count with play chips", "jogue e conte com fichas de mentira"],
     go: async (p, l) => {
       await tab(p, L(l, "Jugar", "Play"));
       await p.locator("section:not([hidden]) .chip-rack .chip").nth(2).click();
@@ -115,8 +118,8 @@ const CAPTURAS = [
     },
   },
   {
-    t: ["Encuentra <em>tus errores</em>", "Find <em>your mistakes</em>"],
-    s: ["tu tabla, pintada según cómo juegas", "your chart, colored by how you play"],
+    t: ["Encuentra <em>tus errores</em>", "Find <em>your mistakes</em>", "Encontre <em>seus erros</em>"],
+    s: ["tu tabla, pintada según cómo juegas", "your chart, colored by how you play", "sua tabela, pintada conforme você joga"],
     go: async (p, l) => {
       await tab(p, L(l, "Progreso", "Progress"));
       await p.getByText(L(l, "Análisis de tus errores", "Mistake analysis")).first().click();
@@ -124,8 +127,8 @@ const CAPTURAS = [
     },
   },
   {
-    t: ["Tu mesa, <em>a tu gusto</em>", "Your table, <em>your style</em>"],
-    s: ["paños, dorsos y mazo de 4 colores", "felts, card backs and a 4-color deck"],
+    t: ["Tu mesa, <em>a tu gusto</em>", "Your table, <em>your style</em>", "Sua mesa, <em>do seu jeito</em>"],
+    s: ["paños, dorsos y mazo de 4 colores", "felts, card backs and a 4-color deck", "feltros, versos e baralho de 4 cores"],
     data: { settings: { felt: "azul", cardBack: "oro" } },
     go: async (p, l) => {
       await tab(p, L(l, "Progreso", "Progress"));
@@ -136,8 +139,8 @@ const CAPTURAS = [
     },
   },
   {
-    t: ["Mira cómo <em>mejoras</em>", "Watch yourself <em>improve</em>"],
-    s: ["tu racha, tus misiones y tu rango", "your streak, missions and rank"],
+    t: ["Mira cómo <em>mejoras</em>", "Watch yourself <em>improve</em>", "Veja como você <em>melhora</em>"],
+    s: ["tu racha, tus misiones y tu rango", "your streak, missions and rank", "sua sequência, missões e nível"],
     go: async (p, l) => {
       await tab(p, L(l, "Progreso", "Progress"));
       await p.evaluate(() => document.querySelector("section:not([hidden]) .goal-card").scrollIntoView({ block: "start" }));
@@ -145,8 +148,8 @@ const CAPTURAS = [
     },
   },
   {
-    t: ["Casino <em>simulado</em>", "Simulated <em>casino</em>"],
-    s: ["presupuesto simulado, límites y vigilancia", "simulated budget, table limits and surveillance"],
+    t: ["Casino <em>simulado</em>", "Simulated <em>casino</em>", "Cassino <em>simulado</em>"],
+    s: ["presupuesto simulado, límites y vigilancia", "simulated budget, table limits and surveillance", "orçamento simulado, limites e vigilância"],
     go: async (p, l) => {
       await tab(p, L(l, "Jugar", "Play"));
       await p.locator(".casino-ib").first().click();
@@ -171,14 +174,15 @@ box-shadow:0 50px 120px rgba(0,0,0,.55);transform:rotate(-2.5deg)}
 
 const browser = await chromium.launch();
 const errores = [];
-for (const lang of ["es", "en"]) {
-  const out = path.join(ROOT, lang === "es" ? "store/capturas" : "store/capturas-en");
+// IDIOMAS=pt node tools/capturas-tienda.mjs arma solo las de ese idioma.
+for (const lang of (process.env.IDIOMAS || "es,en,pt").split(",")) {
+  const out = path.join(ROOT, lang === "es" ? "store/capturas" : `store/capturas-${lang}`);
   fs.mkdirSync(out, { recursive: true });
   for (const f of fs.readdirSync(out)) if (/^\d\d\.png$/.test(f)) fs.rmSync(path.join(out, f));
   for (let i = 0; i < CAPTURAS.length; i++) {
     const c = CAPTURAS[i];
     // La pantalla de la app, en un celular de 360×640 (a 3x).
-    const ctx = await browser.newContext({ viewport: { width: 360, height: 640 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: lang === "es" ? "es-UY" : "en-US" });
+    const ctx = await browser.newContext({ viewport: { width: 360, height: 640 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: { es: "es-UY", en: "en-US", pt: "pt-BR" }[lang] });
     await ctx.addInitScript(azar(3 + i * 2));
     await ctx.addInitScript(`if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s", "1"); localStorage.setItem("edge21.lang", "${lang}"); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(STATE(c.data)))}); }`);
     const p = await ctx.newPage();
@@ -196,7 +200,7 @@ for (const lang of ["es", "en"]) {
     // El marco.
     const fr = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
     const html = `frame-${lang}-${i}.html`;
-    fs.writeFileSync(path.join(TMP, html), `<meta charset="utf-8"><style>${css}</style><div class="t"><h1>${c.t[lang === "es" ? 0 : 1]}</h1><p>${c.s[lang === "es" ? 0 : 1]}</p></div><img class="shot" src="/_tmp/${shot}"><img class="chip" src="/img/ficha.svg">`);
+    fs.writeFileSync(path.join(TMP, html), `<meta charset="utf-8"><style>${css}</style><div class="t"><h1>${c.t[IDX[lang]]}</h1><p>${c.s[IDX[lang]]}</p></div><img class="shot" src="/_tmp/${shot}"><img class="chip" src="/img/ficha.svg">`);
     await fr.goto(`${base}/_tmp/${html}`);
     await fr.waitForTimeout(300);
     await fr.screenshot({ path: path.join(out, `${String(i + 1).padStart(2, "0")}.png`) });
@@ -204,7 +208,8 @@ for (const lang of ["es", "en"]) {
   }
   // Gráfico destacado (1024×500).
   const g = await browser.newPage({ viewport: { width: 1024, height: 500 } });
-  const [t1, t2] = lang === "es" ? ["Edge 21", "Aprende a contar cartas<br>en blackjack"] : ["Edge 21", "Learn to count cards<br>at blackjack"];
+  const t1 = "Edge 21";
+  const t2 = { es: "Aprende a contar cartas<br>en blackjack", en: "Learn to count cards<br>at blackjack", pt: "Aprenda a contar cartas<br>no blackjack" }[lang];
   const gf = `fg-${lang}.html`;
   fs.writeFileSync(
     path.join(TMP, gf),
@@ -212,7 +217,7 @@ for (const lang of ["es", "en"]) {
   );
   await g.goto(`${base}/_tmp/${gf}`);
   await g.waitForTimeout(300);
-  await g.screenshot({ path: path.join(ROOT, lang === "es" ? "store/grafico-destacado.png" : "store/grafico-destacado-en.png") });
+  await g.screenshot({ path: path.join(ROOT, lang === "es" ? "store/grafico-destacado.png" : `store/grafico-destacado-${lang}.png`) });
   await g.close();
 }
 await browser.close();

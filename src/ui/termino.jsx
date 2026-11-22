@@ -54,13 +54,14 @@ function TerminoSheet() {
   );
 }
 
-// "Desviación" también encuentra "desviaciones"; el resto, el plural con s o es.
+// "Desviación" también encuentra "desviaciones" (y en portugués, "penetração", "penetrações"); el
+// resto, el plural con s o es.
 const LETRA = "[\\p{L}\\p{N}]";
 function patron(a) {
   const esc = a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return /ción$/i.test(a)
-    ? esc.slice(0, -4) + "(?:ción|ciones)"
-    : esc + "(?:es|s)?";
+  if (/ción$/i.test(a)) return esc.slice(0, -4) + "(?:ción|ciones)";
+  if (/ção$/i.test(a)) return esc.slice(0, -3) + "(?:ção|ções)";
+  return esc + "(?:es|s)?";
 }
 const ENTRADAS = MARCAR.map((term) => ({
   term,

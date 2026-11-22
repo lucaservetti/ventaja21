@@ -1,9 +1,9 @@
 // Idioma de la app. Los textos se escriben en español en el código y la compilación los envuelve
-// en __t()/__tf() (scripts/i18n-core.mjs); en inglés se buscan en en.json.
-// El diccionario va aparte en el HTML, como JSON: en español ni se lee, así la app arranca antes.
-function loadDict() {
+// en __t()/__tf() (scripts/i18n-core.mjs); en inglés se buscan en en.json y en portugués, en pt.json.
+// Los diccionarios van aparte en el HTML, como JSON: en español ni se leen, así la app arranca antes.
+function loadDict(lang) {
   try {
-    const el = document.getElementById("i18n-en");
+    const el = document.getElementById(`i18n-${lang}`);
     return el ? JSON.parse(el.textContent) : {};
   } catch {
     return {};
@@ -14,7 +14,7 @@ const KEY = "edge21.lang";
 function detect() {
   try {
     const saved = localStorage.getItem(KEY);
-    if (saved === "es" || saved === "en") return saved;
+    if (saved === "es" || saved === "en" || saved === "pt") return saved;
   } catch {
     // Sin almacenamiento: se usa el idioma del celular.
   }
@@ -23,12 +23,12 @@ function detect() {
       ((navigator.languages && navigator.languages[0]) ||
         navigator.language)) ||
     "es";
-  return /^es\b/i.test(nav) ? "es" : "en";
+  return /^es\b/i.test(nav) ? "es" : /^pt\b/i.test(nav) ? "pt" : "en";
 }
 
 export const LANG = detect();
-const DICT = LANG === "en" ? loadDict() : null;
-export const LOCALE = LANG === "en" ? "en-US" : "es-UY";
+const DICT = LANG === "es" ? null : loadDict(LANG);
+export const LOCALE = { en: "en-US", pt: "pt-BR" }[LANG] || "es-UY";
 export const DEC = LANG === "en" ? "." : ",";
 
 export function __t(s) {

@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://edge21.app/">
 <link rel="apple-touch-icon" href="app/apple-touch-icon.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Edge 21","applicationCategory":"EducationalApplication","operatingSystem":"Android, Web","inLanguage":["es","en"],"url":"https://edge21.app/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Aprende estrategia básica y conteo de cartas en blackjack, paso a paso. Sin dinero real."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Edge 21","applicationCategory":"EducationalApplication","operatingSystem":"Android, Web","inLanguage":["es","en","pt"],"url":"https://edge21.app/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Aprende estrategia básica y conteo de cartas en blackjack, paso a paso. Sin dinero real."}</script>
 <style>
   @font-face { font-family: "DM Sans"; font-weight: 400 800; font-display: swap; src: url(app/fonts/DMSans-latin-400-800.woff2) format("woff2"); }
   @font-face { font-family: "Oswald"; font-weight: 600; font-display: swap; src: url(app/fonts/Oswald-latin-600.woff2) format("woff2"); }
@@ -292,14 +292,17 @@
   @keyframes spin-in { from { transform: rotate(-200deg) scale(0.4); opacity: 0; } to { transform: none; opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
 
-  @media (max-width: 380px) {
+  /* Con tres idiomas (ES · EN · PT), la barra se achica antes. */
+  @media (max-width: 440px) {
     .bar .wrap { gap: 6px; }
     .bar .brand { font-size: 17px; gap: 6px; }
     .bar .brand img { width: 26px; height: 26px; }
-    .lang button { padding: 6px 9px; }
+    .lang button { padding: 6px 8px; }
     .bar .btn.sm { padding: 8px 10px !important; font-size: 13px !important; white-space: nowrap; flex-shrink: 0; }
     .bar .lang { flex-shrink: 0; }
   }
+  /* En pantallas muy angostas, solo la ficha del logo (sin el nombre). */
+  @media (max-width: 340px) { .bar .brand { font-size: 0; gap: 0; } }
   @media (max-width: 820px) {
     .bar nav { display: none; }
     .bar .wrap { gap: 10px; }
@@ -371,6 +374,7 @@
     <div class="lang" role="group" aria-label="Idioma · Language">
       <button type="button" data-lang="es">ES</button>
       <button type="button" data-lang="en">EN</button>
+      <button type="button" data-lang="pt">PT</button>
     </div>
     <a class="btn gold sm" href="app/" data-t="go"></a>
   </div>
@@ -470,7 +474,7 @@
       <div><b>47</b><span data-t="st1"></span></div>
       <div><b>10</b><span data-t="st2"></span></div>
       <div><b>7</b><span data-t="st3"></span></div>
-      <div><b>2</b><span data-t="st4"></span></div>
+      <div><b>3</b><span data-t="st4"></span></div>
     </div>
     <div class="feats">
       <div class="feat"><span class="feat-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 12h5"/></svg></span><h3 data-t="f1t"></h3><p data-t="f1p"></p></div>
@@ -606,7 +610,7 @@
       "qz-left": "Te quedan {0} de prueba", "qz-left1": "Te queda 1 de prueba", "qz-end-t": "¡Jugaste tus 4 manos de prueba!",
       "qz-end-p": "En la app sigues con miles de manos, la tabla completa, lecciones y el conteo de cartas. Gratis y sin dinero real.", "qz-end-btn": "Seguir jugando gratis", dock: "Aprende blackjack gratis",
       n1: "Funciones", n2: "Premium", n3: "Preguntas", n4: "Guías", go: "Jugar ahora", rail: "El blackjack paga 3 a 2 · El crupier se planta en 17",
-      t1: "47 lecciones", t2: "10 niveles de conteo", t3: "Español e inglés", t4: "Sin dinero real",
+      t1: "47 lecciones", t2: "10 niveles de conteo", t3: "Español, inglés y portugués", t4: "Sin dinero real",
       "v-title": "Mírala en acción", "v-sub": "Así se ve por dentro: cada mano, cada carta y cada apuesta.",
       v1: "La jugada correcta, con el porqué", v2: "Bajas +1, del 7 al 9 nada, altas −1", v3: "Cuenta y apuesta con el conteo",
       "p-soon": "En la web y en Android",
@@ -649,7 +653,7 @@
       "q-title": "Preguntas",
       q1: "¿Contar cartas es legal?", a1: "Contar con la cabeza es legal. Lo prohibido es usar aparatos en la mesa, y el casino puede pedirte que no juegues al blackjack.",
       q2: "¿Se juega con dinero real?", a2: "No. Edge 21 es para aprender: no se apuesta ni se gana dinero real.",
-      q3: "¿En qué idiomas está?", a3: "En español y en inglés. Sale en el idioma de tu celular y lo puedes cambiar en Ajustes.",
+      q3: "¿En qué idiomas está?", a3: "En español, inglés y portugués. Sale en el idioma de tu celular y lo puedes cambiar en Ajustes.",
       q4: "¿Funciona sin internet?", a4: "Sí. Una vez instalada, la app funciona sin conexión.",
       foot: "Edge 21 ♠ · Es para aprender: la práctica usa saldo virtual, sin dinero real ni premios.", privacy: "Política de privacidad", terms: "Términos de uso", delacc: "Borrar la cuenta",
     },
@@ -661,7 +665,7 @@
       "qz-left": "{0} practice hands left", "qz-left1": "1 practice hand left", "qz-end-t": "You played your 4 practice hands!",
       "qz-end-p": "Keep going in the app: thousands of hands, the full chart, lessons and card counting. Free, no real money.", "qz-end-btn": "Keep playing for free", dock: "Learn blackjack for free",
       n1: "Features", n2: "Premium", n3: "FAQ", n4: "Guides", go: "Play now", rail: "Blackjack pays 3 to 2 · Dealer stands on 17",
-      t1: "47 lessons", t2: "10 counting levels", t3: "Spanish and English", t4: "No real money",
+      t1: "47 lessons", t2: "10 counting levels", t3: "Spanish, English and Portuguese", t4: "No real money",
       "v-title": "See it in action", "v-sub": "This is what it looks like inside: every hand, every card and every bet.",
       v1: "The right play, with the why", v2: "Low +1, 7 to 9 zero, high −1", v3: "Count and bet with the count",
       "p-soon": "On the web and on Android",
@@ -704,9 +708,64 @@
       "q-title": "Questions",
       q1: "Is counting cards legal?", a1: "Counting in your head is legal. What's prohibited is using devices at the table, and the casino can ask you not to play blackjack.",
       q2: "Is there real-money gambling?", a2: "No. Edge 21 is for learning: you don't bet or win real money.",
-      q3: "What languages is it in?", a3: "Spanish and English. It uses your phone's language and you can change it in Settings.",
+      q3: "What languages is it in?", a3: "Spanish, English and Portuguese. It uses your phone's language and you can change it in Settings.",
       q4: "Does it work offline?", a4: "Yes. Once installed, the app works without a connection.",
       foot: "Edge 21 ♠ · It's for learning: practice uses a virtual balance, with no real money or prizes.", privacy: "Privacy policy", terms: "Terms of use", delacc: "Delete account",
+    },
+    pt: {
+      "qz-title": "Você sabe jogar esta mão?", "qz-sub": "Teste aqui mesmo: escolha a jogada certa pela estratégia básica.",
+      "qz-dealer": "Dealer", "qz-you": "Sua mão", "qz-h": "Pedir", "qz-s": "Parar", "qz-d": "Dobrar",
+      "qz-again": "Outra mão", "qz-ok": "Correto!", "qz-bad": "Não era essa: a jogada é {0}.", "qz-score": "{0} de {1} certas",
+      "qz-more": "Gostou? No app há milhares de mãos, a tabela completa e a contagem de cartas.",
+      "qz-left": "Restam {0} mãos de prática", "qz-left1": "Resta 1 mão de prática", "qz-end-t": "Você jogou suas 4 mãos de prática!",
+      "qz-end-p": "Continue no app: milhares de mãos, a tabela completa, lições e contagem de cartas. Grátis e sem dinheiro real.", "qz-end-btn": "Continuar jogando grátis", dock: "Aprenda blackjack grátis",
+      n1: "Funções", n2: "Premium", n3: "Perguntas", n4: "Guias", go: "Jogar agora", rail: "Blackjack paga 3 para 2 · O dealer para com 17",
+      t1: "47 lições", t2: "10 níveis de contagem", t3: "Português, espanhol e inglês", t4: "Sem dinheiro real",
+      "v-title": "Veja em ação", "v-sub": "Assim é por dentro: cada mão, cada carta e cada aposta.",
+      v1: "A jogada certa, com o porquê", v2: "Baixas +1, 7 a 9 zero, altas −1", v3: "Conte e aposte com a contagem",
+      "p-soon": "Na web e no Android",
+      "l-pill": "Em breve no Google Play", "l-title": "Seja um dos primeiros", "l-sub": "O app para Android está quase saindo. Teste antes de todo mundo ou fique sabendo no dia em que sair.",
+      l1t: "Teste antes de todo mundo", l1p: "Procuramos usuários de Android para testar o app completo antes do lançamento, de graça.",
+      l1a: "Escreva para <b>soporte@edge21.app</b> com o e-mail da sua conta do Google Play.", l1b: "Mandamos o convite para você instalar.", l1c: "Use normalmente e conte o que você melhoraria.", l1btn: "Quero ser tester",
+      l2t: "Fique sabendo quando sair", l2p: "Vamos anunciar o lançamento no Instagram e no TikTok, e postamos uma dica de blackjack por dia.",
+      q9: "Quando o app sai?", a9: "O app para Android sai muito em breve no Google Play. Enquanto isso, você pode usá-lo grátis na web e, se tiver Android, pode <a href=\"#lanzamiento\">entrar como tester</a>.",
+      q10: "A web é o app completo?", a10: "Sim. A web tem o mesmo que o app, de graça: lições, a trilha de contagem, Treinar, os desafios e a mesa. Se você entrar com o Google, seu progresso passa para o app quando ele sair.",
+      "h-title": "Como funciona", "h-sub": "Três passos, no seu ritmo, alguns minutos por dia.",
+      h1a: "Lições de 2 a 5 minutos", h1b: "Um mentor explica cada jogada",
+      h2a: "Rodadas que miram seus erros", h2b: "Seu nível sobe a cada jogada certa",
+      h3a: "Dos valores das cartas à contagem real", h3b: "Hi-Lo, KO, Zen e mais sistemas",
+      st1: "lições", st2: "níveis de contagem", st3: "sistemas de contagem", st4: "idiomas",
+      h1t: "Aprenda", h1p: "Lições curtas numa mesa narrada: as regras, a estratégia básica e por que ela funciona.",
+      h2t: "Pratique", h2p: "Mãos escolhidas a partir dos seus erros, um modo contra o relógio e um desafio novo por dia.",
+      h3t: "Conte", h3p: "Uma trilha de 10 níveis até você acompanhar a contagem real de um sapato inteiro com a mesa cheia.",
+      "r-title": "Compita com seus amigos", "r-sub": "Desafie um amigo com as mesmas cartas e vejam quem conta melhor. Entre com o Google se quiser e apareça no ranking do desafio diário.", "r-cta": "Jogar o desafio de hoje", "r-eyebrow": "Ranking de hoje", "r-you": "Você",
+      pm: "Mensal", "pm-p": "US$2,49", "pa-p": "US$16,99", "pl-p": "US$39,99", "pm-d": "Cancele quando quiser", pa: "Anual", "pa-tag": "5 dias grátis", "pa-d": "US$1,42 por mês · economize 43%", pl: "Para sempre", "pl-d": "Um único pagamento, sem assinatura",
+      "p-note": "Preços na web em dólares americanos (você paga pela Paddle). No Google Play custam US$2,99, US$19,99 e US$49,99, mostrados na sua moeda. O teste grátis é uma vez por conta. Reembolsos de compras na web: em até 14 dias (<a href=\"terminos.html#pt-reembolsos\">veja os termos</a>).",
+      q5: "Preciso de uma conta?", a5: "Não. Seu progresso fica salvo no seu celular e o app funciona sem internet. Se quiser, entre com o Google para ter um backup, levar o progresso para outro aparelho e aparecer no ranking.",
+      q6: "Quanto custa?", a6: "Aprender, praticar, a trilha de contagem e a mesa são grátis, com alguns anúncios. O Premium tira os anúncios e soma as funções avançadas. E com sua conta do Google você pode ganhar dias de Premium de presente: jogando o desafio diário 7 ou 30 dias seguidos ou terminando todas as lições.",
+      q8: "Dá para ter Premium de graça?", a8: "Sim, ganhando: com sua conta do Google você ganha dias de Premium por jogar o desafio diário 7 ou 30 dias seguidos ou por terminar todas as lições.",
+      q7: "E no iPhone ou no computador?", a7: "Entre em edge21.app/app: é o app completo, grátis, em qualquer navegador, com o mesmo que no Android. No iPhone, no Safari toque em Compartilhar e em Adicionar à Tela de Início, e funciona como um app. Se você entrar com o Google, seu progresso acompanha você em todos os aparelhos.",
+      "z-title": "Comece hoje, grátis", "z-sub": "A primeira lição leva 4 minutos.",
+      h1: "Jogue blackjack como um <em>profissional</em>",
+      lead: "Estratégia básica e contagem de cartas, passo a passo: lições curtas, exercícios e um cassino de prática no seu celular.",
+      play: "Baixe no Google Play", soon: "Em breve no Google Play", web: "Jogar grátis agora",
+      "f-title": "Tudo o que um contador precisa", "f-sub": "De não saber as regras a contar um sapato inteiro com a mesa cheia.",
+      f1t: "Lições narradas", f1p: "47 lições curtas numa mesa de verdade: você joga cada mão enquanto o mentor explica por quê.",
+      f2t: "Sua tabela, casa por casa", f2p: "Sua tabela de estratégia acende à medida que você aprende, e você revisa com cartões que voltam bem antes de você esquecer.",
+      f3t: "Uma trilha de contagem de 10 níveis", f3p: "Dos valores das cartas a contar um sapato inteiro. Hi-Lo, KO, Zen, Omega II e mais.",
+      f4t: "Treino feito para você", f4p: "Rodadas focadas nos seus pontos fracos, um nível pela cor da ficha e seus erros salvos até você dominá-los.",
+      f5t: "Um cassino no seu bolso", f5p: "Um simulador com outros jogadores, checagens de contagem surpresa, seis tipos de mesa e pressão de mesa.",
+      f6t: "Missões e desafios", f6p: "3 missões novas por dia com prêmio, um desafio diário num formato diferente, uma meta semanal com insígnia e um modo contra o relógio.",
+      "s-title": "Veja por dentro",
+      c1: "Aprender", c2: "A jogada certa", c3: "A trilha de contagem", c4: "A mesa", c5: "Cassino simulado", c6: "Seu progresso",
+      "p-title": "Premium, do seu jeito", "p-sub": "Mensal, anual com 5 dias de teste grátis, ou pague uma vez e é seu para sempre. O básico continua grátis.",
+      p1: "Sem anúncios", p2: "Modo cassino simulado com saldo virtual, limites, vigilância e uma prova com certificado", p3: "A trilha de desvios completa: Illustrious 18 e Fab 4", p4: "Simulador de banca e risco de ruína", p6: "Análise de erros: sua tabela pintada conforme onde você erra", p7: "Feltros e baralhos à sua escolha, sistemas de contagem avançados e sua mesa do seu jeito: cada regra à mão e duas mãos por rodada",
+      "q-title": "Perguntas",
+      q1: "Contar cartas é legal?", a1: "Contar de cabeça é legal. O proibido é usar aparelhos na mesa, e o cassino pode pedir que você não jogue blackjack.",
+      q2: "Há apostas com dinheiro real?", a2: "Não. O Edge 21 é para aprender: você não aposta nem ganha dinheiro real.",
+      q3: "Em que idiomas está?", a3: "Português, espanhol e inglês. Usa o idioma do seu celular e você pode mudar em Configurações.",
+      q4: "Funciona sem internet?", a4: "Sim. Depois de instalado, o app funciona sem conexão.",
+      foot: "Edge 21 ♠ · É para aprender: a prática usa saldo virtual, sem dinheiro real nem prêmios.", privacy: "Política de privacidade", terms: "Termos de uso", delacc: "Apagar conta",
     },
   };
   function setLang(lang) {
@@ -714,12 +773,14 @@
     document.documentElement.lang = lang;
     document.querySelectorAll("[data-t]").forEach((el) => { el.innerHTML = t[el.dataset.t]; });
     document.querySelectorAll("[data-img]").forEach((el) => { el.src = `img/${el.dataset.img}-${lang}.webp`; });
+    // Los videos de muestra están en español y en inglés: en portugués se muestran los de inglés.
+    const vl = lang === "pt" ? "en" : lang;
     document.querySelectorAll("[data-vid]").forEach((el) => {
-      el.poster = `img/v-${el.dataset.vid}-${lang}.webp`;
-      const src = `store/video/redes/edge21-${el.dataset.vid}-${lang}-web.mp4`;
+      el.poster = `img/v-${el.dataset.vid}-${vl}.webp`;
+      const src = `store/video/redes/edge21-${el.dataset.vid}-${vl}-web.mp4`;
       if (el.dataset.src !== src) { el.dataset.src = src; if (el.src) { el.src = src; el.play().catch(() => {}); } }
     });
-    document.title = lang === "en" ? "Edge 21 · Blackjack and card counting" : "Edge 21 · Blackjack y conteo de cartas";
+    document.title = { en: "Edge 21 · Blackjack and card counting", pt: "Edge 21 · Blackjack e contagem de cartas" }[lang] || "Edge 21 · Blackjack y conteo de cartas";
     document.querySelectorAll(".lang button").forEach((b) => b.classList.toggle("on", b.dataset.lang === lang));
     const play = document.getElementById("play");
     play.textContent = PUBLISHED ? t.play : t.soon;
@@ -729,8 +790,8 @@
     document.getElementById("lanzamiento").hidden = PUBLISHED;
     document.getElementById("p-soon").hidden = PUBLISHED;
     document.querySelectorAll("details.pre").forEach((d) => (d.hidden = PUBLISHED));
-    const sub = lang === "en" ? "I want to try Edge 21 on Android" : "Quiero probar Edge 21 en Android";
-    const body = lang === "en" ? "My Google Play email is: " : "Mi mail de Google Play es: ";
+    const sub = { en: "I want to try Edge 21 on Android", pt: "Quero testar o Edge 21 no Android" }[lang] || "Quiero probar Edge 21 en Android";
+    const body = { en: "My Google Play email is: ", pt: "Meu e-mail do Google Play é: " }[lang] || "Mi mail de Google Play es: ";
     // En el celular, el mail se abre en la app de correo. En la compu, en Gmail (en una pestaña nueva):
     // si no, abre Outlook u otro programa que casi nadie usa.
     const tester = document.getElementById("tester");
@@ -739,15 +800,15 @@
       ? `https://mail.google.com/mail/?view=cm&fs=1&to=soporte@edge21.app&su=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`
       : `mailto:soporte@edge21.app?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
     if (compu) { tester.target = "_blank"; tester.rel = "noopener"; }
-    document.querySelectorAll(".to-guias").forEach((a) => (a.href = lang === "en" ? "en/guides/" : "guias/"));
+    document.querySelectorAll(".to-guias").forEach((a) => (a.href = lang === "es" ? "guias/" : "en/guides/"));
     for (const [id, f] of [["privacy", "privacidad"], ["terms", "terminos"], ["delacc", "borrar-cuenta"]])
-      document.getElementById(id).href = `${f}.html${lang === "en" ? "#en" : ""}`;
+      document.getElementById(id).href = `${f}.html${lang === "es" ? "" : "#" + lang}`;
     try { localStorage.setItem("edge21.lang", lang); } catch {}
     if (typeof deal === "function" && document.getElementById("qz-you").innerHTML) deal();
   }
   let lang = "es";
-  try { lang = localStorage.getItem("edge21.lang") || (/^es\b/i.test(navigator.language) ? "es" : "en"); } catch {}
-  setLang(lang === "en" ? "en" : "es");
+  try { lang = localStorage.getItem("edge21.lang") || (/^es\b/i.test(navigator.language) ? "es" : /^pt\b/i.test(navigator.language) ? "pt" : "en"); } catch {}
+  setLang(T[lang] ? lang : "es");
   document.querySelectorAll(".lang button").forEach((b) => b.addEventListener("click", () => { lang = b.dataset.lang; setLang(lang); }));
   const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.12 });
   document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
@@ -768,7 +829,7 @@
   document.querySelectorAll("[data-vid]").forEach((v) => {
     const b = document.createElement("button");
     b.type = "button"; b.className = "vplay";
-    b.setAttribute("aria-label", document.documentElement.lang === "en" ? "Play video" : "Reproducir video");
+    b.setAttribute("aria-label", { en: "Play video", pt: "Reproduzir vídeo" }[document.documentElement.lang] || "Reproducir video");
     b.innerHTML = '<i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg></i>';
     b.addEventListener("click", () => { cargar(v); v.play().then(() => v.parentElement.classList.remove("tap")).catch(() => {}); });
     v.after(b);
@@ -808,7 +869,7 @@
   const qzUsed = () => { try { const v = JSON.parse(localStorage.getItem(QZ_KEY) || "{}"); return v.day === new Date().toDateString() ? v.n || 0 : 0; } catch { return 0; } };
   const qzUse = () => { try { localStorage.setItem(QZ_KEY, JSON.stringify({ day: new Date().toDateString(), n: qzUsed() + 1 })); } catch {} };
   const cardEl = (r, k) => { const s = SUITS[(k + r.length + qi) % 4]; return `<div class="qz-card${s === "h" || s === "d" ? " red" : ""}" style="animation-delay:${k * 0.08}s" role="img" aria-label="${r}"><span class="qz-rank${r === "10" ? " r10" : ""}">${r}</span><svg class="qz-suit" viewBox="0 0 24 24" aria-hidden="true"><path d="${PIP[s]}"/></svg></div>`; };
-  function total(p) { let t = p.reduce((a, r) => a + VAL(r), 0); const soft = p.includes("A") && t <= 21; if (t > 21 && p.includes("A")) t -= 10; return (soft ? (lang === "en" ? "Soft " : "Blando ") : "") + t; }
+  function total(p) { let t = p.reduce((a, r) => a + VAL(r), 0); const soft = p.includes("A") && t <= 21; if (t > 21 && p.includes("A")) t -= 10; return (soft ? { en: "Soft ", pt: "Macio " }[lang] || "Blando " : "") + t; }
   function qzEnd() {
     document.getElementById("qz-next").hidden = true;
     document.getElementById("qz-end").hidden = false;

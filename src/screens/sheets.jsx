@@ -232,6 +232,7 @@ function SettingsSheet({ open: a, onClose: e }) {
           options={[
             { value: "es", label: "Español" },
             { value: "en", label: "English" },
+            { value: "pt", label: "Português" },
           ]}
           value={LANG}
           onChange={(m) => m !== LANG && setLang(m)}
@@ -401,7 +402,7 @@ function SettingsSheet({ open: a, onClose: e }) {
       <p className="small legal-links" style={{ marginTop: 18 }}>
         <a
           className="link"
-          href={`https://edge21.app/privacidad.html${LANG === "en" ? "#en" : ""}`}
+          href={`https://edge21.app/privacidad.html${LANG === "es" ? "" : `#${LANG}`}`}
           target="_blank"
           rel="noreferrer"
         >
@@ -409,7 +410,7 @@ function SettingsSheet({ open: a, onClose: e }) {
         </a>
         <a
           className="link"
-          href={`https://edge21.app/terminos.html${LANG === "en" ? "#en" : ""}`}
+          href={`https://edge21.app/terminos.html${LANG === "es" ? "" : `#${LANG}`}`}
           target="_blank"
           rel="noreferrer"
         >

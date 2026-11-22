@@ -1,6 +1,7 @@
-// Moneda del casino, el simulador de banca y el diario: dólares, pesos o euros, con montos
+// Moneda del casino, el simulador de banca y el diario: dólares, pesos, reales o euros, con montos
 // sugeridos para cada una y la opción de escribir cualquier monto.
 import { useState } from "react";
+import { LANG } from "../i18n/index.js";
 import { setState, useStore } from "../state.js";
 import { money } from "../engine/table.js";
 import { Button, Modal, Pills, cx } from "./components.jsx";
@@ -30,6 +31,18 @@ const CURRENCIES = {
     setup: { wallet: 20000, buyIn: 6000, minBet: 200, maxBet: 10000 },
     exam: { wallet: 40000, buyIn: 20000, minBet: 200, maxBet: 5000 },
   },
+  BRL: {
+    id: "BRL",
+    label: "Reales",
+    sym: "R$",
+    wallet: [1000, 2000, 5000, 10000, 20000],
+    buyIn: [500, 1000, 1500, 2500, 5000, 10000],
+    min: [10, 25, 50, 100, 250],
+    max: [500, 1000, 2500, 5000, 10000, 25000],
+    bank: [2000, 5000, 10000, 20000, 50000, 100000],
+    setup: { wallet: 5000, buyIn: 1500, minBet: 50, maxBet: 2500 },
+    exam: { wallet: 5000, buyIn: 2500, minBet: 50, maxBet: 1000 },
+  },
   EUR: {
     id: "EUR",
     label: "Euros",
@@ -44,8 +57,10 @@ const CURRENCIES = {
   },
 };
 
+// Sin elegir: reales en portugués, dólares en el resto.
+const PORDEFECTO = LANG === "pt" ? "BRL" : "USD";
 function currencyOf(st) {
-  return CURRENCIES[st.settings.currency] || CURRENCIES.USD;
+  return CURRENCIES[st.settings.currency] || CURRENCIES[PORDEFECTO];
 }
 function useCurrency() {
   return currencyOf(useStore());
@@ -79,7 +94,10 @@ function CurrencyPills() {
   const cur = useCurrency();
   return (
     <Pills
-      options={Object.values(CURRENCIES).map((c) => ({
+      // Dólares, euros y la moneda del idioma (pesos o reales), más la que ya esté elegida.
+      options={Object.values(CURRENCIES)
+        .filter((c) => c.id === cur.id || c.id === "USD" || c.id === "EUR" || c.id === (LANG === "pt" ? "BRL" : "UYU"))
+        .map((c) => ({
         value: c.id,
         label: `${c.label} (${c.sym})`,
       }))}

@@ -33,6 +33,7 @@ function servidor() {
 }
 
 class Fallo extends Error {}
+const PT = JSON.parse(fs.readFileSync(path.join(ROOT, "src/i18n/pt.json"), "utf8"));
 function check(cond, msg) {
   if (!cond) throw new Fallo(msg);
 }
@@ -40,7 +41,8 @@ function check(cond, msg) {
 // Lo que cada prueba puede hacer con la app.
 function helpers(page, lang, name) {
   let n = 0;
-  const T = (es, en) => (lang === "es" ? es : en);
+  // En portugués se busca el texto en pt.json a partir del español (si no está, queda el español).
+  const T = (es, en) => (lang === "es" ? es : lang === "pt" ? (PT[es] ?? es) : en);
   const h = {
     page,
     T,
@@ -317,6 +319,33 @@ const PRUEBAS = {
   },
 
   // Celebración: al subir de rango aparece con su botón para compartir; "Seguir" la cierra y no vuelve.
+  // Portugués: las pestañas, los ajustes y lo que se ve con un progreso avanzado, sin restos en español.
+  // Corre una sola vez (en la vuelta en español), con el idioma cambiado a mano.
+  async portugues(h) {
+    if (h.T("es", "en") !== "es") return;
+    const { page } = h;
+    const estado = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/video/estado.json"), "utf8"));
+    await page.evaluate((e) => {
+      localStorage.setItem("ventaja21.state.v1", e);
+      localStorage.setItem("edge21.lang", "pt");
+    }, JSON.stringify(estado));
+    await page.reload();
+    await page.waitForTimeout(1200);
+    check((await page.evaluate(() => document.documentElement.lang)) === "pt", "no cambió a portugués");
+    const ESPANOL =
+      /\b(crupier|mazos?|apuestas?|conteo|lecci[oó]n|lecciones|ejercicios?|manos?|tandas?|racha|jugadas?|pierdes|aquí|despu[eé]s|tambi[eé]n|cu[aá]nto|qué|ning[uú]n|elige|juega|entrenar|tienes|puedes|blandas?|plantarte|plántate|rendirse|ajustes)\b| y /i;
+    for (const tab of ["Aprender", "Treinar", "Contagem", "Jogar", "Progresso"]) {
+      await page.locator(`nav.tabbar button:has-text("${tab}")`).first().click();
+      await page.waitForTimeout(500);
+      const txt = await page.locator(".layer.with-tabbar:not([hidden])").last().innerText();
+      const m = txt.match(ESPANOL);
+      check(!m, `en ${tab} queda español: "${m && txt.slice(Math.max(0, m.index - 40), m.index + 40)}"`);
+    }
+    await page.locator(".acct-btn:visible").first().click();
+    await page.getByText("Configurações").first().waitFor({ timeout: 3000 });
+    await page.getByText("Português").first().waitFor({ timeout: 3000 });
+    await h.foto("portugues");
+  },
   async celebracion(h) {
     const { page } = h;
     const app = page.url();

@@ -42,6 +42,6 @@ tr:last-child td { border-bottom: 0; }
 footer { border-top: 1px solid var(--line); margin-top: 56px; padding-top: 20px; font-size: 14px; color: var(--text-2); display: flex; flex-wrap: wrap; gap: 8px 18px; }
 footer a { color: var(--text-2); }
 [data-lang] { display: none; }
-html[lang="es"] [data-lang="es"], html[lang="en"] [data-lang="en"] { display: block; }
+html[lang="es"] [data-lang="es"], html[lang="en"] [data-lang="en"], html[lang="pt"] [data-lang="pt"] { display: block; }
 @media (max-width: 560px) { .toc { columns: 1; } body { font-size: 16px; } }
 @media print { header, .lang, footer { display: none; } body { background: #fff; color: #000; } p, li, td, th { color: #000; } }

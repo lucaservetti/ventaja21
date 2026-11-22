@@ -1,17 +1,18 @@
-// Páginas legales de Edge 21: elige el idioma (#en en el enlace, el de la app o el del navegador)
-// y maneja el botón ES/EN. Se carga en el <head>, así la página aparece directo en su idioma.
+// Páginas legales de Edge 21: elige el idioma (#en o #pt en el enlace, el de la app o el del
+// navegador) y maneja el botón ES/EN/PT. Se carga en el <head>, así la página aparece directo en su idioma.
 (function () {
   var root = document.documentElement;
   function fromHash() {
     var h = location.hash.slice(1, 3);
-    return h === "en" || h === "es" ? h : null;
+    return h === "en" || h === "es" || h === "pt" ? h : null;
   }
   var l = fromHash();
   try {
     l = l || localStorage.getItem("edge21.lang");
   } catch (e) {}
-  l = l || ((navigator.language || "es").toLowerCase().indexOf("es") === 0 ? "es" : "en");
-  root.lang = l === "en" ? "en" : "es";
+  var nav = (navigator.language || "es").toLowerCase();
+  l = l || (nav.indexOf("es") === 0 ? "es" : nav.indexOf("pt") === 0 ? "pt" : "en");
+  root.lang = l === "en" || l === "pt" ? l : "es";
   window.addEventListener("hashchange", function () {
     var h = fromHash();
     if (h) root.lang = h;

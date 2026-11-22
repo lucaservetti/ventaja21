@@ -1,5 +1,5 @@
 // Saca las capturas de la página web (img/<pantalla>-<idioma>.webp, 1080x1920) desde la app actual.
-// Uso: npm run build && node tools/capturas-web.mjs
+// Uso: npm run build && node tools/capturas-web.mjs   (IDIOMAS=pt para hacer solo las de ese idioma)
 import { chromium } from "playwright";
 import http from "node:http";
 import fs from "node:fs";
@@ -21,7 +21,9 @@ const base = `http://localhost:${srv.address().port}/app/index.html`;
 const azar = `(() => { let s = 7; const r = () => { s = (s * 1103515245 + 12345) >>> 0; return s / 4294967296; }; Math.random = r; if (window.crypto) crypto.getRandomValues = (a) => { for (let i = 0; i < a.length; i++) a[i] = Math.floor(r() * 4294967296); return a; }; })();`;
 
 // Cada pantalla: cómo llegar desde la app recién abierta.
-const W = (L, es, en) => (L === "es" ? es : en);
+// En portugués, el texto de la app se busca en pt.json a partir del español.
+const PT = JSON.parse(fs.readFileSync(path.join(ROOT, "src/i18n/pt.json"), "utf8"));
+const W = (L, es, en) => (L === "es" ? es : L === "pt" ? PT[es] ?? es : en);
 const PANTALLAS = {
   aprender: async (p, L) => {
     await tab(p, W(L, "Aprender", "Learn"));
@@ -55,9 +57,9 @@ async function tab(p, name) {
 }
 
 const b = await chromium.launch();
-for (const L of ["es", "en"]) {
+for (const L of (process.env.IDIOMAS || "es,en,pt").split(",")) {
   for (const [nombre, ir] of Object.entries(PANTALLAS)) {
-    const ctx = await b.newContext({ viewport: { width: 405, height: 720 }, deviceScaleFactor: 8 / 3, locale: L === "es" ? "es-UY" : "en-US" });
+    const ctx = await b.newContext({ viewport: { width: 405, height: 720 }, deviceScaleFactor: 8 / 3, locale: { es: "es-UY", en: "en-US", pt: "pt-BR" }[L] });
     await ctx.addInitScript(azar);
     await ctx.addInitScript(`if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s", "1"); localStorage.setItem("edge21.lang", "${L}"); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(estado))}); }`);
     const p = await ctx.newPage();
