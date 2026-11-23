@@ -614,7 +614,9 @@ const PRUEBAS = {
   // worker la primera vez que se trae.
   async sinInternet(h) {
     const { page } = h;
-    await page.evaluate(() => navigator.serviceWorker && navigator.serviceWorker.ready);
+    // Si el service worker no se registra, ready no termina nunca: se espera con límite.
+    const listo = await page.evaluate(() => Promise.race([navigator.serviceWorker.ready.then(() => true), new Promise((r) => setTimeout(() => r(false), 5000))]));
+    check(listo, "el service worker no se registró");
     await page.reload();
     await page.waitForTimeout(900);
     check(await page.evaluate(() => !!navigator.serviceWorker.controller), "el service worker no maneja la página");
