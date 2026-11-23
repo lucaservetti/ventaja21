@@ -1,4 +1,5 @@
-// Arma las guías de la web (páginas aparte de la portada), en español, inglés y portugués:
+// Arma las guías de la web (páginas aparte de la portada), en español, inglés y portugués. Las dos
+// interactivas (estrategia y conteo) tienen sus textos en contenido.mjs; las de texto, en articulos.mjs:
 //   /guias/  ·  /guias/estrategia-basica/  ·  /guias/contar-cartas/
 //   /en/guides/  ·  /en/guides/basic-strategy/  ·  /en/guides/card-counting/
 //   /pt/guias/  ·  /pt/guias/estrategia-basica/  ·  /pt/guias/contagem-de-cartas/
@@ -8,6 +9,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { COMUN, CONTEO, ESTRATEGIA, INDICE, RUTAS, SITIO } from "./contenido.mjs";
+import { ARTICULOS, SLUGS } from "./articulos.mjs";
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
 const DATOS = JSON.parse(execFileSync(process.execPath, [path.join(ROOT, "tools/guias/datos.mjs")], { maxBuffer: 64e6 }).toString());
@@ -15,6 +17,12 @@ const IDIOMAS = ["es", "en", "pt"];
 // Código de idioma para lang y hreflang: el portugués es el de Brasil.
 const HL = { es: "es", en: "en", pt: "pt-BR" };
 const legal = (lang) => (lang === "es" ? "" : `#${lang}`);
+for (const [clave, rutas] of Object.entries(SLUGS)) for (const l of IDIOMAS) RUTAS[l][clave] = rutas[l];
+// Todas las guías, en el orden del índice. Cada una sabe su título, su tarjeta y sus minutos.
+const ORDEN = ["reglas", "estrategia", "doblar", "conteo", "seguro", "pago"];
+const GUIA = (clave, lang) => (clave === "estrategia" ? ESTRATEGIA : clave === "conteo" ? CONTEO : ARTICULOS[clave])[lang];
+// {estrategia}, {pago}...: enlaces a otras guías dentro de los textos.
+const enlaces = (s, lang) => String(s).replace(/\{(\w+)\}/g, (m, k) => RUTAS[lang][k] || m);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const texto = (s) => String(s).replace(/<[^>]+>/g, "");
 
@@ -172,6 +180,7 @@ function estrategia(lang) {
     ${secciones}
     ${sigueHtml(lang, t.sigue)}
     ${faqHtml(lang, t.faq)}
+    ${masGuias(lang, ["doblar", "reglas", "seguro"])}
   </article>
   <script type="application/json" id="g-datos">${JSON.stringify(datos).replace(/</g, "\\u003c")}</script>`;
   return pagina({
@@ -225,6 +234,7 @@ function conteo(lang) {
     <section class="g-sec"><h2>${t.mitos.h}</h2><ul class="g-list">${t.mitos.lista.map((l) => `<li>${l}</li>`).join("")}</ul></section>
     ${sigueHtml(lang, t.sigue)}
     ${faqHtml(lang, t.faq)}
+    ${masGuias(lang, ["seguro", "pago", "estrategia"])}
   </article>`;
   return pagina({
     lang,
@@ -237,26 +247,85 @@ function conteo(lang) {
   });
 }
 
-// ---- Índice de guías ----
-function indice(lang) {
-  const t = INDICE[lang];
+// ---- Tarjetas de guías (en el índice y en "Más guías") ----
+const ICONOS = {
+  reglas: '<svg viewBox="0 0 24 24"><path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4M8.5 12h7M8.5 16h5"/></svg>',
+  estrategia: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>',
+  doblar: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="9" height="13" rx="2"/><rect x="12" y="6" width="9" height="13" rx="2"/><path d="M7.5 3.5v5M5 6h5"/></svg>',
+  conteo: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="11" height="15" rx="2"/><path d="M14 7.5l4.5 1.2a2 2 0 0 1 1.4 2.5l-2.6 9.6"/><path d="M8.5 10v5M6 12.5h5"/></svg>',
+  seguro: '<svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>',
+  pago: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3"/></svg>',
+};
+const tarjeta = (lang, clave, tag = "h2") => {
+  const g = GUIA(clave, lang);
   const c = COMUN[lang];
-  const tarjeta = (clave, g, icono) => `<a class="g-tile" href="${RUTAS[lang][clave]}">
-      <span class="g-tile-ic" aria-hidden="true">${icono}</span>
-      <h2>${g.h1}</h2>
+  return `<a class="g-tile" href="${RUTAS[lang][clave]}">
+      <span class="g-tile-ic" aria-hidden="true">${ICONOS[clave]}</span>
+      <${tag}>${g.h1}</${tag}>
       <p>${g.tarjeta}</p>
       <span class="g-tile-meta">${g.minutos} ${c.min} · <b>${c.leer} →</b></span>
     </a>`;
-  const icTabla = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>';
-  const icCartas = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="11" height="15" rx="2"/><path d="M14 7.5l4.5 1.2a2 2 0 0 1 1.4 2.5l-2.6 9.6"/><path d="M8.5 10v5M6 12.5h5"/></svg>';
+};
+const masGuias = (lang, claves) =>
+  claves && claves.length ? `<section class="g-sec g-mas"><h2>${COMUN[lang].masGuias}</h2><div class="g-tiles">${claves.map((k) => tarjeta(lang, k, "h3")).join("")}</div></section>` : "";
+
+// ---- Guías de texto (tools/guias/articulos.mjs) ----
+function articulo(lang, clave) {
+  const t = ARTICULOS[clave][lang];
+  const E = (x) => enlaces(x, lang);
+  const tabla = (filas) =>
+    `<div class="g-table-wrap"><table class="g-table"><thead><tr>${filas[0].map((h) => `<th scope="col">${h}</th>`).join("")}</tr></thead><tbody>${filas
+      .slice(1)
+      .map((f) => `<tr>${f.map((x, i) => (i === 0 ? `<th scope="row">${x}</th>` : `<td>${x}</td>`)).join("")}</tr>`)
+      .join("")}</tbody></table></div>`;
+  const manos = (m) =>
+    `<div class="g-values g-hands">${m.map(([cs, pie]) => `<div class="g-val"><div class="g-cards">${cs.map(([r, s]) => carta(r, s)).join("")}</div><span>${pie}</span></div>`).join("")}</div>`;
+  const calc = (k) =>
+    `<div class="g-calc" data-t="${esc(JSON.stringify(k))}">
+      <div class="g-calc-in">
+        <label>${k.apuesta}<input type="number" inputmode="decimal" min="1" value="10" data-k="apuesta"></label>
+        <label>${k.manos}<input type="number" inputmode="numeric" min="1" value="80" data-k="manos"></label>
+        <label>${k.horas}<input type="number" inputmode="decimal" min="1" value="3" data-k="horas"></label>
+      </div>
+      <p class="g-calc-res" aria-live="polite"></p>
+      <p class="g-note">${k.nota}</p>
+    </div>`;
+  const secciones = t.secciones
+    .map(
+      (s) =>
+        `<section class="g-sec"><h2>${s.h}</h2>${(s.p || []).map((p) => `<p>${E(p)}</p>`).join("")}${s.lista ? `<ul class="g-list">${s.lista.map((l) => `<li>${E(l)}</li>`).join("")}</ul>` : ""}${s.cartas ? manos(s.cartas) : ""}${s.tabla ? tabla(s.tabla) : ""}${s.calc ? calc(t.calc) : ""}${s.nota ? `<p class="g-note">${E(s.nota)}</p>` : ""}</section>`,
+    )
+    .join("\n");
+  const cuerpo = `
+  ${migas(lang, t.h1)}
+  <article>
+    <h1>${t.h1}</h1>
+    <p class="g-lead">${E(t.intro)}</p>
+    ${secciones}
+    ${faqHtml(lang, t.faq.map(([q, a]) => [q, E(a)]))}
+    ${masGuias(lang, t.relacionadas)}
+  </article>`;
+  return pagina({
+    lang,
+    clave,
+    titulo: t.titulo,
+    descripcion: t.descripcion,
+    cuerpo,
+    conScript: !!t.calc,
+    jsonld: [articuloLd(lang, clave, t), migasLd(lang, clave, t.h1), faqLd(t.faq)],
+  });
+}
+
+// ---- Índice de guías ----
+function indice(lang) {
+  const t = INDICE[lang];
   const cuerpo = `
   <section class="g-hero">
     <h1>${t.h1}</h1>
     <p class="g-lead">${t.intro}</p>
   </section>
   <div class="g-tiles">
-    ${tarjeta("estrategia", ESTRATEGIA[lang], icTabla)}
-    ${tarjeta("conteo", CONTEO[lang], icCartas)}
+    ${ORDEN.map((k) => tarjeta(lang, k)).join("\n    ")}
   </div>`;
   return pagina({
     lang,
@@ -287,12 +356,13 @@ for (const lang of IDIOMAS) {
   escribir(RUTAS[lang].guias, indice(lang));
   escribir(RUTAS[lang].estrategia, estrategia(lang));
   escribir(RUTAS[lang].conteo, conteo(lang));
+  for (const clave of Object.keys(ARTICULOS)) escribir(RUTAS[lang][clave], articulo(lang, clave));
 }
 
 // ---- sitemap.xml y robots.txt ----
 const hoy = new Date().toISOString().slice(0, 10);
 const entradas = [`  <url>\n    <loc>${SITIO}/</loc>\n    <lastmod>${hoy}</lastmod>\n  </url>`];
-for (const clave of ["guias", "estrategia", "conteo"])
+for (const clave of ["guias", ...ORDEN])
   for (const lang of IDIOMAS)
     entradas.push(`  <url>
     <loc>${SITIO + RUTAS[lang][clave]}</loc>

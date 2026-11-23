@@ -170,3 +170,28 @@ footer nav { display: flex; flex-wrap: wrap; gap: 14px; }
 @media (max-width: 400px) { .bar .wrap { gap: 10px; } }
 @media (max-width: 359px) { .bar .brand { font-size: 0; gap: 0; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* Guías de texto: manos de ejemplo, filas con nombre, calculadora de 6:5 y "Más guías" */
+.g-hands .g-val > span { font-size: 15px; color: var(--text); }
+.g-table tbody th { color: var(--text); font-size: 15.5px; text-transform: none; letter-spacing: 0; font-weight: 700; }
+.g-sec .g-note a, .g-sec p a, .g-list a { color: var(--gold); }
+.g-calc { margin: 16px 0 6px; padding: 20px; border-radius: 20px; background: linear-gradient(160deg, #123826, var(--surface) 70%); border: 1px solid var(--line); }
+.g-calc-in { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.g-calc-in label { display: grid; gap: 6px; font-size: 13.5px; font-weight: 700; color: var(--text-2); }
+.g-calc-in input { width: 100%; min-width: 0; font: 800 18px "DM Sans", sans-serif; color: var(--text); background: rgba(6, 17, 12, 0.6); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.g-calc-in input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+.g-calc-res { margin: 16px 0 8px !important; font-size: 18px; color: var(--text) !important; }
+.g-calc-res b { color: var(--gold); font-size: 22px; }
+.g-mas .g-tiles { margin-top: 14px; }
+.g-mas .g-tile h3 { font-size: 19px; margin: 8px 0 0; }
+@media (max-width: 620px) { .g-calc-in { grid-template-columns: 1fr; } }
+@media (max-width: 620px) {
+  .g-table th, .g-table td { padding: 10px 10px; font-size: 14.5px; }
+  .g-table thead th { font-size: 12px; letter-spacing: 0.04em; }
+  /* Las manos de ejemplo quedan de a tres en el celular, con cartas un poco más chicas. */
+  .g-values.g-hands { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .g-hands .g-val { display: grid; grid-template-columns: none; justify-content: stretch; padding: 14px 4px; }
+  .g-hands .g-card { --w: 40px; }
+  .g-hands .g-val > span { font-size: 13.5px; }
+}
+@media (max-width: 359px) { .g-hands .g-card { --w: 34px; } .g-hands .g-cards { gap: 4px; } }

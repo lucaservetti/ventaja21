@@ -29,6 +29,30 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/"/>
   </url>
   <url>
+    <loc>https://edge21.app/guias/reglas-del-blackjack/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/reglas-del-blackjack/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/blackjack-rules/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://edge21.app/pt/guias/regras-do-blackjack/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/reglas-del-blackjack/"/>
+  </url>
+  <url>
+    <loc>https://edge21.app/en/guides/blackjack-rules/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/reglas-del-blackjack/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/blackjack-rules/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://edge21.app/pt/guias/regras-do-blackjack/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/reglas-del-blackjack/"/>
+  </url>
+  <url>
+    <loc>https://edge21.app/pt/guias/regras-do-blackjack/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/reglas-del-blackjack/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/blackjack-rules/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://edge21.app/pt/guias/regras-do-blackjack/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/reglas-del-blackjack/"/>
+  </url>
+  <url>
     <loc>https://edge21.app/guias/estrategia-basica/</loc>
     <lastmod>2026-11-22</lastmod>
     <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/estrategia-basica/"/>
@@ -53,6 +77,30 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/estrategia-basica/"/>
   </url>
   <url>
+    <loc>https://edge21.app/guias/doblar-y-separar/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/doblar-y-separar/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/double-down-and-split/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://edge21.app/pt/guias/dobrar-e-dividir/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/doblar-y-separar/"/>
+  </url>
+  <url>
+    <loc>https://edge21.app/en/guides/double-down-and-split/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/doblar-y-separar/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/double-down-and-split/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://edge21.app/pt/guias/dobrar-e-dividir/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/doblar-y-separar/"/>
+  </url>
+  <url>
+    <loc>https://edge21.app/pt/guias/dobrar-e-dividir/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/doblar-y-separar/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/double-down-and-split/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://edge21.app/pt/guias/dobrar-e-dividir/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/doblar-y-separar/"/>
+  </url>
+  <url>
     <loc>https://edge21.app/guias/contar-cartas/</loc>
     <lastmod>2026-11-22</lastmod>
     <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/contar-cartas/"/>
@@ -75,6 +123,54 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/card-counting/"/>
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://edge21.app/pt/guias/contagem-de-cartas/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/contar-cartas/"/>
+  </url>
+  <url>
+    <loc>https://edge21.app/guias/seguro/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/seguro/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/insurance/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://edge21.app/pt/guias/seguro/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/seguro/"/>
+  </url>
+  <url>
+    <loc>https://edge21.app/en/guides/insurance/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/seguro/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/insurance/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://edge21.app/pt/guias/seguro/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/seguro/"/>
+  </url>
+  <url>
+    <loc>https://edge21.app/pt/guias/seguro/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/seguro/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/insurance/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://edge21.app/pt/guias/seguro/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/seguro/"/>
+  </url>
+  <url>
+    <loc>https://edge21.app/guias/3-2-o-6-5/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/3-2-o-6-5/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/3-2-vs-6-5/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://edge21.app/pt/guias/3-2-ou-6-5/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/3-2-o-6-5/"/>
+  </url>
+  <url>
+    <loc>https://edge21.app/en/guides/3-2-vs-6-5/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/3-2-o-6-5/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/3-2-vs-6-5/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://edge21.app/pt/guias/3-2-ou-6-5/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/3-2-o-6-5/"/>
+  </url>
+  <url>
+    <loc>https://edge21.app/pt/guias/3-2-ou-6-5/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://edge21.app/guias/3-2-o-6-5/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://edge21.app/en/guides/3-2-vs-6-5/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://edge21.app/pt/guias/3-2-ou-6-5/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edge21.app/guias/3-2-o-6-5/"/>
   </url>
   <url>
     <loc>https://edge21.app/privacidad.html</loc>

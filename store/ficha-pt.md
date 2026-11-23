@@ -60,7 +60,7 @@ Agora o Edge 21 está em português! 47 lições (também KO, Hi-Opt, Zen, Omega
 ## Imágenes
 - Gráfico destacado: store/grafico-destacado-pt.png (1024×500)
 - Capturas del teléfono: store/capturas-pt/01.png a 08.png (1080×1920), en ese orden.
-- Video: por ahora sirve el de inglés (store/video/edge21-video-en.mp4).
+- Video: store/video/edge21-video-pt.mp4. Play pide un enlace de YouTube: súbelo como "No listado" y pega el enlace.
 
 ## Dónde cargarla
 Play Console → tu app → Crecimiento → Presencia en la tienda → Ficha principal de Play Store → **Administrar traducciones → Agregar traducciones → Portugués (Brasil)**. Pegas el nombre, las dos descripciones y, en la versión, las novedades.

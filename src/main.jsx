@@ -924,13 +924,17 @@ if ("serviceWorker" in navigator && !NATIVE) {
   const reloadIfIdle = () => {
     if (updateReady && window.__v21Idle) location.reload();
   };
-  window.addEventListener("load", () => {
+  const registrar = () => {
     try {
       if (location.protocol === "https:" || location.hostname === "localhost") {
         navigator.serviceWorker.register("./sw.js").catch(() => {});
       }
     } catch {}
-  });
+  };
+  // En inglés y portugués la app arranca después de traer el diccionario, a veces con la página ya
+  // cargada: en ese caso se registra enseguida (esperar a "load" sería esperar para siempre).
+  if (document.readyState === "complete") registrar();
+  else window.addEventListener("load", registrar);
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (!hadController) return;
     updateReady = true;

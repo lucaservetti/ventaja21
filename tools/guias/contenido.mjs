@@ -20,6 +20,7 @@ export const COMUN = {
     leer: "Leer la guía",
     min: "min de lectura",
     faq: "Preguntas frecuentes",
+    masGuias: "Más guías",
     gratis: "Gratis",
     premium: "Premium",
   },
@@ -35,6 +36,7 @@ export const COMUN = {
     leer: "Read the guide",
     min: "min read",
     faq: "Frequently asked questions",
+    masGuias: "More guides",
     gratis: "Free",
     premium: "Premium",
   },
@@ -43,13 +45,13 @@ export const COMUN = {
 export const INDICE = {
   es: {
     titulo: "Guías de blackjack gratis | Edge 21",
-    descripcion: "Guías claras para jugar blackjack mejor: la tabla de estrategia básica interactiva y cómo contar cartas con el método Hi-Lo, paso a paso.",
+    descripcion: "Guías claras para jugar blackjack mejor: las reglas, la tabla de estrategia básica interactiva, cuándo doblar y separar, el seguro, 3:2 o 6:5 y cómo contar cartas con Hi-Lo.",
     h1: "Guías de blackjack",
     intro: "Todo lo que necesitas para jugar cada mano bien y entender cómo se cuentan cartas, explicado simple y con ejemplos que puedes tocar.",
   },
   en: {
     titulo: "Free blackjack guides | Edge 21",
-    descripcion: "Clear guides to play blackjack better: the interactive basic strategy chart and how to count cards with the Hi-Lo method, step by step.",
+    descripcion: "Clear guides to play blackjack better: the rules, the interactive basic strategy chart, when to double and split, insurance, 3:2 vs 6:5 and how to count cards with Hi-Lo.",
     h1: "Blackjack guides",
     intro: "Everything you need to play every hand right and understand how card counting works, explained simply with examples you can tap.",
   },
@@ -368,13 +370,14 @@ COMUN.pt = {
   leer: "Ler o guia",
   min: "min de leitura",
   faq: "Perguntas frequentes",
+  masGuias: "Mais guias",
   gratis: "Grátis",
   premium: "Premium",
 };
 
 INDICE.pt = {
   titulo: "Guias de blackjack grátis | Edge 21",
-  descripcion: "Guias claros para jogar blackjack melhor: a tabela de estratégia básica interativa e como contar cartas com o método Hi-Lo, passo a passo.",
+  descripcion: "Guias claros para jogar blackjack melhor: as regras, a tabela de estratégia básica interativa, quando dobrar e dividir, o seguro, 3:2 ou 6:5 e como contar cartas com Hi-Lo.",
   h1: "Guias de blackjack",
   intro: "Tudo o que você precisa para jogar cada mão certo e entender como se contam cartas, explicado de forma simples e com exemplos que você pode tocar.",
 };

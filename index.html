@@ -773,8 +773,8 @@
     document.documentElement.lang = lang;
     document.querySelectorAll("[data-t]").forEach((el) => { el.innerHTML = t[el.dataset.t]; });
     document.querySelectorAll("[data-img]").forEach((el) => { el.src = `img/${el.dataset.img}-${lang}.webp`; });
-    // Los videos de muestra están en español y en inglés: en portugués se muestran los de inglés.
-    const vl = lang === "pt" ? "en" : lang;
+    // Videos de muestra: uno por idioma (tools/video/web.sh).
+    const vl = lang;
     document.querySelectorAll("[data-vid]").forEach((el) => {
       el.poster = `img/v-${el.dataset.vid}-${vl}.webp`;
       const src = `store/video/redes/edge21-${el.dataset.vid}-${vl}-web.mp4`;
