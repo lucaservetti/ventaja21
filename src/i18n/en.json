@@ -3745,5 +3745,8 @@
 "{0}: tiene que pedir.": "{0}: must hit.",
 "Reales": "Reais",
 "2 a 6": "2 to 6",
-"7, 8 y 9": "7, 8 and 9"
+"7, 8 y 9": "7, 8 and 9",
+"El blackjack paga 3 a 2": "Blackjack pays 3 to 2",
+"El blackjack paga 6 a 5": "Blackjack pays 6 to 5",
+"El seguro paga 2 a 1": "Insurance pays 2 to 1"
 }

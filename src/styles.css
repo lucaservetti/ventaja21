@@ -3177,7 +3177,7 @@ button.chip:active:not(:disabled) {
 }
 .sim-hud {
   display: grid;
-  grid-template-columns: 64px 1fr 64px;
+  grid-template-columns: minmax(64px, max-content) 1fr minmax(64px, max-content);
   align-items: center;
   gap: 8px;
   margin: 10px 0 8px;
@@ -3188,6 +3188,7 @@ button.chip:active:not(:disabled) {
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
 }
 .hud-center {
   display: flex;
@@ -3279,6 +3280,35 @@ button.chip:active:not(:disabled) {
   border-radius: 50%;
   border-top: 2px solid rgba(255, 255, 255, 0.05);
   pointer-events: none;
+}
+/* Las reglas impresas en el paño (FeltPrint en TableView.jsx), siguiendo la curva de la mesa. */
+.felt > .felt-print {
+  position: absolute;
+  top: calc(46% + 8px);
+  left: 50%;
+  width: min(100%, 420px);
+  transform: translateX(-50%);
+  pointer-events: none;
+  overflow: visible;
+}
+.felt-print text {
+  fill: rgba(255, 255, 255, 0.09);
+  font-family: Oswald, "DM Sans", sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.felt-print .fp-1 {
+  font-size: 15px;
+  letter-spacing: 0.16em;
+  fill: rgba(233, 185, 73, 0.16);
+}
+/* En una mesa que paga 6:5, esa línea va en rojo: es la regla que más cuesta. */
+.felt-print .fp-1.fp-mal {
+  fill: rgba(255, 122, 99, 0.2);
+}
+.felt-print .fp-2 {
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
 }
 .felt.shuffling .dealer-seat:after {
   content: "Mezclando\2026";
@@ -4831,28 +4861,32 @@ i.bc-cell {
   line-height: 1.1;
   margin-top: 8px;
 }
-.lr-dots {
+/* Progreso del curso en el resultado de una lección: un tramo por sección, largo según sus lecciones. */
+.lr-prog {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
   gap: 5px;
-  margin-top: 16px;
+  max-width: 320px;
+  margin: 18px auto 0;
 }
-.lr-dots i {
-  width: 12px;
-  height: 12px;
-  border-radius: 6px;
+.lr-seg {
+  flex-basis: 0;
+  height: 8px;
+  border-radius: 4px;
   background: #1d5338;
+  overflow: hidden;
 }
-.lr-dots i.gap {
-  margin-left: 7px;
-}
-.lr-dots i.on {
+.lr-seg i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
   background: var(--text);
+  transition: width 0.6s ease 0.3s;
 }
-.lr-dots i.cur {
+.lr-seg.cur {
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+.lr-seg.cur i {
   background: var(--accent);
-  width: 20px;
 }
 .lr-sum {
   margin-top: 22px;

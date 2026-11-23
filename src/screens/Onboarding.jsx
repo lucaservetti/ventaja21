@@ -307,7 +307,7 @@ function Placement({
                     </span>
                   ) : (
                     // El test terminó antes de llegar a esta sección: no hubo preguntas.
-                    <span className="muted" style={{ fontWeight: 600 }}>
+                    <span className="muted" style={{ fontWeight: 600, whiteSpace: "nowrap" }}>
                       Sin preguntas
                     </span>
                   )}

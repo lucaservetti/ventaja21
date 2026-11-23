@@ -22,16 +22,27 @@ function getAudio() {
     return null;
   }
 }
-// Respuesta de salón: ruido estéreo que se apaga en ~1 segundo.
+// Respuesta de salón: ruido estéreo que se apaga en ~1 segundo. La curva se calcula una vez para
+// los dos canales (son 50 000 muestras por canal).
 function roomImpulse(ctx, secs = 1.1, decay = 3.2) {
   const n = Math.floor(ctx.sampleRate * secs);
   const buf = ctx.createBuffer(2, n, ctx.sampleRate);
+  const env = new Float32Array(n);
+  for (let i = 0; i < n; i++) env[i] = Math.pow(1 - i / n, decay);
   for (let ch = 0; ch < 2; ch++) {
     const d = buf.getChannelData(ch);
-    for (let i = 0; i < n; i++)
-      d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, decay);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * env[i];
   }
   return buf;
+}
+// Un segundo de ruido blanco, hecho una sola vez: cada carta o ficha usa un pedazo distinto.
+let ruido = null;
+function noiseBuffer(ctx) {
+  if (ruido && ruido.sampleRate === ctx.sampleRate) return ruido;
+  ruido = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+  const c = ruido.getChannelData(0);
+  for (let i = 0; i < c.length; i++) c[i] = Math.random() * 2 - 1;
+  return ruido;
 }
 function getBus(ctx) {
   if (bus) return bus;
@@ -93,15 +104,9 @@ function playNoise(
 ) {
   let n = getAudio();
   if (!n) return;
-  let l = n.currentTime + t,
-    i = Math.floor(n.sampleRate * a),
-    o = n.createBuffer(1, i, n.sampleRate),
-    c = o.getChannelData(0);
-  for (let p = 0; p < i; p++) {
-    c[p] = Math.random() * 2 - 1;
-  }
+  let l = n.currentTime + t;
   let r = n.createBufferSource();
-  r.buffer = o;
+  r.buffer = noiseBuffer(n);
   let u = n.createBiquadFilter();
   if (bp) {
     u.type = "bandpass";
@@ -116,7 +121,7 @@ function playNoise(
   d.gain.exponentialRampToValueAtTime(e, l + attack);
   d.gain.exponentialRampToValueAtTime(1e-4, l + a);
   r.connect(u).connect(d).connect(getBus(n));
-  r.start(l);
+  r.start(l, Math.random() * Math.max(0, 1 - a), a);
 }
 // Una ficha de cerámica: parciales agudos que se apagan rápido, más el clic del golpe.
 function clink(delay = 0, vol = 1) {
@@ -240,5 +245,23 @@ function vibrate(a = 10) {
         navigator.vibrate(a);
       }
     } catch {}
+}
+// Preparar el audio (el contexto, la reverberación y el ruido) cuesta: se hace con la app quieta
+// después del primer toque, y no la primera vez que suena una carta, en medio de la jugada.
+if (typeof window !== "undefined") {
+  const preparar = () => {
+    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200));
+    idle(
+      () => {
+        const ctx = getAudio();
+        if (ctx) {
+          getBus(ctx);
+          noiseBuffer(ctx);
+        }
+      },
+      { timeout: 2000 },
+    );
+  };
+  window.addEventListener("pointerdown", preparar, { once: true, capture: true });
 }
 export { sfx, startAmbience, stopAmbience, vibrate };

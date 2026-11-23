@@ -1072,6 +1072,16 @@ function LessonTool({ lessonId }) {
     </button>
   );
 }
+// Las lecciones agrupadas por sección, en orden: una barra por sección en el resultado.
+function secciones(lecciones) {
+  const out = [];
+  for (const l of lecciones) {
+    const ult = out[out.length - 1];
+    if (ult && ult[0].section === l.section) ult.push(l);
+    else out.push([l]);
+  }
+  return out;
+}
 function LessonResult({ lesson: a, score: e, then: t }) {
   let s = useNav(),
     n = useStore(),
@@ -1103,16 +1113,19 @@ function LessonResult({ lesson: a, score: e, then: t }) {
           )}
           <h1 className="lr-title">{a.title}</h1>
           {l >= 0 ? (
-            <div className="lr-dots" aria-hidden="true">
-              {LESSONS.map((r, u) => (
-                <i
-                  className={cx(
-                    u === l ? "cur" : c(r.id) && "on",
-                    u > 0 && LESSONS[u - 1].section !== r.section && "gap",
-                  )}
-                  key={r.id}
-                />
-              ))}
+            <div className="lr-prog" aria-hidden="true">
+              {secciones(LESSONS).map((g) => {
+                const hechas = g.filter((r) => c(r.id)).length;
+                return (
+                  <span
+                    className={cx("lr-seg", g.some((r) => r.id === a.id) && "cur")}
+                    style={{ flexGrow: g.length }}
+                    key={g[0].section}
+                  >
+                    <i style={{ width: `${(hechas / g.length) * 100}%` }} />
+                  </span>
+                );
+              })}
             </div>
           ) : null}
           {e.n ? (
