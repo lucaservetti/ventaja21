@@ -641,7 +641,8 @@ function Toasts({ items: a }) {
     <div className="toasts" aria-live="polite">
       {(a || []).map((e) => (
         <div className={cx("toast", `toast-${e.kind}`)} key={e.id}>
-          {e.msg}
+          {e.icon ? <Icon name={e.icon} size={20} className="toast-ic" /> : null}
+          <span>{e.msg}</span>
         </div>
       ))}
     </div>

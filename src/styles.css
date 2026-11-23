@@ -1290,7 +1290,12 @@ button.chip:active:not(:disabled) {
   pointer-events: none;
   padding: 0 20px;
 }
+/* Todos los avisos van a lo ancho, como un cartel arriba: no quedan pastillas sueltas sobre el título. */
 .toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
   background: #163d2a;
   color: var(--text);
   padding: 12px 18px;
@@ -1301,6 +1306,10 @@ button.chip:active:not(:disabled) {
   max-width: 460px;
   animation: fadeUp 0.25s ease both;
   border: 1px solid #1d5338;
+}
+.toast-ic {
+  flex: none;
+  color: var(--accent);
 }
 .toast-good {
   border-color: #1f6e48;
