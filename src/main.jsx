@@ -585,6 +585,7 @@ function App() {
       id: Date.now() + ach.id,
       msg: `Logro: ${ach.title}`,
       kind: "good",
+      icon: "trophy",
     });
     maybeAskReview();
     setTimeout(() => setAchToast(null), 3800);

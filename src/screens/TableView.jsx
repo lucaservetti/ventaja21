@@ -2,6 +2,7 @@
 // (nivel 10 de la ruta de conteo y examen final).
 import {
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -62,6 +63,33 @@ function decksText(decks) {
     .toFixed(1)
     .replace(".0", "")
     .replace(".", ",");
+}
+
+// Lo que viene impreso en el paño, como en una mesa de verdad, con las reglas de esta mesa: cuánto
+// paga el blackjack, qué hace el crupier con 17 blando y cuánto paga el seguro. Queda debajo de las
+// cartas y casi transparente.
+function FeltPrint({ rules }) {
+  const id = useId().replace(/:/g, "");
+  const lineas = [
+    rules.bjPays === 1.5 ? "El blackjack paga 3 a 2" : "El blackjack paga 6 a 5",
+    rules.h17 ? "El crupier pide con 17 blando" : "El crupier se planta con 17 blando",
+    "El seguro paga 2 a 1",
+  ];
+  const arcos = ["M 18 24 Q 180 -20 342 24", "M 40 46 Q 180 6 320 46", "M 64 66 Q 180 30 296 66"];
+  return (
+    <svg className="felt-print" viewBox="0 0 360 72" aria-hidden="true">
+      {arcos.map((d, i) => (
+        <path id={`${id}-${i}`} d={d} fill="none" key={d} />
+      ))}
+      {lineas.map((t, i) => (
+        <text className={i > 0 ? "fp-2" : rules.bjPays < 1.5 ? "fp-1 fp-mal" : "fp-1"} key={i}>
+          <textPath href={`#${id}-${i}`} startOffset="50%" textAnchor="middle">
+            {t}
+          </textPath>
+        </text>
+      ))}
+    </svg>
+  );
 }
 
 function TableView({
@@ -321,6 +349,7 @@ function TableView({
           table.botSeats.length > 0 && "has-bots",
         )}
       >
+        <FeltPrint rules={rules} />
         <div className="seat dealer-seat">
           <span className="eyebrow">Crupier</span>
           <div className="card-row overlap cr-md">
