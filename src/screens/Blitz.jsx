@@ -1,7 +1,7 @@
 // Contrarreloj: 60 segundos para acertar todas las manos que puedas.
 // Cada acierto suma 1 y cada error te saca 3 segundos.
 import { useEffect, useRef, useState } from "react";
-import { getState, setState, useStore } from "../state.js";
+import { getState, markActive, setState, useStore } from "../state.js";
 import { Icon } from "../ui/icons.jsx";
 import { Button, PlayingCard, cx } from "../ui/components.jsx";
 import { TopBar, useRules } from "../ui/common.jsx";
@@ -94,20 +94,23 @@ function Blitz({ challenge = null }) {
     if (phase !== "done") return;
     const prev = (getState().train.blitz && getState().train.blitz.best) || 0;
     result.current = { record: score > prev && score > 0, prev };
-    setState((s) => ({
-      ...s,
-      train: {
-        ...s.train,
-        blitz: {
-          best: Math.max(prev, score),
-          plays: ((s.train.blitz && s.train.blitz.plays) || 0) + 1,
-          last: [
-            ...((s.train.blitz && s.train.blitz.last) || []),
-            { t: Date.now(), score },
-          ].slice(-30),
+    // Terminar una contrarreloj cuenta como actividad del día (racha y meta), como el resto.
+    setState((s) =>
+      markActive({
+        ...s,
+        train: {
+          ...s.train,
+          blitz: {
+            best: Math.max(prev, score),
+            plays: ((s.train.blitz && s.train.blitz.plays) || 0) + 1,
+            last: [
+              ...((s.train.blitz && s.train.blitz.last) || []),
+              { t: Date.now(), score },
+            ].slice(-30),
+          },
         },
-      },
-    }));
+      }),
+    );
     if (result.current.record) sfx.win();
   }, [phase]);
 

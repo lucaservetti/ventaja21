@@ -40,6 +40,11 @@ const firebase = {
 const version = pkg.version;
 // Pagos de Premium en la web (Paddle). Ver PAGOS_WEB.md.
 const pagos = JSON.parse(fs.readFileSync("pagos.config.json", "utf8"));
+// Anuncios en la web (AdSense). Vacío = sin anuncios. Ver ANUNCIOS_WEB.md.
+// ADSENSE_CLIENTE reemplaza al del archivo (lo usan las pruebas: tests/e2e/anuncios.mjs).
+const anuncios = { ...(JSON.parse(fs.readFileSync("anuncios.config.json", "utf8")).adsense || {}), ...(process.env.ADSENSE_CLIENTE ? { cliente: process.env.ADSENSE_CLIENTE } : {}) };
+const ADSENSE = anuncios.cliente ? { cliente: anuncios.cliente, prueba: !!anuncios.prueba } : null;
+if (ADSENSE && !/^ca-pub-\d{10,20}$/.test(ADSENSE.cliente)) throw new Error(`anuncios.config.json: el cliente de AdSense tiene que ser "ca-pub-" y números (está "${ADSENSE.cliente}")`);
 
 // Los diccionarios van en archivos aparte, con su huella en el nombre (app/i18n/en-<huella>.json): la
 // app trae solo el de su idioma (src/i18n/arranque.js) y el service worker los guarda entre versiones.
@@ -69,6 +74,7 @@ const js = await esbuild.build({
     __I18N__: JSON.stringify(I18N),
     __FIREBASE__: JSON.stringify(firebase.apiKey && firebase.projectId ? firebase : null),
     __PAGOS__: JSON.stringify({ paddle: pagos.paddle, mostrar: pagos.mostrar }),
+    __ADSENSE__: JSON.stringify(ADSENSE),
     // Anuncio intersticial de AdMob para Android. Sin la variable, se usa el anuncio de prueba de Google.
     __ADMOB_INTERSTITIAL__: JSON.stringify(process.env.ADMOB_INTERSTITIAL_ID || "ca-app-pub-3940256099942544/1033173712"),
     __ADMOB_REWARDED__: JSON.stringify(process.env.ADMOB_REWARDED_ID || "ca-app-pub-3940256099942544/5224354917"),
@@ -87,14 +93,22 @@ const html = fs
 // su propio código a la página y esta política lo frenaría.
 const huella = crypto.createHash("sha256").update(script.trim()).digest("base64");
 const local = firebase.emulator || /^http:/.test(firebase.api) ? " http://127.0.0.1:* http://localhost:*" : "";
+// Con anuncios en la web: el código de AdSense, sus marcos y el mensaje de consentimiento de Google.
+const ads = ADSENSE
+  ? {
+      script: " https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.adtrafficquality.google https://fundingchoicesmessages.google.com https://www.google.com https://www.gstatic.com",
+      connect: " https://*.googlesyndication.com https://*.doubleclick.net https://*.adtrafficquality.google https://fundingchoicesmessages.google.com https://www.google.com",
+      frame: " https://*.googlesyndication.com https://*.doubleclick.net https://*.adtrafficquality.google https://fundingchoicesmessages.google.com https://www.google.com",
+    }
+  : { script: "", connect: "", frame: "" };
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'sha256-${huella}' https://accounts.google.com/gsi/client https://cdn.paddle.com`,
+  `script-src 'self' 'sha256-${huella}' https://accounts.google.com/gsi/client https://cdn.paddle.com${ads.script}`,
   "style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  `connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com ${firebase.api} https://accounts.google.com/gsi/ https://*.paddle.com${local}`,
-  "frame-src https://accounts.google.com/gsi/ https://buy.paddle.com https://sandbox-buy.paddle.com",
+  `connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com ${firebase.api} https://accounts.google.com/gsi/ https://*.paddle.com${ads.connect}${local}`,
+  `frame-src https://accounts.google.com/gsi/ https://buy.paddle.com https://sandbox-buy.paddle.com${ads.frame}`,
   "worker-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",
@@ -103,6 +117,9 @@ const csp = [
 const htmlWeb = html.replace('<meta charset="utf-8">', () => `<meta charset="utf-8">\n<meta http-equiv="Content-Security-Policy" content="${csp}">`);
 // La app vive en app/ (edge21.app/app); en el inicio está la página de presentación.
 fs.writeFileSync("app/index.html", htmlWeb);
+// ads.txt (en la raíz del sitio): le dice a Google qué cuenta de AdSense puede vender anuncios aquí.
+if (ADSENSE) fs.writeFileSync("ads.txt", `google.com, ${ADSENSE.cliente.replace("ca-", "")}, DIRECT, f08c47fec0942fa0\n`);
+else fs.rmSync("ads.txt", { force: true });
 fs.rmSync("app/i18n", { recursive: true, force: true });
 fs.mkdirSync("app/i18n");
 for (const d of Object.values(DICS)) fs.writeFileSync(`app/${d.ruta}`, d.json);

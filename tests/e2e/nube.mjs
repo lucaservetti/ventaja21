@@ -41,12 +41,28 @@ await new Promise((ok) => srv.listen(0, ok));
 // Sin límite de pedidos (aquí la misma cuenta entra desde varios "celulares"; los límites se prueban
 // en tests/servidor.mjs).
 const sinLimite = { limit: async () => ({ success: true }) };
+// Secreto de los avisos de Paddle para esta prueba (el de verdad está solo en Cloudflare).
+const SECRETO_PADDLE = "pdl_ntfset_prueba_nube";
+async function firmarPaddle(raw) {
+  const ts = Math.floor(Date.now() / 1000);
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(SECRETO_PADDLE), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const h = [...new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`${ts}:${raw}`)))].map((x) => x.toString(16).padStart(2, "0")).join("");
+  return `ts=${ts};h1=${h}`;
+}
+// Paddle de mentira: en lugar de cdn.paddle.com, guarda lo que la app pidió abrir y deja avisarle a
+// la app como lo haría Paddle (checkout.completed).
+const PADDLE_FALSO = `window.Paddle = {
+  Environment: { set: (e) => (window.__paddle.entorno = e) },
+  Initialize: (o) => { window.__paddle.token = o.token; window.__paddle.avisar = o.eventCallback; },
+  Checkout: { open: (o) => (window.__paddle.abierto = o) },
+};
+window.__paddle = {};`;
 // El servidor de premios (el mismo código que corre en Cloudflare), apuntando a los emuladores.
 const api = http.createServer(async (req, res) => {
   const partes = [];
   for await (const c of req) partes.push(c);
   const body = req.method === "POST" && partes.length ? Buffer.concat(partes) : undefined;
-  const r = await worker.fetch(new Request(`http://127.0.0.1:8787${req.url}`, { method: req.method, headers: req.headers, body }), { PROJECT_ID: "demo-edge21", EMULATOR: "127.0.0.1", LIMITE_CUENTA: sinLimite, LIMITE_IP: sinLimite });
+  const r = await worker.fetch(new Request(`http://127.0.0.1:8787${req.url}`, { method: req.method, headers: req.headers, body }), { PROJECT_ID: "demo-edge21", EMULATOR: "127.0.0.1", LIMITE_CUENTA: sinLimite, LIMITE_IP: sinLimite, PADDLE_WEBHOOK_SECRET: SECRETO_PADDLE });
   res.writeHead(r.status, Object.fromEntries(r.headers));
   res.end(Buffer.from(await r.arrayBuffer()));
 });
@@ -196,6 +212,48 @@ await paso("premios: terminar las lecciones da 3 días de Premium, con aviso y e
   await a.locator(".pz-item.done").filter({ hasText: "Graduación" }).waitFor({ timeout: 5000 });
   await a.getByText("Tienes Premium de regalo hasta el").first().waitFor({ timeout: 5000 });
   await a.goBack();
+});
+
+// Pagar Premium en la web, de punta a punta, con un Paddle de mentira: la pantalla de Premium abre el
+// pago con el plan elegido y la cuenta; "Paddle" le avisa al servidor (firmado, como el de verdad) y a
+// la app; el servidor anota Premium en la cuenta y la app lo muestra sola.
+await paso("pagar Premium en la web: el pago (Paddle simulado) activa Premium en la cuenta", async () => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "es-UY" });
+  await ctx.addInitScript(`if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s","1"); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(base))}); }`);
+  await ctx.route("https://cdn.paddle.com/**", (r) => r.fulfill({ contentType: "text/javascript", body: PADDLE_FALSO }));
+  const d = await ctx.newPage();
+  d.errors = [];
+  d.on("pageerror", (e) => d.errors.push(String(e)));
+  // Con el sandbox de Paddle, los pagos aparecen solo en modo prueba (?pagos=prueba).
+  await d.goto(url + "?pagos=prueba");
+  await d.waitForTimeout(900);
+  await d.evaluate((t) => window.__cloudTest.finishSignIn(t), fakeGoogle("g-caro", "Caro Díaz", "caro@ejemplo.com"));
+  const uidC = await d.evaluate(() => JSON.parse(localStorage.getItem("edge21.account")).uid);
+  await d.locator('nav.tabbar button:has-text("Jugar")').click();
+  await d.locator("section:not([hidden]) .casino-ib").click();
+  await d.getByText("Pagas con tarjeta, Apple Pay, Google Pay o PayPal").waitFor({ timeout: 5000 });
+  // Plan anual (el que viene elegido) y pagar.
+  await d.locator(".bottom-actions button.btn").first().click();
+  await d.waitForFunction(() => window.__paddle && window.__paddle.abierto, null, { timeout: 5000 });
+  const abierto = await d.evaluate(() => window.__paddle);
+  const cfg = JSON.parse(fs.readFileSync(path.join(ROOT, "pagos.config.json"), "utf8")).paddle;
+  check(abierto.entorno === "sandbox" && abierto.token === cfg.token, "Paddle no se inició con el token del sandbox");
+  check(abierto.abierto.items[0].priceId === cfg.precios.yearly, `abrió otro precio: ${abierto.abierto.items[0].priceId}`);
+  check(abierto.abierto.customData.uid === uidC, "el pago no lleva la cuenta");
+  check(abierto.abierto.customer.email === "caro@ejemplo.com", "el pago no lleva el mail de la cuenta");
+  // Paddle cobra y le avisa al servidor...
+  const fin = new Date(Date.now() + 365 * 864e5).toISOString();
+  const ev = { event_type: "subscription.activated", data: { id: "sub_nube", status: "active", customer_id: "ctm_nube", custom_data: { uid: uidC }, items: [{ price: { id: cfg.precios.yearly } }], current_billing_period: { starts_at: new Date().toISOString(), ends_at: fin } } };
+  const raw = JSON.stringify(ev);
+  const r = await fetch("http://127.0.0.1:8787/pagos/paddle", { method: "POST", headers: { "Content-Type": "application/json", "Paddle-Signature": await firmarPaddle(raw) }, body: raw });
+  check(r.status === 200, `el servidor no aceptó el aviso (${r.status})`);
+  // ...y a la app, que espera a que el servidor lo anote.
+  await d.evaluate(() => window.__paddle.avisar({ name: "checkout.completed" }));
+  await d.getByText("¡Ya eres Premium! Gracias por apoyar la app.").waitFor({ timeout: 15000 });
+  const st = await state(d);
+  check(st.settings.cloudPagado === true && st.settings.cloudPremium > Date.now() + 300 * 864e5, "Premium no quedó como pagado hasta dentro de un año");
+  check(!d.errors.length, d.errors.join(" | "));
+  await ctx.close();
 });
 
 await paso("Premium por cuenta: lo marca el dueño en Firebase y se activa", async () => {

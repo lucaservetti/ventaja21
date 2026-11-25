@@ -5,6 +5,7 @@ import { Icon } from "../ui/icons.jsx";
 import { Button, cx } from "../ui/components.jsx";
 import { TopBar } from "../ui/common.jsx";
 import {
+  ADS_WEB,
   APP_MODE,
   NATIVE,
   buyPremium,
@@ -365,7 +366,7 @@ function Premium({ feature, then }) {
               Ya lo compré: restaurar
             </Button>
           )}
-          {NATIVE ? (
+          {NATIVE || ADS_WEB ? (
             <button
               type="button"
               className="link small prem-privacy"

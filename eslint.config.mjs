@@ -18,6 +18,7 @@ export default [
         __ADMOB_REWARDED__: "readonly",
         __FIREBASE__: "readonly",
         __PAGOS__: "readonly",
+        __ADSENSE__: "readonly",
       },
     },
     rules: { "no-undef": "error" },

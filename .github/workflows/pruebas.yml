@@ -73,6 +73,14 @@ jobs:
           npm run build
           npx --yes firebase-tools@14 emulators:exec --project demo-edge21 --only auth,firestore "node tests/e2e/nube.mjs"
 
+      - name: Anuncios en la web (con un AdSense de mentira)
+        if: ${{ !cancelled() && matrix.idioma == 'es' }}
+        env:
+          ADSENSE_CLIENTE: ca-pub-0000000000000000
+        run: |
+          npm run build
+          node tests/e2e/anuncios.mjs
+
       - name: Servidor de premios (con los emuladores de Firebase)
         if: ${{ !cancelled() && matrix.idioma == 'es' }}
         run: npx --yes firebase-tools@14 emulators:exec --project demo-edge21 --only auth,firestore "node tests/servidor.mjs"
