@@ -1,6 +1,6 @@
 {
   "name": "ventaja21",
-  "version": "1.20.2",
+  "version": "1.20.3",
   "private": true,
   "description": "Edge 21: aprendé a contar cartas en blackjack (PWA en español).",
   "type": "module",
