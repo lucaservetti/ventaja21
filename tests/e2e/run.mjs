@@ -6,6 +6,7 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { sinAnuncios } from "./sin-anuncios.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const FOTOS = process.env.FOTOS ? path.join(ROOT, "tests/e2e/fotos") : null;
@@ -999,6 +1000,7 @@ const PRUEBAS = {
     const code = link.split("#reto=")[1];
     // Otra persona abre el enlace.
     const other = await page.context().browser().newContext({ viewport: { width: 390, height: 844 }, locale: { es: "es-UY", pt: "pt-BR" }[h.lang] || "en-US" });
+    await sinAnuncios(other);
     await other.addInitScript(`localStorage.setItem("edge21.lang", ${JSON.stringify(h.lang)}); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(ONB))});`);
     const p2 = await other.newPage();
     await p2.goto(page.url().split("#")[0] + "#reto=" + code);
@@ -1189,6 +1191,7 @@ const PRUEBAS = {
     for (const [name, fn] of Object.entries(PRUEBAS)) {
       if (SOLO && SOLO !== name) continue;
       const ctx = await browser.newContext({ viewport: { width: ANCHO, height: ALTO }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, locale: { es: "es-UY", pt: "pt-BR" }[lang] || "en-US", colorScheme: TEMA });
+      await sinAnuncios(ctx);
       const seed = ["onboarding", "medicion"].includes(name) ? null : AJUSTES ? { ...ONB, settings: AJUSTES } : ONB;
       if (AUDITAR) await ctx.addInitScript({ path: path.join(ROOT, "tests/e2e/auditoria.js") });
       await ctx.addInitScript(`if (!sessionStorage.getItem("seeded")) { sessionStorage.setItem("seeded","1"); localStorage.setItem("edge21.lang", ${JSON.stringify(lang)}); ${seed ? `localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(seed))});` : ""} }`);

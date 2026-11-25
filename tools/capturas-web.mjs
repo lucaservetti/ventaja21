@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { sinAnuncios } from "../tests/e2e/sin-anuncios.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const estado = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/video/estado.json"), "utf8"));
@@ -60,6 +61,7 @@ const b = await chromium.launch();
 for (const L of (process.env.IDIOMAS || "es,en,pt").split(",")) {
   for (const [nombre, ir] of Object.entries(PANTALLAS)) {
     const ctx = await b.newContext({ viewport: { width: 405, height: 720 }, deviceScaleFactor: 8 / 3, locale: { es: "es-UY", en: "en-US", pt: "pt-BR" }[L] });
+    await sinAnuncios(ctx);
     await ctx.addInitScript(azar);
     await ctx.addInitScript(`if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s", "1"); localStorage.setItem("edge21.lang", "${L}"); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(estado))}); }`);
     const p = await ctx.newPage();

@@ -10,6 +10,7 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { sinAnuncios } from "./sin-anuncios.mjs";
 import worker from "../../servidor/index.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -71,6 +72,7 @@ const url = `http://localhost:${srv.address().port}/app/index.html`;
 const browser = await chromium.launch();
 async function phone(state) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "es-UY" });
+  await sinAnuncios(ctx);
   if (state) await ctx.addInitScript(`if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s","1"); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(state))}); }`);
   const page = await ctx.newPage();
   const errors = [];
@@ -158,6 +160,7 @@ await paso("invitar amigos: el enlace de Ana trae a Beto, que entra con Google y
   const codigo = r && r.invitar && r.invitar.codigo;
   check(/^[A-HJ-NP-Z2-9]{6}$/.test(codigo || ""), `código de Ana: ${JSON.stringify(r && r.invitar)}`);
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "es-UY" });
+  await sinAnuncios(ctx);
   await ctx.addInitScript(`if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s","1"); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(base))}); }`);
   const e = await ctx.newPage();
   await e.goto(`${url}?amigo=${codigo}`);
@@ -219,6 +222,7 @@ await paso("premios: terminar las lecciones da 3 días de Premium, con aviso y e
 // la app; el servidor anota Premium en la cuenta y la app lo muestra sola.
 await paso("pagar Premium en la web: el pago (Paddle simulado) activa Premium en la cuenta", async () => {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "es-UY" });
+  await sinAnuncios(ctx);
   await ctx.addInitScript(`if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s","1"); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(base))}); }`);
   await ctx.route("https://cdn.paddle.com/**", (r) => r.fulfill({ contentType: "text/javascript", body: PADDLE_FALSO }));
   const d = await ctx.newPage();

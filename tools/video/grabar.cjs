@@ -107,6 +107,8 @@ function director(page, cdp, dir, L) {
 
 async function toma(browser, base, L, nombre, esc, seed, dir) {
   const ctx = await browser.newContext({ viewport: { width: 390 * ZOOM, height: 844 * ZOOM }, deviceScaleFactor: 1, locale: { es: "es-UY", pt: "pt-BR" }[L] || "en-US" });
+  // Sin anuncios de verdad en las grabaciones (como en tests/e2e/sin-anuncios.mjs).
+  await ctx.route(/^https?:\/\/([^/]+\.)?(googlesyndication\.com|doubleclick\.net|googleadservices\.com|adtrafficquality\.google|fundingchoicesmessages\.google\.com)\//, (r) => r.abort());
   await ctx.addInitScript(`window.__V_EPOCH = ${Date.UTC(2026, 10, 20, 15, 0, 0)};`);
   await ctx.addInitScript(reloj);
   await ctx.addInitScript(azar(seed));
