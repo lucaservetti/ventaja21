@@ -7,6 +7,7 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { sinAnuncios } from "../tests/e2e/sin-anuncios.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const TMP = fs.mkdtempSync(path.join(ROOT, "tools/.tienda-"));
@@ -183,6 +184,7 @@ for (const lang of (process.env.IDIOMAS || "es,en,pt").split(",")) {
     const c = CAPTURAS[i];
     // La pantalla de la app, en un celular de 360×640 (a 3x).
     const ctx = await browser.newContext({ viewport: { width: 360, height: 640 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: { es: "es-UY", en: "en-US", pt: "pt-BR" }[lang] });
+    await sinAnuncios(ctx);
     await ctx.addInitScript(azar(3 + i * 2));
     await ctx.addInitScript(`if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s", "1"); localStorage.setItem("edge21.lang", "${lang}"); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(STATE(c.data)))}); }`);
     const p = await ctx.newPage();

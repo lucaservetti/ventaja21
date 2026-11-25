@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { sinAnuncios } from "./sin-anuncios.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const AXE = fs.readFileSync(createRequire(import.meta.url).resolve("axe-core/axe.min.js"), "utf8");
@@ -19,6 +20,7 @@ await new Promise((ok) => srv.listen(0, ok));
 const base = `http://localhost:${srv.address().port}`;
 const b = await chromium.launch();
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, locale: "es-UY" });
+await sinAnuncios(ctx);
 await ctx.addInitScript(`if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s","1"); localStorage.setItem("ventaja21.state.v1", ${JSON.stringify(JSON.stringify(ONB))}); }`);
 const page = await ctx.newPage();
 await page.goto(base + "/app/index.html");
