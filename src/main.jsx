@@ -42,6 +42,7 @@ import {
 import { Icon } from "./ui/icons.jsx";
 import { vibrate } from "./sound.js";
 import { Toasts, cx } from "./ui/components.jsx";
+import { PAGOS_WEB } from "./pagos-web.js";
 import { prepararMisiones } from "./misiones.js";
 import { useAvisoMisiones } from "./screens/misiones.jsx";
 import { TrainSession } from "./screens/TrainSession.jsx";
@@ -495,8 +496,9 @@ function App() {
   useEffect(() => {
     if (depth.current > 0 && l.length === 0)
       maybeShowAd().then((n) => {
-        // Después del 2.º y el 5.º anuncio del día, un recordatorio de que con Premium no hay.
-        if (n === 2 || n === 5)
+        // Después del 2.º y el 5.º anuncio del día, un recordatorio de que con Premium no hay
+        // (en la web, solo si ya se puede pagar ahí).
+        if ((n === 2 || n === 5) && (NATIVE || PAGOS_WEB))
           showPremToast(
             "¿Muchos anuncios? Con Premium no ves ninguno. Está en Ajustes → Premium.",
           );

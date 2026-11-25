@@ -1,0 +1,7 @@
+{
+  "_ayuda": "Anuncios en la web (Google AdSense: entre actividades y con premio, con las mismas reglas que en Android). Mientras 'cliente' esté vacío, la web no muestra anuncios. 'prueba': true muestra anuncios de prueba de Google. Ver ANUNCIOS_WEB.md.",
+  "adsense": {
+    "cliente": "",
+    "prueba": false
+  }
+}

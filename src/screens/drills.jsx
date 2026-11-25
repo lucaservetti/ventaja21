@@ -23,7 +23,7 @@ import {
 } from "../engine/cards.js";
 import { sfx, vibrate } from "../sound.js";
 import { DEC } from "../i18n/index.js";
-import { APP_MODE, hasPremium, watchAdForReward } from "../platform.js";
+import { ADS_WEB, APP_MODE, hasPremium, watchAdForReward } from "../platform.js";
 import { CLOUD } from "../cloud.js";
 import { randomSeed } from "../challenge.js";
 import { ChallengeButton, ChallengeOutcome } from "../ui/ChallengeShare.jsx";
@@ -1148,10 +1148,10 @@ function DrillRunning({
   );
 }
 // Segunda oportunidad del desafío diario: un intento más que cuenta (con otras cartas),
-// a cambio de mirar un anuncio en la app gratis. Con Premium o en la web, sin anuncio.
+// a cambio de mirar un anuncio (en la app gratis, y en la web si tiene anuncios). Con Premium, sin anuncio.
 function SecondChance({ streak, onGo }) {
   const [busy, setBusy] = useState(false);
-  const withAd = APP_MODE && !hasPremium();
+  const withAd = (APP_MODE || ADS_WEB) && !hasPremium();
   return (
     <div className="second-chance">
       <p className="small">

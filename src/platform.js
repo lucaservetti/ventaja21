@@ -1,5 +1,6 @@
 // Lo que cambia en la app de Android (Play Store): algunos anuncios y la compra de Premium.
-// En la web (GitHub Pages) no hay anuncios ni compras y todo queda abierto, como siempre.
+// En la web (GitHub Pages) todo queda abierto; los anuncios (AdSense, anuncios-web.js) y el pago
+// (Paddle, pagos-web.js) se prenden solo si están configurados.
 // Para probar en la computadora cómo se ve en Android: localStorage.setItem("v21.sim", "1") y recargar.
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import {
@@ -22,6 +23,13 @@ import {
   subscribe,
 } from "./state.js";
 import { cuandoEdadOk } from "./edad.js";
+import {
+  ANUNCIOS_WEB,
+  iniciarAnunciosWeb,
+  intersticialWeb,
+  premioWeb,
+  privacidadWeb,
+} from "./anuncios-web.js";
 
 function simulated() {
   try {
@@ -33,6 +41,9 @@ function simulated() {
 const NATIVE = Capacitor.isNativePlatform();
 // "Modo app": la de Android, o la web simulándola.
 const APP_MODE = NATIVE || simulated();
+// Anuncios en la web (AdSense): solo en la web de verdad (no en Android ni en la web que lo simula) y
+// con el cliente de AdSense cargado en anuncios.config.json.
+const ADS_WEB = !APP_MODE && ANUNCIOS_WEB;
 
 // Productos de Google Play (tienen que llamarse igual en Play Console, ver store/monetizacion.md).
 const SUB_ID = "edge21_premium"; // suscripción con dos planes: "mensual" y "anual"
@@ -272,7 +283,10 @@ async function loadRewarded() {
 }
 
 async function initAds() {
-  if (!NATIVE || hasPremium()) return;
+  if (hasPremium()) return;
+  // En la web, con AdSense configurado: se carga el código de Google (ver anuncios-web.js).
+  if (ADS_WEB) return iniciarAnunciosWeb();
+  if (!NATIVE) return;
   try {
     // Consentimiento (Europa y otros lugares que lo piden): Google muestra su formulario si hace falta.
     const info = await AdMob.requestConsentInfo();
@@ -300,7 +314,7 @@ async function maybeShowAd() {
     ads.tick = tick;
     ads.done++;
   }
-  if (!NATIVE || hasPremium() || !ads.loaded) return 0;
+  if (hasPremium() || (NATIVE ? !ads.loaded : !ADS_WEB)) return 0;
   const now = Date.now();
   const created = getState().profile.createdAt || now;
   if (
@@ -311,6 +325,16 @@ async function maybeShowAd() {
   )
     return 0;
   let shown = 0;
+  if (!NATIVE) {
+    // En la web: se cuenta solo si Google de verdad mostró uno (puede no tener anuncio para dar).
+    ads.lastAt = now;
+    ads.done = 0;
+    if (await intersticialWeb()) {
+      countAd();
+      shown = adsToday();
+    }
+    return shown;
+  }
   try {
     ads.loaded = false;
     ads.lastAt = now;
@@ -343,7 +367,9 @@ async function maybeShowAd() {
 // Anuncio con premio, que la persona elige mirar. Devuelve true si se ganó el premio.
 // Si no hay anuncio para mostrar (sin conexión, sin anuncios disponibles), el premio se da igual.
 async function watchAdForReward() {
-  if (!APP_MODE || hasPremium()) return true;
+  if (hasPremium()) return true;
+  if (ADS_WEB) return premioWeb();
+  if (!APP_MODE) return true;
   if (!NATIVE) return true; // web simulando Android: no hay anuncios de verdad
   if (!ads.rewardLoaded) {
     await loadRewarded();
@@ -385,6 +411,7 @@ async function watchAdForReward() {
 
 // Botón de "Privacidad de los anuncios" (obligatorio donde se pide consentimiento).
 async function showAdPrivacy() {
+  if (ADS_WEB) return privacidadWeb();
   if (!NATIVE) return;
   try {
     await AdMob.showPrivacyOptionsForm();
@@ -660,7 +687,11 @@ function onAndroidBack(fn) {
 }
 
 function initPlatform() {
-  if (!NATIVE) return;
+  // En la web solo los anuncios (si están configurados), también después de confirmar la edad.
+  if (!NATIVE) {
+    if (ADS_WEB) cuandoEdadOk(initAds);
+    return;
+  }
   followSystemFont();
   restoreFromMirror().finally(keepMirror);
   initShop().catch(() => {});
@@ -669,6 +700,7 @@ function initPlatform() {
 }
 
 export {
+  ADS_WEB,
   PRUEBA_MS,
   empezarPrueba,
   grupoDe,
