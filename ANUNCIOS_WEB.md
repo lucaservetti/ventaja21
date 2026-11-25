@@ -26,6 +26,8 @@ Pongo tu ID en `anuncios.config.json` y publico. Con eso:
 
 ## 3. Verificar el sitio y pedir la revisión (lo haces tú, después del paso 2)
 
+La portada (`index.html`) también tiene la etiqueta `google-adsense-account`, por si prefieres verificar con "Etiqueta meta".
+
 1. En AdSense, **Sitios → edge21.app**. Elige verificar con **ads.txt** y toca **Verificar**.
 2. Toca **Solicitar revisión**. Google tarda entre unos días y un par de semanas.
 3. Pide acceso a los **anuncios para juegos web (H5 Games Ads)**: la app usa esa forma de mostrar anuncios entre actividades y con premio. Busca "H5 Games Ads" en la ayuda de AdSense. Ahí está el formulario para pedirlo, con tu ID de editor y `edge21.app/app`. Sin ese acceso puede que no se muestre ningún anuncio, pero la app funciona igual.
